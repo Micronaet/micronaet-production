@@ -1,0 +1,57 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#	* production_accounting_external
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 7.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-01-30 12:42+0000\n"
+"PO-Revision-Date: 2015-01-30 13:43+0100\n"
+"Last-Translator: Nicola Riolini <nicola.riolini@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+
+#. module: production_accounting_external
+#: model:ir.model,name:production_accounting_external.model_product_product
+msgid "Product"
+msgstr "Prodotto"
+
+#. module: production_accounting_external
+#: field:product.product,maximum_qty:0
+msgid "Max. quantity"
+msgstr "Quantità max"
+
+#. module: production_accounting_external
+#: help:product.product,minimum_qty:0
+msgid "Minimum value for stock"
+msgstr "Scorta minima magazzino"
+
+#. module: production_accounting_external
+#: help:product.product,accounting_qty:0
+msgid "Accounting existence updated today"
+msgstr "Esistenza contabile ad oggi"
+
+#. module: production_accounting_external
+#: field:product.product,minimum_qty:0
+msgid "Min. quantity"
+msgstr "Scorta minima"
+
+#. module: production_accounting_external
+#: help:product.product,maximum_qty:0
+msgid "Maximum value for stock"
+msgstr "Minima scorta di magazzino"
+
+#. module: production_accounting_external
+#: view:product.product:0
+msgid "Accounting"
+msgstr "Contabilità"
+
+#. module: production_accounting_external
+#: field:product.product,accounting_qty:0
+msgid "Accounting quantity"
+msgstr "Quantità contabile"
+

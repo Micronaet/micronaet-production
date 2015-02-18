@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+    <record model="ir.ui.view" id="product_accouting_external_form_view">
+        <field name="name">product.product.accounting</field>
+        <field name="model">product.product</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>        
+        <field name="arch" type="xml">
+            <xpath expr="//page/group[@name='inventory']" position="after">
+                <group name="acounting" string="Accounting" colspan="2">
+                    <field name="minimum_qty" />
+                    <field name="maximum_qty" />
+                    <field name="accounting_qty" />
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    </data>
+</openerp>
+

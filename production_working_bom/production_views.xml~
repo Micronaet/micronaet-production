@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+    <record model="ir.ui.view" id="mrp_production_lavoration_form_view">
+        <field name="name">Production lavoration</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page" position="after">
+                <page string="Lavoration">
+                    <button name="load_lavoration" type="object" string="Load lavoration" />
+                    <button name="%(action_mrp_production_schedulation_wizard)d" type="action" string="Schedule lavoration" />
+                    <button name="open_lavoration" type="object" string="Lavorations" icon="terp-calendar"/>
+                    <group colspan="2">
+                        <field name="worker_ids" widget="many2many_tags"/>
+                    </group>                    
+                    <newline />
+                    <field name="lavoration_ids" colors="blue:fixed==True">
+                        <tree string="Lavoration" editable="bottom">
+                           <field name="level" />
+                           <field name="phase_id" />
+                           <field name="fixed" invisible="1" />
+                           <field name="workers" />
+                           <field name="line_id" />
+                           <field name="duration" widget="float_time" sum="total"/>
+                           <button name="open_lavoration_wc" type="object" string="" icon="terp-calendar"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Lavoration scheduled">
+                    <field name="scheduled_lavoration_ids"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!--mrp.production.workcenter.line-->
+    <record model="ir.ui.view" id="mrp_production_workcenter_form_lavoration_extra_view">
+        <field name="name">WC lavoration info</field>
+        <field name="model">mrp.production.workcenter.line</field>
+        <field name="inherit_id" ref="mrp_operations.mrp_production_workcenter_form_view_inherit" />
+        <field name="arch" type="xml">
+            <field name="hour" position="before">
+                <field name="lavoration_qty" />
+                <field name="phase_id" />
+                <field name="level" />
+                <field name="workers" />
+            </field>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="mrp_production_workcenter_form_lavoration_extra_search_view">
+        <field name="name">WC lavoration search</field>
+        <field name="model">mrp.production.workcenter.line</field>
+        <field name="inherit_id" ref="mrp.view_mrp_production_filter" />
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="product" string="Product" />
+            </field>
+        </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="mrp_production_workcenter_line_calendar_default_view">
+        <field name="name">Production work</field>
+        <field name="model">mrp.production.workcenter.line</field>
+        <field name="priority" eval="35"/>
+        <field name="arch" type="xml">
+            <calendar color="product" date_delay="hour" date_start="date_planned" string="Operations">
+	            <field name="workcenter_id" />
+	            <field name="production_id" />
+	            <field name="product" />	            
+            </calendar>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="mrp_production_workcenter_line_calendar_lavoration_view">
+        <field name="name">Production work</field>
+        <field name="model">mrp.production.workcenter.line</field>
+        <field name="priority" eval="5"/>
+        <field name="arch" type="xml">
+            <calendar color="workcenter_id" date_delay="hour" date_start="date_planned" string="Operations">
+	            <field name="workcenter_id" />
+	            <field name="production_id" />
+	            <field name="product" />	            
+            </calendar>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_mrp_production_production_calendar">
+        <field name="name">Production schedulation</field>
+        <field name="res_model">mrp.production.workcenter.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">calendar,tree,form</field>
+        <field name="view_id" ref="mrp_production_workcenter_line_calendar_default_view"/>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
+    </record>
+    
+    <menuitem 
+        parent="mrp.menu_mrp_production_action" 
+        id="menu_mrp_production_for_production" 
+        action="action_mrp_production_production_calendar"/>
+    </data>
+</openerp>
+

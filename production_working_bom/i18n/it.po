@@ -1,0 +1,328 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#	* production_working_bom
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 7.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-01-30 12:29+0000\n"
+"PO-Revision-Date: 2015-01-30 13:38+0100\n"
+"Last-Translator: Nicola Riolini <nicola.riolini@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+
+#. module: production_working_bom
+#: view:mrp.production:0
+msgid "Lavoration scheduled"
+msgstr "Pianificazione lavorazioni"
+
+#. module: production_working_bom
+#: field:mrp.production.status.wizard,month_window:0
+msgid "Statistic production window "
+msgstr "Statistiche produzione"
+
+#. module: production_working_bom
+#: help:mrp.production.status.wizard,with_medium:0
+msgid "if check in report there's production m(x), if not check report is more fast"
+msgstr "Se spuntato introduce la media m(x), se non spuntato il report si carica più velocemente"
+
+#. module: production_working_bom
+#: model:ir.actions.act_window,name:production_working_bom.act_product_status_wizard_action_4
+#: view:mrp.production.status.wizard:0
+msgid "Product and material status"
+msgstr "Stato prodotti e materie prime"
+
+#. module: production_working_bom
+#: model:ir.model,name:production_working_bom.model_mrp_production
+msgid "Manufacturing Order"
+msgstr "Ordine di produzione"
+
+#. module: production_working_bom
+#: field:mrp.production,scheduled_lavoration_ids:0
+msgid "Scheduled lavoration"
+msgstr "Lavoraziona pianificata"
+
+#. module: production_working_bom
+#: help:mrp.production.status.wizard,active:0
+msgid "Show only product and material with movement"
+msgstr "Mostra solo prodotti e materie prime con movimenti"
+
+#. module: production_working_bom
+#: view:mrp.production.status.wizard:0
+msgid "Print"
+msgstr "Stampa"
+
+#. module: production_working_bom
+#: field:mrp.production.status.wizard,days:0
+msgid "Days from today"
+msgstr "Giorni da oggi"
+
+#. module: production_working_bom
+#: field:mrp.production.status.wizard,negative:0
+msgid "Only negative"
+msgstr "Solo negativi"
+
+#. module: production_working_bom
+#: model:ir.model,name:production_working_bom.model_mrp_production_workcenter_line
+msgid "Work Order"
+msgstr "Ordine di Lavoro"
+
+#. module: production_working_bom
+#: field:mrp.production,worker_ids:0
+#: field:mrp.production.workcenter.line,worker_ids:0
+msgid "Employee"
+msgstr "Impiegati"
+
+#. module: production_working_bom
+#: help:mrp.bom.lavoration,total_duration:0
+msgid "Duration in hour:minute for lavoration of quantity piece"
+msgstr "Durata in ore:minuti per lavorare la quantità di pezzi"
+
+#. module: production_working_bom
+#: view:mrp.production:0
+msgid "Load lavoration"
+msgstr "Carica lavorazione"
+
+#. module: production_working_bom
+#: field:mrp.production.workcenter.line,lavoration_qty:0
+msgid "Lavoration qty"
+msgstr "Quantità lavorazione"
+
+#. module: production_working_bom
+#: field:mrp.prouction.schedulation.wizard,type:0
+msgid "Type"
+msgstr "Tipo"
+
+#. module: production_working_bom
+#: help:mrp.workcenter,ordinary_hour:0
+msgid "Normal work hours"
+msgstr "Normale orario di lavoro"
+
+#. module: production_working_bom
+#: model:ir.model,name:production_working_bom.model_product_product
+msgid "Product"
+msgstr "Prodotto"
+
+#. module: production_working_bom
+#: view:mrp.prouction.schedulation.wizard:0
+msgid "Schedule production"
+msgstr "Schedula produzione"
+
+#. module: production_working_bom
+#: view:mrp.prouction.schedulation.wizard:0
+msgid "Schedule"
+msgstr "Pianificazione"
+
+#. module: production_working_bom
+#: model:ir.model,name:production_working_bom.model_mrp_bom_lavoration
+msgid "BOM Lavoration"
+msgstr "Lavorazione distinta base"
+
+#. module: production_working_bom
+#: model:ir.model,name:production_working_bom.model_mrp_prouction_schedulation_wizard
+msgid "Production schedule wizard"
+msgstr "Wizard Schedula produzione"
+
+#. module: production_working_bom
+#: model:ir.actions.report.xml,name:production_working_bom.webkit_status_hour_report
+msgid "Hour status"
+msgstr "Stato ore"
+
+#. module: production_working_bom
+#: model:ir.actions.report.xml,name:production_working_bom.webkit_status_report
+msgid "Material status"
+msgstr "Stato materiali"
+
+#. module: production_working_bom
+#: field:mrp.production.workcenter.line,lavoration_id:0
+msgid "Linked lavoration"
+msgstr "Lavorazione collegata"
+
+#. module: production_working_bom
+#: view:mrp.production:0
+msgid "Lavorations"
+msgstr "Lavorazioni"
+
+#. module: production_working_bom
+#: field:mrp.production.status.wizard,with_medium:0
+msgid "With m(x)"
+msgstr "Con m(x)"
+
+#. module: production_working_bom
+#: field:mrp.production.workcenter.line,phase_id:0
+msgid "Phase"
+msgstr "Fase"
+
+#. module: production_working_bom
+#: selection:mrp.prouction.schedulation.wizard,type:0
+msgid "10 hour a day"
+msgstr "10 ore per giorno"
+
+#. module: production_working_bom
+#: field:mrp.bom.lavoration,production_id:0
+msgid "Production"
+msgstr "Produzione"
+
+#. module: production_working_bom
+#: selection:mrp.prouction.schedulation.wizard,type:0
+msgid "With saturday"
+msgstr "Con sabato"
+
+#. module: production_working_bom
+#: view:mrp.production.workcenter.line:0
+msgid "Operations"
+msgstr "Lavorazioni"
+
+#. module: production_working_bom
+#: code:addons/production_working_bom/production.py:114
+#, python-format
+msgid "Production elements"
+msgstr "Elementi produzione"
+
+#. module: production_working_bom
+#: field:mrp.production.workcenter.line,level:0
+msgid "Level"
+msgstr "Livello"
+
+#. module: production_working_bom
+#: model:ir.model,name:production_working_bom.model_res_company
+msgid "Companies"
+msgstr "Aziende"
+
+#. module: production_working_bom
+#: model:ir.actions.act_window,name:production_working_bom.action_mrp_production_production_calendar
+#: model:ir.ui.menu,name:production_working_bom.menu_mrp_production_for_production
+msgid "Production schedulation"
+msgstr "Schedulazione produzione"
+
+#. module: production_working_bom
+#: help:res.company,max_employee:0
+msgid "Max number of employee"
+msgstr "Massimo numero di impiegati"
+
+#. module: production_working_bom
+#: model:ir.actions.act_window,name:production_working_bom.action_mrp_production_schedulation_wizard
+#: view:mrp.production:0
+msgid "Schedule lavoration"
+msgstr "Schedula lavorazione"
+
+#. module: production_working_bom
+#: view:mrp.production.status.wizard:0
+#: view:mrp.prouction.schedulation.wizard:0
+msgid "Cancel"
+msgstr "Annulla"
+
+#. module: production_working_bom
+#: help:mrp.workcenter,extra_hour:0
+msgid "Extra work max hours"
+msgstr "Extra lavorativo massimo ore"
+
+#. module: production_working_bom
+#: view:mrp.production:0
+#: field:mrp.production,lavoration_ids:0
+msgid "Lavoration"
+msgstr "Lavorazione"
+
+#. module: production_working_bom
+#: help:res.company,max_hour_man:0
+msgid "Max time * employee for a work day"
+msgstr "Max ora * ore di lavoro giornaliere impiegato"
+
+#. module: production_working_bom
+#: help:mrp.production.workcenter.line,lavoration_qty:0
+msgid "Quantity lavoration"
+msgstr "Quantità lavorazione"
+
+#. module: production_working_bom
+#: field:mrp.production.workcenter.line,workers:0
+msgid "Default workers"
+msgstr "Lavoratori standard"
+
+#. module: production_working_bom
+#: help:mrp.production.status.wizard,negative:0
+msgid "Show only product and material with negative value in range"
+msgstr "Mostra solo i prodotti e materie con numeri negativi nel range"
+
+#. module: production_working_bom
+#: field:res.company,max_hour_man:0
+msgid "Max hour/man a day"
+msgstr "Max ore/uomo per giorno"
+
+#. module: production_working_bom
+#: view:mrp.production:0
+msgid "total"
+msgstr "totale"
+
+#. module: production_working_bom
+#: field:product.product,show_in_status:0
+msgid "Show in status report"
+msgstr "Mostra nel report di stato"
+
+#. module: production_working_bom
+#: help:mrp.bom.lavoration,real_duration:0
+msgid "Real duration in hour:minute for lavoration of quantity piece"
+msgstr "Durata reale ore:minuti per lavorare la quantità di pezzi"
+
+#. module: production_working_bom
+#: field:mrp.bom.lavoration,scheduled_ids:0
+msgid "Scheduled lavorations"
+msgstr "Lavorazioni schedulate"
+
+#. module: production_working_bom
+#: model:ir.model,name:production_working_bom.model_mrp_production_status_wizard
+#: model:ir.model,name:production_working_bom.model_product_status_wizard
+msgid "Product status wizard"
+msgstr "Wizard stato prodotti"
+
+#. module: production_working_bom
+#: selection:mrp.prouction.schedulation.wizard,type:0
+msgid "Work week"
+msgstr "Settimana lavorativa"
+
+#. module: production_working_bom
+#: field:mrp.workcenter,extra_hour:0
+#: field:mrp.workcenter,ordinary_hour:0
+#: field:res.company,max_employee:0
+msgid "Ordinary hour"
+msgstr "Ore ordinarie"
+
+#. module: production_working_bom
+#: model:ir.actions.act_window,name:production_working_bom.mrp_production_status_wizard_action
+msgid "Material status wizard"
+msgstr "Wizard stato materiali"
+
+#. module: production_working_bom
+#: field:mrp.production.status.wizard,active:0
+msgid "Only record with data"
+msgstr "Solo record con dati"
+
+#. module: production_working_bom
+#: field:mrp.prouction.schedulation.wizard,deadline:0
+msgid "Deadline"
+msgstr "Scadenza"
+
+#. module: production_working_bom
+#: field:mrp.prouction.schedulation.wizard,from_date:0
+msgid "From date"
+msgstr "Dalla data"
+
+#. module: production_working_bom
+#: field:mrp.bom.lavoration,real_duration:0
+#: field:mrp.bom.lavoration,total_duration:0
+msgid "Duration"
+msgstr "Durata"
+
+#. module: production_working_bom
+#: help:mrp.production.status.wizard,month_window:0
+msgid "Month back for medium production monthly index (Kg / month of prime material)"
+msgstr "Mesi addietro da utilizzare per il calcolo consumi medi (Kg / mese di materia prima)"
+
+#. module: production_working_bom
+#: model:ir.model,name:production_working_bom.model_mrp_workcenter
+msgid "Work Center"
+msgstr "Centro di lavoro"
+

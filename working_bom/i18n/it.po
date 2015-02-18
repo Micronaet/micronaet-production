@@ -1,0 +1,121 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#	* working_bom
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 7.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-01-30 12:38+0000\n"
+"PO-Revision-Date: 2015-01-30 13:41+0100\n"
+"Last-Translator: Nicola Riolini <nicola.riolini@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+
+#. module: working_bom
+#: code:addons/working_bom/bom.py:75
+#, python-format
+msgid "No phase"
+msgstr "No fase"
+
+#. module: working_bom
+#: field:mrp.bom.lavoration,level:0
+msgid "Level"
+msgstr "Livello"
+
+#. module: working_bom
+#: model:ir.model,name:working_bom.model_mrp_bom_lavoration
+#: view:mrp.bom.lavoration:0
+msgid "BOM Lavoration"
+msgstr "Distinta base di lavorazione"
+
+#. module: working_bom
+#: field:mrp.bom.lavoration.phase,line_id:0
+msgid "Default line"
+msgstr "Linea predefinita"
+
+#. module: working_bom
+#: field:mrp.bom.lavoration.phase,unload_material:0
+msgid "Unload material"
+msgstr "Scarica materiale"
+
+#. module: working_bom
+#: field:mrp.bom.lavoration,phase_id:0
+#: field:mrp.bom.lavoration.phase,name:0
+msgid "Phase"
+msgstr "Fase"
+
+#. module: working_bom
+#: field:mrp.bom.lavoration.phase,note:0
+msgid "Note"
+msgstr "Note"
+
+#. module: working_bom
+#: model:ir.model,name:working_bom.model_mrp_bom
+msgid "Bill of Material"
+msgstr "Distinta Base"
+
+#. module: working_bom
+#: field:mrp.bom.lavoration,quantity:0
+msgid "Quantity"
+msgstr "Quantità"
+
+#. module: working_bom
+#: view:mrp.bom:0
+#: field:mrp.bom,lavoration_ids:0
+msgid "Lavoration"
+msgstr "Lavorazione"
+
+#. module: working_bom
+#: field:mrp.bom.lavoration,bom_id:0
+msgid "BOM"
+msgstr "Distinta base"
+
+#. module: working_bom
+#: help:mrp.bom.lavoration,quantity:0
+msgid "Number of piece producted in duration time"
+msgstr "Numero di pezzi prodotti nella durata di tempo"
+
+#. module: working_bom
+#: help:mrp.bom.lavoration,duration:0
+msgid "Duration in hour:minute for lavoration of quantity piece"
+msgstr "Durata in ore:minuti per produrre la quantità di pezzi indicata"
+
+#. module: working_bom
+#: field:mrp.bom.lavoration,duration:0
+msgid "Duration"
+msgstr "Durata"
+
+#. module: working_bom
+#: field:mrp.bom.lavoration,workers:0
+msgid "Default workers"
+msgstr "Addetti predefiniti"
+
+#. module: working_bom
+#: model:ir.model,name:working_bom.model_mrp_bom_lavoration_phase
+msgid "BOM Lavoration phase"
+msgstr "Fase di lavorazione"
+
+#. module: working_bom
+#: field:mrp.bom.lavoration,fixed:0
+msgid "Fixed"
+msgstr "Fisso"
+
+#. module: working_bom
+#: help:mrp.bom.lavoration.phase,unload_material:0
+msgid "This phase unload material from stock"
+msgstr "Questa fase scarica materiale dal magazzino"
+
+#. module: working_bom
+#: field:mrp.bom.lavoration,line_id:0
+msgid "Line"
+msgstr "Linea"
+
+#. module: working_bom
+#: field:mrp.bom,has_lavoration:0
+msgid "Has lavoration"
+msgstr "Ha la lavorazione"
+

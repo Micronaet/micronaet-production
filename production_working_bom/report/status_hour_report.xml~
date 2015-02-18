@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <!--Loop for report-->
+    <template id="report_status_hour">
+        <t t-foreach="docs" t-as="o">
+            <div class="page">
+                <t t-if="startup()">
+                   <!-- Start loop product and material status: -->
+                     <table>
+                         <thead>
+                             <tr>
+                                 <t t-set="get_cols" t-value="get_cols()"/>
+                                 <th class="text-left">Description</th>                                 
+                                 <t t-foreach="get_cols" t-as="col">
+                                     <th class="text-center"><t t-esc="col"/></th>
+                                 </t>
+                             </tr>
+                         </thead>                         
+                         <tbody>
+                             <t t-set="total_cols" t-value="{}"/>
+                             <t t-esc="set_dict_counter('total_cols')"/>
+                             <t t-foreach="get_rows()" t-as="row">
+                                 <tr>
+                                     <td><t t-esc="row"/></td>
+                                     <t t-foreach="get_cols" t-as="col">
+                                         <!--Read parameters:-->
+                                         <t t-set="res" t-value="get_cel(row, col)"/>
+                                         <t t-set="hm" t-value="res[0]"/>
+                                         <t t-set="hour" t-value="res[1]"/>
+                                         <t t-set="products" t-value="res[2]"/>                                         
+                                         <t t-esc="set_dict_counter('total_cols', col, get_dict_counter('total_cols', col) + (hm or 0.0))"/>
+
+                                         <td>
+                                             <table>
+                                                 <!--HOUR STATUS-->
+                                                 <tr>
+                                                     <!--negative (white)-->
+                                                     <t t-if="hour&lt;=0">
+                                                         <td></td>
+                                                     </t>
+                                                     <!--normal (green)-->
+                                                     <t t-if="hour &gt;0 and hour&lt;=8.0">
+                                                         <td class="text-center">H.: <t t-esc="hour"/></td>
+                                                     </t>
+                                                     <!--extra hour (yellow)-->
+                                                     <t t-if="hour &gt;8.0 and hour&lt;=9.0">
+                                                         <td class="text-center">H.: <t t-esc="hour"/></td>
+                                                     </t>
+                                                     <!--over hour (red)-->
+                                                     <t t-if="hour&gt;9.0">
+                                                         <td class="text-center">H.: <t t-esc="hour"/></td>
+                                                     </t>
+                                                 </tr>
+                                                 <!--H/M STATUS-->
+                                                 <tr>
+                                                     <!--normal (white)-->
+                                                     <t t-if="hm&lt;=80.0">
+                                                         <td class="text-center">H/m: <t t-esc="hm"/></td>
+                                                     </t>
+                                                     <!--extra hour (yellow)-->
+                                                     <t t-if="hm &gt;80.0 and hm&lt;=90.0">
+                                                         <td class="text-center">H/m: <t t-esc="hm"/></td>
+                                                     </t>
+                                                     <!--extra hour (red)-->
+                                                     <t t-if="hm&gt;90.0">
+                                                         <td class="text-center">H/m: <t t-esc="hm"/></td>
+                                                     </t>                                                     
+                                                 </tr>
+                                                 <!--PRODUCT STATUS-->
+                                                 <t t-if="products">
+                                                     <td class="text-center">
+                                                         <t t-foreach="products" t-as="p">
+                                                             <t t-esc="p.replace(' ', '')"/>
+                                                         </t>
+                                                     </td>
+                                                 </t>
+                                                 <t t-if="not products">
+                                                     <td></td>
+                                                 </t>                                                 
+                                             </table>
+                                         </td>                                        
+                                     </t><!--for cols-->
+                                 </tr>
+                             </t><!--for rows-->
+                             <!--TOTALS:-->
+                             <tr>
+                                 <td class="text-left">Totale H/u</td>
+                                 <t t-foreach="get_cols" t-as="col">
+                                     <t t-set="tot" t-value="total_cols.get(col, 0.0)"/>
+                                     <!--no total (white)-->
+                                     <t t-if="tot&lt;=0">
+                                         <td class="text-center"><t t-esc="tot"/></td>
+                                     </t>
+                                     <!--normal (green)-->
+                                     <t t-if="tot&lt;=80.0">
+                                         <td class="text-center"><t t-esc="tot"/></td>
+                                     </t>
+                                     <!--extra hour (yellow)-->
+                                     <t t-if="tot&gt;80.0 and tot&lt;=90.0">
+                                         <td class="text-center"><t t-esc="tot"/></td>
+                                     </t>
+                                     <!--over total (red)-->
+                                     <t t-if="tot&gt;90.0">
+                                         <td class="text-center"><t t-esc="tot"/></td>
+                                     </t>
+                                 </t> <!--for cols-->
+                             </tr>
+                         </tbody>
+                     </table>
+                </t>
+            </div>
+        </t>
+    </template>    
+
+    <!--Create action report-->
+    <report
+        string="Status hour"
+        id="action_report_status_hour"
+        model="mrp.production"
+        report_type="qweb-pdf"
+        name="production_working_bom.report_status_hour"
+        file="production_working_bom.report_status_hour"
+        />
+  </data>
+</openerp>
