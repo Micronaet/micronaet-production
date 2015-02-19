@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+    <!--product.product-->
     <record model="ir.ui.view" id="product_accouting_external_form_view">
         <field name="name">product.product.accounting</field>
         <field name="model">product.product</field>
@@ -16,6 +17,16 @@
             </xpath>
         </field>
     </record>
+
+    <!--MENUITEM:-->
+   <menuitem name="Sale order" 
+       parent="mrp.menu_mrp_manufacturing" 
+       id="menu_base_sale_order_root" 
+       sequence="0" />   
+      <!--<menuitem name="OC line" 
+          parent="menu_base_sale_order_root" 
+          id="menu_sale_order_line_m0" 
+          action="sql_sale_order.action_view_sale_order_line" sequence="10" />-->
 
     </data>
 </openerp>

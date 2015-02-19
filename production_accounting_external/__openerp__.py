@@ -34,11 +34,12 @@
         'base',
         'product',
         'stock',
+        'sql_sale_order',
         ],
     'init_xml': [],
     'demo': [],
     'data': [
-        'accounting_views.xml',        
+        'accounting_views.xml',       
         ],
     'active': False,
     'installable': True,
