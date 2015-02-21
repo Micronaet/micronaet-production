@@ -23,10 +23,10 @@
        parent="mrp.menu_mrp_manufacturing" 
        id="menu_base_sale_order_root" 
        sequence="0" />   
-      <!--<menuitem name="OC line" 
+      <menuitem name="OC line" 
           parent="menu_base_sale_order_root" 
           id="menu_sale_order_line_m0" 
-          action="sql_sale_order.action_view_sale_order_line" sequence="10" />-->
+          action="sql_sale_order.action_view_sale_order_line" sequence="10" />
 
     </data>
 </openerp>

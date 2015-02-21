@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+    <record model="ir.ui.view" id="product_product_family_form_view">
+        <field name="name">product.product.family.form</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_template_form_view" />
+        <field name="arch" type="xml">
+            <field name="list_price" position="after">
+                <field name="is_family" />
+                <field name="family_id" attrs="{'invisible': [('is_family', '=', True)]}" />
+            </field>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="product_product_family_tree_view">
+        <field name="name">product.product.tree.form</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_template_tree_view" />
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="is_family" invisible="1"/>
+                <field name="family_id" />
+            </field>
+        </field>
+    </record>
+    
+    </data>
+</openerp>
+

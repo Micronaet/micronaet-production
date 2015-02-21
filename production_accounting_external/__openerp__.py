@@ -21,12 +21,12 @@
     'name': 'Accounting external for production',
     'version': '0.1',
     'category': '',
-    'description': """
+    'description': '''
         Add extra field for import account information like:
         Min. stock value
         Max. stock value
         Accounting stock status
-        """,
+        ''',
     'author': 'Micronaet S.r.l. - Nicola Riolini',
     'website': 'http://www.micronaet.it',
     'license': 'AGPL-3',

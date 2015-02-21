@@ -18,14 +18,15 @@
 ###############################################################################
 
 {
-    'name': 'Accounting external for production',
+    'name': 'Product family',
     'version': '0.1',
     'category': '',
     'description': """
-        Add extra field for import account information like:
-        Min. stock value
-        Max. stock value
-        Accounting stock status
+        In production sometimes is usefull act with family of product than
+        product so this module create a particular product that work like
+        goups (the difference is that when you product, create a BOM,
+        sell generic product etc. you can use directly the product instead of
+        change all linked object to work with groups.
         """,
     'author': 'Micronaet S.r.l. - Nicola Riolini',
     'website': 'http://www.micronaet.it',
@@ -33,13 +34,12 @@
     'depends': [
         'base',
         'product',
-        'stock',
-        'sql_sale_order',
+        'mrp',
         ],
     'init_xml': [],
     'demo': [],
     'data': [
-        'accounting_views.xml',       
+        'family_views.xml',        
         ],
     'active': False,
     'installable': True,
