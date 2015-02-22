@@ -40,15 +40,15 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
-class ProductProductFamily(orm.Model):
+class ProductTemplateFamily(orm.Model):
     ''' Add extra information to default product
     '''
     
-    _inherit = 'product.product'
+    _inherit = 'product.template'
     
     _columns = {
-        'family': fields.boolean('Is family'),
-        'family_id': fields.many2one('product.product', 'Family', 
+        'is_family': fields.boolean('Is family'),
+        'family_id': fields.many2one('product.template', 'Family', 
             help='Parent family product belongs',
             domain=[('is_family', '=', True)]),            
         }
