@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+    <record model="ir.ui.view" id="mrp_bom_lavoration_form_view">
+        <field name="name">mrp.bom.lavoration.form</field>
+        <field name="model">mrp.bom.lavoration</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+           <form string="BOM Lavoration" version="7.0">
+               <sheet>
+                   <field name="level" />
+                   <field name="phase_id" />
+                   <field name="fixed" />
+                   <field name="quantity" />
+                   <!--<field name="uom_id" />-->
+                   <field name="duration" widget="float_time"/>
+                   <field name="workers" />
+                   <field name="line_id" />
+                   <!--<field name="bom_id" />-->
+               </sheet>
+           </form> 
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="mrp_bom_lavoration_tree_view">
+        <field name="name">mrp.bom.lavoration.tree</field>
+        <field name="model">mrp.bom.lavoration</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+           <tree string="BOM Lavoration" editable="bottom" colors="blue:fixed==True">
+               <field name="level" />
+               <field name="phase_id" />
+               <field name="fixed" />
+               <field name="quantity" />
+               <!--<field name="uom_id" />-->
+               <field name="duration" widget="float_time"/>
+               <field name="workers" />
+               <field name="line_id" />
+               <!--<field name="bom_id"/>-->
+           </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="mrp_bom_add_lavoration_form_view">
+        <field name="name">BOM with lavoration</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+           <field name="product_qty" position="after">               
+               <field name="has_lavoration" class="oe_inline"/>
+               <label for="has_lavoration" />
+           </field>
+           <xpath expr="//notebook/page" position="after">
+               <page string="Lavoration" attrs="{'invisible':[('has_lavoration','=','False')]}">
+                   <field name="lavoration_ids"> 
+                       <tree string="Lavoration" editable="bottom">
+                           <field name="level" />
+                           <field name="phase_id" />
+                           <field name="line_id" />
+                           <field name="workers" />
+                           <field name="duration" />
+                           <field name="quantity" />
+                           <field name="fixed" />
+                       </tree>
+                       <form string="Lavoration" >
+                           <group>
+                               <field name="level" />
+                               <field name="phase_id" />
+                               <field name="line_id" />
+                               <field name="workers" />
+                               <field name="duration" />
+                               <field name="quantity" />
+                               <field name="fixed" />
+                           </group>
+                       </form>
+                   </field>
+               </page>
+           </xpath>
+        </field>
+    </record>
+    </data>
+</openerp>
+

@@ -19,7 +19,7 @@
 ###############################################################################
 import os
 import sys
-import netsvc
+from openerp import netsvc
 import logging
 from openerp.osv import osv, orm, fields
 from datetime import datetime, timedelta
@@ -31,11 +31,11 @@ from openerp.tools.translate import _
 
 _logger = logging.getLogger(__name__)
 
-class product_product(orm.Model):
+class ProductTemplateAccounting(orm.Model):
     ''' Accounting external fields
     '''
-    _name = 'product.product'
-    _inherit = 'product.product'
+    _name = 'product.template'
+    _inherit = 'product.template'
     
     _columns = {
         'minimum_qty': fields.float('Min. quantity', digits=(10, 2), 

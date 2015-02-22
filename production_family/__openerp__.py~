@@ -18,29 +18,24 @@
 ###############################################################################
 
 {
-    'name': 'Accounting external for production',
+    'name': 'BOM for working process',
     'version': '0.1',
     'category': '',
-    'description': '''
-        Add extra field for import account information like:
-        Min. stock value
-        Max. stock value
-        Accounting stock status
-        ''',
+    'description': """
+        Add extra information for manage BOM as a work BOM
+        """,
     'author': 'Micronaet S.r.l. - Nicola Riolini',
     'website': 'http://www.micronaet.it',
     'license': 'AGPL-3',
     'depends': [
         'base',
-        'product',
-        'stock',
-        'sql_sale_order',
-        'production_family',
+        'mrp',
         ],
     'init_xml': [],
     'demo': [],
     'data': [
-        'accounting_views.xml',       
+        'security/ir.model.access.csv',
+        'bom_views.xml',        
         ],
     'active': False,
     'installable': True,

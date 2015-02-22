@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ###############################################################################
 #
 #    Copyright (C) 2001-2014 Micronaet SRL (<http://www.micronaet.it>).
@@ -16,33 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ###############################################################################
+import family
 
-{
-    'name': 'Accounting external for production',
-    'version': '0.1',
-    'category': '',
-    'description': '''
-        Add extra field for import account information like:
-        Min. stock value
-        Max. stock value
-        Accounting stock status
-        ''',
-    'author': 'Micronaet S.r.l. - Nicola Riolini',
-    'website': 'http://www.micronaet.it',
-    'license': 'AGPL-3',
-    'depends': [
-        'base',
-        'product',
-        'stock',
-        'sql_sale_order',
-        'production_family',
-        ],
-    'init_xml': [],
-    'demo': [],
-    'data': [
-        'accounting_views.xml',       
-        ],
-    'active': False,
-    'installable': True,
-    'auto_install': False,
-    }
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
