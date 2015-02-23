@@ -46,11 +46,32 @@ class ProductTemplateFamily(orm.Model):
     
     _inherit = 'product.template'
     
+    # -------------
+    # button event:
+    # -------------
+    def update_family(self, cr, uid, ids, context=None):
+        ''' Force single family update
+        '''
+        product_proxy = self.browse(cr, uid, ids, context=context)[0]
+        product_pool = self.pool.get('product.product')
+        
+        # Search all elements of code:
+        for code in product_proxy.family_list.split("|"):
+            product_ids = product_pool.search(cr, uid, [
+                ('default_code', '=ilike', code + "%")], context=context)
+            product_pool.write(cr, uid, product_ids, {
+                'family_id': product_proxy.id
+                }, context=context)    
+        return True
+        
     _columns = {
         'is_family': fields.boolean('Is family'),
         'family_id': fields.many2one('product.template', 'Family', 
             help='Parent family product belongs',
             domain=[('is_family', '=', True)]),            
+        'family_list': fields.char(
+            'Family list', size=80,
+            help='Code list (divided by |), ex.: 001|002 for 001* and 002*'),
         }
         
     _defaults = {
@@ -94,21 +115,42 @@ class SaleOrderLine(orm.Model):
     '''
     _inherit = 'sale.order.line'
     
+    # ---------------
+    # Function field:
+    # ---------------
+    def _function_get_family(self, cr, uid, ids, field, arg, context=None):
+        ''' Return field value
+        '''
+        res = {}
+        for line in self.browse(cr, uid, ids, context=context):
+            try:
+                res[line.id] = line.product_id.family_id.id
+            except:
+                res[line.id] = False
+        return res
+        
     def _trigger_change_family(self, cr, uid, ids, context=None):
         ''' Select all sale order line with product with changed family
         '''
+        
+        res = []
         cr.execute("""
             SELECT id 
             FROM sale_order_line 
-            WHERE product_id in (%s);""" % (ids, ))
+            WHERE product_id in %s;""" % (
+                ("%s" % (tuple(ids), )).replace(",)", ")"), # TODO better...
+                ))
         
-        # Select all lines with product that change family:
-        res = dict.fromkeys([record[0] for record in cr.fetchall()], False)
+        # Select all lines with product that change family:        
+        for record in cr.fetchall():
+            if record[0] not in res:
+                res.append(record[0])
         return res
         
     _columns = {
         'family_id': fields.function(_function_get_family, method=True, 
-            type='many2one', string='Family', object='product.template',
+            type='many2one', string='Family', 
+            relation='product.template',
             store={
                 'product.template': (
                     _trigger_change_family, ['family_id'], 10),

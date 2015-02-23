@@ -1,11 +1,47 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+    <!--sale.order.line-->
+    <record model="ir.ui.view" id="sale_order_line_family_search_view">
+        <field name="name">sale.order.line.search.family</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sql_sale_order.view_sale_order_line_search"/>
+        <field name="arch" type="xml">
+            <field name="product_id" position="after">
+                <field name="family_id" string="Family" filter_domain="[('family_id','=',self)]"/>
+            </field>    
+            <filter name="group_order" position="after">
+                <filter name="group_family" string="Family" context="{'group_by':'family_id'}"/>            
+            </filter>    
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="sale_order_line_family_tree_view">
+        <field name="name">sale.order.line.tree.family</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sql_sale_order.view_sale_order_line_tree"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="family_id"/>
+            </field>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="sale_order_line_family_form_view">
+        <field name="name">sale.order.line.family</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sql_sale_order.view_sale_order_line_form"/>
+        <field name="arch" type="xml">
+            <field name="sequence" position="after">
+                <field name="family_id"/>
+            </field>
+        </field>
+    </record>
+    
     <!--product.product-->
     <record model="ir.ui.view" id="product_accouting_external_form_view">
         <field name="name">product.product.accounting</field>
         <field name="model">product.product</field>
-        <field name="type">form</field>
         <field name="inherit_id" ref="product.product_normal_form_view"/>        
         <field name="arch" type="xml">
             <xpath expr="//page/group[@name='inventory']" position="after">
