@@ -52,6 +52,7 @@
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="product.product_template_tree_view" />        
         <!--<field name="search_view_id" ref="product_template_family_search_view" />-->
+        <field name="context">{'default_is_family': True}</field>
         <field name="domain">[('is_family', '=', True)]</field>
     </record>
           
@@ -59,8 +60,7 @@
         parent="mrp.menu_mrp_configuration" 
         id="menu_configuration_family" 
         action="action_view_configuration_family" 
-        sequence="30" />   
-    
+        sequence="30" />       
     </data>
 </openerp>
 

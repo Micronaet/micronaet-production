@@ -58,7 +58,8 @@ def return_view(self, cr, uid, res_id, view_name, object_name):
         cr, uid, [
             ('model', '=', 'ir.ui.view'), 
             ('module','=',view_element[0]), 
-            ('name', '=', view_element[1])], context=context)
+            ('name', '=', view_element[1]),
+            ], context=context)
             
     if model_id:
         view_id = self.pool.get('ir.model.data').read(
@@ -84,7 +85,9 @@ class CreateMrpProductionWizard(orm.TransientModel):
     
     _name = "mrp.production.create.wizard"
     
+    # ---------------
     # Utility funtion
+    # ---------------
     def preserve_window(self, cr, uid, ids, context=None):
         ''' Create action for return the same open wizard window
         '''
@@ -105,7 +108,9 @@ class CreateMrpProductionWizard(orm.TransientModel):
             'nodestroy': True,
             }
                                 
+    # --------------
     # Wizard button:
+    # --------------
     def action_create_mrp_production_order(self, cr, uid, ids, context=None):
         ''' Create production order based on product_id and depend on quantity
             Redirect mrp.production form after
@@ -141,66 +146,111 @@ class CreateMrpProductionWizard(orm.TransientModel):
             self, cr, uid, p_id, "mrp.mrp_production_form_view", 
             "mrp.production") 
 
+    # -----------------
     # default function:        
+    # -----------------
     def default_oc_list(self, cr, uid, field, context=None):
         ''' Get list of order for confirm as default
+            context: used for select product or family (grouping clause)
         '''
+        if context is None:
+            context = {}
+
         sol_pool = self.pool.get('sale.order.line')
         ids = sol_pool.search(cr, uid, [
             ('id', 'in', context.get("active_ids", [])),
             ], context=context)
         sol_browse = sol_pool.browse(cr, uid, ids, context=context) 
-                
+        
+        if context.get('grouping', 'product') == 'product':
+            ref_field = 'product_id'
+        else:
+            ref_field = 'family_id'    
+
         default = {
-            "list": _("- Q. in store (don't produce): %6.3f\n") % (
-                sol_browse[0].product_id.accounting_qty if (
-                    len(sol_browse)>0 and sol_browse[0].product_id) else 0.0), 
-            "error": False, 
-            "total": 0.0 - (
-                sol_browse[0].product_id.accounting_qty if (
-                    len(sol_browse)>0 and sol_browse[0].product_id) else 0.0), 
+            "list": _("""
+                <style>
+                    .table_bf {
+                         border:1px; 
+                         padding: 3px;
+                         solid black;
+                     }
+                    .table_bf td {
+                         border:1px; 
+                         solid black;
+                         padding: 3px;
+                         text-align: center;
+                     }
+                    .table_bf th {
+                         border:1px; 
+                         solid black;
+                         padding: 3px;
+                         text-align: center;
+                         background-color: grey;
+                         color: white;
+                     }
+                </style>
+                <table class='table_bf'>
+                <tr class='table_bf'>
+                   <th>OC</th>
+                   <th>Q.</th>
+                   <th>Deadline</th>
+                </tr>"""), 
+            "is_error": False, 
+            "total": 0.0, 
             "product": False, 
             "deadline": False, 
-            "bom": False
-        }
-             
+            "bom": False,
+            "error": "", #TODO
+            "warning": "", #TODO
+            }             
         res = default.get(field, False)        
-        old_product_id = False       
-        try:
-            if field == "product":
-                return sol_browse[0].product_id.id
-        except:
-            return False    
-        try:
-            if field=="bom":
-                return self.pool.get("mrp.bom").search(cr, uid, [
-                    ('product_id','=',sol_browse[0].product_id.id),
-                    ], context=context)
-        except:
-            return False    
+        old_product_id = False     
         
+        try:
+            if field == "product":                
+                return sol_browse[0].__getattribute__(ref_field).id
+        except:
+            return False
+            
+        try:
+            if field=="bom":                
+                return self.pool.get("mrp.bom").search(
+                    cr, uid, [(
+                        'product_id', 
+                        '=', 
+                        sol_browse[0]._getattr__(ref_field).id
+                        ), ], context=context)
+        except:
+            return False    
+
         for item in sol_browse:
-            if old_product_id==False:
-                old_product_id=item.product_id.id
+            if old_product_id == False:
+                old_product_id = item.__getattribute__(ref_field).id
                 
             # Test function mode:
             if field == "list":
-                if item.product_id.id != old_product_id:
+                if item.__getattribute__(ref_field).id != old_product_id:
                     res = "Error! Choose order line that are of one product ID"
-                    break            
-                        
-                res+="+ OC: %s [Row: %s] q.: %s (Scad.: %s).\n" % (
-                    item.order_id.name,
-                    item.sequence,
-                    item.product_uom_qty,
-                    "%s/%s/%s" % (
-                        item.date_deadline[8:10],
-                        item.date_deadline[5:7],
-                        item.date_deadline[:4],
-                        ) if item.date_deadline else "Not present!"
-                    )
+                    break                                    
+                         
+                res += """
+                    <tr>
+                        <td>%s#%s</td>
+                        <td>%s</td>
+                        <td>%s</td>
+                    </tr>""" % (
+                        item.order_id.name,
+                        item.sequence,
+                        item.product_uom_qty,
+                        "%s/%s/%s" % (
+                            item.date_deadline[8:10],
+                            item.date_deadline[5:7],
+                            item.date_deadline[:4],
+                            ) if item.date_deadline else _("Not present!")
+                        )
             elif field == "error":
-                if item.product_id.id != old_product_id:
+                if item.__getattribute__(ref_field).id != old_product_id:
                     return True
             elif field == "total":
                 res += item.product_uom_qty or 0.0
@@ -208,26 +258,41 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 if not res:
                     res = item.date_deadline
                 if item.date_deadline < res:
-                    res = item.date_deadline      
+                    res = item.date_deadline
+        else:
+            if field == "list":
+                res += "</table>" # close table for list element
         return res
+        
    
     _columns = {
-        'name': fields.text('OC line', ),
-        'error': fields.boolean('Error'),        
+        'name': fields.text('OC line'),
+        
+        
         'oc_total': fields.float('OC Total', digits=(16, 2)),
-        'total': fields.float('Total', digits=(16, 2), required=True),
+        'total': fields.float(
+            'Total', 
+            digits=(16, 2), 
+            required=True,
+            help='Produce total'),
+
         'product_id': fields.many2one(
-            'product.product', 'Product', required=True),
+            'product.template', 'Product/Family', required=True),
         'bom_id': fields.many2one('mrp.bom', 'BOM'),
         'date_deadline': fields.date('Date deadline', 
             help="Generated automatically based on min deadline of order header selected, changeable form user but not tipped!"),
+
+        # Error control:
+        'is_error': fields.boolean('Is error'),
+        'error': fields.text('Error'),
+        'warning': fields.text('Warning'),
         }
         
     _defaults = {
         'name':  lambda s, cr, uid, c: s.default_oc_list(
             cr, uid, "list", context=c),
-        'all_in_one': lambda *a: False,
-        'error': lambda s, cr, uid, c: s.default_oc_list(
+        #'all_in_one': lambda *a: False,
+        'is_error': lambda s, cr, uid, c: s.default_oc_list(
             cr, uid, "error", context=c),
         'total': lambda s, cr, uid, c: s.default_oc_list(
             cr, uid, "total", context=c),        

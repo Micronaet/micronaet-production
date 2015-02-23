@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
-       <!-- picking.import.wizard -->
+       <!-- mrp.production.create.wizard -->
        <record id="mrp_production_create_wizard_view" model="ir.ui.view">
             <field name="name">Create production order</field>
             <field name="model">mrp.production.create.wizard</field>
@@ -10,14 +10,27 @@
                    <header>
                        <button string="Cancel" special="cancel" />
                        <button name="action_create_mrp_production_order" string="Create" type="object" icon="gtk-jump-to" class="oe_highlight" attrs="{'invisible':[('error','=',True)]}"/>
-                   </header>                   
+                   </header>              
                    <group colspan="4" col="4">
                         <field name="product_id" />
                         <field name="bom_id" domain="[('product_id','=',product_id)]"/>
                         <field name="total" />
                         <field name="date_deadline" />
-                        <field name="name" colspan="4" />
-                        <field name="error" invisible="1" />
+                        <field name="is_error" invisible="1" />
+                        <notebook colspan="4">
+                            <page string="Error" attrs="{'invisible': [('is_error','=',False)]}">
+                               <group>
+                                   <field name="error" attrs="{'invisible': [('error','=',False)]}" readonly="1"/>
+                                   <field name="warning" attrs="{'invisible': [('warning','=',False)]}" readonly="1"/>
+                               </group>                                
+                            </page>
+                            <page string="Order">
+                               <group>
+                                   <field name="name" widget="html" readonly="1" nolabel="1"/>
+                               </group>   
+                            </page>
+                            
+                        </notebook>
                    </group>
                 </form>
             </field>
@@ -30,6 +43,7 @@
         target="new"
         res_model="mrp.production.create.wizard"
         key2="client_action_multi"
+        context="{'grouping':'family'}"
         src_model="sale.order.line"/>
     </data>
 </openerp>
