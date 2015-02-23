@@ -54,16 +54,26 @@
         </field>
     </record>
 
+    <record model="ir.actions.act_window" id="action_view_sale_order_line">
+        <field name="name">Sale order line</field>
+        <field name="res_model">sale.order.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>
+        <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>        
+        <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form'}</field>
+    </record>   <!--<field name="domain">[('product_id.route_ids',')]</field>-->
+    
     <!--MENUITEM:-->
    <menuitem name="Sale order" 
        parent="mrp.menu_mrp_manufacturing" 
        id="menu_base_sale_order_root" 
        sequence="0" />   
-      <menuitem name="OC line" 
+      <menuitem name="OC line"
           parent="menu_base_sale_order_root" 
           id="menu_sale_order_line_m0" 
-          action="sql_sale_order.action_view_sale_order_line" sequence="10" />
-
+          action="action_view_sale_order_line" 
+          sequence="10" />
     </data>
 </openerp>
 
