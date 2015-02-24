@@ -93,7 +93,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         '''
         view_id = self.pool.get('ir.ui.view').search(cr,uid,[
             ('model', '=', 'mrp.production.create.wizard'),
-            ('name','=','Wizard create production order')
+            ('name','=','Create production order') # TODO needed?
             ], context=context)
         
         return {
@@ -115,6 +115,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         ''' Create production order based on product_id and depend on quantity
             Redirect mrp.production form after
         '''
+        
         if context is None:
            context = {}
 
@@ -147,12 +148,13 @@ class CreateMrpProductionWizard(orm.TransientModel):
             "mrp.production") 
 
     # -----------------
-    # default function:        
+    # Default function:        
     # -----------------
     def default_oc_list(self, cr, uid, field, context=None):
         ''' Get list of order for confirm as default
             context: used for select product or family (grouping clause)
         '''
+        
         if context is None:
             context = {}
 
@@ -194,9 +196,11 @@ class CreateMrpProductionWizard(orm.TransientModel):
                    <th>Deadline</th>
                 </tr>"""), 
             "is_error": False, 
+            "oc_total": 0.0, 
             "total": 0.0, 
             "product": False, 
-            "deadline": False, 
+            "from_deadline": False, 
+            "to_deadline": False, 
             "bom": False,
             "error": "", #TODO
             "warning": "", #TODO
@@ -249,13 +253,18 @@ class CreateMrpProductionWizard(orm.TransientModel):
             elif field == "error":
                 if item.__getattribute__(ref_field).id != old_product_id:
                     return True
-            elif field == "total":
+            elif field in ("oc_total", "total"):
                 res += item.product_uom_qty or 0.0
-            elif field == "deadline":
+            elif field == "from_deadline":
                 if not res:
-                    res = item.date_deadline
-                if item.date_deadline < res:
-                    res = item.date_deadline
+                    res = item.from_deadline
+                if item.from_deadline < res:
+                    res = item.from_deadline
+            elif field == "to_deadline":
+                if not res:
+                    res = item.to_deadline
+                if item.to_deadline > res:
+                    res = item.to_deadline
         else:
             if field == "list":
                 res += "</table>" # close table for list element
@@ -263,10 +272,10 @@ class CreateMrpProductionWizard(orm.TransientModel):
         
    
     _columns = {
-        'name': fields.text('OC line'),
+        'name': fields.text('OC line', readonly=True),
         
-        
-        'oc_total': fields.float('OC Total', digits=(16, 2)),
+        'oc_total': fields.float(
+            'OC Total', digits=(16, 2), readonly=True),
         'total': fields.float(
             'Total', 
             digits=(16, 2), 
@@ -276,13 +285,18 @@ class CreateMrpProductionWizard(orm.TransientModel):
         'product_id': fields.many2one(
             'product.template', 'Product/Family', required=True),
         'bom_id': fields.many2one('mrp.bom', 'BOM'),
-        'date_deadline': fields.date('Date deadline', 
-            help="Generated automatically based on min deadline of order header selected, changeable form user but not tipped!"),
+        
+        'from_deadline': fields.date('From deadline', 
+            help='Min deadline found in order line!',
+            readonly=True),
+        'to_deadline': fields.date('To deadline', 
+            help='Max deadline found in order line!',
+            readonly=True),
 
         # Error control:
         'is_error': fields.boolean('Is error'),
-        'error': fields.text('Error'),
-        'warning': fields.text('Warning'),
+        'error': fields.text('Error', readonly=True),
+        'warning': fields.text('Warning', readonly=True),
         }
         
     _defaults = {
@@ -291,13 +305,17 @@ class CreateMrpProductionWizard(orm.TransientModel):
         #'all_in_one': lambda *a: False,
         'is_error': lambda s, cr, uid, c: s.default_oc_list(
             cr, uid, "error", context=c),
+        'oc_total': lambda s, cr, uid, c: s.default_oc_list(
+            cr, uid, "oc_total", context=c),        
         'total': lambda s, cr, uid, c: s.default_oc_list(
             cr, uid, "total", context=c),        
         'product_id': lambda s, cr, uid, c: s.default_oc_list(
             cr, uid, "product", context=c),        
         'bom_id': lambda s, cr, uid, c: s.default_oc_list(
             cr, uid, "bom", context=c),        
-        'date_deadline': lambda s, cr, uid, c: s.default_oc_list(
-            cr, uid, "deadline", context=c),        
+        'from_deadline': lambda s, cr, uid, c: s.default_oc_list(
+            cr, uid, "from_deadline", context=c),        
+        'to_deadline': lambda s, cr, uid, c: s.default_oc_list(
+            cr, uid, "to_deadline", context=c),        
     }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
