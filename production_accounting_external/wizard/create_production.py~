@@ -118,7 +118,29 @@ class CreateMrpProductionWizard(orm.TransientModel):
             'target': 'new',
             'nodestroy': True,
             }
-                                
+        
+    # ----------    
+    # On Change:            
+    # ----------    
+    def onchange_append_production(self, cr, uid, ids, production_id, oc_total, 
+            context=None):
+        ''' Search values for total
+        ''' 
+        if not production_id:
+            return {}
+
+        res = {'value': {}}
+        production_pool = self.pool.get('mrp.production')
+        production_proxy = production_pool.browse(
+            cr, uid, production_id, context=context)
+        res['value']['current_total'] = production_proxy.product_qty
+        res['value']['current_extra'] = production_proxy.extra_qty        
+        res['value']['total'] = (
+            production_proxy.product_qty or 0.0) + ( # production total
+            #production_proxy.extra_qty or 0.0) + ( # production extra
+            oc_total or 0.0) # current OC        
+        return res 
+           
     # --------------
     # Wizard button:
     # --------------
@@ -134,12 +156,12 @@ class CreateMrpProductionWizard(orm.TransientModel):
         # Create a production order and open it:
         production_pool = self.pool.get("mrp.production")
         
-        product_id = get_product_from_template(
+        product_id = get_product_from_template( # TODO use product_id?
             self, cr, uid, wizard_browse.product_tmpl_id.id, context=context)
 
         if wizard_browse.operation == 'create':
             p_id = production_pool.create(               
-                cr, uid,{
+                cr, uid, {
                     'name': self.pool.get(
                         'ir.sequence').get(cr, uid, 'mrp.production'),
                     'product_id': product_id,
@@ -151,7 +173,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     'order_line_ids': [(6, 0, context.get("active_ids", []))],
                     }, context=context)
         else: # append
-            p_id = wizard_browse.product_id.id
+            p_id = wizard_browse.production_id.id
             self.pool.get('sale.order.line').write(
                 cr, uid, context.get("active_ids", []), {
                     'mrp_id': p_id,
@@ -321,6 +343,11 @@ class CreateMrpProductionWizard(orm.TransientModel):
             digits=(16, 2), 
             required=True,
             help='Produce total'),
+
+        'current_total': fields.float(
+            'Production Total', digits=(16, 2), readonly=True),
+        'current_extra': fields.float(
+            'Production Total', digits=(16, 2), readonly=True),
 
         'product_id': fields.many2one(
             'product.product', 'Product/Family'), # only for filter BOM

@@ -52,6 +52,18 @@
             <!--<field name="product_qty" position="attributes">
                 <attribute name="on_change">on_change_qty_alert()</attribute>
             </field>-->
+
+            <field name="origin" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <!--<field name="product_qty" position="before">
+               <field name="extra_qty" />
+            </field>-->
+            
+            <field name="date_planned" position="before">
+                <field name="extra_qty" />
+                
+            </field>
             
             <!--Hide notebook page-->
             <xpath expr="/form/sheet/notebook/page[@string='Consumed Products']" position="attributes">
@@ -68,13 +80,11 @@
             </xpath>
             
             <!--New notebook -->
-            <xpath expr="/form/head" position="replace" />
-
             <xpath expr="/form/sheet/notebook" position="inside">
 		        <page string="Sale order">
 			        <group string="Order lines">				              
 				        <field name="order_line_ids" nolabel="1">
-				            <tree string="OC line" editable="bottom">
+				            <tree string="OC line" editable="bottom" delete="0">
                                 <field name="order_id" readonly="1"/>
                                 <field name="name" readonly="1" />
                                 <!--<field name="partner_id" />-->

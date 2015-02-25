@@ -73,6 +73,8 @@ class MrpProduction(orm.Model):
     _inherit = 'mrp.production'
     
     _columns = {
+        'extra_qty': fields.float('Extra q.', digits=(16, 2)), 
+        # TODO there's extra bool?
         'order_line_ids': fields.one2many(
             'sale.order.line', 'mrp_id', 'Order line'),
         }
