@@ -1,6 +1,106 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+    <!--mrp.production-->
+    <record model="ir.ui.view" id="default_mrp_production_tree_view">
+        <field name="name">Production custom tree</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_tree_view" />
+        <field name="arch" type="xml">
+            <!--Tree colors -->
+            <!--<xpath expr="/tree" position="attributes">
+                <attribute name="colors">colors="blue:accounting_state in ('draft',);green:accounting_state in ('production',);red:accounting_state in ('cancel',);black:accounting_state in ('close',);</attribute>
+            </xpath>-->
+            
+            <!--<field name="product_qty" position="after">
+                <field name="lavoration_planned" />
+            </field>-->
+
+            <!-- Show correct status -->
+            <field name="state" position="attributes">
+               <attribute name="invisible">1</attribute>
+            </field>
+            <!--<field name="state" position="after">
+               <field name="accounting_state" />
+            </field>-->
+        </field>
+    </record>   
+
+    <record model="ir.ui.view" id="default_mrp_production_form_view">
+        <field name="name">Production form custom</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view" />
+        <field name="arch" type="xml">
+            <!--<field name="user_id" position="after">
+                <field name="state_info" />
+            </field>-->
+
+            <!-- New header -->
+            <!--<xpath expr="/form/header" position="replace">
+                <header>
+                    <button name="trigger_accounting_cancel_a" type="workflow" string="Cancel" attrs="{'invisible':[('accounting_state','not in',('production',))],}" />
+                    <button name="trigger_accounting_cancel_b" type="workflow" string="Cancel" attrs="{'invisible':[('accounting_state','not in',('close',))],}"  />
+                    <button name="trigger_accounting_production" type="workflow" class="oe_highlight" string="In produzione" attrs="{'invisible':[('accounting_state','not in',('draft',))],}"/>
+                    <button name="trigger_accounting_close" type="workflow" class="oe_highlight" string="Close" attrs="{'invisible':[('accounting_state','not in',('production',))],}" />
+                    <button name="trigger_accounting_draft" type="workflow" class="oe_highlight" string="Restart" attrs="{'invisible':[('accounting_state','not in',('cancel',))],}" />
+
+                    <button name="dummy_refresh" type="object" icon="gtk-refresh" string="Refresh" attrs="{'invisible':[('accounting_state','in',('cancel','close'))],}" />
+		            <field name="accounting_state" widget="statusbar" statusbar_visible="draft,production,close,cancel" />
+		            <field name="state" invisible="1" />
+	            </header>       
+            </xpath>-->
+            <!--<field name="product_qty" position="attributes">
+                <attribute name="on_change">on_change_qty_alert()</attribute>
+            </field>-->
+            
+            <!--Hide notebook page-->
+            <xpath expr="/form/sheet/notebook/page[@string='Consumed Products']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page[@string='Finished Products']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page[@string='Scheduled Products']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page[@string='Extra Information']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            
+            <!--New notebook -->
+            <xpath expr="/form/sheet/notebook" position="inside">
+		        <page string="Sale order">
+			        <group string="Order lines">				              
+				        <field name="order_line_ids" nolabel="1">
+				            <tree string="OC line" editable="bottom">
+                                <field name="order_id" readonly="1"/>
+                                <field name="name" readonly="1" />
+                                <!--<field name="partner_id" />-->
+                                <field name="date_deadline" readonly="1" />                    
+                                <field name="product_uom_qty" sum="Total" readonly="1" />
+                                <field name="product_uom" string="UOM" readonly="1"/>
+                                <field name="state" invisible="1" />
+                                <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" />
+                            </tree>
+				            <form string="OC line">
+				                <group colspan="4" col="4">
+                                    <field name="order_id" readonly="1" />
+                                    <field name="date_deadline" readonly="1"/>                    
+                                    <field name="name" readonly="1"/>
+                                    <!--<field name="partner_id" readonly="1"/>-->
+                                    <!--<field name="product_uom_qty" readonly="1"/>-->
+                                    <field name="product_uom" readonly="1"/>
+                                    <field name="state" invisible="1" />
+                                    <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" />
+                                </group>    
+                            </form>
+				        </field>
+			        </group>
+		        </page>
+            </xpath>            
+        </field>
+    </record>        
+
     <!--sale.order.line-->
     <record model="ir.ui.view" id="sale_order_line_family_search_view">
         <field name="name">sale.order.line.search.family</field>
@@ -23,6 +123,7 @@
         <field name="arch" type="xml">
             <field name="name" position="after">
                 <field name="family_id"/>
+                <field name="mrp_id"/>
             </field>
         </field>
     </record>
@@ -54,6 +155,17 @@
         </field>
     </record>
 
+    <record model="ir.actions.act_window" id="action_view_sale_order_production_line">
+        <field name="name">Sale order line</field>
+        <field name="res_model">sale.order.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>
+        <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>        
+        <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form','search_default_group_family':True}</field>
+        <field name="domain">[('mrp_id','=',False)]</field>
+    </record>
+    
     <record model="ir.actions.act_window" id="action_view_sale_order_line">
         <field name="name">Sale order line</field>
         <field name="res_model">sale.order.line</field>
@@ -62,18 +174,23 @@
         <field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>
         <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>        
         <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form'}</field>
-    </record>   <!--<field name="domain">[('product_id.route_ids',')]</field>-->
+    </record>
     
     <!--MENUITEM:-->
    <menuitem name="Sale order" 
        parent="mrp.menu_mrp_manufacturing" 
        id="menu_base_sale_order_root" 
        sequence="0" />   
+      <menuitem name="OC line production"
+          parent="menu_base_sale_order_root" 
+          id="menu_sale_order_line_m1" 
+          action="action_view_sale_order_production_line" 
+          sequence="10" />
       <menuitem name="OC line"
           parent="menu_base_sale_order_root" 
           id="menu_sale_order_line_m0" 
           action="action_view_sale_order_line" 
-          sequence="10" />
+          sequence="20" />
     </data>
 </openerp>
 

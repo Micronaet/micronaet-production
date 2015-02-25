@@ -13,11 +13,19 @@
                    </header>              
                    <group colspan="4" col="4">
                         <field name="product_id" />
-                        <field name="bom_id" domain="[('product_id','=',product_id)]"/>
+                        <newline />
+                        
+                        <field name="operation" />
+                        <field name="production_id" attrs="{'invisible': [('operation','=','create')], 'required': [('operation','!=','create')]}" domain="[('product_id','=',product_id)]"/>
+                        <newline />
+                        
+                        <field name="bom_id" domain="[('product_tmpl_id','=',product_id.product_tmpl_id)]"/>
+                        <field name="item_hour" attrs="{'required': [('bom_id','=',False)]}"/>
                         <field name="from_deadline" />
                         <field name="to_deadline" />
                         <field name="oc_total" />
                         <field name="total" />
+
                         <field name="is_error" invisible="1" />
                         <notebook colspan="4">
                             <page string="Error" attrs="{'invisible': [('is_error','=',False)]}">
@@ -30,8 +38,7 @@
                                <group>
                                    <field name="name" widget="html" readonly="1" nolabel="1"/>
                                </group>   
-                            </page>
-                            
+                            </page>                            
                         </notebook>
                    </group>
                 </form>
