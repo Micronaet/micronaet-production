@@ -41,6 +41,17 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 _logger = logging.getLogger(__name__)
 
 # Generic function 
+def get_product_from_template(self, cr, uid, tmpl_id, context=None):
+    ''' Return product (first) with that template ID
+    '''
+    product_ids = self.pool.get('product.product').search(cr, uid, [
+        ('product_tmpl_id', '=', tmpl_id)
+        ], context=context)
+    if product_ids:
+        return product_ids[0]
+    else:
+        return False
+            
 def return_view(self, cr, uid, res_id, view_name, object_name, context=None):
     '''Function that return dict action for next step of the wizard
     '''
@@ -112,7 +123,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
     # Wizard button:
     # --------------
     def action_create_mrp_production_order(self, cr, uid, ids, context=None):
-        ''' Create production order based on product_id and depend on quantity
+        ''' Create production order based on product_tmpl_id depend on quantity
             Redirect mrp.production form after
         '''        
         if context is None:
@@ -122,12 +133,16 @@ class CreateMrpProductionWizard(orm.TransientModel):
 
         # Create a production order and open it:
         production_pool = self.pool.get("mrp.production")
+        
+        product_id = get_product_from_template(
+            self, cr, uid, wizard_browse.product_tmpl_id.id, context=context)
+
         if wizard_browse.operation == 'create':
             p_id = production_pool.create(               
                 cr, uid,{
                     'name': self.pool.get(
                         'ir.sequence').get(cr, uid, 'mrp.production'),
-                    'product_id': wizard_browse.product_id.id,
+                    'product_id': product_id,
                     'product_qty': wizard_browse.total,
                     'product_uom': wizard_browse.product_id.uom_id.id,
                     'date_planned': wizard_browse.from_deadline,
@@ -216,23 +231,36 @@ class CreateMrpProductionWizard(orm.TransientModel):
         old_product_id = False     
         
         try:
-            if field == "product":                
-                import pdb; pdb.set_trace()
-                return sol_browse[0].__getattribute__(ref_field).id
+            if field == "template": # so template
+                if ref_field == 'product_id':
+                    return sol_browse[0].product_id.product_tmpl_id.id
+                else: # family
+                    return sol_browse[0].family_id.id                
+        except:
+            return False
+        try:
+            if field == "product": # so template
+                if ref_field == 'product_id':
+                    return sol_browse[0].product_id.id
+                else: # family
+                    return get_product_from_template(
+                        self, cr, uid, sol_browse[0].family_id.id, 
+                        context=context)
         except:
             return False
             
         try:
             if field == "bom":        
+                if ref_field == 'product_id':
+                    tmpl_id = sol_browse[0].product_id.product_tmpl_id.id
+                else: # family
+                    tmpl_id = sol_browse[0].family_id.id                
+
                 # Search BOM for template:
                 item_ids = self.pool.get("mrp.bom").search(
                     cr, uid, [(
-                        'product_tmpl_id', 
-                        '=', 
-                        sol_browse[0].__getattribute__(
-                            ref_field).product_tmpl_id.id
-                            ), ], context=context)
-                if item_ids:       
+                        'product_tmpl_id', '=', tmpl_id), ], context=context)
+                if item_ids:
                     return item_ids[0]
                 else: 
                     return False    
@@ -295,7 +323,9 @@ class CreateMrpProductionWizard(orm.TransientModel):
             help='Produce total'),
 
         'product_id': fields.many2one(
-            'product.product', 'Product/Family', required=True),
+            'product.product', 'Product/Family'), # only for filter BOM
+        'product_tmpl_id': fields.many2one(
+            'product.template', 'Mod. Product/Family', required=True),
         'production_id': fields.many2one(
             'mrp.production', 'Production'),
         'bom_id': fields.many2one('mrp.bom', 'BOM'),
@@ -332,6 +362,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
             cr, uid, "total", context=c),        
         'product_id': lambda s, cr, uid, c: s.default_oc_list(
             cr, uid, "product", context=c),        
+        'product_tmpl_id': lambda s, cr, uid, c: s.default_oc_list(
+            cr, uid, "template", context=c),        
         'bom_id': lambda s, cr, uid, c: s.default_oc_list(
             cr, uid, "bom", context=c),        
         'from_deadline': lambda s, cr, uid, c: s.default_oc_list(

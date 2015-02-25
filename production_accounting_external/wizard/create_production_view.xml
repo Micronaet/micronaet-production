@@ -12,14 +12,15 @@
                        <button name="action_create_mrp_production_order" string="Create" type="object" icon="gtk-jump-to" class="oe_highlight" attrs="{'invisible':[('error','=',True)]}"/>
                    </header>              
                    <group colspan="4" col="4">
-                        <field name="product_id" />
+                        <field name="product_tmpl_id" />
+                        <field name="product_id"/> <!-- invisible="1"-->
                         <newline />
                         
                         <field name="operation" />
                         <field name="production_id" attrs="{'invisible': [('operation','=','create')], 'required': [('operation','!=','create')]}" domain="[('product_id','=',product_id)]"/>
                         <newline />
                         
-                        <field name="bom_id" domain="[('product_tmpl_id','=',product_id.product_tmpl_id)]"/>
+                        <field name="bom_id" domain="[('product_tmpl_id','=',product_tmpl_id)]"/>
                         <field name="item_hour" attrs="{'required': [('bom_id','=',False)]}"/>
                         <field name="from_deadline" />
                         <field name="to_deadline" />
