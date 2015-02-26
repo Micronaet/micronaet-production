@@ -128,6 +128,7 @@ class MrpProduction(orm.Model):
             res[order.id] = {}
             res[order.id]['oc_qty'] = 0.0
             res[order.id]['previsional_qty'] = 0.0
+            res[order.id]['use_extra_qty'] = 0.0
 
             for line in order.order_line_ids:
                 res[order.id]['oc_qty'] += line.product_uom_qty # TODO UM?
@@ -135,8 +136,10 @@ class MrpProduction(orm.Model):
             for line in order.previsional_line_ids:
                 res[order.id]['previsional_qty'] += line.product_uom_qty 
 
-            for line in order.use_mrp_ids:
-                res[order.id]['use_extra_qty'] += line.extra_qty 
+            for line in order.use_mrp_ids: # TO correct (for recursion)
+                res[order.id]['use_extra_qty'] += self.browse(cr, uid, line.id).extra_qty
+
+                #res[order.id]['use_extra_qty'] += line.extra_qty 
 
             res[order.id]['extra_qty'] = (        # Extra =
                 order.product_qty +               # Production
