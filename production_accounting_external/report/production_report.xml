@@ -9,7 +9,7 @@
         <field name="report_type">aeroo</field>
         <field name="in_format">oo-odt</field>
         <field name="parser_loc">production_accounting_external/report/production_parser.py</field>
-        <field name="report_rml">production_line/report/production_report.odt</field>
+        <field name="report_rml">production_accounting_external/report/production_report.odt</field>
         <field name="parser_state">loc</field>
         <field name="tml_source">file</field>
     </record>
