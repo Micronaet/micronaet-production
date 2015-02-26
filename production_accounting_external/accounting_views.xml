@@ -81,6 +81,7 @@
             
             <field name="date_planned" position="before">
                 <field name="oc_qty" />
+                <field name="previsional_qty" />
                 <field name="extra_qty" />
                 <field name="error_qty" invisible="1"/> <!--TODO alert-->
             </field>
@@ -129,6 +130,11 @@
 				        </field>
 			        </group>
 		        </page>
+		        <page string="Previsional order">
+			        <group string="Previsional order">				              
+			            <field name="previsional_line_ids" nolabel="1" context="{'embedded':True}"/>
+			        </group>
+			    </page>
             </xpath>            
         </field>
     </record>        
@@ -149,13 +155,12 @@
         <field name="model">sale.order.line.previsional</field>
         <field name="arch" type="xml">
            <search string="Search previsional">
-                <field name="updated" string="Updated" filter_domain="[('updated','=',True)]"/>
-                <field name="updated" string="Not updated" filter_domain="[('updated','=',True)]"/>
-                <filter name="group_order" position="after">
-                    <filter name="group_partner" string="Customer" context="{'group_by': 'partner_id'}"/>            
-                    <filter name="group_deadline" string="Deadline" context="{'group_by': 'deadline'}"/>            
-                    <filter name="group_updated" string="Updated" context="{'group_by': 'updated'}"/>            
-                </filter>    
+                <field name="partner_id" filter_domain="[('partner_id','=',self)]"/>
+                <filter name="yes_updated" string="Updated" domain="[('updated','=',True)]"/>
+                <filter name="not_updated" string="Not updated" domain="[('updated','=',True)]"/>
+                <filter name="group_partner" string="Customer" context="{'group_by': 'partner_id'}"/>            
+                <filter name="group_deadline" string="Deadline" context="{'group_by': 'deadline'}"/>            
+                <filter name="group_updated" string="Updated" context="{'group_by': 'updated'}"/>            
            </search>
         </field>
     </record>
@@ -164,12 +169,14 @@
         <field name="model">sale.order.line.previsional</field>
         <field name="arch" type="xml">
            <tree string="Tree previsional" editable="bottom">
-                <field name="mrp_id" />
+                <field name="mrp_id" invisible="context.get('embedded',False)"/>
+                <field name="updated" invisible="1"/>
                 <field name="partner_id" />
+                <field name="product_id" domain="[('family_id','=',parent.product_id)]"/>
                 <field name="deadline" />
                 <field name="product_uom_qty" sum="Total"/>
                 <field name="note" />
-                <!--Button updated-->
+                <button name="set_updated" string="Updated" help="Manually update in accounting" type="object" icon="gtk-apply" attrs="{'invisible': [('updated','=',True)]}"/>
            </tree>
         </field>
     </record>
@@ -179,7 +186,9 @@
         <field name="arch" type="xml">
            <form string="Form previsional">
                 <field name="mrp_id" />
+                <field name="updated" />
                 <field name="partner_id" />
+                <field name="product_id" domain="[('family_id','=',parent.product_id)]"/>
                 <field name="deadline" />
                 <field name="product_uom_qty" />
                 <field name="note" />                

@@ -71,13 +71,22 @@ class SaleOrderLinePrevisional(orm.Model):
     '''
     
     _name = 'sale.order.line.previsional'
-            
+    
+    def set_updated(self, cr, uid, ids, context=None):
+        ''' Check the updated boolean (for speed up)
+        '''
+        self.write(cr, uid, ids, {'updated': True}, context=context)
+        return True
+        
     _columns = {
         'partner_id':fields.many2one(
             'res.partner', 'Customer', required=False),
-        'deadline': fields.datetime('Deadline'), 
+        'product_id': fields.many2one(
+            'product.product', 'Product', required=False),
+        'deadline': fields.date('Deadline'), 
         'note': fields.text('Note'),        
-        'product_uom_qty': fields.float('Quantity', digits=(16, 2)),
+        'product_uom_qty': fields.float('Quantity', digits=(16, 2), 
+            required=True),
         'updated': fields.boolean('Updated', 
             help='Manually updated on accounting program'),
         'mrp_id': fields.many2one(
@@ -111,10 +120,18 @@ class MrpProduction(orm.Model):
         for order in self.browse(cr, uid, ids, context=context):
             res[order.id] = {}
             res[order.id]['oc_qty'] = 0.0
+            res[order.id]['previsional_qty'] = 0.0
+
             for line in order.order_line_ids:
                 res[order.id]['oc_qty'] += line.product_uom_qty # TODO UM?
-            res[order.id][
-                'extra_qty'] = order.product_qty - res[order.id]['oc_qty']
+
+            for line in order.previsional_line_ids:
+                res[order.id]['previsional_qty'] += line.product_uom_qty 
+
+            res[order.id]['extra_qty'] = (        # Extra =
+                order.product_qty -               # Production
+                res[order.id]['oc_qty'] -         # - Ordered
+                res[order.id]['previsional_qty']) # - Previsional
             res[order.id]['error_qty'] = res[order.id]['extra_qty'] < 0.0
             res[order.id]['has_extra_qty'] = res[order.id]['extra_qty'] > 0.0
         return res    
@@ -123,6 +140,9 @@ class MrpProduction(orm.Model):
         'oc_qty': fields.function(
             _get_totals, method=True, type='float', 
             string='OC qty', store=False, readonly=True, multi=True),
+        'previsional_qty': fields.function(
+            _get_totals, method=True, type='float', 
+            string='Previsional qty', store=False, readonly=True, multi=True),
         'extra_qty': fields.function(
             _get_totals, method=True, type='float', 
             string='Extra qty', store=False, readonly=True, multi=True),
