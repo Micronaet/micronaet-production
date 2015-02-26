@@ -16,7 +16,21 @@
                 <field name="lavoration_planned" />
             </field>-->
 
-            <!-- Show correct status -->
+            <field name="product_qty" position="before">
+               <field name="oc_qty" />
+               <field name="extra_qty" />
+               <field name="error_qty" invisible="1"/>
+            </field>
+
+            <!--<field name="hour_total" position="attributes">
+               <attribute name="invisible">1</attribute>
+            </field>-->
+            <field name="cycle_total" position="attributes">
+               <attribute name="invisible">1</attribute>
+            </field>
+            <field name="origin" position="attributes">
+               <attribute name="invisible">1</attribute>
+            </field>
             <field name="state" position="attributes">
                <attribute name="invisible">1</attribute>
             </field>
@@ -56,13 +70,17 @@
             <field name="origin" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>
-            <!--<field name="product_qty" position="before">
-               <field name="extra_qty" />
-            </field>-->
+            <field name="location_src_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="location_dest_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
             
             <field name="date_planned" position="before">
+                <field name="oc_qty" />
                 <field name="extra_qty" />
-                
+                <field name="error_qty" invisible="1"/> <!--TODO alert-->
             </field>
             
             <!--Hide notebook page-->

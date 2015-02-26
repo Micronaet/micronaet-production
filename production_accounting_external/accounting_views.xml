@@ -10,13 +10,27 @@
             <!--Tree colors -->
             <!--<xpath expr="/tree" position="attributes">
                 <attribute name="colors">colors="blue:accounting_state in ('draft',);green:accounting_state in ('production',);red:accounting_state in ('cancel',);black:accounting_state in ('close',);</attribute>
-            </xpath>-->
+            </xpath>blue:state in ('draft','confirmed');red:date_planned&lt;current_date and state not in ('done','cancel');black:date_planned&gt;=current_date;gray:state in ('done','cancel')-->
             
             <!--<field name="product_qty" position="after">
                 <field name="lavoration_planned" />
             </field>-->
 
-            <!-- Show correct status -->
+            <field name="product_qty" position="before">
+               <field name="oc_qty" />
+               <field name="extra_qty" />
+               <field name="error_qty" invisible="1"/>
+            </field>
+
+            <!--<field name="hour_total" position="attributes">
+               <attribute name="invisible">1</attribute>
+            </field>-->
+            <field name="cycle_total" position="attributes">
+               <attribute name="invisible">1</attribute>
+            </field>
+            <field name="origin" position="attributes">
+               <attribute name="invisible">1</attribute>
+            </field>
             <field name="state" position="attributes">
                <attribute name="invisible">1</attribute>
             </field>
@@ -56,9 +70,17 @@
             <field name="origin" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>
+            <field name="location_src_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="location_dest_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
             
             <field name="date_planned" position="before">
-                <field name="extra_qty" />                
+                <field name="oc_qty" />
+                <field name="extra_qty" />
+                <field name="error_qty" invisible="1"/> <!--TODO alert-->
             </field>
             
             <!--Hide notebook page-->

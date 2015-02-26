@@ -72,8 +72,33 @@ class MrpProduction(orm.Model):
     
     _inherit = 'mrp.production'
     
+    def _get_totals(self, cr, uid, ids, fields=None, args=None, context=None):
+        ''' Calculate all totals 
+            oc_qty = sum (qty for all line)
+            extra_qty = total production - oc_qty
+        '''
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            res[order.id] = {}
+            res[order.id]['oc_qty'] = 0.0
+            for line in order.order_line_ids:
+                res[order.id]['oc_qty'] += line.product_uom_qty # TODO UM?
+            res[order.id][
+                'extra_qty'] = order.product_qty - res[order.id]['oc_qty']
+            res[order.id]['error_qty'] = res[order.id]['extra_qty'] < 0.0
+        return res    
+    
     _columns = {
-        'extra_qty': fields.float('Extra q.', digits=(16, 2)), 
+        'oc_qty': fields.function(
+            _get_totals, method=True, type='float', 
+            string='OC qty', store=False, readonly=True, multi=True),
+        'extra_qty': fields.function(
+            _get_totals, method=True, type='float', 
+            string='Extra qty', store=False, readonly=True, multi=True),
+        'error_qty': fields.function(
+            _get_totals, method=True, type='boolean', 
+            string='Total error', store=False, readonly=True, multi=True),
+        
         # TODO there's extra bool?
         'order_line_ids': fields.one2many(
             'sale.order.line', 'mrp_id', 'Order line'),
