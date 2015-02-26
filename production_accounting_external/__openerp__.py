@@ -36,6 +36,8 @@
         'stock',
         'sql_sale_order',
         'production_family',
+        'report_aeroo',
+        
         ],
     'init_xml': [],
     'demo': [],
