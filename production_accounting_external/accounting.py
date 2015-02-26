@@ -135,8 +135,12 @@ class MrpProduction(orm.Model):
             for line in order.previsional_line_ids:
                 res[order.id]['previsional_qty'] += line.product_uom_qty 
 
+            for line in order.use_mrp_ids:
+                res[order.id]['use_extra_qty'] += line.extra_qty 
+
             res[order.id]['extra_qty'] = (        # Extra =
-                order.product_qty -               # Production
+                order.product_qty +               # Production
+                res[order.id]['use_extra_qty'] -  # + extra qty used
                 res[order.id]['oc_qty'] -         # - Ordered
                 res[order.id]['previsional_qty']) # - Previsional
             res[order.id]['error_qty'] = res[order.id]['extra_qty'] < 0.0
@@ -150,6 +154,9 @@ class MrpProduction(orm.Model):
         'previsional_qty': fields.function(
             _get_totals, method=True, type='float', 
             string='Previsional qty', store=False, readonly=True, multi=True),
+        'use_extra_qty': fields.function(
+            _get_totals, method=True, type='float', 
+            string='Use extra qty', store=False, readonly=True, multi=True),
         'extra_qty': fields.function(
             _get_totals, method=True, type='float', 
             string='Extra qty', store=False, readonly=True, multi=True),

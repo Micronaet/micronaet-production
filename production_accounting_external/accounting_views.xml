@@ -81,6 +81,7 @@
             </field>
             
             <field name="date_planned" position="before">
+                <field name="use_extra_qty" />
                 <field name="oc_qty" />
                 <field name="previsional_qty" />
                 <field name="extra_qty" />
