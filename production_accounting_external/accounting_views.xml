@@ -20,6 +20,7 @@
                <field name="oc_qty" />
                <field name="extra_qty" />
                <field name="error_qty" invisible="1"/>
+               <field name="has_extra_qty" invisible="1"/>
             </field>
 
             <!--<field name="hour_total" position="attributes">
@@ -132,6 +133,68 @@
         </field>
     </record>        
 
+    <record model="ir.actions.act_window" id="action_view_mrp_production_extra">
+        <field name="name">Extra production</field>
+        <field name="res_model">mrp.production</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <!--<field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>-->
+        <field name="view_id" ref="mrp.mrp_production_tree_view"/> 
+        <field name="domain">[('has_extra_qty','=',True)]</field>
+    </record>
+
+    <!--sale.order.line.previsional-->
+    <record model="ir.ui.view" id="sale_order_line_previsional_search_view">
+        <field name="name">sale.order.line.previsional.search</field>
+        <field name="model">sale.order.line.previsional</field>
+        <field name="arch" type="xml">
+           <search string="Search previsional">
+                <field name="updated" string="Updated" filter_domain="[('updated','=',True)]"/>
+                <field name="updated" string="Not updated" filter_domain="[('updated','=',True)]"/>
+                <filter name="group_order" position="after">
+                    <filter name="group_partner" string="Customer" context="{'group_by': 'partner_id'}"/>            
+                    <filter name="group_deadline" string="Deadline" context="{'group_by': 'deadline'}"/>            
+                    <filter name="group_updated" string="Updated" context="{'group_by': 'updated'}"/>            
+                </filter>    
+           </search>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="sale_order_line_previsional_tree_view">
+        <field name="name">sale.order.line.previsional.tree</field>
+        <field name="model">sale.order.line.previsional</field>
+        <field name="arch" type="xml">
+           <tree string="Tree previsional" editable="bottom">
+                <field name="mrp_id" />
+                <field name="partner_id" />
+                <field name="deadline" />
+                <field name="product_uom_qty" sum="Total"/>
+                <field name="note" />
+                <!--Button updated-->
+           </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="sale_order_line_previsional_form_view">
+        <field name="name">sale.order.line.previsional.form</field>
+        <field name="model">sale.order.line.previsional</field>
+        <field name="arch" type="xml">
+           <form string="Form previsional">
+                <field name="mrp_id" />
+                <field name="partner_id" />
+                <field name="deadline" />
+                <field name="product_uom_qty" />
+                <field name="note" />                
+           </form>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_view_sale_order_line_previsional">
+        <field name="name">Sale order line previsional</field>
+        <field name="res_model">sale.order.line.previsional</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="sale_order_line_previsional_search_view"/>
+        <field name="view_id" ref="sale_order_line_previsional_tree_view"/>        
+    </record>    
+    
     <!--sale.order.line-->
     <record model="ir.ui.view" id="sale_order_line_family_search_view">
         <field name="name">sale.order.line.search.family</field>
@@ -208,6 +271,17 @@
     </record>
     
     <!--MENUITEM:-->
+   <menuitem name="Extra production"
+          parent="mrp.menu_mrp_production_action" 
+          id="menu_view_mrp_production_extra" 
+          action="action_view_mrp_production_extra" 
+          sequence="20" />
+   <menuitem name="Previsional production"
+          parent="mrp.menu_mrp_production_action" 
+          id="menu_view_sale_order_line_previsional" 
+          action="action_view_sale_order_line_previsional" 
+          sequence="30" />
+    
    <menuitem name="Sale order" 
        parent="mrp.menu_mrp_manufacturing" 
        id="menu_base_sale_order_root" 
