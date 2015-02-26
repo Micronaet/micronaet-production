@@ -21,7 +21,7 @@
                <field name="extra_qty" />
                <field name="error_qty" invisible="1"/>
                <field name="has_extra_qty" invisible="1"/>
-               <field name="used_by_mrp_id" string="extra used by"/>
+               <field name="used_by_mrp_id" string="Extra used by"/>
             </field>
 
             <!--<field name="hour_total" position="attributes">
@@ -169,7 +169,7 @@
         <field name="view_mode">tree,form</field>
         <!--<field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>-->
         <field name="view_id" ref="mrp.mrp_production_tree_view"/> 
-        <field name="domain">[('has_extra_qty','=',True)]</field>
+        <field name="domain">[('has_extra_qty','=',True),('used_by_mrp_id','=',False)]</field>
     </record>
 
     <!--sale.order.line.previsional-->

@@ -62,11 +62,11 @@ class MrpAssignProductionWizard(orm.TransientModel):
         '''
         if context is None: 
             context = {}        
-        
         wizard_browse = self.browse(cr, uid, ids, context=context)[0]
-        mod = self.pool.get('mrp.production').write(
+        self.pool.get('mrp.production').write(
             cr, uid, wizard_browse.used_mrp_id.id, {
-                'mrp_used_by_id': wizard_browse.parent_mrp_id.id, }, context=context)
+                'used_by_mrp_id': wizard_browse.parent_mrp_id.id, 
+                }, context=context)
 
         return {'type':'ir.actions.act_window_close'}
 
