@@ -135,6 +135,24 @@
 			            <field name="previsional_line_ids" nolabel="1" context="{'embedded':True}"/>
 			        </group>
 			    </page>
+                <page string="Use extra production">
+			        <group string="Extra production">				              
+				        <field name="use_mrp_ids" nolabel="1">
+				            <tree string="Extra production" editable="bottom" delete="0">
+                                <field name="used_by_mrp_id" domain="[('id','!=',parent.id),('product_id','=',parent.product_id),('has_extra_qty','=',True),('used_by_mrp_id','=',False)]"/>
+                                <field name="extra_qty" readonly="1" sum="Total"/>
+                                <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" />
+                            </tree>
+				            <form string="OC line">
+    		                    <group colspan="4" col="4">
+                                    <field name="used_by_mrp_id" domain="[('has_extra_qty','=',True),('used_by_mrp_id','=',False)]"/>
+                                    <field name="extra_qty" readonly="1" />
+                                    <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" />
+                                </group>    
+                            </form>
+				        </field>
+			        </group>
+		        </page>			    
             </xpath>            
         </field>
     </record>        

@@ -109,7 +109,14 @@ class MrpProduction(orm.Model):
     #    for v in vote_ids:
     #    res[v.idea_id.id] = True # Store the idea identifiers in a set
     #    return res.keys()
-
+    # -------------
+    # Button event:
+    # -------------
+    def free_line(self, cr, uid, ids, context=None):
+        ''' Free the line from production order 
+        '''
+        return self.write(cr, uid, ids, {
+            'used_by_mrp_id': False, }, context=context)
 
     def _get_totals(self, cr, uid, ids, fields=None, args=None, context=None):
         ''' Calculate all totals 
@@ -155,7 +162,10 @@ class MrpProduction(orm.Model):
             _get_totals, method=True, type='boolean', 
             string='Total error', store=False, readonly=True, multi=True),
         
-        # TODO there's extra bool?
+        'used_by_mrp_id': fields.many2one('mrp.production', 'Used by'),
+        
+        'use_mrp_ids': fields.one2many(
+            'mrp.production', 'used_by_mrp_id', 'Use mrp'),
         'order_line_ids': fields.one2many(
             'sale.order.line', 'mrp_id', 'Order line'),
         'previsional_line_ids': fields.one2many(
