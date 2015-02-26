@@ -42,6 +42,7 @@
     'init_xml': [],
     'demo': [],
     'data': [
+        'wizard/assign_production.xml',
         'accounting_views.xml',       
         'report/production_report.xml',
         'wizard/create_production_view.xml',
