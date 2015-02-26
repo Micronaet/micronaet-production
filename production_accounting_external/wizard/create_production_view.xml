@@ -25,14 +25,18 @@
                         <field name="operation" />
                         <field name="production_id" attrs="{'invisible': [('operation','=','create')], 'required': [('operation','!=','create')]}" domain="[('product_id','=',product_id)]" on_change="onchange_append_production(production_id, oc_total)"/>
                         <newline />
+                        
+                        <group name="total" colspan="4" col="6">
+                            <field name="production_oc" attrs="{'invisible': [('operation','=','create')]}" />
+                            <field name="production_extra" attrs="{'invisible': [('operation','=','create')]}" />
+                            <field name="production_total" attrs="{'invisible': [('operation','=','create')]}" />
 
-                        <field name="current_total" attrs="{'invisible': [('operation','=','create')]}" />
-                        <field name="current_extra" attrs="{'invisible': [('operation','=','create')]}" />
+                            <field name="oc_total" />
+                            <field name="extra_total" />
+                            <field name="total" on_change="onchange_total(total,oc_total)"/>
 
-                        <field name="oc_total" />
-                        <field name="total" />
-
-                        <field name="is_error" invisible="1" />
+                            <field name="is_error" invisible="1" />
+                        </group>    
                         <notebook colspan="4">
                             <page string="Error" attrs="{'invisible': [('is_error','=',False)]}">
                                <group>

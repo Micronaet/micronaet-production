@@ -50,19 +50,20 @@
             </field>-->
 
             <!-- New header -->
-            <!--<xpath expr="/form/header" position="replace">
+            <xpath expr="/form/header" position="replace">
                 <header>
-                    <button name="trigger_accounting_cancel_a" type="workflow" string="Cancel" attrs="{'invisible':[('accounting_state','not in',('production',))],}" />
+                    <!--<button name="trigger_accounting_cancel_a" type="workflow" string="Cancel" attrs="{'invisible':[('accounting_state','not in',('production',))],}" />
                     <button name="trigger_accounting_cancel_b" type="workflow" string="Cancel" attrs="{'invisible':[('accounting_state','not in',('close',))],}"  />
                     <button name="trigger_accounting_production" type="workflow" class="oe_highlight" string="In produzione" attrs="{'invisible':[('accounting_state','not in',('draft',))],}"/>
                     <button name="trigger_accounting_close" type="workflow" class="oe_highlight" string="Close" attrs="{'invisible':[('accounting_state','not in',('production',))],}" />
                     <button name="trigger_accounting_draft" type="workflow" class="oe_highlight" string="Restart" attrs="{'invisible':[('accounting_state','not in',('cancel',))],}" />
 
                     <button name="dummy_refresh" type="object" icon="gtk-refresh" string="Refresh" attrs="{'invisible':[('accounting_state','in',('cancel','close'))],}" />
-		            <field name="accounting_state" widget="statusbar" statusbar_visible="draft,production,close,cancel" />
+		            <field name="accounting_state" widget="statusbar" statusbar_visible="draft,production,close,cancel" />-->
 		            <field name="state" invisible="1" />
 	            </header>       
-            </xpath>-->
+            </xpath>
+            
             <!--<field name="product_qty" position="attributes">
                 <attribute name="on_change">on_change_qty_alert()</attribute>
             </field>-->

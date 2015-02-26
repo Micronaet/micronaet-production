@@ -41,6 +41,7 @@
     'demo': [],
     'data': [
         'accounting_views.xml',       
+        'wizard/create_production_view.xml',
         ],
     'active': False,
     'installable': True,

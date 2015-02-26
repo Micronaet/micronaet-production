@@ -82,7 +82,7 @@ class MrpProduction(orm.Model):
             res[order.id] = {}
             res[order.id]['oc_qty'] = 0.0
             for line in order.order_line_ids:
-                res[order.id]['oc_qty'] += product_uom_qty # TODO UM?
+                res[order.id]['oc_qty'] += line.product_uom_qty # TODO UM?
             res[order.id][
                 'extra_qty'] = order.product_qty - res[order.id]['oc_qty']
             res[order.id]['error_qty'] = res[order.id]['extra_qty'] < 0.0
