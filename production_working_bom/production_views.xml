@@ -46,7 +46,7 @@
                 <field name="level" />
                 <field name="workers" />
             </field>
-        </field>
+        </field>   
     </record>
 
     <record model="ir.ui.view" id="mrp_production_workcenter_line_calendar_default_view">

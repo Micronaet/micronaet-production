@@ -62,7 +62,9 @@
 
                     <button name="dummy_refresh" type="object" icon="gtk-refresh" string="Refresh" attrs="{'invisible':[('accounting_state','in',('cancel','close'))],}" />
 		            <field name="accounting_state" widget="statusbar" statusbar_visible="draft,production,close,cancel" />-->
-		            <field name="state" invisible="1" />
+                    <!--<field name="updated" invisible="1" />
+                    <button name="set_updated" type="object" icon="gtk-gtk-ok" string="Close production" attrs="{'invisible':[('updated','=',True)],}" />-->
+		            <field name="state" invisible="1" />		            
 	            </header>       
             </xpath>
             
@@ -163,6 +165,18 @@
         </field>
     </record>        
 
+    <!--<record model="ir.ui.view" id="mrp_production_lavoration_form_updated_view">
+        <field name="name">Production lavoration</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="production_working_bom.mrp_production_lavoration_form_view" />
+        <field name="arch" type="xml">        
+            <field name="duration" position="after">    
+                <field name="updated" invisible="1" />
+                <button name="set_updated" type="object" icon="gtk-gtk-ok" string="Close production" attrs="{'invisible':[('updated','=',True)],}" />
+            </field>    
+        </field>
+    </record>-->
+    
     <record model="ir.actions.act_window" id="action_view_mrp_production_extra">
         <field name="name">Extra production</field>
         <field name="res_model">mrp.production</field>
