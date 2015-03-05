@@ -53,8 +53,8 @@
                <field name="has_lavoration" class="oe_inline"/>
            </field>
            <xpath expr="//notebook/page" position="after">
-               <page string="Lavoration" attrs="{'invisible':[('has_lavoration','=','False')]}">
-                   <field name="lavoration_ids"> 
+               <page string="Lavoration" attrs="{'invisible':[('has_lavoration','=',False)]}">
+                   <field name="lavoration_ids" attrs="{'invisible':[('has_lavoration','=',False)]}"> 
                        <tree string="Lavoration" editable="bottom">
                            <field name="level" />
                            <field name="phase_id" />

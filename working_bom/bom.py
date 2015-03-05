@@ -113,5 +113,9 @@ class mrp_bom(orm.Model):
         'lavoration_ids': fields.one2many('mrp.bom.lavoration', 'bom_id', 
             'Lavoration'),        
         }
+        
+    _defaults = {
+        'has_lavoration': lambda *x: True,
+        }    
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
