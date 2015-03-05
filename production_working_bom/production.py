@@ -161,7 +161,6 @@ class bom_production(orm.Model):
     def schedule_lavoration(self, cr, uid, ids, context=None):
         ''' Schedule activities (or update current scheduled)
         '''
-        import pdb; pdb.set_trace()
         if context is None: 
             context = {}
 
@@ -175,11 +174,30 @@ class bom_production(orm.Model):
             
         # TODO load a date list for leave days >> need a module for this
         
+        # Force load of lavoration from bom:
+        self.load_lavoration(cr, uid, ids, context=context)
+
         # Get day of week hour totals
         workhour = {}
-        for hour in mrp_proxy.workhour_id.hour_ids:
-            workhour[int(hour.weekday)] = hour # int for '0' problems on write
+ 
+        if not mrp_proxy.workhour_id:
+            raise osv.except_osv(_('Error'), _('No work hour type setted!'))
+        if not mrp_proxy.schedule_from_date:
+            raise osv.except_osv(_('Error'), _('No start date for schedule!'))
+
+        for item in mrp_proxy.workhour_id.day_ids:
+            workhour[int(item.weekday)] = item.hour # int for '0' problems on write
                     
+        # ---------------------------------------------------------------------
+        #              Delete lavoration not confirmed
+        # ---------------------------------------------------------------------
+        lavoration_pool = self.pool.get('mrp.production.workcenter.line')
+        lavoration_ids = lavoration_pool.search(cr, uid, [
+            ('production_id', '=', ids[0])], context=context)
+        # TODO ^^^^ search only not confirmed or closed ^^^^^^
+        # TODO manage error vvvvvvvv
+        lavoration_pool.unlink(cr, uid, lavoration_ids, context=context)
+        
         # ---------------------------------------------------------------------
         #               Check possibly lavoration present:
         # ---------------------------------------------------------------------
@@ -187,8 +205,8 @@ class bom_production(orm.Model):
         total_scheduled = {} # Dict for phase (currently only one)
         max_date = False
         max_sequence = 0
-        last_lavoration_hour = 0
-        for lavoration in scheduled_lavoration_ids:
+        last_lavoration_hour = 0.0
+        for lavoration in mrp_proxy.scheduled_lavoration_ids:
             # Max number of sequence:
             if max_sequence < lavoration.sequence:
                 max_sequence = lavoration.sequence
@@ -199,14 +217,14 @@ class bom_production(orm.Model):
     
             # Save total for phase for test create or delete hour    
             if lavoration.lavoration_id.id not in total_scheduled:
-                total_scheduled[lavoration.lavoration_id.id] = lavoration.hour
+                total_scheduled[lavoration.phase_id.id] = lavoration.hour
             else:
-                total_scheduled[lavoration.lavoration_id.id] += lavoration.hour
+                total_scheduled[lavoration.phase_id.id] += lavoration.hour
         else: # save last total
             try:
-                last_lavoration_hour = lavoration.hour        
+                last_lavoration_hour = lavoration.hour # last or error        
             except:
-                last_lavoration_hour = 0
+                last_lavoration_hour = 0.0
 
         # ---------------------------------------------------------------------
         #            Init counters depend also on previous loop
@@ -223,14 +241,11 @@ class bom_production(orm.Model):
         # ---------------------------------------------------------------------
         #                      Create lavorations:
         # ---------------------------------------------------------------------
-        # Force load of lavoration from bom:
-        self.load_lavoration(cr, uid, ids, context=context)
-        
         # Start loop:
-        for lavoration in self.lavoration_ids:
+        for lavoration in mrp_proxy.lavoration_ids:
             total_hour = (
                 lavoration.duration - # Total
-                total_scheduled.get(lavoration.lavoration_id.id) # - Scheduled
+                total_scheduled.get(lavoration.phase_id.id, 0.0) # - Scheduled
                 )
             # TODO To delete elements!!! remove lavoration or reduce
             
@@ -238,7 +253,7 @@ class bom_production(orm.Model):
             #wd = current_date.weekday()
             #if last_lavoration_hour:
             #    remain_hour_a_day = last_lavoration_hour - workhour.get(wd, 0.0)
-            #remain_hour_a_day = 0.0
+            remain_hour_a_day = 0.0
             
             # Leave loop for next developing (now only one line=production)
             while total_hour > 0.0:
@@ -271,20 +286,21 @@ class bom_production(orm.Model):
                     current_date = current_date + timedelta(days=1)
                 workcenter_pool.create(cr, uid, {
                     'name': '%s [%s]' % (
-                        production_proxy.name, max_sequence),
+                        mrp_proxy.name, max_sequence),
                     'sequence': max_sequence,
                     'workcenter_id': lavoration.line_id.id,
                     'date_planned': current_date_text,
                     'date_start': current_date_text,
                     'hour': hour,
-                    'product': production_proxy.product_id.id,
-                    'production_id': production_proxy.id,
+                    'phase_id': lavoration.phase_id.id,
+                    'product': mrp_proxy.product_id.id,
+                    'production_id': mrp_proxy.id,
                     'lavoration_id': lavoration.id,
                     'workers': lavoration.workers,
 
                     # Statistic m(x):
                     'lavoration_qty': hour * (
-                        production_proxy.product_qty / lavoration.duration),
+                        mrp_proxy.product_qty / lavoration.duration),
                     }, context=context)
 
         # TODO Write some date in production start / stop?                    
@@ -310,14 +326,14 @@ class bom_production(orm.Model):
             pass # TODO
                 
         # Create new from BOM 
-        production_proxy = self.browse(cr, uid, ids, context=context)[0]
-        for lavoration in production_proxy.bom_id.lavoration_ids:
+        mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
+        for lavoration in mrp_proxy.bom_id.lavoration_ids:
             if lavoration.fixed:
                 duration = lavoration.duration
             else:
                 try:
                     duration = lavoration.duration * (
-                        production_proxy.product_qty / lavoration.quantity)
+                        mrp_proxy.product_qty / lavoration.quantity)
                 except:
                     duration = 0.0    
             lavoration_pool.create(cr, uid, {
