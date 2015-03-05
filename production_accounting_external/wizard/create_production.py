@@ -164,7 +164,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             self, cr, uid, wiz_browse.product_tmpl_id.id, context=context)
         workhour = wiz_browse.workhour_id.id if wiz_browse.workhour_id else False
         
-        if wiz_browse.operation == 'create':
+        if wiz_browse.operation in ('create', 'lavoration'):
             p_id = production_pool.create(               
                 cr, uid, {
                     'name': self.pool.get(
@@ -396,7 +396,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
         'error': fields.text('Error', readonly=True),
         'warning': fields.text('Warning', readonly=True),
         'operation':fields.selection([
-            ('create', 'Create'),
+            ('create', 'Create production'),
+            ('lavoration', 'Create with lavoration'),
             ('append', 'Append'),            
             ], 'Operation', select=True, required=True),
         }
@@ -421,6 +422,6 @@ class CreateMrpProductionWizard(orm.TransientModel):
             cr, uid, "from_deadline", context=c),        
         'to_deadline': lambda s, cr, uid, c: s.default_oc_list(
             cr, uid, "to_deadline", context=c),        
-        'operation': lambda *x: 'create',    
+        'operation': lambda *x: 'lavoration',    
     }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -17,17 +17,20 @@
                         <field name="product_id" invisible="1" /> 
                         <!--<field name="item_hour" attrs="{'required': [('bom_id','=',False)]}"/>-->
                         
-                        <separator string="Schedule:" colspan="4"/>
+                        <separator string="Schedule:" colspan="4" attrs="{'invisible':[('operation','not in',('lavoration'))]}"/>
                         <field name="from_deadline" />
                         <field name="to_deadline" />
 
-                        <field name="schedule_from_date" />
-                        <field name="workhour_id" create="0"/>
+                        <field name="schedule_from_date" attrs="{'required':[('operation','in',('lavoration'))]}" />
+                        <field name="workhour_id" create="0" attrs="{'required':[('operation','in',('lavoration'))]}" />
 
                                                 
                         <separator string="Operation:" colspan="4"/>
                         <field name="operation" />
-                        <field name="production_id" attrs="{'invisible': [('operation','=','create')], 'required': [('operation','!=','create')]}" domain="[('product_id','=',product_id)]" on_change="onchange_append_production(production_id, oc_total)"/>
+                        <field name="production_id" 
+                               attrs="{'invisible': [('operation','!=','append')], 'required': [('operation','=','append')]}" 
+                               domain="[('product_id','=',product_id)]" 
+                               on_change="onchange_append_production(production_id, oc_total)"/>
                         <newline />
                         
                         <group name="total" colspan="4" col="6">
