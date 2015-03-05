@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+    <!--hr.workhour-->
+    
+    <record model="ir.ui.view" id="hr_workhour_search_view">
+        <field name="name">hr.workhour.form</field>
+        <field name="model">hr.workhour</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+            </search>    
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="hr_workhour_form_view">
+        <field name="name">hr.workhour.form</field>
+        <field name="model">hr.workhour</field>
+        <field name="arch" type="xml">
+           <form string="Work hour" version="7.0">
+               <group col="4" colspan="4">
+                    <field name="name" />
+                    <field name="day_ids" colspan="4" nolabel="1">
+                        <tree string="Days" editable="bottom">
+                            <field name="weekday" />
+                            <field name="hour" />
+                        </tree>
+                        <form string="Days">
+                            <field name="weekday" />
+                            <field name="hour" />
+                        </form>
+                    </field>
+                    <separator string="Note"/>
+                    <field name="note" colspan="4" nolabel="1" />
+               </group>
+            </form>    
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="hr_workhour_tree_view">
+        <field name="name">hr.workhour.form</field>
+        <field name="model">hr.workhour</field>
+        <field name="arch" type="xml">
+            <tree string="Work hour">
+                <field name="name" />
+                <field name="note" />
+            </tree>    
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_hr_workhour_tree">
+        <field name="name">Work hour</field>
+        <field name="res_model">hr.workhour</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="hr_workhour_tree_view" />
+    </record>
+          
+    <menuitem name="Work hour"
+        parent="mrp.menu_mrp_configuration" 
+        id="menu_configuration_workhour" 
+        action="action_hr_workhour_tree" 
+        sequence="40" />           
+    </data>
+</openerp>
+

@@ -18,44 +18,27 @@
 ###############################################################################
 
 {
-    'name': 'Production BOM for working process',
+    'name': 'Production Work Hour',
     'version': '0.1',
     'category': '',
     'description': """
-        Add extra information for manage BOM as a work BOM
-        Add report for status of lines and workers per day
+        In production this module let manage work hour for timesheet and 
+        emplyoee, usually is attached to other prodution master modules.
         """,
     'author': 'Micronaet S.r.l. - Nicola Riolini',
     'website': 'http://www.micronaet.it',
     'license': 'AGPL-3',
     'depends': [
         'base',
-        'sale',
+        'product',
         'mrp',
-        'hr',
-        'mrp',
-        'mrp_operations',
-        'working_bom',
-        'production_accounting_external',
-        'production_workhour',
-        #'report',
-        'report_webkit',
-        #'report_aeroo',
-        #'report_aeroo_ooo',
+        'hr'
         ],
     'init_xml': [],
     'demo': [],
     'data': [
-        #'security/ir.model.access.csv',
-        #'wizard/create_workcenter_view.xml',     
-        'wizard/wizard_report_status_view.xml',
-        'production_views.xml',
-
-        'report/status_hour_report.xml',
-        #'report/status_work_report.xml',
-        #'report/status_hour_report.xml',
-        #'report/status_work.xml',
-        #'report/status_hour.xml',
+        'security/ir.model.access.csv',
+        'work_views.xml',        
         ],
     'active': False,
     'installable': True,

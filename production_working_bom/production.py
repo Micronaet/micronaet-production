@@ -77,11 +77,13 @@ class mrp_bom_lavoration(orm.Model):
             ondelete='cascade'),            
         'total_duration': fields.float('Duration', digits=(10, 2),
             help="Duration in hour:minute for lavoration of quantity piece"),
+
         # TODO move in another module after DEMO    
         'real_duration': fields.float('Duration', digits=(10, 2),
             help="Real duration in hour:minute for lavoration of quantity piece"),
         'scheduled_ids': fields.one2many('mrp.production.workcenter.line',
             'lavoration_id', 'Scheduled lavorations'),    
+
         }
 
 class bom_production(orm.Model):
@@ -89,7 +91,7 @@ class bom_production(orm.Model):
         Add totals and link to production order for use same element also 
         for exploded BOM in productions
     '''
-    _name = 'mrp.production'
+
     _inherit = 'mrp.production'
 
     # --------
@@ -156,6 +158,87 @@ class bom_production(orm.Model):
     # -------    
     # Button:
     # -------    
+    def schedule_schedule(self, cr, uid, ids, context=None):
+        ''' Schedule activities
+        '''
+        if context is None: 
+            context = {}
+
+        mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
+        
+        # Load information for lavoration:
+        workcenter_pool = self.pool.get('mrp.production.workcenter.line')
+
+        # Parameters:            
+        max_day = 5 # < saturday
+        hour_a_day = 8.0 # work hour per day   # TODO parametrize
+        start_hour = 7.0 # # GMT               # TODO parametrize
+            
+        # TODO set for days elements (TODO what about leave days?)
+        schedule_type = mrp_proxy.workhour_id
+        # TODO Change:
+        hour_a_day = 10.0
+        max_day = 6
+        
+        current_date = datetime.strptime(
+            mrp_proxy.schedule_from_date, DEFAULT_SERVER_DATE_FORMAT)
+
+        sequence = 0
+        remain_hour_a_day = 0.0
+        i = 0
+        current_date_text = False
+        for lavoration in self.lavoration_ids:
+            i += 1
+            total_hour = lavoration.duration
+            
+            while total_hour > 0.0:  
+                if current_date.weekday() >= max_day: # sat, sun:
+                    current_date = current_date + timedelta(days=1)
+                    continue
+                sequence += 1
+                if remain_hour_a_day:
+                   hour = remain_hour_a_day
+                   remain_hour_a_day = 0.0
+                else:   
+                    if total_hour >= hour_a_day:
+                        hour = hour_a_day
+                        total_hour -= hour_a_day
+                    else:
+                        hour = total_hour
+                        total_hour = 0.0    
+                        remain_hour_a_day = hour_a_day - hour # for next lavoration
+                        
+                # For all lavoration create an appointment 4 hour | 4 hour a day
+                current_date_text = "%s %02d:00:00" % (
+                    current_date.strftime(DEFAULT_SERVER_DATE_FORMAT),
+                    start_hour, )
+                    
+                if not remain_hour_a_day: # no remain hour to fill
+                    current_date = current_date + timedelta(days=1)
+                workcenter_pool.create(cr, uid, {
+                    'name': '%s [%s]' % (
+                        production_proxy.name, sequence),
+                    'sequence': sequence,
+                    'workcenter_id': lavoration.line_id.id,
+                    'date_planned': current_date_text,
+                    'date_start': current_date_text, # TODO: set up by wf
+                    'hour': hour,
+                    'product': production_proxy.product_id.id,
+                    'production_id': production_proxy.id,
+                    'lavoration_id': lavoration.id,
+                    'lavoration_qty': hour * (
+                        production_proxy.product_qty / lavoration.duration),
+                    'workers': lavoration.workers,
+                    }, context=context)
+                    
+        #if current_date_text:            
+        #    production['date_finished'] = current_date_text
+        
+        # Update production with time value # TODO set in lavoration write 
+        #production_pool.write(cr, uid, [active_id], production, context=context)
+        return True
+
+    
     def open_lavoration(self, cr, uid, ids, context=None):
         ''' Open in calendar all lavorations for this production
         '''
@@ -204,12 +287,16 @@ class bom_production(orm.Model):
         'scheduled_lavoration_ids': fields.one2many('mrp.production.workcenter.line',
             'production_id', 'Scheduled lavoration'),
         'worker_ids': fields.many2many('hr.employee', 'mrp_production_workcenter_employee', 'production_id', 'employee_id', 'Employee'),
+        
+        # For schedule lavoration:
+        'schedule_from_date': fields.date(
+            'From date', help="Scheduled from date to start lavorations"),
+        'workhour_id':fields.many2one('hr.workhour', 'Work hour'), # TODO mand.
         }
 
 class mrp_production_workcenter_line(orm.Model):
     ''' Extra field for workcenter line for extra info about lavoration
     '''
-    _name = 'mrp.production.workcenter.line'
     _inherit = 'mrp.production.workcenter.line'
     
     _columns = {
@@ -224,8 +311,9 @@ class mrp_production_workcenter_line(orm.Model):
             'lavoration_id', 'employee_id', 'Employee'),
         'lavoration_qty': fields.float('Lavoration qty', digits=(10, 2),
             help="Quantity lavoration"),
-        #'duration': fields.float('Duration', digits=(10, 2),
-        #    help="Duration in hour:minute for lavoration of quantity piece"),
+        'duration': fields.float('Duration', digits=(10, 2),
+            help="Duration in hour:minute for lavoration of quantity piece"),
+        'updated': fields.boolean('Label', required=False),    
         }
 
 class product_product(orm.Model):

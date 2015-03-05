@@ -25,7 +25,6 @@ import logging
 import openerp
 import openerp.netsvc as netsvc
 import openerp.addons.decimal_precision as dp
-from openerp.report import report_sxw
 from openerp.osv import fields, osv, expression, orm
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -41,23 +40,55 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+class HrWorkhour(orm.Model):
+    ''' Class for manage Work hour
+    '''
 
-class Parser(report_sxw.rml_parse):
-    def __init__(self, cr, uid, name, context):
-        super(Parser, self).__init__(cr, uid, name, context)
-        self.localcontext.update({
-            'get_hour': self.get_hour,
-        })
+    _name = 'hr.workhour'
+    _description = 'Employee work hour'
+            
+    _columns = {
+        'name': fields.char('Work hour', size=64, required=True),
+        'note': fields.text('Note'),
+        }
 
-    def get_hour(self, value):
-        ''' Format float with H:MM format
-        '''
-        try:
-            return "%s:%s" % (
-                int(value),
-                int(60 * (value - int(value))),
-                )
-        except:
-            return "0:00"
+class HrWorkhourDay(orm.Model):
+    ''' Class for manage Work hour for each day of the week
+    '''
+    
+    _name = 'hr.workhour.day'
+    _description = 'Employee work hour'
+    _rec_name = 'weekday'
+
+    # weekday python value:
+    get_weekday = [ 
+        ('0', 'Monday'),
+        ('1', 'Tuesday'),
+        ('2', 'Wednesday'),
+        ('3', 'Thursday'),
+        ('4', 'Friday'),
+        ('5', 'Saturday'),
+        ('6', 'Sunday'),
+        ]
+            
+    _columns = {
+        'workhour_id': fields.many2one('hr.workhour', 'Workhour'),
+        'weekday': fields.selection(
+            get_weekday, 'Weekday', select=True, readonly=False),
+        'hour': fields.integer('Label')            
+        }
         
+    _defaults = {
+        'hour': lambda *x: 8,
+        }    
+
+class HrWorkhour(orm.Model):
+    ''' Class for manage Work hour
+    '''
+
+    _inherit = 'hr.workhour'
+    
+    _columns = {
+        'day_ids': fields.one2many('hr.workhour.day', 'workhour_id', 'Day'),
+        }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

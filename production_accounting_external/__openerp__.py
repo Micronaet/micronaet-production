@@ -36,12 +36,16 @@
         'stock',
         'sql_sale_order',
         'production_family',
-        'report_aeroo',
-        
+        #'production_working_bom',
+        'report_aeroo',        
+        'sql_sale_order',
+        'production_order_mandatory',
+        'production_workhour',
         ],
     'init_xml': [],
     'demo': [],
     'data': [
+        'security/ir.model.access.csv',    
         'wizard/assign_production.xml',
         'accounting_views.xml',       
         'report/production_report.xml',

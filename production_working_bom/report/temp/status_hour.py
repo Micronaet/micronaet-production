@@ -2,12 +2,14 @@
 ##############################################################################
 #
 #    OpenERP module
-#    Copyright (C) 2010 Micronaet srl (<http://www.micronaet.it>) and the
+#    Copyright (C) 2010 Micronaet srl (<http://www.micronaet.it>) 
+#    
 #    Italian OpenERP Community (<http://www.openerp-italia.com>)
 #
-#    ########################################################################
+#############################################################################
+#
 #    OpenERP, Open Source Management Solution	
-#    Copyright (C) 2004-2008 Tiny SPRL (<http://tiny.be>). All Rights Reserved
+#    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -24,88 +26,46 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+import sys
+import os
+from openerp.osv import osv
+from datetime import datetime, timedelta
+from openerp.report import report_sxw
+import logging, time
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
+    DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare)
 
 
-from openerp import api, models
+# Global elements:
+_logger = logging.getLogger(__name__)
 
-class ReportStatusHour(models.AbstractModel):
-    ''' Report parser status of hour
-    '''
-    
-    _name = 'report.production_working_bom.report_status_hour'
-    
-    # -------------------------------------------------------------------------
-    # Render method:
-    # -------------------------------------------------------------------------
-        
-    @api.multi
-    def render_html(self, data=None):
-        ''' Renter report action:
-        '''
-        # ---------------------------------------------------------------------
+class report_webkit_html(report_sxw.rml_parse):    
+    def __init__(self, cr, uid, name, context):    
         # Set up private variables:
-        # ---------------------------------------------------------------------
         self.rows = []
         self.cols = []
         self.minimum = {}
         self.table = {}
-        self.counter = {} # counter dict
-        
-        report_obj = self.env['report']
-        report = report_obj._get_report_from_name(
-            'production_working_bom.report_status_hour')
-        docargs = {
-            'doc_ids': self._ids,
-            'doc_model': report.model,
-            'docs': self,
-            
-            # Counters:
-            'get_dict_counter': self.get_dict_counter,
-            'set_dict_counter': self.set_dict_counter,
 
-            # Report:
-            'startup': self._startup,
+        super(report_webkit_html, self).__init__(
+            cr, uid, name, context=context)
+        self.localcontext.update({
+            'time': time,
+            'cr': cr,
+            'uid': uid,
+            'start_up': self._start_up,
             'get_rows': self._get_rows,
             'get_cols': self._get_cols,
             'get_cel': self._get_cel,
-            'has_negative': self._has_negative,            
-            }
-        return report_obj.render(
-            'production_working_bom.report_status_hour', 
-            docargs, 
-            )
+            'has_negative': self._has_negative,
+            })
 
-    # -------------------------------------------------------------------------
-    # Counters methods:
-    # -------------------------------------------------------------------------
-    
-    def set_dict_counter(self, name, item=None, value=False):
-        ''' Set element of dict counter        
-        '''
-        if name not in self.counter:
-            self.counter[name] = {}
-        
-        if item is not None:
-            self.counter[name][item] = value # normal set
-        return 
-
-    def get_dict_counter(self, name, item=None, default=False):
-        ''' Reset element of counter        
-        '''
-        if item is None:
-            return self.counter[name]
-        else:        
-            return self.counter[name].get(item, default)
-        
-    # -------------------------------------------------------------------------
-    # Report methods:
-    # -------------------------------------------------------------------------
     def _has_negative(self, row, data=None):
         ''' ???
         '''
         return 
         
-    def _startup(self, data=None):
+    def _start_up(self, data=None):
         ''' Master function for prepare report
         '''
         if data is None:
@@ -115,29 +75,29 @@ class ReportStatusHour(models.AbstractModel):
         self.rows = []
         self.cols = []
         self.table = {}
-        self.counters = {}
         
         # Load production converter for get product code:
         production_pool = self.pool.get("mrp.production")
-        production_ids = production_pool.search(self.env.cr, self.env.uid, [])
+        production_ids = production_pool.search(self.cr, self.uid, [])
         production_converter = {}
-        for p in production_pool.browse(self.env.cr, self.env.uid, production_ids):
-            production_converter[p.id] = p.product_id.default_code or "#NoCod"
-                
+        for p in production_pool.browse(self.cr, self.uid, production_ids):
+            production_converter[p.id] = p.product_id.default_code            
+        
+        
         # Read cols elements:        
-        self.env.cr.execute("""
+        self.cr.execute("""
             SELECT DISTINCT left(CAST(date_planned AS TEXT), 10) as day
             FROM mrp_production_workcenter_line
             ORDER BY day;
             """)
-        for day in self.env.cr.fetchall():
+        for day in self.cr.fetchall():
             day = day[0]
             self.cols.append(day[-5:]) # populare cols list
             
             start = "%s 00:00:00" % day
             end = "%s 23:59:59" % day
             
-            self.env.cr.execute("""
+            self.cr.execute("""
                 SELECT rr.name, q.hour, q.workers, q.prod 
                 FROM (
                     SELECT 
@@ -154,7 +114,7 @@ class ReportStatusHour(models.AbstractModel):
                     ORDER BY rr.name;
                 """, (start, end))
 
-            for record in self.env.cr.fetchall():
+            for record in self.cr.fetchall():
                 if record[0] not in self.rows:
                     self.rows.append(record[0])
                     
@@ -170,9 +130,10 @@ class ReportStatusHour(models.AbstractModel):
                 self.table[k][0] += record[1] * record[2]
                 self.table[k][1] += record[1]
                 self.table[k][2].append(
-                    production_converter.get(record[3], "??")) # production_id > default_code
+                    production_converter.get(record[3], "??")) # production_id > defalt_code
                 
-        self.rows.sort() # only row
+        self.rows.sort()
+        # self.cols.sort()
         return True
 
     def _get_rows(self):
@@ -189,6 +150,11 @@ class ReportStatusHour(models.AbstractModel):
         ''' Return cell elements or empty one if not present
         '''
         return self.table.get((row, col), [0, 0, []])
-            
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 
+report_sxw.report_sxw(
+    'report.webkithourstatus',
+    'mrp.production', 
+    'addons/production_working_bom/report/status_hour.mako',
+    parser=report_webkit_html
+)
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

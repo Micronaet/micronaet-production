@@ -155,29 +155,32 @@ class CreateMrpProductionWizard(orm.TransientModel):
         if context is None:
            context = {}
 
-        wizard_browse = self.browse(cr, uid, ids, context=context)[0]
+        wiz_browse = self.browse(cr, uid, ids, context=context)[0]
 
         # Create a production order and open it:
         production_pool = self.pool.get("mrp.production")
         
         product_id = get_product_from_template( # TODO use product_id?
-            self, cr, uid, wizard_browse.product_tmpl_id.id, context=context)
-
-        if wizard_browse.operation == 'create':
+            self, cr, uid, wiz_browse.product_tmpl_id.id, context=context)
+        workhour = wiz_browse.workhour_id.id if wiz_browse.workhour_id else False
+        
+        if wiz_browse.operation == 'create':
             p_id = production_pool.create(               
                 cr, uid, {
                     'name': self.pool.get(
                         'ir.sequence').get(cr, uid, 'mrp.production'),
                     'product_id': product_id,
-                    'product_qty': wizard_browse.total,
-                    'product_uom': wizard_browse.product_id.uom_id.id,
-                    'date_planned': wizard_browse.from_deadline,
-                    'bom_id': wizard_browse.bom_id.id,
+                    'product_qty': wiz_browse.total,
+                    'product_uom': wiz_browse.product_id.uom_id.id,
+                    'date_planned': wiz_browse.from_deadline,
+                    'bom_id': wiz_browse.bom_id.id,
                     'user_id': uid,
+                    'schedule_from_date': wiz_browse.schedule_from_date,
+                    'workhour_id': workhour, 
                     'order_line_ids': [(6, 0, context.get("active_ids", []))],
                     }, context=context)
         else: # append
-            p_id = wizard_browse.production_id.id
+            p_id = wiz_browse.production_id.id
             
             # Assign line to production:
             self.pool.get('sale.order.line').write(
@@ -189,8 +192,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
             production_pool.write(
                 cr, uid, p_id, {
                     'product_qty': (
-                        wizard_browse.total +
-                        wizard_browse.production_id.product_qty),
+                        wiz_browse.total +
+                        wiz_browse.production_id.product_qty),
                     }, context=context)
 
         # Load element from BOM: # TODO 
@@ -381,8 +384,15 @@ class CreateMrpProductionWizard(orm.TransientModel):
             help='Max deadline found in order line!',
             readonly=True),
 
+        'schedule_from_date': fields.date(
+            'From date', help="Scheduled from date to start lavorations"),
+        'workhour_id':fields.many2one('hr.workhour', 'Work hour'), # TODO mand.
+
         # Error control:
         'is_error': fields.boolean('Is error'),
+        'other_production': fields.text(
+            'Other production', 
+            help="Production open on line of this production", readonly=True),
         'error': fields.text('Error', readonly=True),
         'warning': fields.text('Warning', readonly=True),
         'operation':fields.selection([

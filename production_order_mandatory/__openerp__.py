@@ -18,44 +18,28 @@
 ###############################################################################
 
 {
-    'name': 'Production BOM for working process',
+    'name': 'Production order mandatory',
     'version': '0.1',
     'category': '',
     'description': """
-        Add extra information for manage BOM as a work BOM
-        Add report for status of lines and workers per day
+        In production sometimes there's some delivery order that have
+        deadline mandatory, this module import that information from 
+        accounting program but also manage partner that has always
+        mandatory orders.
         """,
     'author': 'Micronaet S.r.l. - Nicola Riolini',
     'website': 'http://www.micronaet.it',
     'license': 'AGPL-3',
     'depends': [
         'base',
-        'sale',
+        'product',
         'mrp',
-        'hr',
-        'mrp',
-        'mrp_operations',
-        'working_bom',
-        'production_accounting_external',
-        'production_workhour',
-        #'report',
-        'report_webkit',
-        #'report_aeroo',
-        #'report_aeroo_ooo',
+        'sql_sale_order', # for schedule importation
         ],
     'init_xml': [],
     'demo': [],
     'data': [
-        #'security/ir.model.access.csv',
-        #'wizard/create_workcenter_view.xml',     
-        'wizard/wizard_report_status_view.xml',
-        'production_views.xml',
-
-        'report/status_hour_report.xml',
-        #'report/status_work_report.xml',
-        #'report/status_hour_report.xml',
-        #'report/status_work.xml',
-        #'report/status_hour.xml',
+        'mandatory_views.xml',        
         ],
     'active': False,
     'installable': True,

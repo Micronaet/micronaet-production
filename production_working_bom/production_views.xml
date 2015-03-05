@@ -6,14 +6,17 @@
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_form_view" />
         <field name="arch" type="xml">
-            <xpath expr="//notebook/page" position="after">
+            <xpath expr="//notebook" position="inside">
                 <page string="Lavoration">
                     <button name="load_lavoration" type="object" string="Load lavoration" />
-                    <button name="%(action_mrp_production_schedulation_wizard)d" type="action" string="Schedule lavoration" />
+                    <button name="schedule_lavoration" type="object" string="Schedule lavoration" />                    
                     <button name="open_lavoration" type="object" string="Lavorations" icon="terp-calendar"/>
-                    <group colspan="2">
-                        <field name="worker_ids" widget="many2many_tags"/>
-                    </group>                    
+                    
+                    <group colspan="4" col="4">
+                        <field name="workhour_id" />
+                        <field name="schedule_from_date" />
+                        <field name="worker_ids" widget="many2many_tags" colspan="4"/>
+                    </group>
                     <newline />
                     <field name="lavoration_ids" colors="blue:fixed==True">
                         <tree string="Lavoration" editable="bottom">
@@ -26,8 +29,7 @@
                            <button name="open_lavoration_wc" type="object" string="" icon="terp-calendar"/>
                         </tree>
                     </field>
-                </page>
-                <page string="Lavoration scheduled">
+                    <separator string="Scheduled" />
                     <field name="scheduled_lavoration_ids"/>
                 </page>
             </xpath>
@@ -46,7 +48,7 @@
                 <field name="level" />
                 <field name="workers" />
             </field>
-        </field>   
+        </field>
     </record>
 
     <record model="ir.ui.view" id="mrp_production_workcenter_line_calendar_default_view">

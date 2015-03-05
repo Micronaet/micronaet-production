@@ -60,10 +60,34 @@ class SaleOrderLine(orm.Model):
         '''
         return self.write(cr, uid, ids, {
             'mrp_id': False, }, context=context)
+
+    def close_production(self, cr, uid, ids, context=None):
+        ''' Close production
+        '''
+        # TODO (interact with accounting)
+        line_proxy = self.browse(cr, uid, ids, context=context)[0]
+        
+        if line_proxy.product_uom_maked_qty: # partial
+            pass # TODO close (partial)
+            #self.write(cr, uid, ids, {
+            #    'is_produced': True,   
+            #    }, context=context)
+        else: # TODO manage well (now not correct)
+            self.write(cr, uid, ids, {
+                'product_uom_maked_qty': 
+                    line_proxy.product_uom_qty,
+                'is_produced': True,
+                }, context=context)                
+        return True
             
     _columns = {
         'mrp_id': fields.many2one(
             'mrp.production', 'Production', ondelete='set null', ),
+        'product_uom_maked_qty': fields.float(
+            'Quantity maked', digits=(16, 2), ),
+            
+        # TODO remove with state?
+        'is_produced': fields.boolean('Is produced', required=False),    
         }
 
 class SaleOrderLinePrevisional(orm.Model):
@@ -87,6 +111,7 @@ class SaleOrderLinePrevisional(orm.Model):
         'note': fields.text('Note'),        
         'product_uom_qty': fields.float('Quantity', digits=(16, 2), 
             required=True),
+
         'updated': fields.boolean('Updated', 
             help='Manually updated on accounting program'),
         'mrp_id': fields.many2one(
@@ -109,9 +134,11 @@ class MrpProduction(orm.Model):
     #    for v in vote_ids:
     #    res[v.idea_id.id] = True # Store the idea identifiers in a set
     #    return res.keys()
+
     # -------------
     # Button event:
     # -------------
+    
     def free_line(self, cr, uid, ids, context=None):
         ''' Free the line from production order 
         '''
@@ -180,6 +207,7 @@ class MrpProduction(orm.Model):
             'sale.order.line', 'mrp_id', 'Order line'),
         'previsional_line_ids': fields.one2many(
             'sale.order.line.previsional', 'mrp_id', 'Previsional order'),
+        'updated':fields.boolean('Label', required=False),    
         }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
