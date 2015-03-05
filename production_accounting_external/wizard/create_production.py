@@ -104,7 +104,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         '''
         view_id = self.pool.get('ir.ui.view').search(cr,uid,[
             ('model', '=', 'mrp.production.create.wizard'),
-            ('name','=','Create production order') # TODO needed?
+            ('name', '=', 'Create production order') # TODO needed?
             ], context=context)
         
         return {
