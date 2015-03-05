@@ -33,7 +33,7 @@ _logger = logging.getLogger(__name__)
 class res_company(orm.Model):
     ''' Add fields for report in workcenter
     '''
-    _name = 'res.company'
+
     _inherit = 'res.company'
     
     _columns = {
@@ -47,7 +47,7 @@ class res_company(orm.Model):
 class mrp_workcenter(orm.Model):
     ''' Add fields for report in workcenter
     '''
-    _name = 'mrp.workcenter'
+
     _inherit = 'mrp.workcenter'
     
     _columns = {
@@ -60,7 +60,7 @@ class mrp_workcenter(orm.Model):
 class mrp_bom_lavoration(orm.Model):
     ''' Add relation fields (use same element in BOM and in production)
     '''
-    _name = 'mrp.bom.lavoration'
+
     _inherit = 'mrp.bom.lavoration'
 
     # -------
@@ -158,9 +158,10 @@ class bom_production(orm.Model):
     # -------    
     # Button:
     # -------    
-    def schedule_schedule(self, cr, uid, ids, context=None):
-        ''' Schedule activities
+    def schedule_lavoration(self, cr, uid, ids, context=None):
+        ''' Schedule activities (or update current scheduled)
         '''
+        import pdb; pdb.set_trace()
         if context is None: 
             context = {}
 
@@ -169,46 +170,99 @@ class bom_production(orm.Model):
         # Load information for lavoration:
         workcenter_pool = self.pool.get('mrp.production.workcenter.line')
 
-        # Parameters:            
-        max_day = 5 # < saturday
-        hour_a_day = 8.0 # work hour per day   # TODO parametrize
-        start_hour = 7.0 # # GMT               # TODO parametrize
+        # Parameters to load :            
+        start_hour = 7.0 # TODO parametrize GMT
             
-        # TODO set for days elements (TODO what about leave days?)
-        schedule_type = mrp_proxy.workhour_id
-        # TODO Change:
-        hour_a_day = 10.0
-        max_day = 6
+        # TODO load a date list for leave days >> need a module for this
         
-        current_date = datetime.strptime(
-            mrp_proxy.schedule_from_date, DEFAULT_SERVER_DATE_FORMAT)
+        # Get day of week hour totals
+        workhour = {}
+        for hour in mrp_proxy.workhour_id.hour_ids:
+            workhour[int(hour.weekday)] = hour # int for '0' problems on write
+                    
+        # ---------------------------------------------------------------------
+        #               Check possibly lavoration present:
+        # ---------------------------------------------------------------------
+        # TODO Compute total (more / less todo) hour
+        total_scheduled = {} # Dict for phase (currently only one)
+        max_date = False
+        max_sequence = 0
+        last_lavoration_hour = 0
+        for lavoration in scheduled_lavoration_ids:
+            # Max number of sequence:
+            if max_sequence < lavoration.sequence:
+                max_sequence = lavoration.sequence
+                
+            # Save max date for start point:
+            if not max_date or max_date < lavoration.date_start[:10]:
+                max_date = lavoration.date_start[:10]            
+    
+            # Save total for phase for test create or delete hour    
+            if lavoration.lavoration_id.id not in total_scheduled:
+                total_scheduled[lavoration.lavoration_id.id] = lavoration.hour
+            else:
+                total_scheduled[lavoration.lavoration_id.id] += lavoration.hour
+        else: # save last total
+            try:
+                last_lavoration_hour = lavoration.hour        
+            except:
+                last_lavoration_hour = 0
 
-        sequence = 0
-        remain_hour_a_day = 0.0
-        i = 0
-        current_date_text = False
+        # ---------------------------------------------------------------------
+        #            Init counters depend also on previous loop
+        # ---------------------------------------------------------------------
+        # Parse time for delta operations:
+        if max_date: # take max in lavorations (TODO + 1?)
+            current_date = datetime.strptime(
+                max_date, DEFAULT_SERVER_DATE_FORMAT)
+        else: # take from production
+            current_date = datetime.strptime(
+                mrp_proxy.schedule_from_date, DEFAULT_SERVER_DATE_FORMAT)
+
+        
+        # ---------------------------------------------------------------------
+        #                      Create lavorations:
+        # ---------------------------------------------------------------------
+        # Force load of lavoration from bom:
+        self.load_lavoration(cr, uid, ids, context=context)
+        
+        # Start loop:
         for lavoration in self.lavoration_ids:
-            i += 1
-            total_hour = lavoration.duration
+            total_hour = (
+                lavoration.duration - # Total
+                total_scheduled.get(lavoration.lavoration_id.id) # - Scheduled
+                )
+            # TODO To delete elements!!! remove lavoration or reduce
             
-            while total_hour > 0.0:  
-                if current_date.weekday() >= max_day: # sat, sun:
+            # TODO Check if last day there's less hour to create (or integrate!!)
+            #wd = current_date.weekday()
+            #if last_lavoration_hour:
+            #    remain_hour_a_day = last_lavoration_hour - workhour.get(wd, 0.0)
+            #remain_hour_a_day = 0.0
+            
+            # Leave loop for next developing (now only one line=production)
+            while total_hour > 0.0:
+                # not work days:
+                wd = current_date.weekday()
+                if wd not in workhour: 
                     current_date = current_date + timedelta(days=1)
                     continue
-                sequence += 1
-                if remain_hour_a_day:
+                    
+                max_sequence += 1
+                hour_a_day = workhour.get(wd, 0.0) # total H to work this day
+                if remain_hour_a_day: # for add another phase (not used yet)
                    hour = remain_hour_a_day
                    remain_hour_a_day = 0.0
-                else:   
+                else:
                     if total_hour >= hour_a_day:
                         hour = hour_a_day
                         total_hour -= hour_a_day
                     else:
                         hour = total_hour
                         total_hour = 0.0    
-                        remain_hour_a_day = hour_a_day - hour # for next lavoration
+                        remain_hour_a_day = hour_a_day - hour 
                         
-                # For all lavoration create an appointment 4 hour | 4 hour a day
+                # For all lav. create an appointment X hour a day
                 current_date_text = "%s %02d:00:00" % (
                     current_date.strftime(DEFAULT_SERVER_DATE_FORMAT),
                     start_hour, )
@@ -217,25 +271,23 @@ class bom_production(orm.Model):
                     current_date = current_date + timedelta(days=1)
                 workcenter_pool.create(cr, uid, {
                     'name': '%s [%s]' % (
-                        production_proxy.name, sequence),
-                    'sequence': sequence,
+                        production_proxy.name, max_sequence),
+                    'sequence': max_sequence,
                     'workcenter_id': lavoration.line_id.id,
                     'date_planned': current_date_text,
-                    'date_start': current_date_text, # TODO: set up by wf
+                    'date_start': current_date_text,
                     'hour': hour,
                     'product': production_proxy.product_id.id,
                     'production_id': production_proxy.id,
                     'lavoration_id': lavoration.id,
+                    'workers': lavoration.workers,
+
+                    # Statistic m(x):
                     'lavoration_qty': hour * (
                         production_proxy.product_qty / lavoration.duration),
-                    'workers': lavoration.workers,
                     }, context=context)
-                    
-        #if current_date_text:            
-        #    production['date_finished'] = current_date_text
-        
-        # Update production with time value # TODO set in lavoration write 
-        #production_pool.write(cr, uid, [active_id], production, context=context)
+
+        # TODO Write some date in production start / stop?                    
         return True
 
     
@@ -245,7 +297,6 @@ class bom_production(orm.Model):
         return self.open_view(
             cr, uid, ids, 'production', context=context) or {}
         
-            
     def load_lavoration(self, cr, uid, ids, context=None):
         ''' Load and calculate time based on lavoration in BOM selected
         '''
