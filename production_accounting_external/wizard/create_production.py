@@ -122,6 +122,47 @@ class CreateMrpProductionWizard(orm.TransientModel):
     # ----------    
     # On Change:            
     # ----------    
+    def onchange_operation(self, cr, uid, ids, operation, product_tmpl_id, 
+            context=None):
+        ''' On change operation list all production open in HTML style
+        '''
+        res = {}
+        # get product_id from template:
+        product_pool = self.pool.get('product.product')
+        product_ids = product_pool.search(cr, uid, [
+            ('product_tmpl_id', '=' , product_tmpl_id)], context=context)
+        
+        if not product_ids:
+            return res
+            
+        production_pool = self.pool.get('mrp.production')
+        production_ids = production_pool.search(
+            cr, uid, [('product_id', '=', product_ids[0])], # TODO only open?
+                context=context)
+                
+        res['other_production'] = _(
+            '''<table>
+                <tr><th>From</th>
+                    <th>To</th>
+                    <th>Prod.</th>
+                    <th>Q.</th>
+                </tr>''')
+        for item in self.browse(cr, uid, production_ids, context=context):
+            res['other_production'] = """
+                <tr><td>%s</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                </tr>""" % (
+                    item.name, # TODO <<< complete elements
+                    item.name,
+                    item.name,
+                    item.name)
+        else:
+            res['other_production'] = '</table>'
+                    
+        return res
+        
     def onchange_append_production(self, cr, uid, ids, production_id, oc_total, 
             context=None):
         ''' Search values for total
@@ -162,7 +203,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
         
         product_id = get_product_from_template( # TODO use product_id?
             self, cr, uid, wiz_browse.product_tmpl_id.id, context=context)
-        workhour = wiz_browse.workhour_id.id if wiz_browse.workhour_id else False
+        workhour = (
+            wiz_browse.workhour_id.id if wiz_browse.workhour_id else False)
         
         if wiz_browse.operation in ('create', 'lavoration'):
             p_id = production_pool.create(               
@@ -186,7 +228,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     cr, uid, [p_id], context=context)        
         else: # append and and append-reload
             p_id = wiz_browse.production_id.id
-            
+
             # Assign line to production:
             self.pool.get('sale.order.line').write(
                 cr, uid, context.get("active_ids", []), {
@@ -200,7 +242,6 @@ class CreateMrpProductionWizard(orm.TransientModel):
                         wiz_browse.total +
                         wiz_browse.production_id.product_qty),
                     }, context=context)
-            append_reload     
              
             if wiz_browse.operation == 'append_reload':        
                 # Extra write (if forced production schedule)
@@ -208,7 +249,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 if wiz_browse.schedule_from_date:
                     data['schedule_from_date'] = wiz_browse.schedule_from_date
                 if wiz_browse.workhour_id:
-                    data['workhour_id'] = wiz_browse.wiz_browse.workhour_id.id
+                    data['workhour_id'] = wiz_browse.workhour_id.id
                 if data:
                     production_pool.write(cr, uid, p_id, data, context=context)
                     
@@ -415,7 +456,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             help="Production open on line of this production", readonly=True),
         'error': fields.text('Error', readonly=True),
         'warning': fields.text('Warning', readonly=True),
-        'operation':fields.selection([
+        'operation': fields.selection([
             ('create', 'Create production'),
             ('lavoration', 'Create with lavoration'),
             ('append', 'Append'),            

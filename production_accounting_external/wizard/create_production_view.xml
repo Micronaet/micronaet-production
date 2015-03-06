@@ -26,9 +26,9 @@
 
                                                 
                         <separator string="Operation:" colspan="4"/>
-                        <field name="operation" />
+                        <field name="operation" on_change="onchange_operation(operation, product_tmpl_id)"/>
                         <field name="production_id" 
-                               attrs="{'invisible': [('operation','!=','append')], 'required': [('operation','=','append')]}" 
+                               attrs="{'invisible': [('operation','not in',('append','append_reload'))], 'required': [('operation','in',('append', 'append_reload'))]}" 
                                domain="[('product_id','=',product_id)]" 
                                on_change="onchange_append_production(production_id, oc_total)"/>
                         <newline />
