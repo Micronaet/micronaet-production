@@ -1,6 +1,21 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+    <!-- mrp.production.workcenter.line -->
+    <record model="ir.ui.view" id="mrp_production_workcenter_line_form_embedded_view">
+        <field name="name">Workcenter embedded</field>
+        <field name="model">mrp.production.workcenter.line</field>
+        <field name="inherit_id" ref="mrp_operations.mrp_production_workcenter_tree_view_inherit" />
+        <field name="arch" type="xml">
+            <field name="production_id" position="attributes">
+                <attribute name="invisible">context.get('embedded',False)</attribute>
+            </field>
+            <field name="cycle" position="attributes">
+                <attribute name="invisible">context.get('embedded',False)</attribute>
+            </field>
+        </field>
+    </record>    
+    
     <record model="ir.ui.view" id="mrp_production_lavoration_form_view">
         <field name="name">Production lavoration</field>
         <field name="model">mrp.production</field>
@@ -30,7 +45,7 @@
                         </tree>
                     </field>
                     <separator string="Scheduled" />
-                    <field name="scheduled_lavoration_ids"/>
+                    <field name="scheduled_lavoration_ids" context="{'embedded':True}"/>
                 </page>
             </xpath>
         </field>

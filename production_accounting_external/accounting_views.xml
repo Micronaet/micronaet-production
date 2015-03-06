@@ -369,10 +369,10 @@
           action="action_view_sale_order_line" 
           sequence="20" />
       <menuitem name="OC mandatory"
-           parent="menu_base_sale_order_root" 
-           id="menu_sale_order_line_m1_mandatory" 
-           action="action_view_sale_order_line_mandatory" 
-           sequence="30" />
+          parent="menu_base_sale_order_root" 
+          id="menu_sale_order_line_m1_mandatory" 
+          action="action_view_sale_order_line_mandatory" 
+          sequence="30" />
     </data>
 </openerp>
 
