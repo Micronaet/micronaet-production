@@ -201,12 +201,20 @@ class CreateMrpProductionWizard(orm.TransientModel):
                         wiz_browse.production_id.product_qty),
                     }, context=context)
             append_reload     
-
+             
             if wiz_browse.operation == 'append_reload':        
+                # Extra write (if forced production schedule)
+                data = {}
+                if wiz_browse.schedule_from_date:
+                    data['schedule_from_date'] = wiz_browse.schedule_from_date
+                if wiz_browse.workhour_id:
+                    data['workhour_id'] = wiz_browse.wiz_browse.workhour_id.id
+                if data:
+                    production_pool.write(cr, uid, p_id, data, context=context)
+                    
                 # Force reschedule (for extra quantity):
                 production_pool.schedule_lavoration(
                     cr, uid, [p_id], context=context)        
-               
 
         # Load element from BOM: # TODO 
         #production_pool._action_load_materials_from_bom(
