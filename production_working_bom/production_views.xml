@@ -10,8 +10,23 @@
             <field name="production_id" position="attributes">
                 <attribute name="invisible">context.get('embedded',False)</attribute>
             </field>
+            <field name="product" position="attributes">
+                <attribute name="invisible">context.get('embedded',False)</attribute>
+            </field>
+            <field name="qty" position="attributes">
+                <attribute name="invisible">context.get('embedded',False)</attribute>
+            </field>
+            <field name="uom" position="attributes">
+                <attribute name="invisible">context.get('embedded',False)</attribute>
+            </field>
+            <field name="name" position="attributes">
+                <attribute name="invisible">context.get('embedded',False)</attribute>
+            </field>
             <field name="cycle" position="attributes">
                 <attribute name="invisible">context.get('embedded',False)</attribute>
+            </field>
+            <field name="state" position="before">
+                <field name="lavoration_qty" sum="total"/>
             </field>
         </field>
     </record>    
