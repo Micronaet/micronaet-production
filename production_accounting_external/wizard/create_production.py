@@ -179,6 +179,11 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     'workhour_id': workhour, 
                     'order_line_ids': [(6, 0, context.get("active_ids", []))],
                     }, context=context)
+                    
+            if wiz_browse.operation == 'lavoration':        
+                # Force reschedule:            
+                production_pool.schedule_lavoration(
+                    cr, uid, [p_id], context=context)        
         else: # append
             p_id = wiz_browse.production_id.id
             
