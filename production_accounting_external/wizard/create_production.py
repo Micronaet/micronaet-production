@@ -126,7 +126,11 @@ class CreateMrpProductionWizard(orm.TransientModel):
             context=None):
         ''' On change operation list all production open in HTML style
         '''
-        res = {}
+        res = {'value': {}}
+        res['value']['other_production'] = _('<b>No production</b>')
+        if not product_tmpl_id or operation not in (
+                'append', 'append_reload'):
+            return res
         # get product_id from template:
         product_pool = self.pool.get('product.product')
         product_ids = product_pool.search(cr, uid, [
@@ -140,26 +144,49 @@ class CreateMrpProductionWizard(orm.TransientModel):
             cr, uid, [('product_id', '=', product_ids[0])], # TODO only open?
                 context=context)
                 
-        res['other_production'] = _(
-            '''<table>
-                <tr><th>From</th>
-                    <th>To</th>
+        res['value']['other_production'] = _(
+            '''<style>
+                    .table_status {
+                         border: 1px solid black;
+                         padding: 3px;
+                     }
+                    .table_status td {
+                         border: 1px solid black;
+                         padding: 3px;
+                         text-align: center;
+                     }
+                    .table_status th {
+                         border: 1px solid black;
+                         padding: 3px;
+                         text-align: center;
+                         background-color: grey;
+                         color: white;
+                     }
+                </style>
+                <table class='table_status'>
+                <tr><th>Date</th>
+                    <!--<th>To</th>-->
                     <th>Prod.</th>
                     <th>Q.</th>
+                    <th>Extra</th>
                 </tr>''')
-        for item in self.browse(cr, uid, production_ids, context=context):
-            res['other_production'] = """
+        for item in production_pool.browse(
+                cr, uid, production_ids, context=context):
+            res['value']['other_production'] += """
                 <tr><td>%s</td>
+                    <!--<td></td>-->
                     <td>%s</td>
                     <td>%s</td>
                     <td>%s</td>
                 </tr>""" % (
-                    item.name, # TODO <<< complete elements
+                    item.date_planned[:10], 
+                    #item.name, # TODO range date!!
                     item.name,
-                    item.name,
-                    item.name)
+                    item.product_qty,
+                    item.extra_qty,
+                    )
         else:
-            res['other_production'] = '</table>'
+            res['value']['other_production'] += '</table>'
                     
         return res
         
