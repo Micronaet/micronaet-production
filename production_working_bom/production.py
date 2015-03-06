@@ -304,6 +304,7 @@ class bom_production(orm.Model):
                     
                 if not remain_hour_a_day: # no remain hour to fill
                     current_date = current_date + timedelta(days=1)
+
                 workcenter_pool.create(cr, uid, {
                     'name': '%s [%s]' % (
                         mrp_proxy.name, max_sequence),
@@ -319,8 +320,9 @@ class bom_production(orm.Model):
                     'workers': lavoration.workers,
 
                     # Statistic m(x):
-                    'lavoration_qty': hour * (
-                        mrp_proxy.product_qty / lavoration.duration),
+                    'lavoration_qty': round(
+                        hour * (
+                        mrp_proxy.product_qty / lavoration.duration), 0),
                     }, context=context)
 
         # TODO Write some date in production start / stop?                    
