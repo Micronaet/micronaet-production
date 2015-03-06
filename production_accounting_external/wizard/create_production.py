@@ -184,7 +184,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 # Force reschedule:            
                 production_pool.schedule_lavoration(
                     cr, uid, [p_id], context=context)        
-        else: # append
+        else: # append and and append-reload
             p_id = wiz_browse.production_id.id
             
             # Assign line to production:
@@ -200,6 +200,13 @@ class CreateMrpProductionWizard(orm.TransientModel):
                         wiz_browse.total +
                         wiz_browse.production_id.product_qty),
                     }, context=context)
+            append_reload     
+
+            if wiz_browse.operation == 'append_reload':        
+                # Force reschedule (for extra quantity):
+                production_pool.schedule_lavoration(
+                    cr, uid, [p_id], context=context)        
+               
 
         # Load element from BOM: # TODO 
         #production_pool._action_load_materials_from_bom(
@@ -404,6 +411,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             ('create', 'Create production'),
             ('lavoration', 'Create with lavoration'),
             ('append', 'Append'),            
+            ('append_reload', 'Append rescheduling'),
             ], 'Operation', select=True, required=True),
         }
         
