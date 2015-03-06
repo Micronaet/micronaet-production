@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <!--Document report-->
+    <template id="report_status_work_document">
+        <div class="page">
+        </div>
+    </template>
+        
+    <!--Loop for report-->
+    <template id="report_status_work">
+        <t t-call="report.html_container">
+            <t t-foreach="doc_ids" t-as="doc_id">
+                <t t-raw="translate_doc(doc_id, doc_model, 'user_id.lang', 'production_working_bom.report_status_work_document')"/>
+            </t>
+        </t>
+    </template>
+
+    <!--Create action report-->
+    <report
+        string="Status work"
+        id="action_report_status_work"
+        model="mrp.production"
+        report_type="qweb-pdf"
+        name="production_working_bom.report_status_work"
+        file="production_working_bom.report_status_work"
+        />
+
+  </data>
+</openerp>

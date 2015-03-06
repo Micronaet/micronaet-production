@@ -31,8 +31,8 @@ from openerp import api, models
 class ReportStatusHour(models.AbstractModel):
     ''' Report parser status of hour
     '''
-    
     _name = 'report.production_working_bom.report_status_hour'
+
     
     # -------------------------------------------------------------------------
     # Render method:
@@ -69,54 +69,33 @@ class ReportStatusHour(models.AbstractModel):
             'get_cols': self._get_cols,
             'get_cel': self._get_cel,
             'has_negative': self._has_negative,            
-            
-            # Color element:
-            'get_wh': self.get_wh,
             }
         return report_obj.render(
             'production_working_bom.report_status_hour', 
             docargs, 
             )
 
-    def get_wh(self, ):
-        ''' Read company element with 
-        '''
-        company_proxy = self.pool.get('res.company').get_hour_parameters(
-            self.env.cr, self.env.uid)
-        return (
-            company_proxy.work_hour_day,
-            company_proxy.work_hour_day + company_proxy.extra_hour_day,
-            company_proxy.work_hour_day * company_proxy.employee,
-            company_proxy.employee * (
-                company_proxy.extra_hour_day + company_proxy.work_hour_day),
-            )
-
     # -------------------------------------------------------------------------
     # Counters methods:
     # -------------------------------------------------------------------------
-    # Dict:
-    def set_dict_counter(self, name, item, value=False, with_return=False):
-        ''' Set element of dict counter
+    
+    def set_dict_counter(self, name, item=None, value=False):
+        ''' Set element of dict counter        
         '''
-        # Fast setup of counter if not present
         if name not in self.counter:
             self.counter[name] = {}
-        self.counter[name][item] = value
-        if with_return:
-            return value
-        else: # nothing returned    
-            return ""
+        
+        if item is not None:
+            self.counter[name][item] = value # normal set
+        return 
 
-    def get_dict_counter(self, name, item, default=False):
-        ''' Get element of counter:
+    def get_dict_counter(self, name, item=None, default=False):
+        ''' Reset element of counter        
         '''
-        # Fast setup of counter if not present
-        if name not in self.counter:
-            self.counter[name] = {}
-        if item not in self.counter[name]:
-            # Fast set of default creating elements:
-            self.counter[name][item] = default
-        return self.counter[name][item]
+        if item is None:
+            return self.counter[name]
+        else:        
+            return self.counter[name].get(item, default)
         
     # -------------------------------------------------------------------------
     # Report methods:
@@ -142,10 +121,8 @@ class ReportStatusHour(models.AbstractModel):
         production_pool = self.pool.get("mrp.production")
         production_ids = production_pool.search(self.env.cr, self.env.uid, [])
         production_converter = {}
-        
         for p in production_pool.browse(self.env.cr, self.env.uid, production_ids):
-            production_converter[p.id] = (
-                p.product_id.default_code or p.product_id.name or "#NoCod")
+            production_converter[p.id] = p.product_id.default_code or "#NoCod"
                 
         # Read cols elements:        
         self.env.cr.execute("""

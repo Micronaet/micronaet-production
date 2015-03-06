@@ -3,35 +3,96 @@
   <data>
     <!--Loop for report-->
     <template id="report_status_hour">
+        <style type="text/css">
+            body {
+                color: #000 !important;
+                }
+            .border-black td {
+                border-top: 1px solid black !important;
+                }
+            .table-condensed > thead > tr > th {
+                border-bottom: 1px solid black !important;
+                }
+            .zero_min_height {
+                min-height: 0px !important;
+                }
+
+            table, td {
+                border: 1px solid #dfdfdf;
+                background-color: #FFFFFF;
+                font-family: Arial, sans-serif, Tahoma, Verdana;
+                font-size: 10px;                 
+                }
+            table, th {
+                border: 1px solid #dfdfdf;
+                background-color: #6fb7ea;                 
+                font-family: Arial, sans-serif, Tahoma, Verdana;
+                font-size: 9px;
+                }     
+              
+            .f_medium {
+                font-size: 8px;
+                background-color: #DDDDDD;
+                }
+            .red {background-color:#ffd5d5;}
+            .blu {background-color:#d5e9ff;}
+            .green {background-color:#ade3b8;}
+            .yellow {background-color:#fffccc;}
+            .right {text-align:right;}
+            .center {text-align:center;}
+            .left {text-align:left;}
+            .even {}
+            .odd {}            
+            .total {
+                font-size: 9px;          
+                font-weight: bold;  
+                padding: 4px;
+                background-color: #f6cf3b;
+                }
+                            
+        </style>
+
         <t t-foreach="docs" t-as="o">
             <div class="page">
                 <t t-if="startup()">
                    <!-- Start loop product and material status: -->
                      <table>
+                     
+                         <!-- HEADER -->
                          <thead>
                              <tr>
                                  <t t-set="get_cols" t-value="get_cols()"/>
-                                 <th class="text-left">Description</th>                                 
+                                 <th class="text-left">Linee</th>                                 
                                  <t t-foreach="get_cols" t-as="col">
-                                     <th class="text-center"><t t-esc="col"/></th>
+                                     <th class="text-center"><t t-esc="col[3:5]"/>-<t t-esc="col[0:2]"/></th>
                                  </t>
                              </tr>
-                         </thead>                         
+                         </thead>
+                         
+                         <!-- BODY -->
                          <tbody>
                              <t t-set="total_cols" t-value="{}"/>
-                             <t t-esc="set_dict_counter('total_cols')"/>
+                             <!--Read parameters:-->
+                             <t t-set="wh" t-value="get_wh()"/>   
+                             <t t-set="wh1A" t-value="wh[0]"/>   
+                             <t t-set="wh1B" t-value="wh[1]"/>   
+                             <t t-set="whnA" t-value="wh[2]"/>   
+                             <t t-set="whnB" t-value="wh[3]"/>   
                              <t t-foreach="get_rows()" t-as="row">
                                  <tr>
                                      <td><t t-esc="row"/></td>
                                      <t t-foreach="get_cols" t-as="col">
-                                         <!--Read parameters:-->
+
+
                                          <t t-set="res" t-value="get_cel(row, col)"/>
                                          <t t-set="hm" t-value="res[0]"/>
                                          <t t-set="hour" t-value="res[1]"/>
-                                         <t t-set="products" t-value="res[2]"/>                                         
-                                         <t t-esc="set_dict_counter('total_cols', col, get_dict_counter('total_cols', col) + (hm or 0.0))"/>
+                                         <t t-set="products" t-value="res[2]"/>
+                                                                               
+                                         <t t-esc="set_dict_counter('total_cols', col, get_dict_counter('total_cols', col, 0) + (hm or 0.0))"/>
 
                                          <td>
+                                             <!-- TABLE INTERNAL-->
                                              <table>
                                                  <!--HOUR STATUS-->
                                                  <tr>
@@ -39,37 +100,39 @@
                                                      <t t-if="hour&lt;=0">
                                                          <td></td>
                                                      </t>
-                                                     <!--normal (green)-->
-                                                     <t t-if="hour &gt;0 and hour&lt;=8.0">
+                                                     <!--normal (green) 8 hour-->
+                                                     <t t-if="hour&gt;0 and hour&lt;=wh1A">
                                                          <td class="text-center">H.: <t t-esc="hour"/></td>
                                                      </t>
-                                                     <!--extra hour (yellow)-->
-                                                     <t t-if="hour &gt;8.0 and hour&lt;=9.0">
-                                                         <td class="text-center">H.: <t t-esc="hour"/></td>
+                                                     <!--extra hour (yellow) 8-9 hour-->
+                                                     <t t-if="hour&gt;wh1A and hour&lt;=wh1B">
+                                                         <td class="text-center yellow">H.: <t t-esc="hour"/></td>
                                                      </t>
-                                                     <!--over hour (red)-->
-                                                     <t t-if="hour&gt;9.0">
-                                                         <td class="text-center">H.: <t t-esc="hour"/></td>
+                                                     <!--over hour (red) > 9.0-->
+                                                     <t t-if="hour&gt;wh1B">
+                                                         <td class="text-center red">H.: <t t-esc="hour"/></td>
                                                      </t>
                                                  </tr>
+                                                 
                                                  <!--H/M STATUS-->
                                                  <tr>
-                                                     <!--normal (white)-->
-                                                     <t t-if="hm&lt;=80.0">
+                                                     <!--normal (white) 80-->
+                                                     <t t-if="hm&lt;=whnA">
                                                          <td class="text-center">H/m: <t t-esc="hm"/></td>
                                                      </t>
-                                                     <!--extra hour (yellow)-->
-                                                     <t t-if="hm &gt;80.0 and hm&lt;=90.0">
-                                                         <td class="text-center">H/m: <t t-esc="hm"/></td>
+                                                     <!--extra hour (yellow) 80 - 90-->
+                                                     <t t-if="hm&gt;whnA and hm&lt;=whnB">
+                                                         <td class="text-center yellow">H/m: <t t-esc="hm"/></td>
                                                      </t>
-                                                     <!--extra hour (red)-->
-                                                     <t t-if="hm&gt;90.0">
-                                                         <td class="text-center">H/m: <t t-esc="hm"/></td>
+                                                     <!--extra hour (red) > 90-->
+                                                     <t t-if="hm&gt;whnB">
+                                                         <td class="text-center red">H/m: <t t-esc="hm"/></td>
                                                      </t>                                                     
                                                  </tr>
+                                                 
                                                  <!--PRODUCT STATUS-->
                                                  <t t-if="products">
-                                                     <td class="text-center">
+                                                     <td class="text-center f_medium">
                                                          <t t-foreach="products" t-as="p">
                                                              <t t-esc="p.replace(' ', '')"/>
                                                          </t>
@@ -85,26 +148,26 @@
                              </t><!--for rows-->
                              <!--TOTALS:-->
                              <tr>
-                                 <td class="text-left">Totale H/u</td>
-                                 <t t-foreach="get_cols" t-as="col">
-                                     <t t-set="tot" t-value="get_dict_counter('total_cols', col, 0.0)"/>
-                                     <!--no total (white)-->
-                                     <t t-if="tot&lt;=0">
-                                         <td class="text-center"><t t-esc="tot"/></td>
-                                     </t>
-                                     <!--normal (green)-->
-                                     <t t-if="tot &gt;0 and tot&lt;=80.0">
-                                         <td class="text-center"><t t-esc="tot"/></td>
-                                     </t>
-                                     <!--extra hour (yellow)-->
-                                     <t t-if="tot&gt;80.0 and tot&lt;=90.0">
-                                         <td class="text-center"><t t-esc="tot"/></td>
-                                     </t>
-                                     <!--over total (red)-->
-                                     <t t-if="tot&gt;90.0">
-                                         <td class="text-center"><t t-esc="tot"/></td>
-                                     </t>
-                                 </t> <!--for cols-->
+                                  <td class="text-left">Totale H/u</td>
+                                  <t t-foreach="get_cols" t-as="col">
+                                      <t t-set="tot" t-value="get_dict_counter('total_cols', col, 0.0)"/>
+                                      <!--no total (white)-->
+                                      <t t-if="tot&lt;=0">
+                                          <td class="text-center"><t t-esc="tot"/></td>
+                                      </t>
+                                      <!--normal (green)-->
+                                      <t t-if="tot&gt;0 and tot&lt;=whnA">
+                                          <td class="text-center green"><t t-esc="tot"/></td>
+                                      </t>
+                                      <!--extra hour (yellow)-->
+                                      <t t-if="tot&gt;whnA and tot&lt;=whnB">
+                                          <td class="text-center yellow"><t t-esc="tot"/></td>
+                                      </t>
+                                      <!--over total (red)-->
+                                      <t t-if="tot&gt;whnB">
+                                          <td class="text-center red"><t t-esc="tot"/></td>
+                                      </t>
+                                  </t> <!--for cols-->
                              </tr>
                          </tbody>
                      </table>
@@ -122,5 +185,28 @@
         name="production_working_bom.report_status_hour"
         file="production_working_bom.report_status_hour"
         />
+
+    <!--Setup page format:-->
+    <record id="paperformat_status_hour" model="report.paperformat">
+        <field name="name">Status hour format</field>
+        <field name="default" eval="True"/>
+        <field name="format">custom</field>
+        <field name="page_height">297</field>
+        <field name="page_width">210</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">5</field>
+        <field name="margin_bottom">5</field>
+        <field name="margin_left">5</field>
+        <field name="margin_right">5</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">5</field>
+        <field name="dpi">80</field>
+    </record>    
+
+    <!--Currently cannot declared directly in report, so:-->
+    <record id="action_report_status_hour" model="ir.actions.report.xml">
+        <field name="paperformat_id" ref="paperformat_status_hour"/>
+    </record>
+
   </data>
 </openerp>

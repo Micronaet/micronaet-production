@@ -36,26 +36,47 @@ class res_company(orm.Model):
 
     _inherit = 'res.company'
     
+    def get_hour_parameters(
+            self, cr, uid, company_id=False, context=None):
+        ''' Read element with company_id or passed 
+        '''
+        if not company_id:
+            company_id = self.search(cr, uid, [], context=context)[0]
+        elif type(company_id) in (list, tuple):
+            company_id = company_id[0]
+        return self.browse(cr, uid, company_id, context=context)
+        
+        
     _columns = {
-        'max_hour_man': fields.integer('Max hour/man a day', 
-            help='Max time * employee for a work day'),
-        # TODO not used yet
-        'max_employee': fields.integer('Ordinary hour', 
-            help='Max number of employee'),
+        'start_hour': fields.integer('Start hour', 
+            help='Start hour for create working process'),
+
+        # Statistic data for color report depend on cases:
+        'work_hour_day': fields.integer('Worh hour day', 
+            help='Normal work hour for one man in a day'),
+        'extra_hour_day': fields.integer('Extra hour day', 
+            help='Normal extra work for one man in a day'),    
+        'employee': fields.integer('# employee', 
+            help='Medium number of employee this company for work'),
         }
-
-class mrp_workcenter(orm.Model):
-    ''' Add fields for report in workcenter
-    '''
-
-    _inherit = 'mrp.workcenter'
     
-    _columns = {
-        'ordinary_hour': fields.integer('Ordinary hour', 
-            help='Normal work hours'),
-        'extra_hour': fields.integer('Ordinary hour', 
-            help='Extra work max hours'),
-        }
+    _defaults = {
+        'workhour_day': lambda *x: 8.0,
+        'extra_hour_day': lambda *x: 1.0,
+        }    
+
+#class mrp_workcenter(orm.Model):
+#    ''' Add fields for report in workcenter
+#    '''
+#
+#    _inherit = 'mrp.workcenter'
+#    
+#    _columns = {
+#        'ordinary_hour': fields.integer('Ordinary hour', 
+#            help='Normal work hours'),
+#        'extra_hour': fields.integer('Ordinary hour', 
+#            help='Extra work max hours'),
+#        }
 
 class mrp_bom_lavoration(orm.Model):
     ''' Add relation fields (use same element in BOM and in production)
@@ -76,14 +97,13 @@ class mrp_bom_lavoration(orm.Model):
         'production_id': fields.many2one('mrp.production', 'Production', 
             ondelete='cascade'),            
         'total_duration': fields.float('Duration', digits=(10, 2),
-            help="Duration in hour:minute for lavoration of quantity piece"),
+            help="Duration hour:minute for lavoration of quantity piece"),
 
         # TODO move in another module after DEMO    
         'real_duration': fields.float('Duration', digits=(10, 2),
-            help="Real duration in hour:minute for lavoration of quantity piece"),
+            help="Real duration hour:minute for lavoration of quantity piece"),
         'scheduled_ids': fields.one2many('mrp.production.workcenter.line',
-            'lavoration_id', 'Scheduled lavorations'),    
-
+            'lavoration_id', 'Scheduled lavorations'), 
         }
 
 class bom_production(orm.Model):

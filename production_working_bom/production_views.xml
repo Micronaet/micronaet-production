@@ -1,6 +1,33 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+    <!--res.company-->
+    <record model="ir.ui.view" id="view_res_company_parameter_form">
+        <field name="name">Company parameter</field>
+        <field name="priority" eval="20" />
+        <field name="model">res.company</field>
+        <field name="arch" type="xml">
+            <form string="Parameters" version="7.0">
+                <group colspan="4" col="4">
+                    <field name="name" readonly="1" /> 
+                    <newline />
+                    <field name="work_hour_day" />
+                    <field name="extra_hour_day" />
+                    <field name="employee" />
+                    <field name="start_hour" />
+                </group>
+            </form>    
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_res_company_parameter">
+        <field name="name">Report parameters</field>
+        <field name="res_model">res.company</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="base.view_company_tree"/>
+        <field name="context">{'form_view_ref': 'production_working_bom.view_res_company_parameter_form'}</field>
+    </record>
+
     <!-- mrp.production.workcenter.line -->
     <record model="ir.ui.view" id="mrp_production_workcenter_line_form_embedded_view">
         <field name="name">Workcenter embedded</field>
@@ -121,6 +148,11 @@
         parent="mrp.menu_mrp_production_action" 
         id="menu_mrp_production_for_production" 
         action="action_mrp_production_production_calendar"/>
+
+    <menuitem 
+        parent="mrp.menu_mrp_configuration" 
+        id="menu_res_company_parameter" 
+        action="action_res_company_parameter"/>
     </data>
 </openerp>
 
