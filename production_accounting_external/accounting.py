@@ -51,6 +51,9 @@ class SaleOrderLine(orm.Model):
     '''
     
     _inherit = 'sale.order.line'
+    
+    # Force new order for production
+    _order = 'mrp_sequence,order_id,sequence'
 
     # -------------
     # Button event:
@@ -76,7 +79,9 @@ class SaleOrderLine(orm.Model):
         ''' Free the line from production order 
         '''
         return self.write(cr, uid, ids, {
-            'mrp_id': False, }, context=context)
+            'mrp_id': False, 
+            'mrp_sequence': False, # reset order
+            }, context=context)
 
     def close_production(self, cr, uid, ids, context=None):
         ''' Close production
@@ -106,6 +111,7 @@ class SaleOrderLine(orm.Model):
 
         # TODO remove with state?
         'is_produced': fields.boolean('Is produced', required=False),
+        'mrp_sequence': fields.integer('MRP order')
         }
 
 class SaleOrderLinePrevisional(orm.Model):
@@ -156,7 +162,29 @@ class MrpProduction(orm.Model):
     # -------------
     # Button event:
     # -------------
-    
+    def force_production_sequence(self, cr, uid, ids, context=None):
+        ''' Set current order depend on default code 
+            Note: currently is forced for particular customization 
+            maybe if order is not your you could override this procedure
+        '''
+        mrp_proxy = self.browse(cr, uid, ids, context=context)
+        order = []
+        for line in mrp_proxy.order_line_ids:
+            order.append((
+                '%3s%2s' % (
+                    line.default_code[:3],
+                    line.default_code[5:7],
+                    ),
+                line.id))
+        line_pool = self.pool.get('sale.order.line')        
+        i = 0
+        for code, item_id in sorted(order):
+            i += 1
+            line_pool.write(cr, uid, item_id, {
+                'mrp_sequence': i,
+                }, context=context)
+        return True
+        
     def free_line(self, cr, uid, ids, context=None):
         ''' Free the line from production order 
         '''

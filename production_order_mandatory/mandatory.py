@@ -51,7 +51,7 @@ class ResPartnerDeadlineMandatory(orm.Model):
         ''' Force in sale order line all mandatory for this partner
         '''
         line_pool = self.pool.get('sale.order.line')
-        line_ids = object_pool.search(cr, uid, [
+        line_ids = line_pool.search(cr, uid, [
             ('partner_id', '=', ids[0])], context=context)
         line_pool.write(cr, uid, line_ids, {
             'has_mandatory_delivery': True}, context=context)    

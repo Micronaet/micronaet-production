@@ -55,6 +55,8 @@ def get_product_from_template(self, cr, uid, tmpl_id, context=None):
 def return_view(self, cr, uid, res_id, view_name, object_name, context=None):
     '''Function that return dict action for next step of the wizard
     '''
+    if context is None:
+        context={}
     
     if not view_name: 
         return {'type': 'ir.actions.act_window_close'}
@@ -77,6 +79,9 @@ def return_view(self, cr, uid, res_id, view_name, object_name, context=None):
             cr, uid, model_id)[0]['res_id']
         views = [(view_id, 'form'), (False, 'tree'), ]
 
+    if context.get('return', False):
+        return {} # don't open production
+        
     return {
         'view_type': 'form',
         'view_mode': 'form,tree',

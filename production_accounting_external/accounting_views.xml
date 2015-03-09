@@ -21,7 +21,7 @@
                     <field name="mrp_id" readonly="1"/><!-- TODO filter >>>>> domain="[('product_id','=',family_id)]"/>-->
                     <field name="production_note" />
                     <!--<button name="force_fast_creation" icon="gtk-connect" string="Fast force" type="object" />-->
-                    <button name="%(action_window_mrp_production_create_wizard_view)d" icon="gtk-save" string="Wizard force" type="action" />
+                    <button name="%(action_window_mrp_production_create_wizard_view)d" icon="gtk-save" string="Wizard force" type="action" context="{'return':True}" attrs="{'invisible':[('mrp_id','!=',False)]}"/>
                     <field name="state" invisible="1"/>
             </tree>
         </field>
@@ -131,12 +131,15 @@
             <xpath expr="/form/sheet/notebook" position="inside">
 		        <page string="Sale order">
 			        <group string="Order lines">				              
+			            <button name="force_production_sequence" string="Force order" type="object" />
+			            <newline />
 				        <field name="order_line_ids" nolabel="1">
 				            <tree string="OC line" editable="bottom" delete="0">
                                 <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('is_produced','=',True)]}" />
+                                <field name="mrp_sequence" readonly="1" string="ord."/>
                                 <field name="order_id" readonly="1"/>
-                                <field name="name" readonly="1" />
-                                <!--<field name="partner_id" />-->
+                                <field name="name" invisible="1"/>
+                                <field name="default_code" />
                                 <field name="date_deadline" readonly="1" />                    
                                 <field name="has_mandatory_delivery" readonly="1" string="Mand."/>
                                 <field name="product_uom" string="UOM" readonly="1"/>
