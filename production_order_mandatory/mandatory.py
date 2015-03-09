@@ -46,6 +46,17 @@ class ResPartnerDeadlineMandatory(orm.Model):
     
     _inherit = 'res.partner'
     
+    # Button events:
+    def force_mandatory_order_line(self, cr, uid, ids, context=None):
+        ''' Force in sale order line all mandatory for this partner
+        '''
+        line_pool = self.pool.get('sale.order.line')
+        line_ids = object_pool.search(cr, uid, [
+            ('partner_id', '=', ids[0])], context=context)
+        line_pool.write(cr, uid, line_ids, {
+            'has_mandatory_delivery': True}, context=context)    
+        return True
+        
     _columns = {
         'has_mandatory_delivery': fields.boolean('Mandatory delivery',
             help='This partner has always mandatory order'),
