@@ -55,6 +55,23 @@ class SaleOrderLine(orm.Model):
     # -------------
     # Button event:
     # -------------
+    """def force_fast_creation(self, cr, uid, ids, context=None):
+        ''' Force fast creation of wizard passing default elements
+        '''
+        line_proxy = self.browse(cr, uid, ids, context=context)[0]
+        
+        # Create a wizard record (setting default) and simulate button pressure
+        wiz_pool = self.pool.get('mrp.production.create.wizard')
+        wiz_id = wiz_pool.create(cr, uid, {
+            'total': wiz_pool.wiz_total,
+            'product_tmpl_id': wiz_proxy.product_id.product_tmpl_id.id,
+            #'bom_id' << default (hoping is present!)
+            'schedule_from_date': wiz_proxy.wiz_date,
+            #'workhour_id': wiz_proxy.wiz_workhour_id.id
+            'operation': 'lavoration',
+            }, context=context)
+        return True"""
+        
     def free_line(self, cr, uid, ids, context=None):
         ''' Free the line from production order 
         '''
@@ -88,7 +105,7 @@ class SaleOrderLine(orm.Model):
         'production_note': fields.char('Note', size=100),    
 
         # TODO remove with state?
-        'is_produced': fields.boolean('Is produced', required=False),    
+        'is_produced': fields.boolean('Is produced', required=False),
         }
 
 class SaleOrderLinePrevisional(orm.Model):

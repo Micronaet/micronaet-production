@@ -53,13 +53,16 @@
                 }
                             
         </style>
-
         <t t-foreach="docs" t-as="o">
+            <!--<div class="text-center">
+               <span>REPORT STATO ORARIO</span>
+               <span t-field="user.company_id.logo" t-field-options="{&quot;widget&quot;: &quot;image&quot;, &quot;class&quot;: &quot;img-rounded&quot;}"/>
+            </div>
+            <img t-att-src="kanban_image('fashion.form', 'draw_image_a', record.id.value)" class="oe_kanban_image_200"/>-->
             <div class="page">
                 <t t-if="startup()">
                    <!-- Start loop product and material status: -->
-                     <table>
-                     
+                     <table>                     
                          <!-- HEADER -->
                          <thead>
                              <tr>

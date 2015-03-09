@@ -47,9 +47,9 @@
     'data': [
         'security/ir.model.access.csv',    
         'wizard/assign_production.xml',
-        'accounting_views.xml',       
-        'report/production_report.xml',
         'wizard/create_production_view.xml',
+        'accounting_views.xml', # after wizard      
+        'report/production_report.xml',
         ],
     'active': False,
     'installable': True,

@@ -38,7 +38,9 @@
     'demo': [],
     'data': [
         'security/ir.model.access.csv',
-        'work_views.xml',        
+        'work_views.xml',   
+             
+        'data/workhour.xml',
         ],
     'active': False,
     'installable': True,
