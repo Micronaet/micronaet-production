@@ -9,9 +9,10 @@
         <field name="arch" type="xml">
             <tree string="OC line" editable="bottom">
                     <field name="name" readonly="1"/>
-                    <field name="product_id" readonly="1" />                    
-                    <field name="family_id" readonly="1" />
+                    <field name="partner_id" readonly="1"/>
                     <field name="order_id" readonly="1" />                   
+                    <field name="family_id" readonly="1" />
+                    <field name="product_id" readonly="1" />                    
                     <field name="date_deadline" readonly="1" />
                     <field name="has_mandatory_delivery" readonly="1" string="Man."/>
                     <field name="product_uom" readonly="1" string="UOM"/>
@@ -133,7 +134,6 @@
 				        <field name="order_line_ids" nolabel="1">
 				            <tree string="OC line" editable="bottom" delete="0">
                                 <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('is_produced','=',True)]}" />
-                                <field name="partner_id" readonly="1"/>
                                 <field name="order_id" readonly="1"/>
                                 <field name="name" readonly="1" />
                                 <!--<field name="partner_id" />-->
@@ -149,7 +149,6 @@
                             </tree>
 				            <form string="OC line">
 				                <group colspan="4" col="4">
-                                    <field name="partner_id" readonly="1"/>
                                     <field name="order_id" readonly="1" />
                                     <field name="date_deadline" readonly="1"/>                    
                                     <field name="has_mandatory_delivery" readonly="1" />
