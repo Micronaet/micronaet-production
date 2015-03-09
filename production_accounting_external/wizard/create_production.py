@@ -384,6 +384,10 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 production_pool.schedule_lavoration(
                     cr, uid, [p_id], context=context)        
 
+        # Force order in every case:
+        production_pool.force_production_sequence(
+            cr, uid, p_id, context=context)
+        
         # Load element from BOM: # TODO 
         #production_pool._action_load_materials_from_bom(
         #    cr, uid, p_id, context=context)    
