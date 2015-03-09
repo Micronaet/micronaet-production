@@ -31,6 +31,7 @@ from openerp.osv import osv, fields
 class mrp_production_status_wizard(osv.osv_memory):
     ''' Parameter for product status per day
     '''    
+    
     _name = 'mrp.production.status.wizard'
     _description = 'Product status wizard'
     

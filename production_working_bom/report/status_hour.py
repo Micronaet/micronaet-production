@@ -143,7 +143,8 @@ class ReportStatusHour(models.AbstractModel):
         production_ids = production_pool.search(self.env.cr, self.env.uid, [])
         production_converter = {}
         
-        for p in production_pool.browse(self.env.cr, self.env.uid, production_ids):
+        for p in production_pool.browse(
+                self.env.cr, self.env.uid, production_ids):
             production_converter[p.id] = (
                 p.product_id.default_code or p.product_id.name or "#NoCod")
                 

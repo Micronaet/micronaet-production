@@ -21,7 +21,7 @@
                         <field name="from_deadline" />
                         <field name="to_deadline" />
 
-                        <field name="schedule_from_date" attrs="{'required':[('operation','in',('lavoration'))]}" />
+                        <field name="schedule_from_date" on_change="onchange_schedule_date(schedule_from_date,bom_id)" attrs="{'required':[('operation','in',('lavoration'))]}" />
                         <field name="workhour_id" create="0" attrs="{'required':[('operation','in',('lavoration'))]}" />
 
                                                 
@@ -57,7 +57,8 @@
                                        <field name="name" widget="html" readonly="1" nolabel="1"/>
                                    </group>   
                                    <group colspan="2">
-                                       <field name="other_production" widget="html" readonly="1" nolabel="1"/>
+                                       <field name="other_production" widget="html" readonly="1" nolabel="1" colspan="2"/>
+                                       <field name="calendar" widget="html" readonly="1" nolabel="1" colspan="2"/>
                                    </group>   
                                </group>   
                             </page>                            

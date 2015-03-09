@@ -122,6 +122,100 @@ class CreateMrpProductionWizard(orm.TransientModel):
     # ----------    
     # On Change:            
     # ----------    
+    def onchange_schedule_date(self, cr, uid, ids, schedule_from_date, bom_id,
+            days=9, context=None):
+        ''' Present a little calendar based on start date
+        '''
+        def format_date(value):
+            '''Date for columns header'''
+            return "%s-%s" % (value[8:10], value[5:7])
+        
+        res = {'value': {}}
+
+        if not(schedule_from_date and bom_id):
+            return res
+                
+        # Read line info: TODO (passed to onchange??    
+        try:
+            wc_proxy = self.pool.get('mrp.bom').browse(
+                cr, uid, bom_id, context=None)
+            workcenter_id = wc_proxy.lavoration_ids[0].line_id.id
+            workers = wc_proxy.lavoration_ids[0].workers or 0
+                
+        except:
+            pass # TODO osv.except_osv()
+            res['value']['calendar'] = _('No BOM or line finded!')
+            return res
+
+        # Manage date:
+        if days <= 0: # Test positive days
+            res['value']['calendar'] = _('Need days > 0!')
+            return res
+
+        start_date = datetime.strptime(schedule_from_date, '%Y-%m-%d')
+        to_date = (start_date + relativedelta(days=days)).strftime('%Y-%m-%d')
+        calendar = {}
+        
+        process_pool = self.pool.get('mrp.production.workcenter.line')
+        process_ids = process_pool.search(cr, uid, [
+            #('workcenter_id', '=', workcenter_id),# after (for H/u total)
+            ('date_planned', '>=', schedule_from_date),
+            ('date_planned', '<', to_date),
+            ], context=None)
+
+        # Read process data and store in calendar
+        for process in process_pool.browse(
+                cr, uid, process_ids, context=context):
+            key = format_date(process.date_planned)
+            
+            if key not in calendar:
+                calendar[key] = [0.0, 0.0] # H, H/m
+
+            if process.workcenter_id.id == workcenter_id:
+                calendar[key][0] += process.hour
+            calendar[key][1] += process.hour * process.workers
+
+        row1 = ''
+        row2 = ''
+        header = ''
+        for i in range(0, days):        
+            to_date = format_date(
+                (start_date + relativedelta(days=i)).strftime('%Y-%m-%d'))
+            header += '<th>%s</th>' % to_date
+            row1 += '<td>%s</td>' % calendar.get(to_date, ("-", "-"))[0]
+            row2 += '<td>%s</td>' % calendar.get(to_date, ("-", "-"))[1]
+
+        res['value']['calendar'] = '''
+            <style>
+                    .table_status {
+                         border: 1px solid black;
+                         padding: 3px;
+                     }
+                    .table_status td {
+                         border: 1px solid black;
+                         padding: 3px;
+                         text-align: center;
+                     }
+                    .table_status th {
+                         border: 1px solid black;
+                         padding: 3px;
+                         text-align: center;
+                         background-color: grey;
+                         color: white;
+                     }
+            </style>
+                <table class='table_status'>
+                    <tr><th>&nbsp;</th>%s</tr>
+                    <tr><td>H.</td>%s</tr>
+                    <tr><td>H./u.</td>%s</tr>
+                <table>''' % (
+            header,
+            row1,
+            row2,
+            )
+            
+        return res        
+        
     def onchange_operation(self, cr, uid, ids, operation, product_tmpl_id, 
             context=None):
         ''' On change operation list all production open in HTML style
@@ -483,6 +577,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             help="Production open on line of this production", readonly=True),
         'error': fields.text('Error', readonly=True),
         'warning': fields.text('Warning', readonly=True),
+        'calendar': fields.text('Calendar', readonly=True),
         'operation': fields.selection([
             ('create', 'Create production'),
             ('lavoration', 'Create with lavoration'),
