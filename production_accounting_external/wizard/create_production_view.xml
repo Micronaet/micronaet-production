@@ -51,13 +51,16 @@
                                    <field name="warning" attrs="{'invisible': [('warning','=',False)]}" readonly="1"/>
                                </group>                                
                             </page>
-                            <page string="Order">
+                            <page string="Information">
                                <group colspan="4" col="4">
                                    <group colspan="2">
+                                       <separator string="Orders:" colspan="2"/>
                                        <field name="name" widget="html" readonly="1" nolabel="1"/>
                                    </group>   
                                    <group colspan="2">
+                                       <separator string="Productions:" colspan="2"/>
                                        <field name="other_production" widget="html" readonly="1" nolabel="1" colspan="2"/>
+                                       <separator string="Calendar for line:" colspan="2"/>
                                        <field name="calendar" widget="html" readonly="1" nolabel="1" colspan="2"/>
                                    </group>   
                                </group>   

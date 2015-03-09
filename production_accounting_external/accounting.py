@@ -84,8 +84,9 @@ class SaleOrderLine(orm.Model):
         'mrp_id': fields.many2one(
             'mrp.production', 'Production', ondelete='set null', ),
         'product_uom_maked_qty': fields.float(
-            'Quantity maked', digits=(16, 2), ),
-            
+            'Maked', digits=(16, 2), ),
+        'production_note': fields.char('Note', size=100),    
+
         # TODO remove with state?
         'is_produced': fields.boolean('Is produced', required=False),    
         }

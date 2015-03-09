@@ -17,6 +17,7 @@
                     <field name="product_uom" readonly="1" />
                     <field name="product_uom_qty" sum="Total" readonly="1" />
                     <field name="accounting_state" readonly="1" />
+                    <field name="production_note" />
                     <field name="mrp_id" /><!-- TODO filter >>>>> domain="[('product_id','=',family_id)]"/>-->
                     <field name="state" invisible="1"/>
             </tree>
@@ -138,6 +139,7 @@
                                 <field name="product_uom" string="UOM" readonly="1"/>
                                 <field name="product_uom_qty" sum="Total" readonly="1" />
                                 <field name="product_uom_maked_qty" />
+                                <field name="production_note" />                                
                                 <field name="state" invisible="1" />
                                 <field name="is_produced" invisible="1" />
                                 <button name="close_production" type="object" string="Produced" icon="gtk-ok" attrs="{'invisible': [('is_produced','=',True)]}"/>
@@ -153,6 +155,7 @@
                                     <field name="product_uom" readonly="1"/>
                                     <field name="state" invisible="1" />
                                     <field name="is_produced" invisible="1" />
+                                    <field name="production_note" />                                
                                     <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('is_produced','=',True)]}"/>
                                     <button name="close_production" type="object" string="Produced" icon="gtk-ok" attrs="{'invisible': [('is_produced','=',True)]}"/>
                                 </group>    

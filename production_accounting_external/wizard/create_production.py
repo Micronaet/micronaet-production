@@ -140,6 +140,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             wc_proxy = self.pool.get('mrp.bom').browse(
                 cr, uid, bom_id, context=None)
             workcenter_id = wc_proxy.lavoration_ids[0].line_id.id
+            workcenter_name = wc_proxy.lavoration_ids[0].line_id.name
             workers = wc_proxy.lavoration_ids[0].workers or 0
                 
         except:
@@ -205,15 +206,15 @@ class CreateMrpProductionWizard(orm.TransientModel):
                      }
             </style>
                 <table class='table_status'>
-                    <tr><th>&nbsp;</th>%s</tr>
+                    <tr><th>%s</th>%s</tr>
                     <tr><td>H.</td>%s</tr>
                     <tr><td>H./u.</td>%s</tr>
                 <table>''' % (
+            workcenter_name,    
             header,
             row1,
             row2,
-            )
-            
+            )            
         return res        
         
     def onchange_operation(self, cr, uid, ids, operation, product_tmpl_id, 

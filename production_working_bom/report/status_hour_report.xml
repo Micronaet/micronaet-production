@@ -29,7 +29,9 @@
                 font-family: Arial, sans-serif, Tahoma, Verdana;
                 font-size: 9px;
                 }     
-              
+            
+            .w30px {width: 30px;}
+            .w100 {width: 100%;}
             .f_medium {
                 font-size: 8px;
                 background-color: #DDDDDD;
@@ -62,7 +64,7 @@
                          <thead>
                              <tr>
                                  <t t-set="get_cols" t-value="get_cols()"/>
-                                 <th class="text-left">Linee</th>                                 
+                                 <th class="text-left w30px">Linee</th>                                 
                                  <t t-foreach="get_cols" t-as="col">
                                      <th class="text-center"><t t-esc="col[3:5]"/>-<t t-esc="col[0:2]"/></th>
                                  </t>
@@ -80,7 +82,7 @@
                              <t t-set="whnB" t-value="wh[3]"/>   
                              <t t-foreach="get_rows()" t-as="row">
                                  <tr>
-                                     <td><t t-esc="row"/></td>
+                                     <td class="w30px"><t t-esc="row"/></td>
                                      <t t-foreach="get_cols" t-as="col">
 
 
@@ -92,56 +94,58 @@
                                          <t t-esc="set_dict_counter('total_cols', col, get_dict_counter('total_cols', col, 0) + (hm or 0.0))"/>
 
                                          <td>
-                                             <!-- TABLE INTERNAL-->
-                                             <table>
-                                                 <!--HOUR STATUS-->
-                                                 <tr>
-                                                     <!--negative (white)-->
-                                                     <t t-if="hour&lt;=0">
-                                                         <td></td>
-                                                     </t>
-                                                     <!--normal (green) 8 hour-->
-                                                     <t t-if="hour&gt;0 and hour&lt;=wh1A">
-                                                         <td class="text-center">H.: <t t-esc="hour"/></td>
-                                                     </t>
-                                                     <!--extra hour (yellow) 8-9 hour-->
-                                                     <t t-if="hour&gt;wh1A and hour&lt;=wh1B">
-                                                         <td class="text-center yellow">H.: <t t-esc="hour"/></td>
-                                                     </t>
-                                                     <!--over hour (red) > 9.0-->
-                                                     <t t-if="hour&gt;wh1B">
-                                                         <td class="text-center red">H.: <t t-esc="hour"/></td>
-                                                     </t>
-                                                 </tr>
-                                                 
-                                                 <!--H/M STATUS-->
-                                                 <tr>
-                                                     <!--normal (white) 80-->
-                                                     <t t-if="hm&lt;=whnA">
-                                                         <td class="text-center">H/m: <t t-esc="hm"/></td>
-                                                     </t>
-                                                     <!--extra hour (yellow) 80 - 90-->
-                                                     <t t-if="hm&gt;whnA and hm&lt;=whnB">
-                                                         <td class="text-center yellow">H/m: <t t-esc="hm"/></td>
-                                                     </t>
-                                                     <!--extra hour (red) > 90-->
-                                                     <t t-if="hm&gt;whnB">
-                                                         <td class="text-center red">H/m: <t t-esc="hm"/></td>
-                                                     </t>                                                     
-                                                 </tr>
-                                                 
-                                                 <!--PRODUCT STATUS-->
-                                                 <t t-if="products">
-                                                     <td class="text-center f_medium">
-                                                         <t t-foreach="products" t-as="p">
-                                                             <t t-esc="p.replace(' ', '')"/>
+                                             <t t-if="hour&gt;0 or hm&gt;0 or products">
+                                                 <!-- TABLE INTERNAL-->
+                                                 <table class="w100">
+                                                     <!--HOUR STATUS-->
+                                                     <tr>
+                                                         <!--negative (white)-->
+                                                         <t t-if="hour&lt;=0">
+                                                             <td />
                                                          </t>
-                                                     </td>
-                                                 </t>
-                                                 <t t-if="not products">
-                                                     <td></td>
-                                                 </t>                                                 
-                                             </table>
+                                                         <!--normal (green) 8 hour-->
+                                                         <t t-if="hour&gt;0 and hour&lt;=wh1A">
+                                                             <td class="text-center">H.: <t t-esc="hour"/></td>
+                                                         </t>
+                                                         <!--extra hour (yellow) 8-9 hour-->
+                                                         <t t-if="hour&gt;wh1A and hour&lt;=wh1B">
+                                                             <td class="text-center yellow">H.: <t t-esc="hour"/></td>
+                                                         </t>
+                                                         <!--over hour (red) > 9.0-->
+                                                         <t t-if="hour&gt;wh1B">
+                                                             <td class="text-center red">H.: <t t-esc="hour"/></td>
+                                                         </t>
+                                                     </tr>
+                                                     
+                                                     <!--H/M STATUS-->
+                                                     <tr>
+                                                         <!--normal (white) 80-->
+                                                         <t t-if="hm&lt;=0">
+                                                             <td />
+                                                         </t>
+                                                         <!--extra hour (yellow) 80 - 90-->
+                                                         <t t-if="hm&gt;whnA and hm&lt;=whnB">
+                                                             <td class="text-center yellow">H/m: <t t-esc="hm"/></td>
+                                                         </t>
+                                                         <!--extra hour (red) > 90-->
+                                                         <t t-if="hm&gt;whnB">
+                                                             <td class="text-center red">H/m: <t t-esc="hm"/></td>
+                                                         </t>                                                     
+                                                     </tr>
+                                                     
+                                                     <!--PRODUCT STATUS-->
+                                                     <t t-if="products">
+                                                         <td class="text-center f_medium">
+                                                             <t t-foreach="products" t-as="p">
+                                                                 <t t-esc="p.replace(' ', '')"/><br />
+                                                             </t>
+                                                         </td>
+                                                     </t>
+                                                     <t t-if="not products">
+                                                         <td></td>
+                                                     </t>                                                 
+                                                 </table>
+                                              </t>    
                                          </td>                                        
                                      </t><!--for cols-->
                                  </tr>
