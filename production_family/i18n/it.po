@@ -6,19 +6,24 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-10 07:33+0000\n"
-"PO-Revision-Date: 2015-03-10 08:56+0100\n"
-"Last-Translator: Nicola Riolini <nicola.riolini@gmail.com>\n"
+"POT-Creation-Date: 2015-03-10 11:51+0000\n"
+"PO-Revision-Date: 2015-03-10 11:51+0000\n"
+"Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
 #. module: production_family
 #: model:ir.model,name:production_family.model_mrp_bom
 msgid "Bill of Material"
 msgstr "Distinta Base"
+
+#. module: production_family
+#: view:product.template:production_family.product_template_family_search_view
+msgid "Category"
+msgstr "Categoria"
 
 #. module: production_family
 #: help:product.template,family_list:0
@@ -28,6 +33,7 @@ msgstr "Lista codici (divisi per |), es.: 001|002 per 001* e 002*"
 #. module: production_family
 #: model:ir.ui.menu,name:production_family.menu_configuration_family
 #: field:mrp.production.workcenter.line,family:0
+#: view:product.template:production_family.product_template_family_search_view
 #: field:product.template,family_id:0
 #: field:sale.order.line,family_id:0
 msgid "Family"
@@ -39,15 +45,21 @@ msgid "Family list"
 msgstr "Lista famiglia"
 
 #. module: production_family
+#: view:product.template:production_family.product_template_family_search_view
 #: field:product.template,is_family:0
 msgid "Is family"
-msgstr "E' famiglia"
+msgstr "E' una famiglia"
 
 #. module: production_family
 #: field:mrp.bom,family:0
 #: field:mrp.production,family:0
 msgid "Is family BOM"
 msgstr "E' distinta base famiglia"
+
+#. module: production_family
+#: view:product.template:production_family.product_template_family_search_view
+msgid "Is product"
+msgstr "E' un prodotto"
 
 #. module: production_family
 #: model:ir.model,name:production_family.model_mrp_production

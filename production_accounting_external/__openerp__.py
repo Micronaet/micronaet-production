@@ -36,6 +36,8 @@
         'stock',
         'sql_sale_order',
         'production_family',
+        'mrp',
+        'mrp_operations',
         #'production_working_bom',
         'report_aeroo',        
         'sql_sale_order',

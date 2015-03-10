@@ -1,6 +1,21 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+    <!--mrp.production.workcenter.line-->
+    <!--<record model="ir.ui.view" id="view_mrp_production_workcenter_form_view_filter_product">
+        <field name="name">OC line force production</field>
+        <field name="model">mrp.production.workcenter.line</field>
+        <field name="inherit_id" ref="mrp_operations.view_mrp_production_workcenter_form_view_filter"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="product_id"/>
+            </field>
+            <filter string="Work Center" position="after">
+                 <filter string="Product" icon="terp-go-home" domain="[]" context="{'group_by':'product_id'}"/>
+            </filter>    
+        </field>
+    </record>-->
+
     <!--mrp.production-->
     <record model="ir.ui.view" id="view_sale_order_line_tree_force_mrp">
         <field name="name">OC line force production</field>
@@ -134,15 +149,16 @@
 			            <button name="force_production_sequence" string="Force order" type="object" />
 			            <newline />
 				        <field name="order_line_ids" nolabel="1">
-				            <tree string="OC line" editable="bottom" delete="0">
+				            <tree string="OC line" editable="bottom" delete="0" colors="blue:has_mandatory_delivery==True">
                                 <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('is_produced','=',True)]}" />
                                 <field name="mrp_sequence" readonly="1" string="ord."/>
+                                <field name="partner_id" readonly="1"/>
                                 <field name="order_id" readonly="1"/>
                                 <field name="name" invisible="1"/>
                                 <field name="default_code" />
                                 <field name="date_deadline" readonly="1" />                    
-                                <field name="has_mandatory_delivery" readonly="1" string="Mand."/>
-                                <field name="product_uom" string="UOM" readonly="1"/>
+                                <field name="has_mandatory_delivery" invisible="1" string="Mand."/>
+                                <field name="product_uom" string="UOM" invisible="1"/>
                                 <field name="product_uom_qty" sum="Total" readonly="1" />
                                 <field name="product_uom_maked_qty" />
                                 <field name="production_note" />                                
@@ -217,6 +233,7 @@
         <field name="arch" type="xml">
            <search string="Search previsional">
                 <field name="partner_id" filter_domain="[('partner_id','=',self)]"/>
+                <field name="product_tmpl_id" filter_domain="[('product_tmpl_id','=',self)]"/>
                 <filter name="yes_updated" string="Updated" domain="[('updated','=',True)]"/>
                 <filter name="not_updated" string="Not updated" domain="[('updated','=',True)]"/>
                 <filter name="group_partner" string="Customer" context="{'group_by': 'partner_id'}"/>            
@@ -233,7 +250,8 @@
                 <field name="mrp_id" invisible="context.get('embedded',False)"/>
                 <field name="updated" invisible="1"/>
                 <field name="partner_id" />
-                <field name="product_id" domain="[('family_id','=',parent.product_id)]"/>
+                <!--<field name="product_tmpl_id" domain="[('family_id','=',parent.product_id)]"/>-->
+                <field name="product_tmpl_id" /><!--TODO domain="[('family_id','=',parent.product_id)]"/> Attivare il filtro dopo avere risolto prolbema product.product in mrp -->
                 <field name="deadline" />
                 <field name="product_uom_qty" sum="Total"/>
                 <field name="note" />
@@ -249,7 +267,8 @@
                 <field name="mrp_id" />
                 <field name="updated" />
                 <field name="partner_id" />
-                <field name="product_id" domain="[('family_id','=',parent.product_id)]"/>
+                <!--<field name="product_tmpl_id" domain="[('family_id','=',parent.product_id)]"/>-->
+                <field name="product_tmpl_id" /><!--TODO domain="[('family_id','=',parent.product_id)]"/> Attivare il filtro dopo avere risolto prolbema product.product in mrp -->
                 <field name="deadline" />
                 <field name="product_uom_qty" />
                 <field name="note" />                

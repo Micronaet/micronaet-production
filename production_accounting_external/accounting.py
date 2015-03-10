@@ -31,6 +31,17 @@ from openerp.tools.translate import _
 
 _logger = logging.getLogger(__name__)
 
+"""class MrpProductionWorkcenterLine(orm.Model):
+    ''' Accounting external fields
+    '''
+    
+    _inherit = 'mrp.production.workcenter.line'
+    
+    _columns = {
+        'product_id': fields.related('mrp_id', 'product_id', 
+            type='many2one', relation='product.product', string='Product'),
+        }
+"""
 class ProductTemplateAccounting(orm.Model):
     ''' Accounting external fields
     '''
@@ -131,6 +142,8 @@ class SaleOrderLinePrevisional(orm.Model):
             'res.partner', 'Customer', required=False),
         'product_id': fields.many2one(
             'product.product', 'Product', required=False),
+        'product_tmpl_id': fields.many2one(
+            'product.template', 'Product', required=False),
         'deadline': fields.date('Deadline'), 
         'note': fields.text('Note'),        
         'product_uom_qty': fields.float('Quantity', digits=(16, 2), 
@@ -170,12 +183,13 @@ class MrpProduction(orm.Model):
         mrp_proxy = self.browse(cr, uid, ids, context=context)
         order = []
         for line in mrp_proxy.order_line_ids:
-            order.append((
-                '%3s%2s' % (
-                    line.default_code[:3],
-                    line.default_code[5:7],
-                    ),
-                line.id))
+            order.append((line.default_code, line.id))
+            #order.append((
+            #    '%3s%2s' % (
+            #        line.default_code[:3],
+            #        line.default_code[5:7],
+            #        ),
+            #    line.id))
         line_pool = self.pool.get('sale.order.line')        
         i = 0
         for code, item_id in sorted(order):

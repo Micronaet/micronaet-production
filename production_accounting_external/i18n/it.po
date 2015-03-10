@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-10 07:32+0000\n"
-"PO-Revision-Date: 2015-03-10 08:55+0100\n"
+"PO-Revision-Date: 2015-03-10 13:47+0100\n"
 "Last-Translator: Nicola Riolini <nicola.riolini@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -227,7 +227,7 @@ msgstr "Famiglia"
 #. module: production_accounting_external
 #: view:mrp.production:production_accounting_external.default_mrp_production_form_view
 msgid "Force order"
-msgstr "Forza ordine"
+msgstr "Forza ordinamento"
 
 #. module: production_accounting_external
 #: view:sale.order.line.previsional:production_accounting_external.sale_order_line_previsional_form_view
