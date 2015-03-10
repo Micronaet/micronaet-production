@@ -7,12 +7,12 @@ msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-10 07:40+0000\n"
-"PO-Revision-Date: 2015-03-10 07:40+0000\n"
-"Last-Translator: <>\n"
+"PO-Revision-Date: 2015-03-10 09:00+0100\n"
+"Last-Translator: Nicola Riolini <nicola.riolini@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
 
 #. module: production_working_bom
@@ -35,7 +35,7 @@ msgstr "Aziende"
 #: code:addons/production_working_bom/production.py:206
 #, python-format
 msgid "Error"
-msgstr "Error"
+msgstr "Errore"
 
 #. module: production_working_bom
 #: view:website:production_working_bom.report_status_hour
@@ -76,13 +76,13 @@ msgstr "Wizard stato materiali"
 #: code:addons/production_working_bom/production.py:206
 #, python-format
 msgid "No start date for schedule!"
-msgstr "No start date for schedule!"
+msgstr "Nessuna data inizio per scedulazione!"
 
 #. module: production_working_bom
 #: code:addons/production_working_bom/production.py:204
 #, python-format
 msgid "No work hour type setted!"
-msgstr "No work hour type setted!"
+msgstr "Nessun orario lavorativo impostato"
 
 #. module: production_working_bom
 #: view:mrp.production.workcenter.line:production_working_bom.mrp_production_workcenter_line_calendar_default_view
@@ -93,7 +93,7 @@ msgstr "Lavorazioni"
 #. module: production_working_bom
 #: view:res.company:production_working_bom.view_res_company_parameter_form
 msgid "Parameters"
-msgstr "Parameters"
+msgstr "Parametri"
 
 #. module: production_working_bom
 #: view:mrp.production.status.wizard:production_working_bom.mrp_production_status_wizard
@@ -136,23 +136,23 @@ msgstr "Wizard Schedula produzione"
 #. module: production_working_bom
 #: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
 msgid "Re-schedule process"
-msgstr "Re-schedule process"
+msgstr "Rischedula processo"
 
 #. module: production_working_bom
 #: model:ir.actions.act_window,name:production_working_bom.action_res_company_parameter
 #: model:ir.ui.menu,name:production_working_bom.menu_res_company_parameter
 msgid "Report parameters"
-msgstr "Report parameters"
+msgstr "Parametri report"
 
 #. module: production_working_bom
 #: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
 msgid "Scheduled"
-msgstr "Scheduled"
+msgstr "Schedulato"
 
 #. module: production_working_bom
 #: model:ir.actions.report.xml,name:production_working_bom.action_report_status_hour
 msgid "Status hour"
-msgstr "Status hour"
+msgstr "Stato ore"
 
 #. module: production_working_bom
 #: view:mrp.production.workcenter.line:production_working_bom.mrp_production_workcenter_line_form_embedded_view

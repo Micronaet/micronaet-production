@@ -7,46 +7,46 @@ msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-10 07:34+0000\n"
-"PO-Revision-Date: 2015-03-10 07:34+0000\n"
-"Last-Translator: <>\n"
+"PO-Revision-Date: 2015-03-10 08:59+0100\n"
+"Last-Translator: Nicola Riolini <nicola.riolini@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
 
 #. module: production_workhour
 #: field:hr.workhour,create_uid:0
 #: field:hr.workhour.day,create_uid:0
 msgid "Created by"
-msgstr "Created by"
+msgstr "Creato da"
 
 #. module: production_workhour
 #: field:hr.workhour,create_date:0
 #: field:hr.workhour.day,create_date:0
 msgid "Created on"
-msgstr "Created on"
+msgstr "Creato il"
 
 #. module: production_workhour
 #: field:hr.workhour,day_ids:0
 msgid "Day"
-msgstr "Day"
+msgstr "Giorno"
 
 #. module: production_workhour
 #: view:hr.workhour:production_workhour.hr_workhour_form_view
 msgid "Days"
-msgstr "Days"
+msgstr "Giorni"
 
 #. module: production_workhour
 #: model:ir.model,name:production_workhour.model_hr_workhour
 #: model:ir.model,name:production_workhour.model_hr_workhour_day
 msgid "Employee work hour"
-msgstr "Employee work hour"
+msgstr "Orario impiegati"
 
 #. module: production_workhour
 #: selection:hr.workhour.day,weekday:0
 msgid "Friday"
-msgstr "Friday"
+msgstr "Venerdì"
 
 #. module: production_workhour
 #: field:hr.workhour,id:0
@@ -57,24 +57,24 @@ msgstr "ID"
 #. module: production_workhour
 #: field:hr.workhour.day,hour:0
 msgid "Label"
-msgstr "Label"
+msgstr "Etichetta"
 
 #. module: production_workhour
 #: field:hr.workhour,write_uid:0
 #: field:hr.workhour.day,write_uid:0
 msgid "Last Updated by"
-msgstr "Last Updated by"
+msgstr "Ultimo aggiornamento da"
 
 #. module: production_workhour
 #: field:hr.workhour,write_date:0
 #: field:hr.workhour.day,write_date:0
 msgid "Last Updated on"
-msgstr "Last Updated on"
+msgstr "Ultimo aggiornamento il"
 
 #. module: production_workhour
 #: selection:hr.workhour.day,weekday:0
 msgid "Monday"
-msgstr "Monday"
+msgstr "Lunedì"
 
 #. module: production_workhour
 #: view:hr.workhour:production_workhour.hr_workhour_form_view
@@ -85,32 +85,32 @@ msgstr "Note"
 #. module: production_workhour
 #: selection:hr.workhour.day,weekday:0
 msgid "Saturday"
-msgstr "Saturday"
+msgstr "Sabato"
 
 #. module: production_workhour
 #: selection:hr.workhour.day,weekday:0
 msgid "Sunday"
-msgstr "Sunday"
+msgstr "Domenica"
 
 #. module: production_workhour
 #: selection:hr.workhour.day,weekday:0
 msgid "Thursday"
-msgstr "Thursday"
+msgstr "Giovedì"
 
 #. module: production_workhour
 #: selection:hr.workhour.day,weekday:0
 msgid "Tuesday"
-msgstr "Tuesday"
+msgstr "Martedì"
 
 #. module: production_workhour
 #: selection:hr.workhour.day,weekday:0
 msgid "Wednesday"
-msgstr "Wednesday"
+msgstr "Mercoledì"
 
 #. module: production_workhour
 #: field:hr.workhour.day,weekday:0
 msgid "Weekday"
-msgstr "Weekday"
+msgstr "Giorno settimana"
 
 #. module: production_workhour
 #: view:hr.workhour:production_workhour.hr_workhour_form_view
@@ -119,10 +119,10 @@ msgstr "Weekday"
 #: model:ir.actions.act_window,name:production_workhour.action_hr_workhour_tree
 #: model:ir.ui.menu,name:production_workhour.menu_configuration_workhour
 msgid "Work hour"
-msgstr "Work hour"
+msgstr "Orario"
 
 #. module: production_workhour
 #: field:hr.workhour.day,workhour_id:0
 msgid "Workhour"
-msgstr "Workhour"
+msgstr "Orario"
 

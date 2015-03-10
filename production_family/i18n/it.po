@@ -7,12 +7,12 @@ msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-10 07:33+0000\n"
-"PO-Revision-Date: 2015-03-10 07:33+0000\n"
-"Last-Translator: <>\n"
+"PO-Revision-Date: 2015-03-10 08:56+0100\n"
+"Last-Translator: Nicola Riolini <nicola.riolini@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
 
 #. module: production_family
@@ -23,7 +23,7 @@ msgstr "Distinta Base"
 #. module: production_family
 #: help:product.template,family_list:0
 msgid "Code list (divided by |), ex.: 001|002 for 001* and 002*"
-msgstr "Code list (divided by |), ex.: 001|002 for 001* and 002*"
+msgstr "Lista codici (divisi per |), es.: 001|002 per 001* e 002*"
 
 #. module: production_family
 #: model:ir.ui.menu,name:production_family.menu_configuration_family
@@ -31,23 +31,23 @@ msgstr "Code list (divided by |), ex.: 001|002 for 001* and 002*"
 #: field:product.template,family_id:0
 #: field:sale.order.line,family_id:0
 msgid "Family"
-msgstr "Family"
+msgstr "Famiglia"
 
 #. module: production_family
 #: field:product.template,family_list:0
 msgid "Family list"
-msgstr "Family list"
+msgstr "Lista famiglia"
 
 #. module: production_family
 #: field:product.template,is_family:0
 msgid "Is family"
-msgstr "Is family"
+msgstr "E' famiglia"
 
 #. module: production_family
 #: field:mrp.bom,family:0
 #: field:mrp.production,family:0
 msgid "Is family BOM"
-msgstr "Is family BOM"
+msgstr "E' distinta base famiglia"
 
 #. module: production_family
 #: model:ir.model,name:production_family.model_mrp_production
@@ -57,7 +57,7 @@ msgstr "Ordine di Produzione"
 #. module: production_family
 #: help:product.template,family_id:0
 msgid "Parent family product belongs"
-msgstr "Parent family product belongs"
+msgstr "Famiglia padre a cui appartiene il prodotto"
 
 #. module: production_family
 #: model:ir.model,name:production_family.model_product_template
@@ -67,7 +67,7 @@ msgstr "Modello Prodotto"
 #. module: production_family
 #: model:ir.actions.act_window,name:production_family.action_view_configuration_family
 msgid "Product family"
-msgstr "Product family"
+msgstr "Famiglia prodotto"
 
 #. module: production_family
 #: model:ir.model,name:production_family.model_sale_order_line
@@ -77,7 +77,7 @@ msgstr "Linea d'ordine di vendita"
 #. module: production_family
 #: view:product.template:production_family.product_template_family_form_view
 msgid "Update product"
-msgstr "Update product"
+msgstr "Aggiorna prodotti"
 
 #. module: production_family
 #: model:ir.model,name:production_family.model_mrp_production_workcenter_line

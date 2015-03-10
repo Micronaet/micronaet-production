@@ -7,35 +7,35 @@ msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-10 07:33+0000\n"
-"PO-Revision-Date: 2015-03-10 07:33+0000\n"
-"Last-Translator: <>\n"
+"PO-Revision-Date: 2015-03-10 08:57+0100\n"
+"Last-Translator: Nicola Riolini <nicola.riolini@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
 
 #. module: production_order_mandatory
 #: view:res.partner:production_order_mandatory.view_res_partner_deadline_mandatory
 msgid "Force"
-msgstr "Force"
+msgstr "Forza"
 
 #. module: production_order_mandatory
 #: view:sale.order.line:production_order_mandatory.view_sale_order_line_mandatory
 msgid "Mand."
-msgstr "Mand."
+msgstr "Obbl."
 
 #. module: production_order_mandatory
 #: view:sale.order.line:production_order_mandatory.view_sale_order_line_search_mandatory
 msgid "Mandatory"
-msgstr "Mandatory"
+msgstr "Obbligatorio"
 
 #. module: production_order_mandatory
 #: field:res.partner,has_mandatory_delivery:0
 #: view:sale.order.line:production_order_mandatory.view_sale_order_line_search_mandatory
 #: field:sale.order.line,has_mandatory_delivery:0
 msgid "Mandatory delivery"
-msgstr "Mandatory delivery"
+msgstr "Consegna obbligatoria"
 
 #. module: production_order_mandatory
 #: model:ir.model,name:production_order_mandatory.model_res_partner
@@ -57,5 +57,5 @@ msgstr "Linea d'ordine di vendita"
 #: help:res.partner,has_mandatory_delivery:0
 #: help:sale.order.line,has_mandatory_delivery:0
 msgid "This partner has always mandatory order"
-msgstr "This partner has always mandatory order"
+msgstr "Questo partner ha la consegna tassativa"
 

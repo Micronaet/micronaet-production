@@ -7,18 +7,19 @@ msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-10 07:32+0000\n"
-"PO-Revision-Date: 2015-03-10 07:32+0000\n"
-"Last-Translator: <>\n"
+"PO-Revision-Date: 2015-03-10 08:55+0100\n"
+"Last-Translator: Nicola Riolini <nicola.riolini@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
 
 #. module: production_accounting_external
 #: code:addons/production_accounting_external/wizard/create_production.py:422
 #, python-format
-msgid "\n"
+msgid ""
+"\n"
 "                <style>\n"
 "                    .table_bf {\n"
 "                         border: 1px solid black;\n"
@@ -43,7 +44,8 @@ msgid "\n"
 "                    <th>Q.</th>\n"
 "                    <th>Deadline</th>\n"
 "                </tr>"
-msgstr "\n"
+msgstr ""
+"\n"
 "                <style>\n"
 "                    .table_bf {\n"
 "                         border: 1px solid black;\n"
@@ -66,19 +68,20 @@ msgstr "\n"
 "                <tr class='table_bf'>\n"
 "                    <th>OC</th>\n"
 "                    <th>Q.</th>\n"
-"                    <th>Deadline</th>\n"
+"                    <th>Scadenza</th>\n"
 "                </tr>"
 
 #. module: production_accounting_external
 #: code:addons/production_accounting_external/wizard/create_production.py:230
 #, python-format
 msgid "<b>No production</b>"
-msgstr "<b>No production</b>"
+msgstr "<b>Nessuna produzione</b>"
 
 #. module: production_accounting_external
 #: code:addons/production_accounting_external/wizard/create_production.py:247
 #, python-format
-msgid "<style>\n"
+msgid ""
+"<style>\n"
 "                    .table_status {\n"
 "                         border: 1px solid black;\n"
 "                         padding: 3px;\n"
@@ -103,7 +106,8 @@ msgid "<style>\n"
 "                    <th>Q.</th>\n"
 "                    <th>Extra</th>\n"
 "                </tr>"
-msgstr "<style>\n"
+msgstr ""
+"<style>\n"
 "                    .table_status {\n"
 "                         border: 1px solid black;\n"
 "                         padding: 3px;\n"
@@ -122,8 +126,8 @@ msgstr "<style>\n"
 "                     }\n"
 "                </style>\n"
 "                <table class='table_status'>\n"
-"                <tr><th>Date</th>\n"
-"                    <!--<th>To</th>-->\n"
+"                <tr><th>Data</th>\n"
+"                    <!--<th>A</th>-->\n"
 "                    <th>Prod.</th>\n"
 "                    <th>Q.</th>\n"
 "                    <th>Extra</th>\n"
@@ -137,123 +141,123 @@ msgstr "Contabilità"
 #. module: production_accounting_external
 #: field:product.product,accounting_structured:0
 msgid "Accounting structured"
-msgstr "Accounting structured"
+msgstr "Conto strutturato"
 
 #. module: production_accounting_external
 #: view:mrp.production.assign.wizard:production_accounting_external.mrp_production_assign_wizard_view
 msgid "Annotation"
-msgstr "Annotation"
+msgstr "Annotazioni"
 
 #. module: production_accounting_external
 #: view:mrp.production.assign.wizard:production_accounting_external.mrp_production_assign_wizard_view
 msgid "Assign"
-msgstr "Assign"
+msgstr "Assegna"
 
 #. module: production_accounting_external
 #: model:ir.actions.act_window,name:production_accounting_external.action_assign_mrp_production_wizard_form
 #: view:mrp.production:production_accounting_external.default_mrp_production_form_view
 #: view:mrp.production.assign.wizard:production_accounting_external.mrp_production_assign_wizard_view
 msgid "Assign production"
-msgstr "Assign production"
+msgstr "Assegna produzione"
 
 #. module: production_accounting_external
 #: view:mrp.production.create.wizard:production_accounting_external.mrp_production_create_wizard_view
 msgid "Calendar for line:"
-msgstr "Calendar for line:"
+msgstr "Calendario per la linea:"
 
 #. module: production_accounting_external
 #: view:mrp.production.assign.wizard:production_accounting_external.mrp_production_assign_wizard_view
 #: view:mrp.production.create.wizard:production_accounting_external.mrp_production_create_wizard_view
 msgid "Cancel"
-msgstr "Cancel"
+msgstr "Annulla"
 
 #. module: production_accounting_external
 #: field:sale.order.line,default_code:0
 msgid "Code"
-msgstr "Code"
+msgstr "Codice"
 
 #. module: production_accounting_external
 #: view:mrp.production.create.wizard:production_accounting_external.mrp_production_create_wizard_view
 msgid "Create"
-msgstr "Create"
+msgstr "Crea"
 
 #. module: production_accounting_external
 #: view:mrp.production.create.wizard:production_accounting_external.mrp_production_create_wizard_view
 msgid "Create MRP"
-msgstr "Create MRP"
+msgstr "Crea produzione"
 
 #. module: production_accounting_external
 #: model:ir.actions.act_window,name:production_accounting_external.act_window_mrp_production_create_wizard_view
 #: model:ir.actions.act_window,name:production_accounting_external.action_window_mrp_production_create_wizard_view
 msgid "Create production"
-msgstr "Create production"
+msgstr "Crea produzione"
 
 #. module: production_accounting_external
 #: view:sale.order.line.previsional:production_accounting_external.sale_order_line_previsional_search_view
 msgid "Customer"
-msgstr "Customer"
+msgstr "Cliente"
 
 #. module: production_accounting_external
 #: view:sale.order.line.previsional:production_accounting_external.sale_order_line_previsional_search_view
 msgid "Deadline"
-msgstr "Deadline"
+msgstr "Scadenza"
 
 #. module: production_accounting_external
 #: view:mrp.production.create.wizard:production_accounting_external.mrp_production_create_wizard_view
 msgid "Error"
-msgstr "Error"
+msgstr "Errore"
 
 #. module: production_accounting_external
 #: model:ir.actions.act_window,name:production_accounting_external.action_view_mrp_production_extra
 #: model:ir.ui.menu,name:production_accounting_external.menu_view_mrp_production_extra
 #: view:mrp.production:production_accounting_external.default_mrp_production_form_view
 msgid "Extra production"
-msgstr "Extra production"
+msgstr "Extra produzione"
 
 #. module: production_accounting_external
 #: view:mrp.production:production_accounting_external.default_mrp_production_tree_view
 msgid "Extra used by"
-msgstr "Extra used by"
+msgstr "Extra utilzzato da"
 
 #. module: production_accounting_external
 #: view:sale.order.line:production_accounting_external.sale_order_line_family_search_view
 msgid "Family"
-msgstr "Family"
+msgstr "Famiglia"
 
 #. module: production_accounting_external
 #: view:mrp.production:production_accounting_external.default_mrp_production_form_view
 msgid "Force order"
-msgstr "Force order"
+msgstr "Forza ordine"
 
 #. module: production_accounting_external
 #: view:sale.order.line.previsional:production_accounting_external.sale_order_line_previsional_form_view
 msgid "Form previsional"
-msgstr "Form previsional"
+msgstr "Previsionale"
 
 #. module: production_accounting_external
 #: view:mrp.production:production_accounting_external.default_mrp_production_form_view
 msgid "Free line"
-msgstr "Free line"
+msgstr "Libera linea"
 
 #. module: production_accounting_external
 #: view:mrp.production.create.wizard:production_accounting_external.mrp_production_create_wizard_view
 msgid "Information"
-msgstr "Information"
+msgstr "Informazioni"
 
 #. module: production_accounting_external
 #: view:sale.order.line:production_accounting_external.view_sale_order_line_tree_force_mrp
 msgid "Man."
-msgstr "Man."
+msgstr "Obbl."
 
 #. module: production_accounting_external
 #: view:mrp.production:production_accounting_external.default_mrp_production_form_view
 msgid "Mand."
-msgstr "Mand."
+msgstr "Obbl."
 
 #. module: production_accounting_external
 #: view:sale.order.line.previsional:production_accounting_external.sale_order_line_previsional_tree_view
 msgid "Manually update in accounting"
-msgstr "Manually update in accounting"
+msgstr "Aggiornato manualmente in contabilità"
 
 #. module: production_accounting_external
 #: model:ir.model,name:production_accounting_external.model_mrp_production
@@ -264,71 +268,71 @@ msgstr "Ordine di Produzione"
 #: code:addons/production_accounting_external/wizard/create_production.py:158
 #, python-format
 msgid "Need days > 0!"
-msgstr "Need days > 0!"
+msgstr "Obbligo giorni > 0!"
 
 #. module: production_accounting_external
 #: code:addons/production_accounting_external/wizard/create_production.py:153
 #, python-format
 msgid "No BOM or line finded!"
-msgstr "No BOM or line finded!"
+msgstr "Nessuna distinta base o riga trovata!"
 
 #. module: production_accounting_external
 #: code:addons/production_accounting_external/wizard/create_production.py:520
 #, python-format
 msgid "Not present!"
-msgstr "Not present!"
+msgstr "Non presente!"
 
 #. module: production_accounting_external
 #: view:sale.order.line.previsional:production_accounting_external.sale_order_line_previsional_search_view
 msgid "Not updated"
-msgstr "Not updated"
+msgstr "Non aggiornato"
 
 #. module: production_accounting_external
 #: model:ir.ui.menu,name:production_accounting_external.menu_sale_order_line_m0
 #: view:mrp.production:production_accounting_external.default_mrp_production_form_view
 #: view:sale.order.line:production_accounting_external.view_sale_order_line_tree_force_mrp
 msgid "OC line"
-msgstr "OC line"
+msgstr "Riga OC"
 
 #. module: production_accounting_external
 #: model:ir.ui.menu,name:production_accounting_external.menu_sale_order_line_m1
 msgid "OC line production"
-msgstr "OC line production"
+msgstr "Riga produzione OC"
 
 #. module: production_accounting_external
 #: model:ir.ui.menu,name:production_accounting_external.menu_sale_order_line_m1_mandatory
 msgid "OC mandatory"
-msgstr "OC mandatory"
+msgstr "OC tassativi"
 
 #. module: production_accounting_external
 #: view:mrp.production.create.wizard:production_accounting_external.mrp_production_create_wizard_view
 msgid "Operation:"
-msgstr "Operation:"
+msgstr "Operazione:"
 
 #. module: production_accounting_external
 #: view:mrp.production:production_accounting_external.default_mrp_production_form_view
 msgid "Order lines"
-msgstr "Order lines"
+msgstr "Righe ordine"
 
 #. module: production_accounting_external
 #: view:mrp.production.create.wizard:production_accounting_external.mrp_production_create_wizard_view
 msgid "Orders:"
-msgstr "Orders:"
+msgstr "Ordini:"
 
 #. module: production_accounting_external
 #: view:mrp.production:production_accounting_external.default_mrp_production_form_view
 msgid "Previsional order"
-msgstr "Previsional order"
+msgstr "Ordine previsionale"
 
 #. module: production_accounting_external
 #: model:ir.ui.menu,name:production_accounting_external.menu_view_sale_order_line_previsional
 msgid "Previsional production"
-msgstr "Previsional production"
+msgstr "Produezione previsionale"
 
 #. module: production_accounting_external
 #: view:mrp.production:production_accounting_external.default_mrp_production_form_view
 msgid "Produced"
-msgstr "Produced"
+msgstr "Prodotto"
 
 #. module: production_accounting_external
 #: model:ir.model,name:production_accounting_external.model_product_product
@@ -343,30 +347,30 @@ msgstr "Modello Prodotto"
 #. module: production_accounting_external
 #: model:ir.actions.report.xml,name:production_accounting_external.aeroo_production_report_id
 msgid "Production Report"
-msgstr "Production Report"
+msgstr "Report produzione"
 
 #. module: production_accounting_external
 #: view:mrp.production.create.wizard:production_accounting_external.mrp_production_create_wizard_view
 msgid "Productions:"
-msgstr "Productions:"
+msgstr "Produzione:"
 
 #. module: production_accounting_external
 #: model:ir.ui.menu,name:production_accounting_external.menu_base_sale_order_root
 #: view:mrp.production:production_accounting_external.default_mrp_production_form_view
 msgid "Sale order"
-msgstr "Sale order"
+msgstr "Ordine di vendita"
 
 #. module: production_accounting_external
 #: model:ir.actions.act_window,name:production_accounting_external.action_view_sale_order_line
 #: model:ir.actions.act_window,name:production_accounting_external.action_view_sale_order_line_mandatory
 #: model:ir.actions.act_window,name:production_accounting_external.action_view_sale_order_production_line
 msgid "Sale order line"
-msgstr "Sale order line"
+msgstr "Riga ordine di vendita"
 
 #. module: production_accounting_external
 #: model:ir.actions.act_window,name:production_accounting_external.action_view_sale_order_line_previsional
 msgid "Sale order line previsional"
-msgstr "Sale order line previsional"
+msgstr "Riga ordine previsionale"
 
 #. module: production_accounting_external
 #: model:ir.model,name:production_accounting_external.model_sale_order_line
@@ -376,12 +380,12 @@ msgstr "Linea d'ordine di vendita"
 #. module: production_accounting_external
 #: view:mrp.production.create.wizard:production_accounting_external.mrp_production_create_wizard_view
 msgid "Schedule:"
-msgstr "Schedule:"
+msgstr "Schedulazioni:"
 
 #. module: production_accounting_external
 #: view:sale.order.line.previsional:production_accounting_external.sale_order_line_previsional_search_view
 msgid "Search previsional"
-msgstr "Search previsional"
+msgstr "Ricerca previsionale"
 
 #. module: production_accounting_external
 #: view:mrp.production:production_accounting_external.default_mrp_production_form_view
@@ -393,29 +397,29 @@ msgstr "Totale"
 #. module: production_accounting_external
 #: view:sale.order.line.previsional:production_accounting_external.sale_order_line_previsional_tree_view
 msgid "Tree previsional"
-msgstr "Tree previsional"
+msgstr "Previsionale"
 
 #. module: production_accounting_external
 #: view:mrp.production:production_accounting_external.default_mrp_production_form_view
 #: view:sale.order.line:production_accounting_external.view_sale_order_line_tree_force_mrp
 msgid "UOM"
-msgstr "UOM"
+msgstr "UM"
 
 #. module: production_accounting_external
 #: view:sale.order.line.previsional:production_accounting_external.sale_order_line_previsional_search_view
 #: view:sale.order.line.previsional:production_accounting_external.sale_order_line_previsional_tree_view
 msgid "Updated"
-msgstr "Updated"
+msgstr "Aggiornato"
 
 #. module: production_accounting_external
 #: view:mrp.production:production_accounting_external.default_mrp_production_form_view
 msgid "Use extra production"
-msgstr "Use extra production"
+msgstr "Usa produzione extra"
 
 #. module: production_accounting_external
 #: view:sale.order.line:production_accounting_external.view_sale_order_line_tree_force_mrp
 msgid "Wizard force"
-msgstr "Wizard force"
+msgstr "Forza"
 
 #. module: production_accounting_external
 #: model:ir.model,name:production_accounting_external.model_mrp_production_workcenter_line
