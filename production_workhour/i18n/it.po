@@ -1,0 +1,128 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* production_workhour
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-03-10 07:34+0000\n"
+"PO-Revision-Date: 2015-03-10 07:34+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: production_workhour
+#: field:hr.workhour,create_uid:0
+#: field:hr.workhour.day,create_uid:0
+msgid "Created by"
+msgstr "Created by"
+
+#. module: production_workhour
+#: field:hr.workhour,create_date:0
+#: field:hr.workhour.day,create_date:0
+msgid "Created on"
+msgstr "Created on"
+
+#. module: production_workhour
+#: field:hr.workhour,day_ids:0
+msgid "Day"
+msgstr "Day"
+
+#. module: production_workhour
+#: view:hr.workhour:production_workhour.hr_workhour_form_view
+msgid "Days"
+msgstr "Days"
+
+#. module: production_workhour
+#: model:ir.model,name:production_workhour.model_hr_workhour
+#: model:ir.model,name:production_workhour.model_hr_workhour_day
+msgid "Employee work hour"
+msgstr "Employee work hour"
+
+#. module: production_workhour
+#: selection:hr.workhour.day,weekday:0
+msgid "Friday"
+msgstr "Friday"
+
+#. module: production_workhour
+#: field:hr.workhour,id:0
+#: field:hr.workhour.day,id:0
+msgid "ID"
+msgstr "ID"
+
+#. module: production_workhour
+#: field:hr.workhour.day,hour:0
+msgid "Label"
+msgstr "Label"
+
+#. module: production_workhour
+#: field:hr.workhour,write_uid:0
+#: field:hr.workhour.day,write_uid:0
+msgid "Last Updated by"
+msgstr "Last Updated by"
+
+#. module: production_workhour
+#: field:hr.workhour,write_date:0
+#: field:hr.workhour.day,write_date:0
+msgid "Last Updated on"
+msgstr "Last Updated on"
+
+#. module: production_workhour
+#: selection:hr.workhour.day,weekday:0
+msgid "Monday"
+msgstr "Monday"
+
+#. module: production_workhour
+#: view:hr.workhour:production_workhour.hr_workhour_form_view
+#: field:hr.workhour,note:0
+msgid "Note"
+msgstr "Note"
+
+#. module: production_workhour
+#: selection:hr.workhour.day,weekday:0
+msgid "Saturday"
+msgstr "Saturday"
+
+#. module: production_workhour
+#: selection:hr.workhour.day,weekday:0
+msgid "Sunday"
+msgstr "Sunday"
+
+#. module: production_workhour
+#: selection:hr.workhour.day,weekday:0
+msgid "Thursday"
+msgstr "Thursday"
+
+#. module: production_workhour
+#: selection:hr.workhour.day,weekday:0
+msgid "Tuesday"
+msgstr "Tuesday"
+
+#. module: production_workhour
+#: selection:hr.workhour.day,weekday:0
+msgid "Wednesday"
+msgstr "Wednesday"
+
+#. module: production_workhour
+#: field:hr.workhour.day,weekday:0
+msgid "Weekday"
+msgstr "Weekday"
+
+#. module: production_workhour
+#: view:hr.workhour:production_workhour.hr_workhour_form_view
+#: view:hr.workhour:production_workhour.hr_workhour_tree_view
+#: field:hr.workhour,name:0
+#: model:ir.actions.act_window,name:production_workhour.action_hr_workhour_tree
+#: model:ir.ui.menu,name:production_workhour.menu_configuration_workhour
+msgid "Work hour"
+msgstr "Work hour"
+
+#. module: production_workhour
+#: field:hr.workhour.day,workhour_id:0
+msgid "Workhour"
+msgstr "Workhour"
+
