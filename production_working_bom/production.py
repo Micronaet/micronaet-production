@@ -36,6 +36,7 @@ class res_company(orm.Model):
 
     _inherit = 'res.company'
     
+    # Utility:
     def get_hour_parameters(
             self, cr, uid, company_id=False, context=None):
         ''' Read element with company_id or passed 
@@ -149,7 +150,7 @@ class bom_production(orm.Model):
         default = False # TODO default view name
         view_id = False
         views = []
-
+        # production_working_bom.mrp_production_workcenter_line_calendar_lavoration_view
         data_pool = self.pool.get('ir.model.data')
         for view in ['form', 'tree', 'calendar', 'gantt', 'graph']:
             try: # compose views parameter:

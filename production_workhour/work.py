@@ -48,7 +48,8 @@ class HrWorkhour(orm.Model):
     _description = 'Employee work hour'
             
     _columns = {
-        'name': fields.char('Work hour', size=64, required=True),
+        'name': fields.char('Work hour', size=64, required=True,
+            translate=True),
         'note': fields.text('Note'),
         }
 

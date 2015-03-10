@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-10 07:34+0000\n"
-"PO-Revision-Date: 2015-03-10 08:59+0100\n"
+"POT-Creation-Date: 2015-03-10 10:29+0000\n"
+"PO-Revision-Date: 2015-03-10 11:30+0100\n"
 "Last-Translator: Nicola Riolini <nicola.riolini@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -75,6 +75,11 @@ msgstr "Ultimo aggiornamento il"
 #: selection:hr.workhour.day,weekday:0
 msgid "Monday"
 msgstr "Lunedì"
+
+#. module: production_workhour
+#: model:hr.workhour,name:production_workhour.hr_workhour_normal
+msgid "Normal workhour"
+msgstr "Orario normale"
 
 #. module: production_workhour
 #: view:hr.workhour:production_workhour.hr_workhour_form_view
