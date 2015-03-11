@@ -147,6 +147,7 @@
 		        <page string="Sale order">
 			        <group string="Order lines">				              
 			            <button name="force_production_sequence" string="Force order" type="object" />
+                        <button name="close_all_production" type="object" string="All produced" icon="gtk-ok" />
 			            <newline />
 				        <field name="order_line_ids" nolabel="1">
 				            <tree string="OC line" editable="bottom" delete="0" colors="blue:has_mandatory_delivery==True">
