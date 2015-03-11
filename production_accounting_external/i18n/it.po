@@ -104,7 +104,7 @@ msgid ""
 "                    <!--<th>To</th>-->\n"
 "                    <th>Prod.</th>\n"
 "                    <th>Q.</th>\n"
-"                    <th>Extra</th>\n"
+"                    <th>Mag.</th>\n"
 "                </tr>"
 msgstr ""
 "<style>\n"
@@ -130,7 +130,7 @@ msgstr ""
 "                    <!--<th>A</th>-->\n"
 "                    <th>Prod.</th>\n"
 "                    <th>Q.</th>\n"
-"                    <th>Extra</th>\n"
+"                    <th>Mag.</th>\n"
 "                </tr>"
 
 #. module: production_accounting_external
@@ -212,12 +212,12 @@ msgstr "Errore"
 #: model:ir.ui.menu,name:production_accounting_external.menu_view_mrp_production_extra
 #: view:mrp.production:production_accounting_external.default_mrp_production_form_view
 msgid "Extra production"
-msgstr "Extra produzione"
+msgstr "Utilizzo produzioni a magazzino"
 
 #. module: production_accounting_external
 #: view:mrp.production:production_accounting_external.default_mrp_production_tree_view
 msgid "Extra used by"
-msgstr "Extra utilzzato da"
+msgstr "Magazzino utilzzato da"
 
 #. module: production_accounting_external
 #: view:sale.order.line:production_accounting_external.sale_order_line_family_search_view
@@ -414,7 +414,7 @@ msgstr "Aggiornato"
 #. module: production_accounting_external
 #: view:mrp.production:production_accounting_external.default_mrp_production_form_view
 msgid "Use extra production"
-msgstr "Usa produzione extra"
+msgstr "Usa magazzino"
 
 #. module: production_accounting_external
 #: view:sale.order.line:production_accounting_external.view_sale_order_line_tree_force_mrp
