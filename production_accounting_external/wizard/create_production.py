@@ -538,6 +538,14 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 res += "</table>" # close table for list element
         return res
    
+    def _get_wh_default(self, cr, uid, context=None):
+        ''' Get default from data if present 
+            TODO >> maybe bettere with a boolean (for deletion)
+        '''
+        res = self.pool.get('ir.model.data').xmlid_to_res_id(
+            cr, uid, 'production_workhour.hr_workhour_normal') or False
+        return res    
+            
     _columns = {
         'name': fields.text('OC line', readonly=True),
         
@@ -616,6 +624,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             cr, uid, "from_deadline", context=c),        
         'to_deadline': lambda s, cr, uid, c: s.default_oc_list(
             cr, uid, "to_deadline", context=c),        
-        'operation': lambda *x: 'lavoration',    
+        'operation': lambda *x: 'lavoration',
+        'workhour_id': lambda s, cr, uid, ctx: s._get_wh_default(cr, uid, ctx),
     }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

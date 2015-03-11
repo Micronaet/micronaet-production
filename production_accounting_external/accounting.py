@@ -31,17 +31,6 @@ from openerp.tools.translate import _
 
 _logger = logging.getLogger(__name__)
 
-"""class MrpProductionWorkcenterLine(orm.Model):
-    ''' Accounting external fields
-    '''
-    
-    _inherit = 'mrp.production.workcenter.line'
-    
-    _columns = {
-        'product_id': fields.related('mrp_id', 'product_id', 
-            type='many2one', relation='product.product', string='Product'),
-        }
-"""
 class ProductTemplateAccounting(orm.Model):
     ''' Accounting external fields
     '''
@@ -120,6 +109,8 @@ class SaleOrderLine(orm.Model):
             'Maked', digits=(16, 2), ),
         'production_note': fields.char('Note', size=100),    
 
+        #'default_code': fields.related('product_id','default_code', 
+        #    type='char', string='Code'),
         # TODO remove with state?
         'is_produced': fields.boolean('Is produced', required=False),
         'mrp_sequence': fields.integer('MRP order')
@@ -161,17 +152,6 @@ class MrpProduction(orm.Model):
     
     _inherit = 'mrp.production'
     
-    # TODO 
-    #def get_extra_production(self, cr, uid, ids, context=None):
-    #    ''' Serch production with that line
-    #    '''
-    #    res = {}
-    #    vote_ids = self.pool.get('sale.order.line').browse(
-    #        cr, uid, ids, context=context)
-    #    for v in vote_ids:
-    #    res[v.idea_id.id] = True # Store the idea identifiers in a set
-    #    return res.keys()
-
     # -------------
     # Button event:
     # -------------
@@ -250,6 +230,23 @@ class MrpProduction(orm.Model):
             res[order.id]['has_extra_qty'] = res[order.id]['extra_qty'] > 0.0
         return res    
     
+    # Fields function:
+    def _get_mandatory_delivery(
+            self, cr, uid, ids, fields, args, context=None):
+        ''' Number of fix delivery
+        ''' 
+        res = {}
+        for mo in self.browse(cr, uid, ids, context=context):
+            res[mo.id] = {
+                'has_mandatory_delivery': '', 
+                'mandatory_delivery': 0,
+                }
+            for so in mo.order_line_ids:
+                if so.has_mandatory_delivery:
+                    res[mo.id]['mandatory_delivery'] += 1
+                    res[mo.id]['has_mandatory_delivery'] += "*"                    
+        return res
+        
     _columns = {
         'oc_qty': fields.function(
             _get_totals, method=True, type='float', 
@@ -281,6 +278,29 @@ class MrpProduction(orm.Model):
         'previsional_line_ids': fields.one2many(
             'sale.order.line.previsional', 'mrp_id', 'Previsional order'),
         'updated':fields.boolean('Label', required=False),    
+        'has_mandatory_delivery': fields.function(_get_mandatory_delivery,
+            method=True, type='char', size=1, string='Has fix delivery', 
+            store=False, multi=True),
+        'mandatory_delivery': fields.function(_get_mandatory_delivery,
+            method=True, type='integer', string='Fix delivery', 
+            store=False, multi=True),
         }
+
+class MrpProductionWorkcenterLine(orm.Model):
+    ''' Accounting external fields
+    '''
+    
+    _inherit = 'mrp.production.workcenter.line'
+    
+    _columns = {
+        #'product_id': fields.related('mrp_id', 'product_id', 
+        #    type='many2one', relation='product.product', string='Product'),
+        'has_mandatory_delivery': fields.related('production_id', 
+            'has_mandatory_delivery', type='char', size=1, 
+            string='Has fix delivery'),    
+        'mandatory_delivery': fields.related('production_id', 
+            'mandatory_delivery', type='integer', string='Fix delivery'),    
+        }
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

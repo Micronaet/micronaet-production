@@ -2,6 +2,29 @@
 <openerp>
     <data>
     <!--mrp.production.workcenter.line-->
+    <record model="ir.ui.view" id="mrp_production_wc_product_calendar_mandatory">
+        <field name="name">Line mandatory (line)</field>
+        <field name="model">mrp.production.workcenter.line</field>
+        <field name="inherit_id" ref="production_working_bom.mrp_production_workcenter_line_calendar_default_view" />
+        <field name="arch" type="xml">
+            <field name="product" position="after">
+                <field name="has_mandatory_delivery" />	            
+                <field name="mandatory_delivery" />	            
+            </field>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="mrp_production_wc_line_calendar_mandatory">
+        <field name="name">Line mandatory (line)</field>
+        <field name="model">mrp.production.workcenter.line</field>
+        <field name="inherit_id" ref="production_working_bom.mrp_production_workcenter_line_calendar_lavoration_view" />
+        <field name="arch" type="xml">
+            <field name="product" position="after">
+                <field name="has_mandatory_delivery" />	            
+                <field name="mandatory_delivery" />	            
+            </field>
+        </field>
+    </record>
+
     <!--<record model="ir.ui.view" id="view_mrp_production_workcenter_form_view_filter_product">
         <field name="name">OC line force production</field>
         <field name="model">mrp.production.workcenter.line</field>
@@ -23,11 +46,12 @@
         <field name="priority" eval="20"/>
         <field name="arch" type="xml">
             <tree string="OC line" editable="bottom">
-                    <field name="name" readonly="1"/>
                     <field name="partner_id" readonly="1"/>
                     <field name="order_id" readonly="1" />                   
                     <field name="family_id" readonly="1" />
-                    <field name="product_id" readonly="1" />                    
+                    <field name="product_id" invisible="1" />
+                    <field name="name" readonly="1"/>
+                    <field name="default_code" readonly="1" />
                     <field name="date_deadline" readonly="1" />
                     <field name="has_mandatory_delivery" readonly="1" string="Man."/>
                     <field name="product_uom" readonly="1" string="UOM"/>
@@ -150,7 +174,7 @@
                         <button name="close_all_production" type="object" string="All produced" icon="gtk-ok" />
 			            <newline />
 				        <field name="order_line_ids" nolabel="1" colspan="4">
-				            <tree string="OC line" editable="bottom" delete="0" colors="blue:has_mandatory_delivery==True">
+				            <tree string="OC line" editable="bottom" delete="0" colors="green:is_produced==True;blue:has_mandatory_delivery==True">
                                 <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('is_produced','=',True)]}" />
                                 <field name="mrp_sequence" readonly="1" string="ord."/>
                                 <field name="partner_id" readonly="1"/>
@@ -305,8 +329,13 @@
         <field name="model">sale.order.line</field>
         <field name="inherit_id" ref="sql_sale_order.view_sale_order_line_tree"/>
         <field name="arch" type="xml">
-            <field name="name" position="after">
+            <xpath expr="/tree" position="attributes">
+                <attribute name="colors">blue:has_mandatory_delivery==True</attribute>
+            </xpath>
+            <field name="order_id" position="after">
                 <field name="family_id"/>
+            </field>
+            <field name="state" position="before">
                 <field name="mrp_id"/>
             </field>
         </field>

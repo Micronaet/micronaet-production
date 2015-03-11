@@ -112,26 +112,26 @@
     </record>
 
     <record model="ir.ui.view" id="mrp_production_workcenter_line_calendar_default_view">
-        <field name="name">Production work</field>
+        <field name="name">Production work (line)</field>
         <field name="model">mrp.production.workcenter.line</field>
         <field name="priority" eval="35"/>
         <field name="arch" type="xml">
             <calendar color="product" date_delay="hour" date_start="date_planned" string="Operations">
 	            <field name="workcenter_id" />
-	            <field name="production_id" />
+	            <!--<field name="production_id" />-->
 	            <field name="product" />	            
             </calendar>
         </field>
     </record>
 
     <record model="ir.ui.view" id="mrp_production_workcenter_line_calendar_lavoration_view">
-        <field name="name">Production work</field>
+        <field name="name">Production work (product)</field>
         <field name="model">mrp.production.workcenter.line</field>
         <field name="priority" eval="5"/>
         <field name="arch" type="xml">
             <calendar color="workcenter_id" date_delay="hour" date_start="date_planned" string="Operations">
 	            <field name="workcenter_id" />
-	            <field name="production_id" />
+	            <!--<field name="production_id" />-->
 	            <field name="product" />	            
             </calendar>
         </field>

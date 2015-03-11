@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-10 07:33+0000\n"
-"PO-Revision-Date: 2015-03-10 08:57+0100\n"
+"PO-Revision-Date: 2015-03-11 16:42+0100\n"
 "Last-Translator: Nicola Riolini <nicola.riolini@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -23,19 +23,19 @@ msgstr "Forza"
 #. module: production_order_mandatory
 #: view:sale.order.line:production_order_mandatory.view_sale_order_line_mandatory
 msgid "Mand."
-msgstr "Obbl."
+msgstr "Fix"
 
 #. module: production_order_mandatory
 #: view:sale.order.line:production_order_mandatory.view_sale_order_line_search_mandatory
 msgid "Mandatory"
-msgstr "Obbligatorio"
+msgstr "Fix"
 
 #. module: production_order_mandatory
 #: field:res.partner,has_mandatory_delivery:0
 #: view:sale.order.line:production_order_mandatory.view_sale_order_line_search_mandatory
 #: field:sale.order.line,has_mandatory_delivery:0
 msgid "Mandatory delivery"
-msgstr "Consegna obbligatoria"
+msgstr "Consegna fix"
 
 #. module: production_order_mandatory
 #: model:ir.model,name:production_order_mandatory.model_res_partner
@@ -57,5 +57,5 @@ msgstr "Linea d'ordine di vendita"
 #: help:res.partner,has_mandatory_delivery:0
 #: help:sale.order.line,has_mandatory_delivery:0
 msgid "This partner has always mandatory order"
-msgstr "Questo partner ha la consegna tassativa"
+msgstr "Questo partner ha la consegna tassativa (fix)"
 

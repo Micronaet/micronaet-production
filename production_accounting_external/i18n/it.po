@@ -302,7 +302,7 @@ msgstr "Riga produzione OC"
 #. module: production_accounting_external
 #: model:ir.ui.menu,name:production_accounting_external.menu_sale_order_line_m1_mandatory
 msgid "OC mandatory"
-msgstr "OC tassativi"
+msgstr "OC fix"
 
 #. module: production_accounting_external
 #: view:mrp.production.create.wizard:production_accounting_external.mrp_production_create_wizard_view
