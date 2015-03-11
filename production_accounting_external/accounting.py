@@ -112,17 +112,6 @@ class SaleOrderLine(orm.Model):
                 'is_produced': True,
                 }, context=context)                
         return True
-
-    def close_all_production(self, cr, uid, ids, context=None):
-        ''' Close all production
-        '''
-        line_proxy = self.browse(cr, uid, ids, context=context).order_line_ids
-        
-        # Loop for close all (use original button event):
-        for line in line_proxy:
-           if not line.is_produced:
-               self.close_production(cr, uid, [line.id], context=context)
-        return True
             
     _columns = {
         'mrp_id': fields.many2one(
@@ -186,6 +175,19 @@ class MrpProduction(orm.Model):
     # -------------
     # Button event:
     # -------------
+    def close_all_production(self, cr, uid, ids, context=None):
+        ''' Close all production
+        '''
+        line_proxy = self.browse(cr, uid, ids, context=context).order_line_ids
+        
+        # Loop for close all (use original button event):
+        for line in line_proxy:
+           if not line.is_produced:
+               self.pool.get(
+                   'sale.order.line').close_production(
+                       cr, uid, [line.id], context=context)
+        return True
+    
     def force_production_sequence(self, cr, uid, ids, context=None):
         ''' Set current order depend on default code 
             Note: currently is forced for particular customization 

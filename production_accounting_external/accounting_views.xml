@@ -145,11 +145,11 @@
             <!--New notebook -->
             <xpath expr="/form/sheet/notebook" position="inside">
 		        <page string="Sale order">
-			        <group string="Order lines">				              
+			        <group string="Order lines" colspan="4" col="4">
 			            <button name="force_production_sequence" string="Force order" type="object" />
                         <button name="close_all_production" type="object" string="All produced" icon="gtk-ok" />
 			            <newline />
-				        <field name="order_line_ids" nolabel="1">
+				        <field name="order_line_ids" nolabel="1" colspan="4">
 				            <tree string="OC line" editable="bottom" delete="0" colors="blue:has_mandatory_delivery==True">
                                 <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('is_produced','=',True)]}" />
                                 <field name="mrp_sequence" readonly="1" string="ord."/>
