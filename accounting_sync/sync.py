@@ -114,12 +114,10 @@ class MrpProduction(orm.Model):
         # --------------
         # Write in file:
         # --------------
-        #temp_file = os.path.expanduser(os.path.join('~', 'close.txt'))
-        #out = open(temp_file, 'w')
         parameters = {}
         parameters['transit_string'] = ''
         for line in sol_pool.browse(cr, uid, sol_ids, context=context):
-            parameters['transit_string'] += "%1s%-18s%-18s%10s%10s%10sXX\n\r" % (
+            parameters['transit_string'] += "%1s%-18s%-18s%10s%10s%10sXX\n" % (
                 'P' if line.sync_state == 'partial' else 'T', # Type (part/tot)
                 line.order_id.name.split("-")[-1].split("/")[0], # Order
                 line.product_id.default_code, # Code

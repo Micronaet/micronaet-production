@@ -26,7 +26,6 @@ import ConfigParser
 from datetime import datetime
 from SimpleXMLRPCServer import SimpleXMLRPCServer, SimpleXMLRPCRequestHandler
 
-
 # -----------------------------------------------------------------------------
 #                                Parameters
 # -----------------------------------------------------------------------------
@@ -38,6 +37,7 @@ config.read(['./openerp.cfg'])
 xmlrpc_host = config.get('XMLRPC', 'host') 
 xmlrpc_port = eval(config.get('XMLRPC', 'port'))
 demo_mode = eval(config.get('XMLRPC', 'demo'))
+newline = eval(config.get('XMLRPC', 'newline'))
 
 path = os.path.expanduser(config.get('mexal', 'path'))
 archive_path = os.path.expanduser(config.get('mexal', 'archive_path'))
@@ -79,7 +79,8 @@ sprix_command = r"%s\mxdesk.exe -command=mxrs.exe -login=%s -t0 -x2 win32g -p#%s
 #                                Create server
 # -----------------------------------------------------------------------------
 server = SimpleXMLRPCServer(
-    (xmlrpc_host, xmlrpc_port), logRequests=True)#requestHandler=RequestHandler)
+    (xmlrpc_host, xmlrpc_port), logRequests=True)
+#requestHandler=RequestHandler)
 #server.register_introspection_functions()
 
 # -----------------------------------------------------------------------------
@@ -103,6 +104,7 @@ def sprix(operation, string="", pickle_parameters=None):
         if not string:
             return "#ERR No file passed"            
         try:
+            string = string.replace("\n", newline)
             res_file = open(file_production, "w")
             res_file.write(string)
             res_file.close()
@@ -158,7 +160,7 @@ server.register_function(sprix) #, 'sprix')
 #                       Run the server's main loop:
 # -----------------------------------------------------------------------------
 try:
-    print "Use CTRL + C to exit"
+    print "Use CTRL + C to exit\n"
     server.serve_forever()
 except KeyboardInterrupt:
     print "Exiting..."
