@@ -112,12 +112,13 @@ class MrpProduction(orm.Model):
         out = open(temp_file, 'w')
         for line in sol_pool.browse(cr, uid, sol_ids, context=context):
             order = line.order_id.name.split("-")[-1].split("/")[0]
-            out.write("%1s%-18s%-18s%10s%10sXX\n\r" % ( # TODO
+            out.write("%1s%-18s%-18s%10s%10s%10sXX\n\r" % ( # TODO
                 'P' if line.sync_state == 'partial' else 'T', # Type (part/tot)
                 order,                           # Order
                 line.product_id.default_code,                 # Code
                 int(line.product_uom_maked_qty),              # Q (part/tot)
                 line.date_deadline,                           # Deadline
+                line.id,
                 ))
         out.close()
                 
