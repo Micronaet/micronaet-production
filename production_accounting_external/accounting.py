@@ -98,30 +98,6 @@ class SaleOrderLine(orm.Model):
             'sync_state': 'closed',
             }, context=context)                
            
-    def accounting_sync(self, cr, uid, ids, context=None):
-        ''' Read all line to sync in accounting and produce it for 
-            XMLRPC call
-        '''
-        # Read all line to close
-        sol_ids = self.search(cr, uid, [
-            ('sync_state', 'in', ('partial', 'closed'))
-            ], 
-            order='order_id', # TODO line sequence?
-            context=context, )
-
-        # Write in file:
-        temp_file = 'close.txt'
-        out = open(temp_file, 'w')
-        for line in self.browse(cr, uid, sol_ids, context=context):
-            out.write("%10s" % ( # TODO
-                line.order_id.name,                
-                ))
-        out.close()
-                
-        # XMLRPC call for import the file
-        
-        return True
-        
     _columns = {
         'mrp_id': fields.many2one(
             'mrp.production', 'Production', ondelete='set null', ),
@@ -196,6 +172,11 @@ class MrpProduction(orm.Model):
                self.pool.get(
                    'sale.order.line').close_production(
                        cr, uid, [line.id], context=context)
+        return True
+
+    def accounting_sync(self, cr, uid, ids, context=None):
+        ''' Function to override depend on sync method used
+        '''
         return True
     
     def force_production_sequence(self, cr, uid, ids, context=None):
