@@ -98,7 +98,7 @@ class SaleOrderLine(orm.Model):
             'sync_state': 'closed',
             }, context=context)                
            
-    def accounting_sync(self, cr, uid, ids, context=context):
+    def accounting_sync(self, cr, uid, ids, context=None):
         ''' Read all line to sync in accounting and produce it for 
             XMLRPC call
         '''
@@ -115,7 +115,7 @@ class SaleOrderLine(orm.Model):
         for line in self.browse(cr, uid, sol_ids, context=context):
             out.write("%10s" % ( # TODO
                 line.order_id.name,                
-                )  
+                ))
         out.close()
                 
         # XMLRPC call for import the file
