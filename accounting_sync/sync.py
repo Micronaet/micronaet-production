@@ -21,6 +21,7 @@
 
 import os
 import sys
+import pickle
 import logging
 import openerp
 import xmlrpclib
@@ -61,8 +62,8 @@ class res_company(orm.Model):
 
         try:
             xmlrpc_server = "http://%s:%s" % (
-                mx_parameter_server,
-                mx_parameter_port,
+                parameters.accounting_sync_host,
+                parameters.accounting_sync_port,
             )
             return xmlrpclib.ServerProxy(xmlrpc_server)
         except:
@@ -70,7 +71,8 @@ class res_company(orm.Model):
                 _('Import CL error!'),
                 _(
                 'XMLRPC for calling importation is not response check'
-                ' if program is open on XMLRPC server'), )
+                ' if program is open on XMLRPC server\n[%s]' % (
+                    sys.exc_info(), ) ), )
         
     _columns = {
         'accounting_sync': fields.boolean('Sync via XMLRPC'),
@@ -99,31 +101,53 @@ class MrpProduction(orm.Model):
         ''' Read all line to sync in accounting and produce it for 
             XMLRPC call
         '''
-        sol_pool = self.pool.get('sale.order.line')
+        # ----------------------
         # Read all line to close
+        # ----------------------
+        sol_pool = self.pool.get('sale.order.line')
         sol_ids = sol_pool.search(cr, uid, [
             ('sync_state', 'in', ('partial', 'closed'))
             ], 
             order='order_id', # TODO line sequence?
             context=context, )
 
+        # --------------
         # Write in file:
-        temp_file = os.path.expanduser(os.path.join('~', 'close.txt'))
-        out = open(temp_file, 'w')
+        # --------------
+        #temp_file = os.path.expanduser(os.path.join('~', 'close.txt'))
+        #out = open(temp_file, 'w')
+        parameters = {}
+        parameters['transit_string'] = ''
         for line in sol_pool.browse(cr, uid, sol_ids, context=context):
-            order = line.order_id.name.split("-")[-1].split("/")[0]
-            out.write("%1s%-18s%-18s%10s%10s%10sXX\n\r" % ( # TODO
+            parameters['transit_string'] += "%1s%-18s%-18s%10s%10s%10sXX\n\r" % (
                 'P' if line.sync_state == 'partial' else 'T', # Type (part/tot)
-                order,                           # Order
-                line.product_id.default_code,                 # Code
-                int(line.product_uom_maked_qty),              # Q (part/tot)
-                line.date_deadline,                           # Deadline
+                line.order_id.name.split("-")[-1].split("/")[0], # Order
+                line.product_id.default_code, # Code
+                int(line.product_uom_maked_qty), # Q (part/tot)
+                line.date_deadline, # Deadline
                 line.id,
-                ))
-        out.close()
-                
+                )
+
+        # -------------------------------
         # XMLRPC call for import the file
-        
+        # -------------------------------
+        try:
+            XMLRPC = self.pool.get(
+                'res.company').get_xmlrpc_socket(cr, uid, False, context=context) # TODO company_id 
+                
+            # TODO use pickle library!!!
+            res = XMLRPC.sprix('production', parameters['transit_string'], )#pickle.dumps(parameters)) # param serialized
+        except:    
+            raise osv.except_osv(
+                _('Sync error!'),
+                _('XMLRPC error calling production procedure'), )
+
+        # test if there's an error during importation:
+        if res.startswith("#ERR"):
+            raise osv.except_osv(
+                _('Sync error!'),
+                _('Error from accounting:\n%s') % res,
+            )        
         return True
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

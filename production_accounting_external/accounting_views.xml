@@ -181,12 +181,12 @@
                                 <field name="partner_id" readonly="1"/>
                                 <field name="order_id" readonly="1"/>
                                 <field name="name" invisible="1"/>
-                                <field name="default_code" />
+                                <field name="default_code" readonly="1"/>
                                 <field name="date_deadline" readonly="1" />                    
                                 <field name="has_mandatory_delivery" invisible="1" string="Mand."/>
                                 <field name="product_uom" string="UOM" invisible="1"/>
                                 <field name="product_uom_qty" sum="Total" readonly="1" />
-                                <field name="product_uom_maked_qty" />
+                                <field name="product_uom_maked_qty" readonly="1"/>
                                 <field name="production_note" />                                
                                 <field name="state" invisible="1" />
                                 <field name="sync_state" invisible="1" />
