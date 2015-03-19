@@ -172,10 +172,11 @@
 			        <group string="Order lines" colspan="4" col="4">
 			            <button name="force_production_sequence" string="Force order" type="object" />
                         <button name="close_all_production" type="object" string="All produced" icon="gtk-ok" />
+                        <button name="accounting_sync" type="object" string="Accounting sync" icon="terp-gtk-jump-to-ltr" />
 			            <newline />
 				        <field name="order_line_ids" nolabel="1" colspan="4">
-				            <tree string="OC line" editable="bottom" delete="0" colors="green:is_produced==True;blue:has_mandatory_delivery==True">
-                                <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('is_produced','=',True)]}" />
+				            <tree string="OC line" editable="bottom" delete="0" colors="orange:sync_state=='closed';green:sync_state=='sync';blue:has_mandatory_delivery==True">
+                                <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('sync_state','!=','draft')]}" />
                                 <field name="mrp_sequence" readonly="1" string="ord."/>
                                 <field name="partner_id" readonly="1"/>
                                 <field name="order_id" readonly="1"/>
@@ -188,8 +189,8 @@
                                 <field name="product_uom_maked_qty" />
                                 <field name="production_note" />                                
                                 <field name="state" invisible="1" />
-                                <field name="is_produced" invisible="1" />
-                                <button name="close_production" type="object" string="Produced" icon="gtk-ok" attrs="{'invisible': [('is_produced','=',True)]}"/>
+                                <field name="sync_state" invisible="1" />
+                                <button name="close_production" type="object" string="Produced" icon="gtk-ok" attrs="{'invisible': [('sync_state','!=','draft')]}"/>
                             </tree>
 				            <form string="OC line">
 				                <group colspan="4" col="4">
@@ -201,10 +202,10 @@
                                     <!--<field name="product_uom_qty" readonly="1"/>-->
                                     <field name="product_uom" readonly="1"/>
                                     <field name="state" invisible="1" />
-                                    <field name="is_produced" invisible="1" />
+                                    <field name="sync_state" invisible="1" />
                                     <field name="production_note" />                                
-                                    <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('is_produced','=',True)]}"/>
-                                    <button name="close_production" type="object" string="Produced" icon="gtk-ok" attrs="{'invisible': [('is_produced','=',True)]}"/>
+                                    <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('sync_state','!=','draft')]}"/>
+                                    <button name="close_production" type="object" string="Produced" icon="gtk-ok" attrs="{'invisible': [('sync_state','!=','draft')]}"/>
                                 </group>    
                             </form>
 				        </field>

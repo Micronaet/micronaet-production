@@ -89,19 +89,39 @@ class SaleOrderLine(orm.Model):
         # TODO (interact with accounting)
         line_proxy = self.browse(cr, uid, ids, context=context)[0]
         
-        if line_proxy.product_uom_maked_qty: # partial
-            pass # TODO close (partial)
-            #self.write(cr, uid, ids, {
-            #    'is_produced': True,   
-            #    }, context=context)
-        else: # TODO manage well (now not correct)
-            self.write(cr, uid, ids, {
-                'product_uom_maked_qty': 
-                    line_proxy.product_uom_qty,
-                'is_produced': True,
-                }, context=context)                
+        #if line_proxy.product_uom_maked_qty: # partial
+        #    pass # TODO close (partial)
+        #else: # TODO manage well (now not correct)
+        return self.write(cr, uid, ids, {
+            'product_uom_maked_qty': 
+                line_proxy.product_uom_qty,
+            'sync_state': 'closed',
+            }, context=context)                
+           
+    def accounting_sync(self, cr, uid, ids, context=context):
+        ''' Read all line to sync in accounting and produce it for 
+            XMLRPC call
+        '''
+        # Read all line to close
+        sol_ids = self.search(cr, uid, [
+            ('sync_state', 'in', ('partial', 'closed'))
+            ], 
+            order='order_id', # TODO line sequence?
+            context=context, )
+
+        # Write in file:
+        temp_file = 'close.txt'
+        out = open(temp_file, 'w')
+        for line in self.browse(cr, uid, sol_ids, context=context):
+            out.write("%10s" % ( # TODO
+                line.order_id.name,                
+                )  
+        out.close()
+                
+        # XMLRPC call for import the file
+        
         return True
-            
+        
     _columns = {
         'mrp_id': fields.many2one(
             'mrp.production', 'Production', ondelete='set null', ),
@@ -112,8 +132,18 @@ class SaleOrderLine(orm.Model):
         #'default_code': fields.related('product_id','default_code', 
         #    type='char', string='Code'),
         # TODO remove with state?
-        'is_produced': fields.boolean('Is produced', required=False),
-        'mrp_sequence': fields.integer('MRP order')
+        #'is_produced': fields.boolean('Is produced', required=False),
+        'mrp_sequence': fields.integer('MRP order'),
+        
+        'sync_state': fields.selection([
+            ('draft', 'Draft'),
+            ('partial', 'Partial'),
+            ('closed', 'Closed'),
+            ('sync', 'Sync'), ],'Sync state', select=True),
+        }
+        
+    _defaults = {
+        'sync_state': lambda *x: 'draft',
         }
 
 class SaleOrderLinePrevisional(orm.Model):
