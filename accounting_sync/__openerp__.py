@@ -29,6 +29,7 @@
     'license': 'AGPL-3',
     'depends': [
         'base',
+        'mrp',
         'production_accounting_external',
         ],
     'init_xml': [],

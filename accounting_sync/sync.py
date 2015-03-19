@@ -73,17 +73,18 @@ class res_company(orm.Model):
                 ' if program is open on XMLRPC server'), )
         
     _columns = {
+        'accounting_sync': fields.boolean('Sync via XMLRPC'),
         'accounting_sync_host': fields.char(
             'Accounting sync XMLRPC host', 
             size=64, 
-            required=False, 
-            readonly=False, 
             help="IP address: 10.0.0.2  or hostname: server.example.com"),
         'accounting_sync_port': fields.integer(
             'Acounting sync port', 
-            required=False, 
-            readonly=False, 
             help="XMLRPC port, example: 8000"),
+        }
+    _defaults = {
+        'accounting_sync': lambda *x: True,
+        'accounting_sync_port': lambda *x: 8000,
         }
 
 
