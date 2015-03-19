@@ -23,6 +23,7 @@ import os
 import sys
 import logging
 import openerp
+import xmlrpclib
 import openerp.netsvc as netsvc
 import openerp.addons.decimal_precision as dp
 from openerp.osv import fields, osv, expression, orm
@@ -39,6 +40,52 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 
 _logger = logging.getLogger(__name__)
+
+class res_company(orm.Model):
+    ''' Add XMLRPC parameters for connections
+    '''
+
+    _inherit = 'res.company'
+    
+    # Utility:
+    def get_xmlrpc_socket(
+            self, cr, uid, company_id=False, context=None):
+        ''' Read element with company_id or passed 
+        '''
+        if not company_id:
+            company_id = self.search(cr, uid, [], context=context)[0]
+        elif type(company_id) in (list, tuple):
+            company_id = company_id[0]
+        
+        parameters = self.browse(cr, uid, company_id, context=context)
+
+        try:
+            xmlrpc_server = "http://%s:%s" % (
+                mx_parameter_server,
+                mx_parameter_port,
+            )
+            return xmlrpclib.ServerProxy(xmlrpc_server)
+        except:
+            raise osv.except_osv(
+                _('Import CL error!'),
+                _(
+                'XMLRPC for calling importation is not response check'
+                ' if program is open on XMLRPC server'), )
+        
+    _columns = {
+        'accounting_sync_host': fields.char(
+            'Accounting sync XMLRPC host', 
+            size=64, 
+            required=False, 
+            readonly=False, 
+            help="IP address: 10.0.0.2  or hostname: server.example.com"),
+        'accounting_sync_port': fields.integer(
+            'Acounting sync port', 
+            required=False, 
+            readonly=False, 
+            help="XMLRPC port, example: 8000"),
+        }
+
 
 class MrpProduction(orm.Model):
     ''' Add extra field to manage connection with accounting

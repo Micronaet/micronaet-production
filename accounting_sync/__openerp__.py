@@ -33,7 +33,9 @@
         ],
     'init_xml': [],
     'demo': [],
-    'data': [],
+    'data': [
+        'sync_views.xml',
+        ],
     'active': False,
     'installable': True,
     'auto_install': False,
