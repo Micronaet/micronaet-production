@@ -131,10 +131,12 @@ class MrpProduction(orm.Model):
         # -------------------------------
         try:
             XMLRPC = self.pool.get(
-                'res.company').get_xmlrpc_socket(cr, uid, False, context=context) # TODO company_id 
+                'res.company').get_xmlrpc_socket(
+                    cr, uid, False, context=context) # TODO company_id 
                 
             # TODO use pickle library!!!
-            res = XMLRPC.sprix('production', parameters['transit_string'], )#pickle.dumps(parameters)) # param serialized
+            res = XMLRPC.sprix('production', parameters['transit_string'], )
+            #pickle.dumps(parameters)) # param serialized
         except:    
             raise osv.except_osv(
                 _('Sync error!'),
