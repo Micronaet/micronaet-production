@@ -109,7 +109,7 @@ class MrpLAvorationFamily(orm.Model):
             string='Family', store=False),
         }
 
-class SaleOrderLine(orm.Model):
+"""class SaleOrderLine(orm.Model):
     ''' Manage family field also for order line
         Add extra field for calculate family information
     '''
@@ -132,12 +132,11 @@ class SaleOrderLine(orm.Model):
     def _trigger_change_family(self, cr, uid, ids, context=None):
         ''' Select all sale order line with product with changed family
         '''
-        
         res = []
-        cr.execute("""
+        cr.execute('''
             SELECT id 
             FROM sale_order_line 
-            WHERE product_id in %s;""" % (
+            WHERE product_id in %s;''' % (
                 ("%s" % (tuple(ids), )).replace(",)", ")"), # TODO better...
                 ))
         
@@ -153,7 +152,13 @@ class SaleOrderLine(orm.Model):
             relation='product.template',
             store={
                 'product.template': (
-                    _trigger_change_family, ['family_id'], 10),
+                    _trigger_change_family, ['family_id'], 10),)
+                'sale.order.line': (
+                    _trigger_change_product, ['product_id'], 10),)
                 }),
-        }
+        'family_id': fields.many2one('product.template', 'Family', 
+            help='Parent family product belongs',
+            domain=[('is_family', '=', True)]),            
+                
+        }"""
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

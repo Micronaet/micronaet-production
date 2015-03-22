@@ -313,5 +313,4 @@ class MrpProductionWorkcenterLine(orm.Model):
             'mandatory_delivery', type='integer', string='Fix delivery'),    
         }
 
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
