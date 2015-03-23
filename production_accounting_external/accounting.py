@@ -128,6 +128,7 @@ class SaleOrderLine(orm.Model):
         'sync_state': fields.selection([
             ('draft', 'Draft'),
             ('partial', 'Partial'),
+            ('partial_sync', 'Partial sync'), # TODO used??
             ('closed', 'Closed'),
             ('sync', 'Sync'), ],'Sync state', select=True),
         }

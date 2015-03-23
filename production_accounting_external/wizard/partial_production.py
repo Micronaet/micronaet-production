@@ -66,13 +66,16 @@ class MrpPartialProductionWizard(orm.TransientModel):
         ''' Assign production to selected order line
         '''
         if context is None: 
-            context = {}        
-        wizard_browse = self.browse(cr, uid, ids, context=context)[0]
-        self.pool.get('mrp.production').write(
-            cr, uid, wizard_browse.used_mrp_id.id, {
-                'used_by_mrp_id': wizard_browse.parent_mrp_id.id, 
-                }, context=context)
+            context = {}       
+        wiz_proxy = self.browse(cr, uid, ids, context=context)[0]    
 
+        sol_id = context.get('active_id', False)
+        q = wiz_proxy.maked_load
+        self.pool.get('sale.order.line').write(
+            cr, uid, sol_id, {
+                'product_uom_maked_qty': q,
+                'sync_state': 'partial' if q else 'draft', # reopen
+                }, context=context)
         return {'type':'ir.actions.act_window_close'}
 
     # default function:        
@@ -84,7 +87,7 @@ class MrpPartialProductionWizard(orm.TransientModel):
     #            "active_id", 0), context=context).product_id.id
 
     _columns = {
-        'current_load': fields.float('All partial load', 
+        'maked_load': fields.float('All partial load', 
             digits=(16, 2), 
             help="Assign value for all partial total produced", ),
         }
