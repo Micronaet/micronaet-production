@@ -1,0 +1,91 @@
+# -*- coding: utf-8 -*-
+###############################################################################
+#
+# OpenERP, Open Source Management Solution
+# Copyright (C) 2001-2015 Micronaet S.r.l. (<http://www.micronaet.it>)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+###############################################################################
+
+import os
+import sys
+import logging
+import openerp
+import openerp.netsvc as netsvc
+import openerp.addons.decimal_precision as dp
+from openerp.osv import fields, osv, expression, orm
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
+from openerp import SUPERUSER_ID, api
+from openerp import tools
+from openerp.tools.translate import _
+from openerp.tools.float_utils import float_round as round
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
+    DEFAULT_SERVER_DATETIME_FORMAT, 
+    DATETIME_FORMATS_MAP, 
+    float_compare)
+
+
+_logger = logging.getLogger(__name__)
+
+class MrpPartialProductionWizard(orm.TransientModel):
+    ''' Wizard that assign partial lavoration to the selected order line
+    '''
+    
+    _name = "mrp.production.partial.wizard"
+
+    # Onchange
+    def onchange_current_load(self, cr, uid, ids, current, context=None):
+        ''' Test if don't pass total - partial
+        '''
+        res = {}
+        sol_id = context.get('active_id', False)
+        sol_proxy = self.pool.get("sale.order.line").browse(
+            cr, uid, sol_id, context=context)
+        total = sol_proxy.product_uom_qty    
+        if total - current <= 0:
+            res['warning'] =  {
+                'title': _('Over limit'), 
+                'message': _('Quantity must be < %s') % total}
+        return res
+        
+    # Wizard button:
+    def action_assign_order(self, cr, uid, ids, context=None):
+        ''' Assign production to selected order line
+        '''
+        if context is None: 
+            context = {}        
+        wizard_browse = self.browse(cr, uid, ids, context=context)[0]
+        self.pool.get('mrp.production').write(
+            cr, uid, wizard_browse.used_mrp_id.id, {
+                'used_by_mrp_id': wizard_browse.parent_mrp_id.id, 
+                }, context=context)
+
+        return {'type':'ir.actions.act_window_close'}
+
+    # default function:        
+    #def default_product_id(self, cr, uid, context=None):
+    #    ''' Get default value (parent, used only for filter domain)
+    #    '''
+    #    return self.pool.get('mrp.production').browse(
+    #        cr, uid, context.get(
+    #            "active_id", 0), context=context).product_id.id
+
+    _columns = {
+        'current_load': fields.float('All partial load', 
+            digits=(16, 2), 
+            help="Assign value for all partial total produced", ),
+        }
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

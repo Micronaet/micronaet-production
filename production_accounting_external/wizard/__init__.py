@@ -22,5 +22,6 @@
 
 from . import assign_production
 from . import create_production
+from . import partial_production
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

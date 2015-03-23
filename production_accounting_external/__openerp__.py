@@ -50,6 +50,7 @@
         'security/ir.model.access.csv',    
         'wizard/assign_production.xml',
         'wizard/create_production_view.xml',
+        'wizard/partial_production.xml',
         'accounting_views.xml', # after wizard      
         'report/production_report.xml',
         ],

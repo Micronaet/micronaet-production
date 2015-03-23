@@ -97,6 +97,20 @@ class SaleOrderLine(orm.Model):
                 line_proxy.product_uom_qty,
             'sync_state': 'closed',
             }, context=context)                
+
+    def undo_close_production(self, cr, uid, ids, context=None):
+        ''' Undo close production (before sync)
+        '''
+        # TODO (interact with accounting)
+        line_proxy = self.browse(cr, uid, ids, context=context)[0]
+        
+        #if line_proxy.product_uom_maked_qty: # partial
+        #    pass # TODO close (partial)
+        #else: # TODO manage well (now not correct)
+        return self.write(cr, uid, ids, {
+            'product_uom_maked_qty': 0.0, # TODO problem if partial!!
+            'sync_state': 'draft',
+            }, context=context)                
            
     _columns = {
         'mrp_id': fields.many2one(
@@ -168,7 +182,7 @@ class MrpProduction(orm.Model):
         
         # Loop for close all (use original button event):
         for line in line_proxy:
-           if not line.is_produced:
+           if line.sync_state == 'draft':
                self.pool.get(
                    'sale.order.line').close_production(
                        cr, uid, [line.id], context=context)
