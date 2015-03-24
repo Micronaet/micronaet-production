@@ -46,8 +46,10 @@ class MrpPartialProductionWizard(orm.TransientModel):
     
     _name = "mrp.production.partial.wizard"
 
-    # Onchange
-    def onchange_current_load(self, cr, uid, ids, current, remian, 
+    # ---------
+    # Onchange:
+    # ---------
+    def onchange_current_load(self, cr, uid, ids, current, remain, 
             context=None):
         ''' Test if don't pass total - partial
         '''
@@ -58,17 +60,30 @@ class MrpPartialProductionWizard(orm.TransientModel):
         total = sol_proxy.product_uom_qty    
         maked = sol_proxy.product_uom_maked_sync_qty    
 
-        if wiz_proxy.remain: # compile remain quantity
+        if remain: # compile remain quantity
             return {'value': {'maked_load': total - maked, }}    
-                
-        if total - maked - current <= 0:
+
+        if not current: 
+            return {}
+
+        if current < maked:
+            return {'warning': {
+                'title': _('Min limit'), 
+                'message': _(
+                    'Total maked must be > yet maked in account (%s)') % (
+                    maked, )
+                }}
+                    
+        if total - maked - current < 0:
             return {'warning': {
                 'title': _('Over limit'), 
                 'message': _('Quantity must be < %s - %s (yet prod.)') % (
                     total, maked)
                 }}
         
+    # --------------    
     # Wizard button:
+    # --------------    
     def action_assign_order(self, cr, uid, ids, context=None):
         ''' Assign production to selected order line
         '''
@@ -88,6 +103,9 @@ class MrpPartialProductionWizard(orm.TransientModel):
         return {'type':'ir.actions.act_window_close'}
 
     _columns = {
+        #'yet_maked': fields.float('All partial load', 
+        #    digits=(16, 2), readonly=True,
+        #    help="Production yet present in accounting", ),
         'maked_load': fields.float('All partial load', 
             digits=(16, 2), 
             help="Assign value for all partial total produced", ),

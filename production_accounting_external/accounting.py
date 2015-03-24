@@ -229,7 +229,8 @@ class MrpProduction(orm.Model):
                 res[order.id]['previsional_qty'] += line.product_uom_qty 
 
             for line in order.use_mrp_ids: # TO correct (for recursion)
-                res[order.id]['use_extra_qty'] += self.browse(cr, uid, line.id).extra_qty
+                res[order.id]['use_extra_qty'] += \
+                    self.browse(cr, uid, line.id).extra_qty
 
                 #res[order.id]['use_extra_qty'] += line.extra_qty 
 
