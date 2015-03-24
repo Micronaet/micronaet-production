@@ -189,7 +189,7 @@
                                 <field name="product_uom_maked_qty" readonly="1"/>
                                 <field name="product_uom_maked_sync_qty" readonly="1" />
                                 <button name="%(action_assign_mrp_production_partial_wizard_form)d" string="Partial production" type="action" icon="gtk-add" attrs="{'invisible': [('sync_state','=','sync')]}"/>
-                                <field name="production_note" />                                
+                                <field name="production_note" readonly="1" />                                
                                 <field name="state" invisible="1" />
                                 <field name="sync_state" invisible="1" />
                                 <button name="close_production" type="object" string="Produced" icon="STOCK_SAVE" attrs="{'invisible': [('sync_state','!=','draft')]}"/>

@@ -178,6 +178,7 @@ class MrpProduction(orm.Model):
             else: # complete
                 sol_pool.write(cr, uid, item_id, {
                     'sync_state': 'sync',
+                    'product_uom_maked_sync_qty': sol_lines[item_id][2], # tot.
                     }, context=context)
         return True
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
