@@ -166,19 +166,15 @@ class MrpProduction(orm.Model):
                 
             if sol_lines[item_id][0] == 'partial':
                 # check if is complete (total = account + current):
-                if sol_lines[item_id][2] == sol_lines[item_id][1]:
-                    sol_pool.write(cr, uid, item_id, {
-                        'sync_state': 'sync', # completed
-                        'product_uom_maked_sync_qty': sol_lines[item_id][1],
-                        'product_uom_maked_qty': 0,
-                        }, context=context)                    
-                
-                # TODO mark sync all when all quantity
-                sol_pool.write(cr, uid, item_id, {
-                    'sync_state': 'partial_sync',
+                data = {
+                    'sync_state': 'partial_sync', # completed
                     'product_uom_maked_sync_qty': sol_lines[item_id][1],
-                    'product_uom_maked_qty': 0, # reset for new load
-                    }, context=context)
+                    'product_uom_maked_qty': 0,
+                    }
+                if sol_lines[item_id][2] == sol_lines[item_id][1]:
+                   data['sync_state'] = 'sync'
+                sol_pool.write(cr, uid, item_id, data, context=context)
+
             else: # complete
                 sol_pool.write(cr, uid, item_id, {
                     'sync_state': 'sync',
