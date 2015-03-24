@@ -47,19 +47,26 @@ class MrpPartialProductionWizard(orm.TransientModel):
     _name = "mrp.production.partial.wizard"
 
     # Onchange
-    def onchange_current_load(self, cr, uid, ids, current, context=None):
+    def onchange_current_load(self, cr, uid, ids, current, remian, 
+            context=None):
         ''' Test if don't pass total - partial
         '''
-        res = {}
         sol_id = context.get('active_id', False)
         sol_proxy = self.pool.get("sale.order.line").browse(
             cr, uid, sol_id, context=context)
+            
         total = sol_proxy.product_uom_qty    
-        if total - current <= 0:
-            res['warning'] =  {
+        maked = sol_proxy.product_uom_maked_sync_qty    
+
+        if wiz_proxy.remain: # compile remain quantity
+            return {'value': {'maked_load': total - maked, }}    
+                
+        if total - maked - current <= 0:
+            return {'warning': {
                 'title': _('Over limit'), 
-                'message': _('Quantity must be < %s') % total}
-        return res
+                'message': _('Quantity must be < %s - %s (yet prod.)') % (
+                    total, maked)
+                }}
         
     # Wizard button:
     def action_assign_order(self, cr, uid, ids, context=None):
@@ -67,9 +74,11 @@ class MrpPartialProductionWizard(orm.TransientModel):
         '''
         if context is None: 
             context = {}       
+
         wiz_proxy = self.browse(cr, uid, ids, context=context)[0]    
 
         sol_id = context.get('active_id', False)
+        
         q = wiz_proxy.maked_load
         self.pool.get('sale.order.line').write(
             cr, uid, sol_id, {
@@ -78,17 +87,10 @@ class MrpPartialProductionWizard(orm.TransientModel):
                 }, context=context)
         return {'type':'ir.actions.act_window_close'}
 
-    # default function:        
-    #def default_product_id(self, cr, uid, context=None):
-    #    ''' Get default value (parent, used only for filter domain)
-    #    '''
-    #    return self.pool.get('mrp.production').browse(
-    #        cr, uid, context.get(
-    #            "active_id", 0), context=context).product_id.id
-
     _columns = {
         'maked_load': fields.float('All partial load', 
             digits=(16, 2), 
             help="Assign value for all partial total produced", ),
+        'remain': fields.boolean('Remain', required=False),    
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
