@@ -12,8 +12,8 @@
                        <button name="action_assign_order" string="Assign" type="object" icon="gtk-jump-to" class="oe_highlight" />
                    </header>                   
                    <group colspan="4" col="4">
-                        <field name="maked_load" on_change="onchange_current_load(maked_load,remain)"/>
                         <field name="remain" on_change="onchange_current_load(maked_load,remain)"/>
+                        <field name="maked_load" on_change="onchange_current_load(maked_load,remain)" attrs="{'invisible':[('remain','=',True)]}"/>
                    </group>
                 </form>
             </field>

@@ -129,7 +129,9 @@ def sprix(operation, string="", pickle_parameters=None):
         completed = []
         try:
             for line in open(file_production, "r"):
-                if line[range_ok[0]:range_ok[1]] == 'OK': # TODO Change
+                if demo_mode:
+                    line = line[:-4] + "OK" + newline
+                if line[range_ok[0]:range_ok[1]] == 'OK':
                     completed.append(
                         int(line[range_id[0]:range_id[1]].strip()))
         except:
@@ -150,7 +152,7 @@ def sprix(operation, string="", pickle_parameters=None):
                 file_production,
                 path_history, 
                 )
-    return "OK"
+    return "OK%s" % completed
 
 # -----------------------------------------------------------------------------
 #                  Register Function in XML-RPC server:
@@ -161,7 +163,13 @@ server.register_function(sprix) #, 'sprix')
 #                       Run the server's main loop:
 # -----------------------------------------------------------------------------
 try:
-    print "Use CTRL + C to exit\n"
+    print "-" * 50
+    print "Start XMLRPC server, listening %s:%s" % (
+        xmlrpc_host,
+        xmlrpc_port,
+        )
+    print "Use CTRL + C to exit\nLog activity:"
+    print "-" * 50
     server.serve_forever()
 except KeyboardInterrupt:
     print "Exiting..."

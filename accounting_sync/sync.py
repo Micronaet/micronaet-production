@@ -114,9 +114,16 @@ class MrpProduction(orm.Model):
         # --------------
         # Write in file:
         # --------------
-        parameters = {}
+        parameters = {} # replace transit file
+        sol_lines = {} # for close OK lines  (only for partial use)
         parameters['transit_string'] = ''
-        for line in sol_pool.browse(cr, uid, sol_ids, context=context):
+        
+        for line in sol_pool.browse(cr, uid, sol_ids, context=context):            
+            sol_lines[line.id] = [ # only for partial check
+                line.sync_state,
+                line.product_uom_maked_qty + line.product_uom_maked_sync_qty,
+                line.product_uom_qty # total
+                ]
             parameters['transit_string'] += "%1s%-18s%-18s%10s%10s%10sXX\n" % (
                 'P' if line.sync_state == 'partial' else 'T', # Type (part/tot)
                 line.order_id.name.split("-")[-1].split("/")[0], # Order
@@ -147,7 +154,34 @@ class MrpProduction(orm.Model):
             raise osv.except_osv(
                 _('Sync error!'),
                 _('Error from accounting:\n%s') % res,
-            )        
+            )
+            
+        # Update odoo sol with sync informations:    
+        item_ids = eval(res[2:])
+        for item_id in item_ids: # update sync value in accounting
+            if item_id not in sol_lines:
+                _logger.warning('Order line in production not sync because'
+                    'not exist in odoo but only in accounting (jumped)')
+                continue
+                
+            if sol_lines[item_id][0] == 'partial':
+                # check if is complete (total = account + current):
+                if sol_lines[item_id][2] == sol_lines[item_id][1]:
+                    sol_pool.write(cr, uid, item_id, {
+                        'sync_state': 'sync', # completed
+                        'product_uom_maked_sync_qty': sol_lines[item_id][1],
+                        'product_uom_maked_qty': 0,
+                        }, context=context)                    
+                
+                # TODO mark sync all when all quantity
+                sol_pool.write(cr, uid, item_id, {
+                    'sync_state': 'partial_sync',
+                    'product_uom_maked_sync_qty': sol_lines[item_id][1],
+                    'product_uom_maked_qty': 0, # reset for new load
+                    }, context=context)
+            else: # complete
+                sol_pool.write(cr, uid, item_id, {
+                    'sync_state': 'sync',
+                    }, context=context)
         return True
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

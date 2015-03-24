@@ -65,24 +65,16 @@ class MrpPartialProductionWizard(orm.TransientModel):
 
         if not current: 
             return {}
-
-        if current < maked:
-            return {'warning': {
-                'title': _('Min limit'), 
-                'message': _(
-                    'Total maked must be > yet maked in account (%s)') % (
-                    maked, )
-                }}
-                    
-        if total - maked - current < 0:
+            
+        maximum = total - maked
+        if current > maximum:
             return {'warning': {
                 'title': _('Over limit'), 
-                'message': _('Quantity must be < %s - %s (yet prod.)') % (
-                    total, maked)
+                'message': _('Quantity must be max %s') % maximum,
                 }}
         
     # --------------    
-    # Wizard button:
+    # Button events:
     # --------------    
     def action_assign_order(self, cr, uid, ids, context=None):
         ''' Assign production to selected order line
@@ -91,24 +83,19 @@ class MrpPartialProductionWizard(orm.TransientModel):
             context = {}       
 
         wiz_proxy = self.browse(cr, uid, ids, context=context)[0]    
-
-        sol_id = context.get('active_id', False)
-        
+        sol_id = context.get('active_id', False)        
         q = wiz_proxy.maked_load
         self.pool.get('sale.order.line').write(
             cr, uid, sol_id, {
                 'product_uom_maked_qty': q,
-                'sync_state': 'partial' if q else 'draft', # reopen
+                'sync_state': 'partial',
                 }, context=context)
-        return {'type':'ir.actions.act_window_close'}
+        return {'type': 'ir.actions.act_window_close'}
 
     _columns = {
-        #'yet_maked': fields.float('All partial load', 
-        #    digits=(16, 2), readonly=True,
-        #    help="Production yet present in accounting", ),
-        'maked_load': fields.float('All partial load', 
-            digits=(16, 2), 
-            help="Assign value for all partial total produced", ),
+        'maked_load': fields.float('Partial load', 
+            digits=(16, 2), help="Partial load to assign as producted", ),
         'remain': fields.boolean('Remain', required=False),    
+        #'note': fields.text('Note'), # TODO default function for range!!!
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
