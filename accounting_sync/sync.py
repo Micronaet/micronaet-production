@@ -128,7 +128,7 @@ class MrpProduction(orm.Model):
                 'P' if line.sync_state == 'partial' else 'T', # Type (part/tot)
                 line.order_id.name.split("-")[-1].split("/")[0], # Order
                 line.product_id.default_code, # Code
-                int(line.product_uom_maked_qty), # Q (part/tot)
+                int(line.product_uom_maked_qty),
                 line.date_deadline, # Deadline
                 line.id,
                 )
@@ -179,6 +179,7 @@ class MrpProduction(orm.Model):
                 sol_pool.write(cr, uid, item_id, {
                     'sync_state': 'sync',
                     'product_uom_maked_sync_qty': sol_lines[item_id][2], # tot.
+                    'product_uom_maked_qty': 0,                    
                     }, context=context)
         return True
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
