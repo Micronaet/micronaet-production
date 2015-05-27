@@ -36,7 +36,7 @@
         'mrp',
         'mrp_operations',
         'working_bom',
-        'production_accounting_external',
+        #'production_accounting_external',
         'production_workhour',
         #'report',
         'report_webkit',
