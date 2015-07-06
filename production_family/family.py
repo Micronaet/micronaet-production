@@ -69,8 +69,8 @@ class ProductTemplateFamily(orm.Model):
         'family_id': fields.many2one('product.template', 'Family', 
             help='Parent family product belongs',
             domain=[('is_family', '=', True)]),            
-        'family_list': fields.char(
-            'Family list', size=150,
+        'family_list': fields.text(
+            'Family list',
             help='Code list (divided by |), ex.: 001|002 for 001* and 002*'),
         }
         
