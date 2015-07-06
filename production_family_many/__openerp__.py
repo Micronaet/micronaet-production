@@ -18,12 +18,15 @@
 ###############################################################################
 
 {
-    'name': 'Product family with one2many product',
+    'name': 'Product family integration 2many fields',
     'version': '0.1',
-    'category': 'Prodouct',
+    'category': '',
     'description': """
-        Extend production family with extra one2many field for manage 
-        sub child product (not used field link (for more product)
+        In production sometimes is usefull act with family of product than
+        product so this module create a particular product that work like
+        goups (the difference is that when you product, create a BOM,
+        sell generic product etc. you can use directly the product instead of
+        change all linked object to work with groups.
         """,
     'author': 'Micronaet S.r.l. - Nicola Riolini',
     'website': 'http://www.micronaet.it',

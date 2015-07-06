@@ -47,7 +47,11 @@ class ProductTemplateFamily(orm.Model):
     _inherit = 'product.template'
     
     _columns = {
-        'family_child_ids': fields.one2many('product.template',
-            'family_id', 'Child product', help='Child parent list'),
+        'family_child_ids': fields.many2many(
+            'product.product',
+            'template_product_family_rel',
+            'pt_id',
+            'pp_id',
+            'Child product', help='Child parent list'),        
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

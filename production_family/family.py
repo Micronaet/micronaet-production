@@ -75,7 +75,7 @@ class ProductTemplateFamily(orm.Model):
         }
         
     _defaults = {
-        'family': lambda *x: False,
+        'is_family': lambda *x: False,
         }
 
 class MrpBomFamily(orm.Model):
