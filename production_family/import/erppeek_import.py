@@ -37,7 +37,7 @@ database = config.get('odoo', 'database')
 user = config.get('odoo', 'user')
 password = config.get('odoo', 'password')
 
-file_in = eval(config.get('csv', 'name'))
+file_in = config.get('csv', 'name')
 separator = eval(config.get('csv', 'separator'))
 header =  eval(config.get('csv', 'header'))
 
@@ -56,7 +56,7 @@ family_pool = odoo.model('product.template')
 # ----------------------------------
 # Read and store all family present:
 # ----------------------------------
-family_ids = family.search([('is_family', '=', True)])
+family_ids = family_pool.search([('is_family', '=', True)])
 family_convert = {}
 for item in family_pool.browse(family_ids):
     family_convert[item.name] = [item.id, []] # create record [ID, [code]]
@@ -67,7 +67,7 @@ for item in family_pool.browse(family_ids):
 i = -header
 max_col = False
 for row in open(file_in, 'rb'):
-    line = row.split(separartor)
+    line = row.split(separator)
     i += 1
     if i <= 0: # jump header
         continue
@@ -76,8 +76,11 @@ for row in open(file_in, 'rb'):
     default_code = line[0]
     family = line[1]
     category = line[2]
-    jump = line[3]
+    jump = line[3].strip() # for \n
     
+    if jump == "*":
+        continue
+
     if family not in family_convert:
         # Create dict record 
         family_convert[family] = [
@@ -87,12 +90,13 @@ for row in open(file_in, 'rb'):
                 }),
             []]   
     family_convert[family][1].append(default_code)
-f.close()        
 
 # ----------------------
 # Update family to odoo:
 # ----------------------
-for item_id, family_list in family_convert.iteritems():
+for key in family_convert:
+    item_id, family_list = family_convert[key]
     family_pool.write(item_id, {
-        'family_list': " ".tostring(family_list)
+        'family_list': " ".join(family_list)
         })
+# TODO launch procedure for update all products        
