@@ -70,7 +70,7 @@ class ProductTemplateFamily(orm.Model):
             help='Parent family product belongs',
             domain=[('is_family', '=', True)]),            
         'family_list': fields.char(
-            'Family list', size=80,
+            'Family list', size=150,
             help='Code list (divided by |), ex.: 001|002 for 001* and 002*'),
         }
         
