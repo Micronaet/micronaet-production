@@ -78,7 +78,8 @@ for row in open(file_in, 'rb'):
     category = line[2]
     jump = line[3].strip() # for \n
     
-    if jump == "*":
+    if jump == "*" or not family:
+        print "Jump line %s" % (line, )
         continue
 
     if family not in family_convert:
@@ -97,6 +98,7 @@ for row in open(file_in, 'rb'):
 for key in family_convert:
     item_id, family_list = family_convert[key]
     family_pool.write(item_id, {
-        'family_list': " ".join(family_list)
+        'family_list': "|".join(family_list)
         })
+    family_pool.update_family(item_id)    
 # TODO launch procedure for update all products        
