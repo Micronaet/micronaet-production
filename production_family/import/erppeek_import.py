@@ -58,8 +58,9 @@ family_pool = odoo.model('product.template')
 # ----------------------------------
 family_ids = family_pool.search([('is_family', '=', True)])
 family_convert = {}
-for item in family_pool.browse(family_ids):
-    family_convert[item.name] = [item.id, []] # create record [ID, [code]]
+if family_ids:
+    for item in family_pool.browse(family_ids):
+        family_convert[item.name] = [item.id, []] # create record [ID, [code]]
     
 # -------------------------
 # Load elements from files:
