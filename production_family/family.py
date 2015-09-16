@@ -98,7 +98,7 @@ class MrpProductionFamily(orm.Model):
         'family': fields.boolean('Is family BOM'),
         }
 
-class MrpLAvorationFamily(orm.Model):
+class MrpLavorationFamily(orm.Model):
     ''' Add extra information to set up lavoration for family
     '''
     

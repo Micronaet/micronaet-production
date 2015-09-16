@@ -128,6 +128,8 @@ class SaleOrderLinePrevisional(orm.Model):
     '''
     
     _name = 'sale.order.line.previsional'
+    _description = 'Previsional line'
+    _rec_name = 'partner_id'
     
     def set_updated(self, cr, uid, ids, context=None):
         ''' Check the updated boolean (for speed up)

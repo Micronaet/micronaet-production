@@ -84,6 +84,7 @@ class res_company(orm.Model):
             'Acounting sync port', 
             help="XMLRPC port, example: 8000"),
         }
+        
     _defaults = {
         'accounting_sync': lambda *x: True,
         'accounting_sync_port': lambda *x: 8000,
@@ -142,7 +143,7 @@ class MrpProduction(orm.Model):
                     cr, uid, False, context=context) # TODO company_id 
                 
             # TODO use pickle library!!!
-            res = XMLRPC.sprix('production', parameters['transit_string'], )
+            res = XMLRPC.sprix('production', parameters['transit_string'])
             #pickle.dumps(parameters)) # param serialized
         except:    
             raise osv.except_osv(
