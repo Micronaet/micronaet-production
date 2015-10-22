@@ -45,7 +45,7 @@
         <field name="model">sale.order.line</field>
         <field name="priority" eval="20"/>
         <field name="arch" type="xml">
-            <tree string="OC line" editable="bottom">
+            <tree string="OC lines" editable="bottom">
                     <field name="partner_id" readonly="1"/>
                     <field name="order_id" readonly="1" />                   
                     <field name="family_id" readonly="1" />
@@ -380,7 +380,9 @@
         <field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>
         <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>        
         <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form','search_default_group_family':True}</field>
-        <field name="domain">[('mrp_id','=',False)]</field>
+        <field name="domain">[('mrp_id','=',False),('accounting_order','=',True)]</field>
+        <!--TODO remove filter for accounting when accountin will not be present! -->
+        <!--TODO put filter for line delivered or producted!!!!!!-->
     </record>
     
     <record model="ir.actions.act_window" id="action_view_sale_order_line">
