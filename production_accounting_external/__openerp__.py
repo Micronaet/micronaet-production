@@ -43,6 +43,8 @@
         'sql_sale_order',
         'production_order_mandatory',
         'production_workhour',
+        # Family in sale.order.line:
+        'production_order_line_family', # Micronaet/micronaet-mx8.git 
         ],
     'init_xml': [],
     'demo': [],
