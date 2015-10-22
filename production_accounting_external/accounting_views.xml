@@ -382,7 +382,6 @@
         <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form','search_default_group_family':True}</field>
         <field name="domain">[('mrp_id','=',False),('accounting_order','=',True)]</field>
         <!--TODO remove filter for accounting when accountin will not be present! -->
-        <!--TODO put filter for line delivered or producted!!!!!!-->
     </record>
     
     <record model="ir.actions.act_window" id="action_view_sale_order_line">
