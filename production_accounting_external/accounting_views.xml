@@ -106,6 +106,58 @@
         </field>
     </record>   
 
+    <record model="ir.ui.view" id="production_sale_order_line_form_view">
+        <field name="name">Production sale order line</field>
+        <field name="model">sale.order.line</field>
+        <field name="priority" eval="40"/>
+        <field name="arch" type="xml">
+            <form string="OC line">
+                <group colspan="4" col="4">
+                    <field name="order_id" readonly="1" />
+                    <field name="date_deadline" readonly="1"/>                    
+                    <field name="has_mandatory_delivery" readonly="1" />
+                    <field name="name" readonly="1"/>
+                    <!--<field name="partner_id" readonly="1"/>-->
+                    <!--<field name="product_uom_qty" readonly="1"/>-->
+                    <field name="product_uom" readonly="1"/>
+                    <field name="state" invisible="1" />
+                    <field name="sync_state" invisible="1" />
+                    <field name="production_note" />                                
+                    <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('sync_state','!=','draft')]}"/>
+                    <button name="close_production" type="object" string="Produced" icon="gtk-ok" attrs="{'invisible': [('sync_state','!=','draft')]}"/>
+                </group>    
+            </form>            
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="production_sale_order_line_tree_view">
+        <field name="name">Production sale order line</field>
+        <field name="model">sale.order.line</field>
+        <field name="priority" eval="40"/>
+        <field name="arch" type="xml">
+            <tree string="OC line" editable="bottom" delete="0" colors="orange:sync_state=='closed' or product_uom_maked_qty!=0.0;green:sync_state=='sync';blue:has_mandatory_delivery==True">
+                <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('sync_state','!=','draft')]}" />
+                <field name="mrp_sequence" readonly="1" string="ord."/>
+                <field name="partner_id" readonly="1"/>
+                <field name="order_id" readonly="1"/>
+                <field name="name" invisible="1"/>
+                <field name="default_code" readonly="1"/>
+                <field name="date_deadline" readonly="1" />                    
+                <field name="has_mandatory_delivery" invisible="1" string="Mand."/>
+                <field name="product_uom" string="UOM" invisible="1"/>
+                <field name="product_uom_qty" sum="Total" readonly="1" />                                
+                <field name="product_uom_maked_qty" readonly="1"/>
+                <field name="product_uom_maked_sync_qty" readonly="1" />
+                <button name="%(action_assign_mrp_production_partial_wizard_form)d" string="Partial production" type="action" icon="gtk-add" attrs="{'invisible': [('sync_state','in',('closed','sync'))]}"/>
+                <field name="production_note" readonly="1" />                                
+                <field name="state" invisible="1" />
+                <field name="sync_state" invisible="1" />
+                <button name="close_production" type="object" string="Produced" icon="STOCK_SAVE" attrs="{'invisible': [('sync_state','!=','draft')]}"/>
+                <button name="undo_close_production" type="object" string="Undo produced" icon="STOCK_REVERT_TO_SAVED" attrs="{'invisible': [('sync_state','in',('draft'))]}"/>
+            </tree>        
+        </field>
+    </record>
+
     <record model="ir.ui.view" id="default_mrp_production_form_view">
         <field name="name">Production form custom</field>
         <field name="model">mrp.production</field>
@@ -174,44 +226,11 @@
                         <button name="close_all_production" type="object" string="All produced" icon="gtk-ok" />
                         <button name="accounting_sync" type="object" string="Accounting sync" icon="terp-gtk-jump-to-ltr" />
 			            <newline />
-				        <field name="order_line_ids" nolabel="1" colspan="4">
-				            <tree string="OC line" editable="bottom" delete="0" colors="orange:sync_state=='closed' or product_uom_maked_qty!=0.0;green:sync_state=='sync';blue:has_mandatory_delivery==True">
-                                <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('sync_state','!=','draft')]}" />
-                                <field name="mrp_sequence" readonly="1" string="ord."/>
-                                <field name="partner_id" readonly="1"/>
-                                <field name="order_id" readonly="1"/>
-                                <field name="name" invisible="1"/>
-                                <field name="default_code" readonly="1"/>
-                                <field name="date_deadline" readonly="1" />                    
-                                <field name="has_mandatory_delivery" invisible="1" string="Mand."/>
-                                <field name="product_uom" string="UOM" invisible="1"/>
-                                <field name="product_uom_qty" sum="Total" readonly="1" />                                
-                                <field name="product_uom_maked_qty" readonly="1"/>
-                                <field name="product_uom_maked_sync_qty" readonly="1" />
-                                <button name="%(action_assign_mrp_production_partial_wizard_form)d" string="Partial production" type="action" icon="gtk-add" attrs="{'invisible': [('sync_state','=','sync')]}"/>
-                                <field name="production_note" readonly="1" />                                
-                                <field name="state" invisible="1" />
-                                <field name="sync_state" invisible="1" />
-                                <button name="close_production" type="object" string="Produced" icon="STOCK_SAVE" attrs="{'invisible': [('sync_state','!=','draft')]}"/>
-                                <button name="undo_close_production" type="object" string="Undo produced" icon="STOCK_REVERT_TO_SAVED" attrs="{'invisible': [('sync_state','in',('draft'))]}"/>
-                            </tree>
-				            <form string="OC line">
-				                <group colspan="4" col="4">
-                                    <field name="order_id" readonly="1" />
-                                    <field name="date_deadline" readonly="1"/>                    
-                                    <field name="has_mandatory_delivery" readonly="1" />
-                                    <field name="name" readonly="1"/>
-                                    <!--<field name="partner_id" readonly="1"/>-->
-                                    <!--<field name="product_uom_qty" readonly="1"/>-->
-                                    <field name="product_uom" readonly="1"/>
-                                    <field name="state" invisible="1" />
-                                    <field name="sync_state" invisible="1" />
-                                    <field name="production_note" />                                
-                                    <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('sync_state','!=','draft')]}"/>
-                                    <button name="close_production" type="object" string="Produced" icon="gtk-ok" attrs="{'invisible': [('sync_state','!=','draft')]}"/>
-                                </group>    
-                            </form>
-				        </field>
+			            <!--embed sale.order.line modified:-->
+				        <field name="order_line_ids" nolabel="1" colspan="4" context="{
+				            'tree_view_ref': 'production_accounting_external.production_sale_order_line_tree_view',
+				            'form_view_ref': 'production_accounting_external.production_sale_order_line_form_view'
+				            }" />
 			        </group>
 		        </page>
 		        <page string="Previsional order">
@@ -437,8 +456,8 @@
         <field name="view_mode">tree,form,calendar,graph</field>
         <field name="search_view_id" ref="sale.view_sales_order_filter"/>
         <field name="context">{
-            'search_default_my_sale_orders_filter': 1,
             'mode_production': True,
+            'search_default_my_sale_orders_filter': 1,
             }
         </field>
         <field name="domain">[('accounting_order','=',True)]</field>

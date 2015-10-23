@@ -140,7 +140,7 @@ class MrpProduction(orm.Model):
                         )                       
                     data['product_uom_maked_sync_qty'] = account_qty                     
                     if account_qty == sol.product_uom_qty: # TODO approx?
-                        data['sync_state'] = 'sync' # closed!                        
+                        data['sync_state'] = 'sync' # closed!
                     
                 # Correct line as account sync:    
                 self.pool.get('sale.order.line').write(cr, uid, sol.id, data, 
