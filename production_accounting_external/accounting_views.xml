@@ -402,7 +402,7 @@
             </xpath>
             <field name='state' position="after">
                 <field name="all_produced" invisible="1" />
-                <button name="nothing" string="" type="object" icon="gtk-yes" attrs="{'invisible': [('all_produced','=',False)]}"/>                
+                <button name="nothing" string="" type="object" icon="gtk-yes" attrs="{'invisible':[('all_produced','=',False)]}"/>                
             </field>
         </field>
     </record>
@@ -441,7 +441,7 @@
         <field name="domain">[('mrp_id','=',False),('accounting_order','=',True)]</field>
         <!--TODO remove filter for accounting when accountin will not be present! -->
     </record>
-    
+
     <record model="ir.actions.act_window" id="action_view_sale_order_line">
         <field name="name">Sale order line</field>
         <field name="res_model">sale.order.line</field>
@@ -511,7 +511,6 @@
         </field>
     </record>
 
-    
     <!--MENUITEM:-->
     <!--Overrided:-->
     <menuitem 
@@ -528,9 +527,7 @@
         action="sql_sale_order.action_quotations_accounting"
         name="Production order"/>
 
-
     <!--                       MENUITEM:                                    -->
-
    <!-- PRODUCTION -->
    <menuitem name="Extra production"
           parent="mrp.menu_mrp_production_action" 

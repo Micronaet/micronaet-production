@@ -205,6 +205,38 @@ class MrpProduction(orm.Model):
     '''    
     _inherit = 'mrp.production'
     
+    # ------------------
+    # Override function:
+    # ------------------
+    def unlink(self, cr, uid, ids, context=None):
+        """ Delete all record(s) from table heaving record id in ids
+            return True on success, False otherwise 
+            @param cr: cursor to database
+            @param uid: id of current user
+            @param ids: list of record ids to be removed from table
+            @param context: context arguments, like lang, time zone
+            
+            @return: True on success, False otherwise
+        """
+        # Test if line has accounting element sync:
+        order_locked = ''
+        for production in self.browse(cr, uid, ids, context=context):
+            test = [line.product_uom_maked_sync_qty 
+                for line in production.order_line_ids]
+            if any(test):
+                order_locked += _('Order %s\n') % production.name
+
+        if order_locked:
+            raise osv.except_osv(
+                _('Error'), 
+                _('''Before delete production order undo account operation\n
+                    %s
+                    ''' % order_locked))
+
+        # Delete if no error:            
+        res = super(MrpProduction, self).unlink(
+            cr, uid, ids, context=context)
+        return res
     # -------------
     # Button event:
     # -------------
