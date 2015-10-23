@@ -428,6 +428,31 @@
             </p>
         </field>
     </record>
+
+    <record id="action_production_orders" model="ir.actions.act_window">
+        <field name="name">Sales production order</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,calendar,graph</field>
+        <field name="search_view_id" ref="sale.view_sales_order_filter"/>
+        <field name="context">{
+            'search_default_my_sale_orders_filter': 1,
+            'mode_production': True,
+            }
+        </field>
+        <field name="domain">[('accounting_order','=',True)]</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to create a quotation that can be converted into a sales
+                order.
+            </p><p>
+                Odoo will help you efficiently handle the complete sales flow:
+                quotation, sales order, delivery, invoicing and payment.
+            </p>
+        </field>
+    </record>
+
     
     <!--MENUITEM:-->
     <!--Overrided:-->
@@ -446,7 +471,9 @@
         name="Production order"/>
 
 
-    <!--MENUITEM:-->
+    <!--                       MENUITEM:                                    -->
+
+   <!-- PRODUCTION -->
    <menuitem name="Extra production"
           parent="mrp.menu_mrp_production_action" 
           id="menu_view_mrp_production_extra" 
@@ -477,6 +504,15 @@
           id="menu_sale_order_line_m1_mandatory" 
           action="action_view_sale_order_line_mandatory" 
           sequence="30" />
+
+     <!-- SALES -->
+     <menuitem 
+         action="action_production_orders" 
+         id="menu_sale_production_order" 
+         parent="sale.menu_sale_order" 
+         sequence="20" 
+         groups="base.group_sale_salesman,base.group_sale_manager"
+         />
 
     </data>
 </openerp>
