@@ -119,9 +119,14 @@ class MrpProduction(orm.Model):
             # TODO procedure for set syncronization that is manual
             _logger.info('Manual sync production!')            
             for sol in self.browse(cr, uid, ids, context=context)[
-                    0].order_line_ids:                    
+                    0].order_line_ids:
+                # Jump line sync
+                if sol.sync_state == 'sync':
+                    continue
+                    
                 data = {
                     'product_uom_maked_sync_qty': sol.product_uom_maked_qty,
+                    'product_uom_maked_qty': 0.0, # always reset q maked
                     }
                 
                 # Different behaviour depend on state:    
@@ -134,7 +139,6 @@ class MrpProduction(orm.Model):
                         sol.product_uom_maked_qty
                         )                       
                     data['product_uom_maked_sync_qty'] = account_qty                     
-                    data['product_uom_maked_qty'] = 0.0
                     if account_qty == sol.product_uom_qty: # TODO approx?
                         data['sync_state'] = 'sync' # closed!                        
                     

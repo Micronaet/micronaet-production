@@ -175,7 +175,7 @@
                         <button name="accounting_sync" type="object" string="Accounting sync" icon="terp-gtk-jump-to-ltr" />
 			            <newline />
 				        <field name="order_line_ids" nolabel="1" colspan="4">
-				            <tree string="OC line" editable="bottom" delete="0" colors="orange:sync_state=='closed';green:sync_state=='sync';blue:has_mandatory_delivery==True">
+				            <tree string="OC line" editable="bottom" delete="0" colors="orange:sync_state=='closed' or product_uom_maked_qty!=0.0;green:sync_state=='sync';blue:has_mandatory_delivery==True">
                                 <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('sync_state','!=','draft')]}" />
                                 <field name="mrp_sequence" readonly="1" string="ord."/>
                                 <field name="partner_id" readonly="1"/>
@@ -193,7 +193,7 @@
                                 <field name="state" invisible="1" />
                                 <field name="sync_state" invisible="1" />
                                 <button name="close_production" type="object" string="Produced" icon="STOCK_SAVE" attrs="{'invisible': [('sync_state','!=','draft')]}"/>
-                                <button name="undo_close_production" type="object" string="Undo produced" icon="STOCK_REVERT_TO_SAVED" attrs="{'invisible': [('sync_state','not in',('closed', 'sync'))]}"/>
+                                <button name="undo_close_production" type="object" string="Undo produced" icon="STOCK_REVERT_TO_SAVED" attrs="{'invisible': [('sync_state','in',('draft'))]}"/>
                             </tree>
 				            <form string="OC line">
 				                <group colspan="4" col="4">
