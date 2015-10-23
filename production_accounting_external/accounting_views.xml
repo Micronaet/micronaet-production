@@ -405,6 +405,47 @@
         <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form'}</field>
     </record>
 
+    <!--Override actions-->
+    <record id="action_orders" model="ir.actions.act_window">
+        <field name="name">Sales Orders</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,calendar,graph</field>
+        <field name="search_view_id" ref="sale.view_sales_order_filter"/>
+        <field name="context">{
+                'search_default_my_sale_orders_filter': 1
+            }
+        </field>
+        <field name="domain">[('state', 'not in', ('draft', 'sent', 'cancel')),('accounting_order','=',False)]</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to create a quotation that can be converted into a sales
+                order.
+            </p><p>
+                Odoo will help you efficiently handle the complete sales flow:
+                quotation, sales order, delivery, invoicing and payment.
+            </p>
+        </field>
+    </record>
+    
+    <!--MENUITEM:-->
+    <!--Overrided:-->
+    <menuitem 
+        action="action_orders" 
+        id="sale.menu_sale_order" 
+        parent="base.menu_sales" 
+        sequence="6" 
+        groups="base.group_sale_salesman,base.group_sale_manager"
+        />
+
+    <menuitem
+        parent="sale.menu_sale_order" 
+        id="sql_sale_order.quotation_from_accounting_menu" 
+        action="sql_sale_order.action_quotations_accounting"
+        name="Production order"/>
+
+
     <!--MENUITEM:-->
    <menuitem name="Extra production"
           parent="mrp.menu_mrp_production_action" 
@@ -437,12 +478,6 @@
           action="action_view_sale_order_line_mandatory" 
           sequence="30" />
 
-    <!--Overrided:-->
-    <menuitem
-        parent="sale.menu_sale_order" 
-        id="sql_sale_order.quotation_from_accounting_menu" 
-        action="sql_sale_order.action_quotations_accounting"
-        name="Production order"/>
     </data>
 </openerp>
 

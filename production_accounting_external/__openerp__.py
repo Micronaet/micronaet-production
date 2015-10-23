@@ -34,6 +34,7 @@
         'base',
         'product',
         'stock',
+        'sale',
         'sql_sale_order',
         'production_family',
         'production_working_bom',
