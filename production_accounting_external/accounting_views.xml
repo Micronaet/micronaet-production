@@ -403,8 +403,9 @@
                 <button name="nothing" string="" type="object" icon="gtk-yes" attrs="{'invisible': [('all_produced','=',False)]}"/>
             </xpath>
 
-            <xpath expr="//page/field[@name='order_line']/tree/field[@name='subtotal']" position="after">
+            <xpath expr="//page/field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
                 <field name="mrp_id" />
+                <field name="product_uom_maked_sync_qty" />
             </xpath>
         </field>
     </record>
