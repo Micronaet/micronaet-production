@@ -42,8 +42,7 @@ _logger = logging.getLogger(__name__)
 
 class MrpPartialProductionWizard(orm.TransientModel):
     ''' Wizard that assign partial lavoration to the selected order line
-    '''
-    
+    '''    
     _name = "mrp.production.partial.wizard"
 
     # ---------
@@ -61,7 +60,8 @@ class MrpPartialProductionWizard(orm.TransientModel):
         maked = sol_proxy.product_uom_maked_sync_qty    
 
         if remain: # compile remain quantity
-            return {'value': {'maked_load': total - maked, }}    
+            return {'value': {
+                'maked_load': total - maked, }}    
 
         if not current: 
             return {}

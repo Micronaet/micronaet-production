@@ -42,6 +42,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+
 class res_company(orm.Model):
     ''' Add XMLRPC parameters for connections
     '''
@@ -49,7 +50,7 @@ class res_company(orm.Model):
     _inherit = 'res.company'
     
     # Utility:
-    def get_xmlrpc_is_manual(self, cr, id, company_id=False, context=None):
+    def get_xmlrpc_is_manual(self, cr, uid, company_id=False, context=None):
         ''' Check if is a manual backup
         '''
         if not company_id:
@@ -116,13 +117,30 @@ class MrpProduction(orm.Model):
                 cr, uid, False, context=context):
                 
             # TODO procedure for set syncronization that is manual
-            _logger('Manual sync production!')            
+            _logger.info('Manual sync production!')            
             for sol in self.browse(cr, uid, ids, context=context)[
                     0].order_line_ids:                    
-                # Correct line as account sync:    
-                self.pool.get('sale.order.line').write(cr, uid, sol.id, {
+                data = {
                     'product_uom_maked_sync_qty': sol.product_uom_maked_qty,
-                    }, context=context)
+                    }
+                
+                # Different behaviour depend on state:    
+                if sol.sync_state == 'closed':
+                    data['sync_state'] = 'sync'
+                    
+                if sol.sync_state == 'partial':
+                    account_qty = (
+                        sol.product_uom_maked_sync_qty + 
+                        sol.product_uom_maked_qty
+                        )                       
+                    data['product_uom_maked_sync_qty'] = account_qty                     
+                    data['product_uom_maked_qty'] = 0.0
+                    if account_qty == sol.product_uom_qty: # TODO approx?
+                        data['sync_state'] = 'sync' # closed!                        
+                    
+                # Correct line as account sync:    
+                self.pool.get('sale.order.line').write(cr, uid, sol.id, data, 
+                    context=context)
             return True
 
         # TODO no more used!!!:
