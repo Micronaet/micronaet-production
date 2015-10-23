@@ -57,6 +57,11 @@ class SaleOrder(orm.Model):
         ''' Button event does nothing
         '''
         return True
+        
+    def open_production_form(self, cr, uids, ids, context=None):
+        ''' Button that open form of MRP linked
+        '''
+        return True
 
     # ---------------
     # Function field:

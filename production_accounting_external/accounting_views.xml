@@ -400,14 +400,13 @@
             <xpath expr="/tree" position="attributes">
                  <attribute name="colors">green:all_produced==True;grey:state=='cancel';blue:state in ('waiting_date','manual');red:state in ('invoice_except','shipping_except')</attribute>
             </xpath>
-            
             <field name='state' position="after">
                 <field name="all_produced" invisible="1" />
                 <button name="nothing" string="" type="object" icon="gtk-yes" attrs="{'invisible': [('all_produced','=',False)]}"/>                
             </field>
         </field>
     </record>
-            
+
     <record model="ir.ui.view" id="view_sale_order_production_test_form_view">
         <field name="name">sale.order.production.test.form</field>
         <field name="model">sale.order</field>
@@ -421,8 +420,8 @@
                 <field name="all_produced" invisible="1" />
             </xpath>
             <xpath expr="//page/field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
-                <field name="mrp_id" />
-                <!--TODO button for oper MRP production order-->
+                <field name="mrp_id" invisible="1" />
+                <button name="nothing" string="Open production" type="object" icon="gtk-yes" attrs="{'invisible': [('mrp_id','=',False)]}"/><!--TODO create action-->
                 <field name="product_uom_maked_sync_qty" />
             </xpath>
         </field>
