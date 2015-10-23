@@ -92,7 +92,8 @@ class SaleOrderLine(orm.Model):
         'mrp_id': fields.many2one(
             'mrp.production', 'Production', ondelete='set null', ),
         'product_uom_maked_qty': fields.float(
-            'Maked', digits=(16, 2), ),
+            'Maked (temp.)', digits=(16, 2), 
+            help='Partial position till not sync in accounting'),
         'product_uom_maked_sync_qty': fields.float(
             'Maked (acc.)', digits=(16, 2), 
             help='This quantity is the sync quantity maked in accounting'),
