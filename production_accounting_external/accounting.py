@@ -66,9 +66,10 @@ class SaleOrder(orm.Model):
         '''
         res = {}
         for order in self.browse(cr, uid, ids, context=context):            
-            res[order.id] = any([
+            is_line_produced = [
                 item.product_uom_qty == item.product_uom_maked_sync_qty 
-                    for item in order.order_line])
+                    for item in order.order_line]
+            res[order.id] = all(is_line_produced)
         return res
         
     def _check_line_produced(self, cr, uid, ids, context=None):
@@ -86,7 +87,8 @@ class SaleOrder(orm.Model):
             _get_produced_state, method=True, type='boolean', 
             string='All produced', store={
                 'sale.order.line': (
-                    _check_line_produced, ['product_uom_maked_sync_qty'], 10),
+                    _check_line_produced, [
+                        'mrp_id', 'product_uom_maked_sync_qty'], 10),
                     })}
 
 class SaleOrderLine(orm.Model):

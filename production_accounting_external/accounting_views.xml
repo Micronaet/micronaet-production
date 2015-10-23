@@ -391,18 +391,35 @@
         </field>
     </record>
 
-    <!--sale.order.line-->
+    <!--sale.order.line-->    
+    <record model="ir.ui.view" id="view_sale_order_production_test_tree_view">
+        <field name="name">sale.order.production.test.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="/tree" position="attributes">
+                 <attribute name="colors">green:all_produced==True;grey:state=='cancel';blue:state in ('waiting_date','manual');red:state in ('invoice_except','shipping_except')</attribute>
+            </xpath>
+            
+            <field name='state' position="after">
+                <field name="all_produced" invisible="1" />
+                <button name="nothing" string="" type="object" icon="gtk-yes" attrs="{'invisible': [('all_produced','=',False)]}"/>                
+            </field>
+        </field>
+    </record>
+            
     <record model="ir.ui.view" id="view_sale_order_production_test_form_view">
         <field name="name">sale.order.production.test.form</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form" />
         <field name="arch" type="xml">
             <!--sale.order.line LINE:-->
-            <xpath expr="//page/field[@name='order_line']" position="before">
-                <field name="all_produced" /> <!--invisible="1"-->
-                <button name="nothing" string="" type="object" icon="gtk-yes" attrs="{'invisible': [('all_produced','=',False)]}"/>
+            <xpath expr="/form/sheet//field[@name='name']" position="after">
+                <button name="nothing" string="" type="object" icon="gtk-yes" attrs="{'invisible': [('all_produced','=',False)]}"/>                
             </xpath>
-
+            <xpath expr="//page/field[@name='order_line']" position="before">
+                <field name="all_produced" invisible="1" />
+            </xpath>
             <xpath expr="//page/field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
                 <field name="mrp_id" />
                 <field name="product_uom_maked_sync_qty" />
