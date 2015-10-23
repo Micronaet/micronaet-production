@@ -34,7 +34,6 @@ _logger = logging.getLogger(__name__)
 class ProductTemplateAccounting(orm.Model):
     ''' Accounting external fields
     '''
-    
     _inherit = 'product.template'
     
     _columns = {
@@ -48,8 +47,7 @@ class ProductTemplateAccounting(orm.Model):
 
 class SaleOrderLine(orm.Model):
     ''' Add extra field to manage connection with accounting
-    '''
-    
+    '''    
     _inherit = 'sale.order.line'
     
     # Force new order for production
@@ -61,6 +59,7 @@ class SaleOrderLine(orm.Model):
     def free_line(self, cr, uid, ids, context=None):
         ''' Free the line from production order 
         '''
+        # Only in draft mode!
         return self.write(cr, uid, ids, {
             'mrp_id': False, 
             'mrp_sequence': False, # reset order
@@ -69,12 +68,8 @@ class SaleOrderLine(orm.Model):
     def close_production(self, cr, uid, ids, context=None):
         ''' Close production
         '''
-        # TODO (interact with accounting)
         line_proxy = self.browse(cr, uid, ids, context=context)[0]
         
-        #if line_proxy.product_uom_maked_qty: # partial
-        #    pass # TODO close (partial)
-        #else: # TODO manage well (now not correct)
         return self.write(cr, uid, ids, {
             'product_uom_maked_qty': 
                 line_proxy.product_uom_qty,
@@ -84,14 +79,11 @@ class SaleOrderLine(orm.Model):
     def undo_close_production(self, cr, uid, ids, context=None):
         ''' Undo close production (before sync)
         '''
-        # TODO (interact with accounting)
         line_proxy = self.browse(cr, uid, ids, context=context)[0]
         
-        #if line_proxy.product_uom_maked_qty: # partial
-        #    pass # TODO close (partial)
-        #else: # TODO manage well (now not correct)
+        # TODO manage if there's partial!!
         return self.write(cr, uid, ids, {
-            'product_uom_maked_qty': 0.0, # TODO problem if partial!!
+            'product_uom_maked_qty': 0.0,
             'sync_state': 'draft',
             }, context=context)                
            

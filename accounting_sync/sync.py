@@ -114,21 +114,18 @@ class MrpProduction(orm.Model):
         '''
         if self.pool.get('res.company').get_xmlrpc_is_manual(
                 cr, uid, False, context=context):
-            _logger('Manual sync production!')    
+                
             # TODO procedure for set syncronization that is manual
-            
-            #for sol in self.browse(cr, uid, ids, context=context)[
-            #        0].order_line_ids:
-            #    data = {
-            #        'sync_state': 'partial_sync', # completed
-            #        'product_uom_maked_sync_qty': sol.product_uom_maked_qty,
-            #        #'product_uom_maked_qty': 0,
-            #        }
-            #    if sol.sync_state == 'partial_sync':
-            #    
-            #    elif sol.sync_state == 'complete':
+            _logger('Manual sync production!')            
+            for sol in self.browse(cr, uid, ids, context=context)[
+                    0].order_line_ids:                    
+                # Correct line as account sync:    
+                self.pool.get('sale.order.line').write(cr, uid, sol.id, {
+                    'product_uom_maked_sync_qty': sol.product_uom_maked_qty,
+                    }, context=context)
             return True
 
+        # TODO no more used!!!:
         # ----------------------
         # Read all line to close
         # ----------------------
