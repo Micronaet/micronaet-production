@@ -420,11 +420,11 @@
                 <field name="all_produced" invisible="1" />
             </xpath>
             <xpath expr="//page/field[@name='order_line']/tree/field[@name='product_uom_qty']" position="after">
-                <button name="open_production_form" string="Open production" type="object" icon="gtk-yes" attrs="{'invisible': [('mrp_id','=',False)]}"/>
+                <field name="product_uom_maked_sync_qty" />
             </xpath>
             <xpath expr="//page/field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
                 <field name="mrp_id"  /><!--TODO invisible="1"-->
-                <field name="product_uom_maked_sync_qty" />
+                <button name="open_production_form" string="Open production" type="object" icon="gtk-yes" attrs="{'invisible': [('mrp_id','=',False)]}"/>
             </xpath>
         </field>
     </record>
