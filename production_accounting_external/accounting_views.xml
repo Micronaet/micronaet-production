@@ -391,6 +391,25 @@
         </field>
     </record>
 
+    <!--sale.order.line-->
+    <record model="ir.ui.view" id="view_sale_order_production_test_form_view">
+        <field name="name">sale.order.production.test.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <!--sale.order.line LINE:-->
+            <xpath expr="//page/field[@name='order_line']" position="before">
+                <field name="all_produced" /> <!--invisible="1"-->
+                <button name="nothing" string="" type="object" icon="gtk-yes" attrs="{'invisible': [('all_produced','=',False)]}"/>
+            </xpath>
+
+            <xpath expr="//page/field[@name='order_line']/tree/field[@name='subtotal']" position="after">
+                <field name="mrp_id" />
+            </xpath>
+        </field>
+    </record>
+
+    <!--sale.order.line-->
     <record model="ir.actions.act_window" id="action_view_sale_order_production_line">
         <field name="name">Sale order line</field>
         <field name="res_model">sale.order.line</field>

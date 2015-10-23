@@ -50,7 +50,18 @@ class SaleOrder(orm.Model):
     '''    
     _inherit = 'sale.order'
     
-    def _ckech_produced(self, cr, uid, ids, fields, args, context=None):
+    # -------------
+    # Button event:
+    # -------------
+    def nothing(self, cr, uids, ids, context=None):
+        ''' Button event does nothing
+        '''
+        return True
+
+    # ---------------
+    # Function field:
+    # ---------------
+    def _get_produced_state(self, cr, uid, ids, fields, args, context=None):
         ''' Check all line if are sync
         '''
         res = {}
@@ -60,19 +71,19 @@ class SaleOrder(orm.Model):
                     for item in order.order_line])
         return res
         
-    def _get_line_produced(self, cr, uid, ids, context=None):
+    def _check_line_produced(self, cr, uid, ids, context=None):
         ''' Check when family_id will be modified in product
         '''
         #select distinct order_id from sale_order_line where id in %s
         res = []
         for line in self.browse(cr, uid, ids, context=context):
-            line.order_id.id not in res:
+            if line.order_id.id not in res:
                 res.append(line.order_id.id)
         return res
 
     _columns = {
-        'all_producted': fields.function(
-            _ckech_produced, method=True, type='boolean', 
+        'all_produced': fields.function(
+            _get_produced_state, method=True, type='boolean', 
             string='All produced', store={
                 'sale.order.line': (
                     _check_line_produced, ['product_uom_maked_sync_qty'], 10),
