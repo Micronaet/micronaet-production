@@ -45,6 +45,39 @@ class ProductTemplateAccounting(orm.Model):
             help="Accounting existence updated today"),
     }
 
+class SaleOrder(orm.Model):
+    ''' Add control fields for sale order
+    '''    
+    _inherit = 'sale.order'
+    
+    def _ckech_produced(self, cr, uid, ids, fields, args, context=None):
+        ''' Check all line if are sync
+        '''
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):            
+            res[order.id] = any([
+                item.product_uom_qty == item.product_uom_maked_sync_qty 
+                    for item in order.order_line])
+        return res
+        
+    def _get_line_produced(self, cr, uid, ids, context=None):
+        ''' Check when family_id will be modified in product
+        '''
+        #select distinct order_id from sale_order_line where id in %s
+        res = []
+        for line in self.browse(cr, uid, ids, context=context):
+            line.order_id.id not in res:
+                res.append(line.order_id.id)
+        return res
+
+    _columns = {
+        'all_producted': fields.function(
+            _ckech_produced, method=True, type='boolean', 
+            string='All produced', store={
+                'sale.order.line': (
+                    _check_line_produced, ['product_uom_maked_sync_qty'], 10),
+                    })}
+
 class SaleOrderLine(orm.Model):
     ''' Add extra field to manage connection with accounting
     '''    
@@ -151,8 +184,7 @@ class SaleOrderLinePrevisional(orm.Model):
 
 class MrpProduction(orm.Model):
     ''' Add extra field to manage connection with accounting
-    '''
-    
+    '''    
     _inherit = 'mrp.production'
     
     # -------------
@@ -297,8 +329,7 @@ class MrpProduction(orm.Model):
 
 class MrpProductionWorkcenterLine(orm.Model):
     ''' Accounting external fields
-    '''
-    
+    '''    
     _inherit = 'mrp.production.workcenter.line'
     
     _columns = {
