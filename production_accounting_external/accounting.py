@@ -58,11 +58,6 @@ class SaleOrder(orm.Model):
         '''
         return True
         
-    def open_production_form(self, cr, uids, ids, context=None):
-        ''' Button that open form of MRP linked
-        '''
-        return True
-
     # ---------------
     # Function field:
     # ---------------
@@ -107,6 +102,11 @@ class SaleOrderLine(orm.Model):
     # -------------
     # Button event:
     # -------------
+    def open_production_form(self, cr, uids, ids, context=None):
+        ''' Button that open form of MRP linked
+        '''
+        return True
+
     def free_line(self, cr, uid, ids, context=None):
         ''' Free the line from production order 
         '''
