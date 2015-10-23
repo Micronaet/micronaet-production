@@ -84,6 +84,7 @@ class SaleOrderLine(orm.Model):
         # TODO manage if there's partial!!
         return self.write(cr, uid, ids, {
             'product_uom_maked_qty': 0.0,
+            'product_uom_maked_sync_qty': 0.0,
             'sync_state': 'draft',
             }, context=context)                
            
