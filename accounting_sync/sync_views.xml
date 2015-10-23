@@ -11,8 +11,8 @@
                 <group colspan="4" col="4">
                     <field name="name" readonly="1" /> 
                     <newline />
+                    <field name="manual" /> 
                     <field name="accounting_sync" /> 
-                    <newline />
                     <field name="accounting_sync_host" attrs="{'invisible': [('accounting_sync','=',False)], 'required': [('accounting_sync','=',True)]}"/>
                     <field name="accounting_sync_port" attrs="{'invisible': [('accounting_sync','=',False)], 'required': [('accounting_sync','=',True)]}"/>
                 </group>
@@ -30,7 +30,8 @@
     <menuitem 
         parent="mrp.menu_mrp_configuration" 
         id="menu_res_company_parameter" 
-        action="action_res_company_xmlrpc_parameter"/>
+        action="action_res_company_xmlrpc_parameter"
+        name="XML parameter"/>
     </data>
 </openerp>
 

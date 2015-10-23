@@ -49,6 +49,16 @@ class res_company(orm.Model):
     _inherit = 'res.company'
     
     # Utility:
+    def get_xmlrpc_is_manual(self, cr, id, company_id=False, context=None):
+        ''' Check if is a manual backup
+        '''
+        if not company_id:
+            company_id = self.search(cr, uid, [], context=context)[0]
+        elif type(company_id) in (list, tuple):
+            company_id = company_id[0]
+        
+        return self.browse(cr, uid, company_id, context=context).manual
+        
     def get_xmlrpc_socket(
             self, cr, uid, company_id=False, context=None):
         ''' Read element with company_id or passed 
@@ -59,7 +69,6 @@ class res_company(orm.Model):
             company_id = company_id[0]
         
         parameters = self.browse(cr, uid, company_id, context=context)
-
         try:
             xmlrpc_server = "http://%s:%s" % (
                 parameters.accounting_sync_host,
@@ -83,13 +92,14 @@ class res_company(orm.Model):
         'accounting_sync_port': fields.integer(
             'Acounting sync port', 
             help="XMLRPC port, example: 8000"),
+        'manual': fields.boolean('Manual sync', 
+            help='Manual confirmation set manual accounting sync'),
         }
         
     _defaults = {
         'accounting_sync': lambda *x: True,
         'accounting_sync_port': lambda *x: 8000,
         }
-
 
 class MrpProduction(orm.Model):
     ''' Add extra field to manage connection with accounting
@@ -102,10 +112,28 @@ class MrpProduction(orm.Model):
         ''' Read all line to sync in accounting and produce it for 
             XMLRPC call
         '''
+        if self.pool.get('res.company').get_xmlrpc_is_manual(
+                cr, uid, False, context=context):
+            _logger('Manual sync production!')    
+            # TODO procedure for set syncronization that is manual
+            
+            #for sol in self.browse(cr, uid, ids, context=context)[
+            #        0].order_line_ids:
+            #    data = {
+            #        'sync_state': 'partial_sync', # completed
+            #        'product_uom_maked_sync_qty': sol.product_uom_maked_qty,
+            #        #'product_uom_maked_qty': 0,
+            #        }
+            #    if sol.sync_state == 'partial_sync':
+            #    
+            #    elif sol.sync_state == 'complete':
+            return True
+
         # ----------------------
         # Read all line to close
         # ----------------------
         sol_pool = self.pool.get('sale.order.line')
+        
         sol_ids = sol_pool.search(cr, uid, [
             ('sync_state', 'in', ('partial', 'closed'))
             ], 
