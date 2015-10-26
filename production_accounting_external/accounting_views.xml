@@ -521,11 +521,11 @@
         groups="base.group_sale_salesman,base.group_sale_manager"
         />
 
-    <!--<menuitem
+    <menuitem
         parent="sale.menu_sale_order" 
         id="sql_sale_order.quotation_from_accounting_menu" 
         action="sql_sale_order.action_quotations_accounting"
-        name="Production order"/>-->
+        name="Production order"/>
 
     <!--                       MENUITEM:                                    -->
    <!-- PRODUCTION -->
