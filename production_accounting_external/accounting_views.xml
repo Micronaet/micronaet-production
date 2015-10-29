@@ -440,7 +440,7 @@
         <field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>
         <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>        
         <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form','search_default_group_family':True}</field>
-        <field name="domain">[('mrp_id','=',False),('accounting_order','=',True),('is_manufactured','=',True)]</field>
+        <field name="domain">[('mrp_id','=',False),('accounting_order','=',True)]</field> <!--TODO ,('is_manufactured','=',True)-->
         <!--TODO remove filter for accounting when accounting will not be present! -->
     </record>
 
