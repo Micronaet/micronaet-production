@@ -55,28 +55,16 @@ class ProductTemplateFamily(orm.Model):
         product_proxy = self.browse(cr, uid, ids, context=context)[0]
         product_pool = self.pool.get('product.product')
         
-        # Update manufacture check part:
-        manufacture_id = self.pool.get(
-            'stock.location.route')._get_manufacture_id(
-                cr, uid, context=context)
-        if not manufacture_id:        
-            _logger.error('Error no "Manufacture" in stock.location.route')           
-            
-        if product_proxy.force_manufacture: # add:
-            route_ids = [(4, manufacture_id, False)]
-        else: # remove:
-            route_ids = [(3, manufacture_id, False)]
-            
         # Search all elements of code:
         for code in product_proxy.family_list.split("|"):
             product_ids = product_pool.search(cr, uid, [
                 ('default_code', '=ilike', code + "%")], context=context)
-            data = {'family_id': product_proxy.id}   
-            if manufacture_id:
-                data['route_ids'] = route_ids
-            product_pool.write(cr, uid, product_ids, data, context=context)    
+            product_pool.write(cr, uid, product_ids, {
+                'family_id': product_proxy.id,
+                'internal_manufacture': product_proxy.force_manufacture,
+                }, context=context)    
         return True
-        
+
     _columns = {
         'is_family': fields.boolean('Is family'),
         'family_id': fields.many2one('product.template', 'Family', 
@@ -87,6 +75,8 @@ class ProductTemplateFamily(orm.Model):
             help='Code list (divided by |), ex.: 001|002 for 001* and 002*'),
         'force_manufacture': fields.boolean('Force manufacture', 
             help='If yes update all product also for manufacture else not'),
+        'internal_manufacture': fields.boolean('Internal manufacture', 
+            help='If true this product order line will go in production'),
         }
         
     _defaults = {
