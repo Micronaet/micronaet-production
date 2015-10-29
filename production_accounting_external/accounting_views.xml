@@ -61,6 +61,7 @@
                     <field name="production_note" />
                     <!--<button name="force_fast_creation" icon="gtk-connect" string="Fast force" type="object" />-->
                     <button name="%(action_window_mrp_production_create_wizard_view)d" icon="gtk-save" string="Wizard force" type="action" context="{'return':True}" attrs="{'invisible':[('mrp_id','!=',False)]}"/>
+                    <field name="is_manufactured"  /> <!--TODO invisible="1"-->
                     <field name="state" invisible="1"/>
             </tree>
         </field>
@@ -154,6 +155,7 @@
                 <field name="sync_state" invisible="1" />
                 <button name="close_production" type="object" string="Produced" icon="STOCK_SAVE" attrs="{'invisible': [('sync_state','!=','draft')]}"/>
                 <button name="undo_close_production" type="object" string="Undo produced" icon="STOCK_REVERT_TO_SAVED" attrs="{'invisible': [('sync_state','in',('draft'))]}"/>
+                <field name="is_manufactured"  /> <!--TODO invisible="1"-->
             </tree>        
         </field>
     </record>
@@ -438,8 +440,8 @@
         <field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>
         <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>        
         <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form','search_default_group_family':True}</field>
-        <field name="domain">[('mrp_id','=',False),('accounting_order','=',True)]</field>
-        <!--TODO remove filter for accounting when accountin will not be present! -->
+        <field name="domain">[('mrp_id','=',False),('accounting_order','=',True),('is_manufactured','=',True)]</field>
+        <!--TODO remove filter for accounting when accounting will not be present! -->
     </record>
 
     <record model="ir.actions.act_window" id="action_view_sale_order_line">
