@@ -425,6 +425,8 @@
                 <field name="product_uom_maked_sync_qty" />
             </xpath>
             <xpath expr="//page/field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
+                <field name="is_manufactured" invisible="1"/>
+                <button name="nothing" string="Is manufactured" type="object" icon="terp-product" attrs="{'invisible': [('is_manufactured', '=', False)]}" />            
                 <field name="mrp_id"  /><!--TODO invisible="1"-->
                 <button name="open_production_form" string="Open production" type="object" icon="gtk-yes" attrs="{'invisible': [('mrp_id','=',False)]}"/>
             </xpath>
@@ -441,6 +443,17 @@
         <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>        
         <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form','search_default_group_family':True}</field>
         <field name="domain">[('mrp_id','=',False),('accounting_order','=',True),('is_manufactured','=',True)]</field>
+        <!--TODO remove filter for accounting when accounting will not be present! -->
+    </record>
+    <record model="ir.actions.act_window" id="action_view_sale_order_production_line_no_family">
+        <field name="name">Sale order line without family</field>
+        <field name="res_model">sale.order.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>
+        <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>        
+        <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form','search_default_group_product':True}</field>
+        <field name="domain">[('mrp_id','=',False),('accounting_order','=',True),('family_id','=',False)]</field>
         <!--TODO remove filter for accounting when accounting will not be present! -->
     </record>
 
@@ -551,6 +564,12 @@
           id="menu_sale_order_line_m1" 
           action="action_view_sale_order_production_line" 
           sequence="10" />
+          <menuitem name="OC line production"
+              parent="menu_sale_order_line_m1" 
+              id="menu_sale_order_line_m1_no_family" 
+              action="action_view_sale_order_production_line_no_family" 
+              sequence="10" />
+          
       <menuitem name="OC line"
           parent="menu_base_sale_order_root" 
           id="menu_sale_order_line_m0" 
