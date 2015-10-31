@@ -83,7 +83,6 @@ class ReportStatusHour(models.AbstractModel):
         ''' Read company element with line name passed
             If not present return default value
         '''
-        print self.line.get(row,(default, extra_default)), (default, extra_default)
         return self.line.get(row,(default, extra_default))
 
     def get_wh(self, ):
