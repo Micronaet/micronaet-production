@@ -615,10 +615,11 @@
          groups="base.group_sale_salesman,base.group_sale_manager"
          />
 
-        <menuitem action="mrp.mrp_workcenter_action" 
-            id="menu_view_resource_search_mrp" 
-            parent="mrp.menu_mrp_configuration" 
-            sequence="25"/>
+     <!-- CONFIGURATION -->
+    <menuitem action="mrp.mrp_workcenter_action" 
+        id="menu_view_resource_search_mrp" 
+        parent="mrp.menu_mrp_configuration" 
+        sequence="25"/>
 
     </data>
 </openerp>
