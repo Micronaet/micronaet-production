@@ -72,11 +72,18 @@ class ReportStatusHour(models.AbstractModel):
             
             # Color element:
             'get_wh': self.get_wh,
+            'get_wh_col': self.get_wh_row,
             }
         return report_obj.render(
             'production_working_bom.report_status_hour', 
             docargs, 
             )
+
+    def get_wh_row(self, row):
+        ''' Read company element with 
+        '''
+        import pdb; pdb.set_trace()
+        return self.line[row]
 
     def get_wh(self, ):
         ''' Read company element with 
@@ -137,6 +144,17 @@ class ReportStatusHour(models.AbstractModel):
         self.cols = []
         self.table = {}
         self.counters = {}
+        self.line = {} # work hour of the lines
+
+        # Load production converter for get product code:
+        wc_pool = self.pool.get("mrp.workcenter")
+        wc_ids = wc_pool.search(self.env.cr, self.env.uid, [])        
+        
+        for wc in wc_pool.browse(self.env.cr, self.env.uid, wc_ids):
+            self.line[wc.id] = (
+                wc.work_hour,
+                wc.work_hour + wc.extra_work_hour,
+                )
         
         # Load production converter for get product code:
         production_pool = self.pool.get("mrp.production")

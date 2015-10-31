@@ -77,10 +77,11 @@
                          <!-- BODY -->
                          <tbody>
                              <t t-set="total_cols" t-value="{}"/>
+                             
                              <!--Read parameters:-->
                              <t t-set="wh" t-value="get_wh()"/>   
-                             <t t-set="wh1A" t-value="wh[0]"/>   
-                             <t t-set="wh1B" t-value="wh[1]"/>   
+                             <!--<t t-set="wh1A" t-value="wh[0]"/>   
+                             <t t-set="wh1B" t-value="wh[1]"/>-->
                              <t t-set="whnA" t-value="wh[2]"/>   
                              <t t-set="whnB" t-value="wh[3]"/>   
                              <t t-foreach="get_rows()" t-as="row">
@@ -93,6 +94,11 @@
                                          <t t-set="hm" t-value="res[0]"/>
                                          <t t-set="hour" t-value="res[1]"/>
                                          <t t-set="products" t-value="res[2]"/>
+                                         
+                                         <!--Every line has its own work hour:-->
+                                         <t t-set="wh" t-value="get_wh_row(row)"/>
+                                         <t t-set="wh1A" t-value="wh[0]"/>   
+                                         <t t-set="wh1B" t-value="wh[1]"/>
                                                                                
                                          <t t-esc="set_dict_counter('total_cols', col, get_dict_counter('total_cols', col, 0) + (hm or 0.0))"/>
 
