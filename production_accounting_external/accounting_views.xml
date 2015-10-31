@@ -260,11 +260,12 @@
 				            }" />
 			        </group>
 		        </page>
-		        <page string="Previsional order">
+		        <!--TODO remove page-->
+		        <!--<page string="Previsional order">
 			        <group string="Previsional order">				              
 			            <field name="previsional_line_ids" nolabel="1" context="{'embedded':True}"/>
 			        </group>
-			    </page>
+			    </page>-->
                 <page string="Use extra production">
 			        <group string="Extra production">				              
 			            <button name="%(action_assign_mrp_production_wizard_form)d" string="Assign production" type="action" />
