@@ -11,6 +11,20 @@
                  </button>
             </field>
         </record>
+
+        <record model="ir.ui.view" id="sale_order_forecasted_mrp_form_view">
+            <field name="name">Sale order forecast MRP</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form" />
+            <field name="arch" type="xml">
+                 <field name="order_line" position="before">
+                     <group colspan="4" col="4">
+                         <field name="forecasted_production_id" attrs="{'invisible':[('forecasted_production_id', '=', False)]}" />
+                     </group>    
+                 </field>
+            </field>
+        </record>
+        
     </data>
 </openerp>
 
