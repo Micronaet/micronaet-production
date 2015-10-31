@@ -36,13 +36,27 @@
                 font-size: 8px;
                 background-color: #DDDDDD;
                 }
-            .red {background-color:#ffd5d5;}
-            .blu {background-color:#d5e9ff;}
-            .green {background-color:#ade3b8;}
-            .yellow {background-color:#fffccc;}
-            .right {text-align:right;}
-            .center {text-align:center;}
-            .left {text-align:left;}
+            .red {
+                background-color: #FFD5D5 !important;
+                }
+            .blu {
+                background-color: #D5E9FF !important;
+                }
+            .green {
+                background-color: #ADE3B8 !important;
+                }
+            .yellow {
+                background-color: ##FFFCCC !important;
+                }
+            .right {
+                text-align:right;
+                }
+            .center {
+                text-align:center;
+                }
+            .left {
+                text-align:left;
+                }
             .even {}
             .odd {}            
             .total {
@@ -80,8 +94,8 @@
                              
                              <!--Read parameters:-->
                              <t t-set="wh" t-value="get_wh()"/>   
-                             <!--<t t-set="wh1A" t-value="wh[0]"/>   
-                             <t t-set="wh1B" t-value="wh[1]"/>-->
+                             <t t-set="wh1Adef" t-value="wh[0]"/>   
+                             <t t-set="wh1Bdef" t-value="wh[1]"/>
                              <t t-set="whnA" t-value="wh[2]"/>   
                              <t t-set="whnB" t-value="wh[3]"/>   
                              <t t-foreach="get_rows()" t-as="row">
@@ -96,7 +110,7 @@
                                          <t t-set="products" t-value="res[2]"/>
                                          
                                          <!--Every line has its own work hour:-->
-                                         <t t-set="wh" t-value="get_wh_row(row)"/>
+                                         <t t-set="wh" t-value="get_wh_row(row, wh1Adef, wh1Bdef)"/>
                                          <t t-set="wh1A" t-value="wh[0]"/>   
                                          <t t-set="wh1B" t-value="wh[1]"/>
                                                                                

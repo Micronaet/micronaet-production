@@ -72,18 +72,19 @@ class ReportStatusHour(models.AbstractModel):
             
             # Color element:
             'get_wh': self.get_wh,
-            'get_wh_col': self.get_wh_row,
+            'get_wh_row': self.get_wh_row,
             }
         return report_obj.render(
             'production_working_bom.report_status_hour', 
             docargs, 
             )
 
-    def get_wh_row(self, row):
-        ''' Read company element with 
+    def get_wh_row(self, row, default=8, extra_default=9):
+        ''' Read company element with line name passed
+            If not present return default value
         '''
-        import pdb; pdb.set_trace()
-        return self.line[row]
+        print self.line.get(row,(default, extra_default)), (default, extra_default)
+        return self.line.get(row,(default, extra_default))
 
     def get_wh(self, ):
         ''' Read company element with 
@@ -146,17 +147,21 @@ class ReportStatusHour(models.AbstractModel):
         self.counters = {}
         self.line = {} # work hour of the lines
 
+        # -----------------------------------------------
         # Load production converter for get product code:
+        # -----------------------------------------------
         wc_pool = self.pool.get("mrp.workcenter")
         wc_ids = wc_pool.search(self.env.cr, self.env.uid, [])        
         
         for wc in wc_pool.browse(self.env.cr, self.env.uid, wc_ids):
-            self.line[wc.id] = (
+            self.line[wc.name] = (
                 wc.work_hour,
                 wc.work_hour + wc.extra_work_hour,
                 )
         
+        # -----------------------------------------------
         # Load production converter for get product code:
+        # -----------------------------------------------
         production_pool = self.pool.get("mrp.production")
         production_ids = production_pool.search(self.env.cr, self.env.uid, [])
         production_converter = {}
@@ -166,7 +171,9 @@ class ReportStatusHour(models.AbstractModel):
             production_converter[p.id] = (
                 p.product_id.default_code or p.product_id.name or "#NoCod")
                 
+        # -------------------
         # Read cols elements:        
+        # -------------------
         self.env.cr.execute("""
             SELECT DISTINCT left(CAST(date_planned AS TEXT), 10) as day
             FROM mrp_production_workcenter_line
