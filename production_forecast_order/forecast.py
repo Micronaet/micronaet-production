@@ -59,14 +59,18 @@ class SaleOrderLine(orm.Model):
             return False    
         
     _columns = {
+        'forecasted_production_id': fields.related(
+             'order_id', 'forecasted_production_id', type='many2one', 
+             relation='mrp.production', string='Forecasted', store=False),
+        
         # override for default computation:
         'mrp_id': fields.many2one(
-            'mrp.production', 'Production', ondelete='set null', ),
+            'mrp.production', 'Production', ondelete='set null', ),        
         }
     
     _defaults = {
         'mrp_id': lambda s, cr, uid, ctx: s._get_mrp_id_default(cr, uid, ctx),
-        }    
+        }
 
 class SaleOrder(orm.Model):
     ''' Link the forecast order to the production
