@@ -38,6 +38,36 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+class SaleOrderLine(orm.Model):
+    ''' Auto link to the production
+    '''    
+    _inherit = 'sale.order.line'
+        
+    # default function:
+    def _get_mrp_id_default(self, cr, uid, context=None):
+        ''' Auto link the production if is a forecast order
+        '''
+        if context is None:
+            context = {}
+        res = False
+        res_id = context.get('active_id')
+        active_model =  context.get('active_model', False)
+        
+        if res_id and active_model == 'mrp.production':
+            return res_id
+        else:
+            return False    
+        
+    _columns = {
+        # override for default computation:
+        'mrp_id': fields.many2one(
+            'mrp.production', 'Production', ondelete='set null', ),
+        }
+    
+    _defaults = {
+        'mrp_id': lambda s, cr, uid, ctx: s._get_mrp_id_default(cr, uid, ctx),
+        }    
+
 class SaleOrder(orm.Model):
     ''' Link the forecast order to the production
     '''    
@@ -60,24 +90,31 @@ class MrpProduction(orm.Model):
         '''
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
         if mrp_proxy.forecast_order_id:
-            order_id = mrp_proxy.forecast_order_id
+            order_id = mrp_proxy.forecast_order_id.id
         else:    
             # Create a forecast order and associate, after open
             sale_pool = self.pool.get('sale.order')
             order_id = sale_pool.create(cr, uid, {
-                #'name': # TODO load a counter for prev?
+                'name': 'FC-%s' % mrp_proxy.name,
                 'partner_id': mrp_proxy.company_id.partner_id.id,
                 'date_order': datetime.now(),
+                'forecasted_production_id': mrp_proxy.id,
+                # TODO 'date_deadline': # end of year?
                 
                 # TODO remove when there's no importation
                 'accounting_order': True, # Like an order from account
                 }, context=context)
+                
+            # Update ref in production    
+            self.write(cr, uid, ids, {
+                'forecast_order_id': order_id, 
+                }, context=context)    
 
         # Open order for adding lines:        
         return {
             'name': 'Previsional sale',
             'view_type': 'form',
-            'view_mode': 'tree,form',
+            'view_mode': 'form',
             'res_model': 'sale.order',
             'type': 'ir.actions.act_window',
             'res_id': order_id,
