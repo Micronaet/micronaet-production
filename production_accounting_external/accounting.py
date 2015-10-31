@@ -31,6 +31,23 @@ from openerp.tools.translate import _
 
 _logger = logging.getLogger(__name__)
 
+class MrpWorkcenter(orm.Model):
+    ''' Extra fields for workcenter
+    '''
+    _inherit = 'mrp.workcenter'
+    
+    _columns = {
+        'work_hour': fields.float('Work hour', digits=(10, 2), 
+            help='Normal work hour a day'),
+        'extra_work_hour': fields.float('Extra work hour', digits=(10, 2), 
+            help='Number of hour max after normal work (extraordinary time)'),
+        }
+    
+    _defaults = {
+        'work_hour': lambda *x: 8.0,
+        'extra_work_hour': lambda *x: 1.0,        
+    }        
+
 class ProductTemplateAccounting(orm.Model):
     ''' Accounting external fields
     '''
