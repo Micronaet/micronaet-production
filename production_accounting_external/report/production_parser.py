@@ -46,12 +46,19 @@ class Parser(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
         super(Parser, self).__init__(cr, uid, name, context)
         self.localcontext.update({
+            'get_date': self.get_date,
+            
             # production report:
             'get_hour': self.get_hour,
             
             # remain report:
-            'get_object_remain': self.get_object_remain,
+            'get_object_remain': self.get_object_remain,            
         })
+
+    def get_date(self, ):
+        ''' For report time
+        '''
+        return datetime.now()
 
     def get_object_remain(self, ):
         ''' Get as browse obj all record with unsync elements
