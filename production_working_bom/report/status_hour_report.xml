@@ -18,14 +18,14 @@
                 }
 
             table, td {
-                border: 1px solid #dfdfdf;
-                background-color: #FFFFFF;
+                border: 1px solid #dfdfdf !important;
+                background-color: #FFFFFF !important;
                 font-family: Arial, sans-serif, Tahoma, Verdana;
                 font-size: 10px;                 
                 }
             table, th {
-                border: 1px solid #dfdfdf;
-                background-color: #6fb7ea;                 
+                border: 1px solid #dfdfdf !important;
+                background-color: #6fb7ea !important;                 
                 font-family: Arial, sans-serif, Tahoma, Verdana;
                 font-size: 9px;
                 }     
@@ -34,7 +34,7 @@
             .w100 {width: 100%;}
             .f_medium {
                 font-size: 8px;
-                background-color: #DDDDDD;
+                background-color: #DDDDDD !important;
                 }
             .red {
                 background-color: #FFD5D5 !important;
@@ -46,7 +46,7 @@
                 background-color: #ADE3B8 !important;
                 }
             .yellow {
-                background-color: ##FFFCCC !important;
+                background-color: #FFFCCC !important;
                 }
             .right {
                 text-align:right;
@@ -63,7 +63,7 @@
                 font-size: 9px;          
                 font-weight: bold;  
                 padding: 4px;
-                background-color: #f6cf3b;
+                background-color: #f6cf3b !important;
                 }
                             
         </style>
