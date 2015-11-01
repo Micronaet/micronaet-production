@@ -52,8 +52,24 @@ class Parser(report_sxw.rml_parse):
             'get_hour': self.get_hour,
             
             # remain report:
-            'get_object_remain': self.get_object_remain,            
+            'get_object_remain': self.get_object_remain,
+            'previous_record': self.previous_record,
         })
+
+    def previous_record(self, value=False):
+        ''' Save passed value as previouse record
+            value: 'init' for setup first False record
+                   data for set up this record
+                   Nothing for get element
+        '''
+        if value == 'init':
+            self.previous_record_value = False            
+            return ''
+        if value: # set operation
+            self.previous_record_value = value
+            return '' 
+        else: # get operation
+            return self.previous_record_value 
 
     def get_date(self, ):
         ''' For report time
@@ -63,16 +79,10 @@ class Parser(report_sxw.rml_parse):
     def get_object_remain(self, ):
         ''' Get as browse obj all record with unsync elements
         '''
-        self.cr.execute(''' 
-            SELECT distinct mrp_id 
-            FROM sale_order_line 
-            WHERE product_uom_maked_qty != 0;
-            ''')
-        mrp_ids = [item[0] for item in self.cr.fetchall()]
-        mrp_ids = self.pool.get('mrp.production').search (
-            self.cr, self.uid, [('id', 'in', mrp_ids)], order='name')
-        return self.pool.get('mrp.production').browse(
-            self.cr, self.uid, mrp_ids)
+        line_ids = self.pool.get('sale.order.line').search(self.cr, self.uid, [
+            ('product_uom_maked_qty', '>', 0.0)], order='order_id')
+        return self.pool.get('sale.order.line').browse(
+            self.cr, self.uid, line_ids)
 
     def get_hour(self, value):
         ''' Format float with H:MM format
