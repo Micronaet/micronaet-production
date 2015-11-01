@@ -312,7 +312,30 @@ class CreateMrpProductionWizard(orm.TransientModel):
         res = {'value': {}}
         res['value']['extra_total'] = (total or 0.0) - (oc_total or 0.0)
         return res 
-           
+    
+    def onchange_force_production(self, cr, uid, ids, force_production, bom_id,
+            context=None):
+        ''' Reset parameter or set as bom production one's
+        '''    
+        res = {'value': {}}
+        if force_production:
+            bom_pool = self.pool.get('mrp.bom')
+            bom_proxy = bom_pool.browse(cr, uid, bom_id, context=context)
+            for item in bom_proxy.lavoration_ids:
+                if item.phase_id.production_phase:
+                    res['value'].update({
+                        'item_hour': (
+                            item.quantity / item.duration) if item.duration else 0.0,
+                        'production_employee': item.workers,
+                        })
+        else:
+            # reset elements:
+            res['value'].update({
+                'item_hour': False,
+                'production_employee': False,
+                })
+        return res        
+                
     # --------------
     # Wizard button:
     # --------------
@@ -569,6 +592,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             'Production: Total', readonly=True, digits=(16, 2), ),
 
         # Production corrections:
+        'force_production': fields.boolean('Force production'),
         'item_hour': fields.float(
             'Item per hour', digits=(16, 2),
             help="For generare lavoration (required when BOM not present"),
