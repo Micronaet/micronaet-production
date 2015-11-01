@@ -1,6 +1,43 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+    <!--mrp.bom.lavoration.phase-->
+    <record model="ir.ui.view" id="mrp_bom_lavoration_phase_form_view">
+        <field name="name">mrp.bom.lavoration.phase.form</field>
+        <field name="model">mrp.bom.lavoration.phase</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+           <form string="BOM Lavoration" version="7.0">
+               <sheet>                   
+                   <group colspan="4" col="4">
+                       <field name="name" />
+                       <field name="line_id" />
+
+                       <field name="unload_material" />
+                       <field name="production_phase" />
+                       
+                       <separator string="Note" colspan="4"/>
+                       <field name="note" colspan="4" nolabel="1" />                   
+                   </group>    
+               </sheet>
+           </form> 
+        </field>
+    </record>
+    <record model="ir.ui.view" id="mrp_bom_lavoration_phase_tree_view">
+        <field name="name">mrp.bom.lavoration.phase.tree</field>
+        <field name="model">mrp.bom.lavoration.phase</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+           <tree string="BOM Lavoration" color="blue:production_phase==True">
+               <field name="name" />
+               <field name="line_id" />
+               <field name="unload_material" />
+               <field name="production_phase" />
+               <field name="note" colspan="4" nolabel="1" />                   
+           </tree> 
+        </field>
+    </record>
+
     <record model="ir.ui.view" id="mrp_bom_lavoration_form_view">
         <field name="name">mrp.bom.lavoration.form</field>
         <field name="model">mrp.bom.lavoration</field>

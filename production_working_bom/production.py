@@ -184,7 +184,7 @@ class bom_production(orm.Model):
         '''
         if context is None: 
             context = {}
-
+        
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
         
         # Load information for lavoration:
@@ -338,7 +338,19 @@ class bom_production(orm.Model):
         
     def load_lavoration(self, cr, uid, ids, context=None):
         ''' Load and calculate time based on lavoration in BOM selected
+            force mechanism for hour and employee could be generated with
+            context parameters: force_production_hour and
+            force_production_employee
         '''
+        if context is None:
+            context = {}
+        
+        # Read parameter if present:
+        force_production_hour = context.get(
+            'force_production_hour', False)   
+        force_production_employee = context.get(
+            'force_production_employee', False)   
+    
         # Delete current
         lavoration_pool = self.pool.get('mrp.bom.lavoration')
         lavoration_ids = lavoration_pool.search(cr, uid, [
@@ -354,18 +366,23 @@ class bom_production(orm.Model):
             if lavoration.fixed:
                 duration = lavoration.duration
             else:
-                try:
-                    duration = lavoration.duration * (
-                        mrp_proxy.product_qty / lavoration.quantity)
+                try: # K could be forced:
+                    k = force_production_hour or (
+                        lavoration.quantity /lavoration.duration )
+                    duration = mrp_proxy.product_qty / k
                 except:
                     duration = 0.0    
+                    
+            # Workers (could be forced):
+            workers = force_production_employee or lavoration.workers or 0
+            
             lavoration_pool.create(cr, uid, {
                 'production_id': ids[0],
                 'phase_id': lavoration.phase_id.id,
                 'level': lavoration.level,
                 'fixed': lavoration.fixed,
                 'duration': duration,
-                'workers': lavoration.workers,
+                'workers': workers,
                 'line_id': lavoration.line_id.id,
                 'bom_id': False,                        
                 }, context=context)
@@ -374,9 +391,13 @@ class bom_production(orm.Model):
     _columns = {
         'lavoration_ids': fields.one2many('mrp.bom.lavoration',
             'production_id', 'Lavoration'),
-        'scheduled_lavoration_ids': fields.one2many('mrp.production.workcenter.line',
+        'scheduled_lavoration_ids': fields.one2many(
+            'mrp.production.workcenter.line',
             'production_id', 'Scheduled lavoration'),
-        'worker_ids': fields.many2many('hr.employee', 'mrp_production_workcenter_employee', 'production_id', 'employee_id', 'Employee'),
+        'worker_ids': fields.many2many('hr.employee', 
+            'mrp_production_workcenter_employee', 'production_id', 
+            'employee_id', 
+            'Employee'),
         
         # For schedule lavoration:
         'schedule_from_date': fields.date(
@@ -394,7 +415,8 @@ class mrp_production_workcenter_line(orm.Model):
             'Linked lavoration', ondelete='set null'),
         'phase_id': fields.related('lavoration_id','phase_id', type='many2one',
             relation='mrp.bom.lavoration.phase', string='Phase', store=False),
-        'level': fields.related('lavoration_id','level', type='integer', string='Level'),
+        'level': fields.related('lavoration_id','level', type='integer', 
+            string='Level'),
         'workers': fields.integer('Default workers'),
         'worker_ids': fields.many2many('hr.employee', 
             'mrp_production_workcenter_line_employee', 

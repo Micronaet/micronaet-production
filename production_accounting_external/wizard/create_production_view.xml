@@ -14,8 +14,9 @@
                    <group colspan="4" col="4">
                         <field name="product_tmpl_id" />
                         <field name="bom_id" domain="[('product_tmpl_id','=',product_tmpl_id)]"/>
+                        <field name="item_hour" attrs="{'required': [('bom_id','=',False)]}"/>
+                        <field name="production_employee" attrs="{'required': [('bom_id','=',False)]}" />
                         <field name="product_id" invisible="1" /> 
-                        <!--<field name="item_hour" attrs="{'required': [('bom_id','=',False)]}"/>-->
                         
                         <separator string="Schedule:" colspan="4" attrs="{'invisible':[('operation','not in',('lavoration'))]}"/>
                         <field name="from_deadline" />

@@ -43,9 +43,13 @@ class bom_lavoration_phase(orm.Model):
         'unload_material': fields.boolean('Unload material', 
             help='This phase unload material from stock'),
         'note': fields.text('Note'),
+        # TODO must be unique in table:
+        'production_phase': fields.boolean('Production phase'),
     }
+    
     _defaults = {
         'unload_material': lambda *x: False,
+        'production_phase': lambda *x: False,
         }
 
 class bom_lavoration(orm.Model):

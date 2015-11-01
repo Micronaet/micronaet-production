@@ -324,10 +324,13 @@ class CreateMrpProductionWizard(orm.TransientModel):
            context = {}
 
         wiz_browse = self.browse(cr, uid, ids, context=context)[0]
+        production_pool = self.pool.get("mrp.production")
+                
+        # Save in context force production parameter:
+        context['force_production_hour'] = wiz_browse.item_hour
+        context['force_production_employee'] = wiz_browse.production_employee      
 
         # Create a production order and open it:
-        production_pool = self.pool.get("mrp.production")
-        
         product_id = get_product_from_template( # TODO use product_id?
             self, cr, uid, wiz_browse.product_tmpl_id.id, context=context)
         workhour = (
@@ -348,9 +351,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     'workhour_id': workhour, 
                     'order_line_ids': [(6, 0, context.get("active_ids", []))],
                     }, context=context)
-                    
             if wiz_browse.operation == 'lavoration':        
-                # Force reschedule:            
+                # Force reschedule:
                 production_pool.schedule_lavoration(
                     cr, uid, [p_id], context=context)        
         else: # append and and append-reload
@@ -566,6 +568,13 @@ class CreateMrpProductionWizard(orm.TransientModel):
         'production_total': fields.float(
             'Production: Total', readonly=True, digits=(16, 2), ),
 
+        # Production corrections:
+        'item_hour': fields.float(
+            'Item per hour', digits=(16, 2),
+            help="For generare lavoration (required when BOM not present"),
+        'production_employee': fields.integer(
+            'Production employee'),
+
         'product_id': fields.many2one(
             'product.product', 'Product/Family'), # only for filter BOM
         'product_tmpl_id': fields.many2one(
@@ -573,9 +582,6 @@ class CreateMrpProductionWizard(orm.TransientModel):
         'production_id': fields.many2one(
             'mrp.production', 'Production'),
         'bom_id': fields.many2one('mrp.bom', 'BOM'),
-        'item_hour': fields.float(
-            'Item per hour', digits=(16, 2),
-            help="For generare lavoration (required when BOM not present"),
         
         'from_deadline': fields.date('From deadline', 
             help='Min deadline found in order line!',
