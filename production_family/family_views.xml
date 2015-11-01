@@ -57,6 +57,18 @@
         <field name="domain">[('is_family', '=', True)]</field>
     </record>
           
+    <!--mrp.bom-->    
+    <record id="view_mrp_bom_filter_family" model="ir.ui.view">
+        <field name="name">mrp.bom.select.family</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.view_mrp_bom_filter"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <filter name="is_family" string="Is family" domain="[('product_tmpl_id.is_family','=',True)]"/>
+            </field>
+        </field>
+    </record>
+
     <menuitem name="Family"
         parent="mrp.menu_mrp_configuration" 
         id="menu_configuration_family" 

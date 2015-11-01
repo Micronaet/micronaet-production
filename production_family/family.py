@@ -42,8 +42,7 @@ _logger = logging.getLogger(__name__)
 
 class ProductTemplateFamily(orm.Model):
     ''' Add extra information to default product
-    '''
-    
+    '''    
     _inherit = 'product.template'
     
     # -------------
@@ -85,8 +84,7 @@ class ProductTemplateFamily(orm.Model):
 
 class MrpBomFamily(orm.Model):
     ''' Add extra information to set up BOM for family
-    '''
-    
+    '''    
     _inherit = 'mrp.bom'
     
     _columns = {
@@ -95,8 +93,7 @@ class MrpBomFamily(orm.Model):
 
 class MrpProductionFamily(orm.Model):
     ''' Add extra information to set up production for family
-    '''
-    
+    '''    
     _inherit = 'mrp.production'
     
     _columns = {
@@ -105,65 +102,11 @@ class MrpProductionFamily(orm.Model):
 
 class MrpLavorationFamily(orm.Model):
     ''' Add extra information to set up lavoration for family
-    '''
-    
+    '''    
     _inherit = 'mrp.production.workcenter.line'
     
     _columns = {
         'family': fields.related('production_id', 'family', type='boolean', 
             string='Family', store=False),
         }
-
-"""class SaleOrderLine(orm.Model):
-    ''' Manage family field also for order line
-        Add extra field for calculate family information
-    '''
-    _inherit = 'sale.order.line'
-    
-    # ---------------
-    # Function field:
-    # ---------------
-    def _function_get_family(self, cr, uid, ids, field, arg, context=None):
-        ''' Return field value
-        '''
-        res = {}
-        for line in self.browse(cr, uid, ids, context=context):
-            try:
-                res[line.id] = line.product_id.family_id.id
-            except:
-                res[line.id] = False
-        return res
-        
-    def _trigger_change_family(self, cr, uid, ids, context=None):
-        ''' Select all sale order line with product with changed family
-        '''
-        res = []
-        cr.execute('''
-            SELECT id 
-            FROM sale_order_line 
-            WHERE product_id in %s;''' % (
-                ("%s" % (tuple(ids), )).replace(",)", ")"), # TODO better...
-                ))
-        
-        # Select all lines with product that change family:        
-        for record in cr.fetchall():
-            if record[0] not in res:
-                res.append(record[0])
-        return res
-        
-    _columns = {
-        'family_id': fields.function(_function_get_family, method=True, 
-            type='many2one', string='Family', 
-            relation='product.template',
-            store={
-                'product.template': (
-                    _trigger_change_family, ['family_id'], 10),)
-                'sale.order.line': (
-                    _trigger_change_product, ['product_id'], 10),)
-                }),
-        'family_id': fields.many2one('product.template', 'Family', 
-            help='Parent family product belongs',
-            domain=[('is_family', '=', True)]),            
-                
-        }"""
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

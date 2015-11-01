@@ -109,7 +109,6 @@ class bom_lavoration(orm.Model):
 class mrp_bom(orm.Model):
     ''' Add relation fields
     '''
-    _name = 'mrp.bom'
     _inherit = 'mrp.bom'
     
     _columns = {

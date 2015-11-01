@@ -78,6 +78,19 @@
         </field>
     </record>
 
+    <!--mrp.bom-->    
+    <record id="view_mrp_bom_filter_family" model="ir.ui.view">
+        <field name="name">mrp.bom.select.family</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.view_mrp_bom_filter"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <filter name="with_lavoration" string="With lavoration" domain="[('has_lavoration','=',True)]"/>
+                <filter name="without_lavoration" string="Without lavoration" domain="[('has_lavoration','=',False)]"/>
+            </field>
+        </field>
+    </record>
+
     <record model="ir.ui.view" id="mrp_bom_add_lavoration_form_view">
         <field name="name">BOM with lavoration</field>
         <field name="model">mrp.bom</field>
