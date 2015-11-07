@@ -52,11 +52,12 @@
             <field name="cycle" position="attributes">
                 <attribute name="invisible">context.get('embedded',False)</attribute>
             </field>
-            <field name="hour" position="attributes">
+            <field name="hour" position="attributes">                
                 <attribute name="sum">Total</attribute>
             </field>
-            <field name="state" position="before">
+            <field name="state" position="before">                
                 <field name="lavoration_qty" sum="total"/>
+                <field name="workers" />
             </field>
         </field>
     </record>    

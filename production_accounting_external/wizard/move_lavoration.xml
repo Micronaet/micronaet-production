@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+       <!-- mrp.production.confirm.wizard -->
+       <record id="mrp_production_assign_wizard_view" model="ir.ui.view">
+            <field name="name">Assign lavoration</field>
+            <field name="model">mrp.production.assign.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Assign production" version="7.0">
+                   <header>
+                       <button string="Cancel" special="cancel" />
+                       <button name="action_assign_order" string="Assign" type="object" icon="gtk-jump-to" class="oe_highlight" />
+                       <!--<button name="action_unassign_order" string="Unassign" type="object" icon="gtk-jump-to" />-->
+                   </header>                   
+                   <group colspan="4" col="4">
+                        <field name="product_id" invisible="1" />
+                        <field name="parent_mrp_id" invisible="1" />
+                        <field name="used_mrp_id" domain="[('id', '!=', parent_mrp_id),('product_id', '=', product_id),('has_extra_qty', '=', True),('used_by_mrp_id', '=', False)]"/>
+                        <separator string="Annotation" colspan="4"/>
+                        <field name="note" nolabel="1" colspan="4" readonly="1"/>                        
+                   </group>
+                </form>
+            </field>
+      </record>
+
+      <record model="ir.actions.act_window" id="action_assign_mrp_production_wizard_form">
+          <field name="name">Assign production</field>
+          <field name="res_model">mrp.production.assign.wizard</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">form</field>
+          <field name="target">new</field>
+          <field name="view_id" ref="mrp_production_assign_wizard_view"/>
+      </record>      
+    </data>
+</openerp>
