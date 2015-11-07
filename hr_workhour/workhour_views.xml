@@ -7,12 +7,12 @@
             <field name="model">res.users</field>
             <field name="inherit_id" ref="base.view_users_form"/>
             <field name="arch" type="xml">
-               <field name="active" position="after">
+               <field name="active" position="before">
                   <field name="workhour_plan_id" />
                </field>               
            </field>
         </record>	  
-        <record id="view_res_users_form_workhour" model="ir.ui.view">
+        <record id="view_res_users_tree_workhour" model="ir.ui.view">
             <field name="name">User work time</field>
             <field name="model">res.users</field>
             <field name="inherit_id" ref="base.view_users_tree"/>

@@ -23,7 +23,7 @@
     'category': '',
     'description': '''        
         Manage work hour contract for employee
-        MAnage also festifity days
+        Manage also festivity days
         ''',
     'author': 'Micronaet S.r.l. - Nicola Riolini',
     'website': 'http://www.micronaet.it',
