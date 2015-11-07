@@ -110,12 +110,15 @@ class MrpMoveLavoration(orm.TransientModel):
             help='Add extra info to specify why lavoration are moved'),
         
         # Parameters:
+        # TODO parametrize all for create new elements instead of move:
         'workhour_id': fields.many2one('hr.workhour', 'Work hour', 
-            required=True),
-        'bom_id': fields.many2one('mrp.bom', 'BOM', required=True),
+            readonly=True),
+        'bom_id': fields.many2one('mrp.bom', 'BOM', 
+            readonly=True),
         'workcenter_id': fields.many2one('mrp.workcenter', 'Workcenter',
-            required=True),
-        'workers': fields.integer('Workers', required=True),
+            readonly=True),
+        'workers': fields.integer('Workers', 
+            readonly=True),
         }
 
     _defaults = {

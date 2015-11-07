@@ -284,12 +284,6 @@ class MrpProduction(orm.Model):
         order = []
         for line in mrp_proxy.order_line_ids:
             order.append((line.default_code, line.id))
-            #order.append((
-            #    '%3s%2s' % (
-            #        line.default_code[:3],
-            #        line.default_code[5:7],
-            #        ),
-            #    line.id))
         line_pool = self.pool.get('sale.order.line')        
         i = 0
         for code, item_id in sorted(order):

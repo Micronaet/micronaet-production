@@ -181,9 +181,29 @@ class bom_production(orm.Model):
     # -------    
     def schedule_lavoration(self, cr, uid, ids, context=None):
         ''' Schedule activities (or update current scheduled)
+            This procedure could be used also for move some lavoration passing            
+            in context:            
+            > move_lavoration_ids list of current lavoration to move:
+            > move_date: new date to move
+            > move_workhour_id: new workhour plan
+            > move_workcenter_id: new workcenter line
+            > move_workers: new number of workers
+            > move_bom_id: new bom parameters # TODO            
         '''
         if context is None: 
             context = {}
+        
+        # Check move operation:
+        if context.get('move_lavoration_ids', False):
+            move_operation = True
+            move_lavoration_ids = context.get('move_lavoration_ids', False)
+            move_date = context.get('move_date', False)
+            move_workhour_id = context.get('move_workhour_id', False)
+            move_workcenter_id = context.get('move_workcenter_id', False)
+            move_workers = context.get('move_workers', False)
+            move_bom_id = context.get('move_bom_id', False)
+        else:
+            move_operation = False    
         
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
         
@@ -207,7 +227,8 @@ class bom_production(orm.Model):
             raise osv.except_osv(_('Error'), _('No start date for schedule!'))
 
         for item in mrp_proxy.workhour_id.day_ids:
-            workhour[int(item.weekday)] = item.hour # int for '0' problems on write
+            # use int for '0' problems on write operation:
+            workhour[int(item.weekday)] = item.hour 
                     
         # ---------------------------------------------------------------------
         #              Delete lavoration not confirmed
@@ -257,7 +278,6 @@ class bom_production(orm.Model):
         else: # take from production
             current_date = datetime.strptime(
                 mrp_proxy.schedule_from_date, DEFAULT_SERVER_DATE_FORMAT)
-
         
         # ---------------------------------------------------------------------
         #                      Create lavorations:
@@ -278,7 +298,7 @@ class bom_production(orm.Model):
             
             # Leave loop for next developing (now only one line=production)
             while total_hour > 0.0:
-                # not work days:
+                # Not work days for workhour plan:
                 wd = current_date.weekday()
                 if wd not in workhour: 
                     current_date = current_date + timedelta(days=1)
@@ -325,10 +345,8 @@ class bom_production(orm.Model):
                         hour * (
                         mrp_proxy.product_qty / lavoration.duration), 0),
                     }, context=context)
-
         # TODO Write some date in production start / stop?                    
         return True
-
     
     def open_lavoration(self, cr, uid, ids, context=None):
         ''' Open in calendar all lavorations for this production
