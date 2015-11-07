@@ -34,6 +34,7 @@
             <field name="res_model">mrp.production.move.lavoration.wizard</field>
             <field name="view_type">form</field>
             <field name="view_id" ref="mrp_production_move_lavoration_wizard_view"/>
+            <field name="target">new</field>
             <field name="context">{}</field>
             <field name="domain">[]</field>
       </record>  
@@ -43,8 +44,8 @@
             <field name="model">mrp.production.workcenter.line</field>
             <field name="inherit_id" ref="mrp_operations.mrp_production_workcenter_tree_view_inherit" />
             <field name="arch" type="xml">
-                <field name="state" position="before">                
-                    <button name="%(move_lavoration_wizard)d" string="Move lavoration block" type="action" />
+                <field name="state" position="after">                
+                    <button name="%(move_lavoration_wizard)d" string="Move lavoration block" type="action" icon="STOCK_SAVE"/>
                 </field>
             </field>
       </record>        
