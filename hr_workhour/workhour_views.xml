@@ -1,6 +1,194 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <!-- hr.employee -->
+        <record id="view_hr_employee_extra_fields" model="ir.ui.view">
+            <field name="name">Employee work time</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="base_import_fraternita.view_view_employee_form_extra_field"/>
+            <field name="arch" type="xml">
+               <field name="patent_type" position="after">
+                  <field name="workhour_plan_id" />
+               </field>               
+           </field>
+        </record>	  
+        <record id="view_hr_employee_tree_add_contract_type" model="ir.ui.view">
+            <field name="name">Employee contract type</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_tree"/>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                 <field name="department_id" position="after">
+                  <field name="workhour_plan_id" />
+                 </field>
+            </field>
+        </record>
+
+   <!-- hr.employee.workhour -->
+    <record id="view_hr_employee_workhour_search" model="ir.ui.view">
+        <field name="name">Workhour plan</field>
+        <field name="model">hr.employee.workhour</field>
+        <field name="arch" type="xml">
+            <search string="Contract tipology">
+               <field name="name"/>
+            </search>
+        </field>
+    </record>
+    <record id="view_hr_employee_workhour_tree" model="ir.ui.view">
+        <field name="name">Workhour plan</field>
+        <field name="model">hr.employee.workhour</field>
+        <field name="arch" type="xml">
+            <tree string="Workhour plan">
+               <field name="name" />
+               <field name="note" />
+            </tree>
+        </field>
+    </record>
+    <record id="view_hr_employee_workhour_form" model="ir.ui.view">
+        <field name="name">Workhour plan</field>
+        <field name="model">hr.employee.workhour</field>
+        <field name="arch" type="xml">
+            <form string="Workhour plan" version="7.0">
+               <sheet>
+                   <group colspan="4" col="4">
+                       <field name="name" />
+                       
+                       <separator string="Details" colspan="4" />
+                       <field name="line_ids" nolabel="1" colspan="4">
+                           <tree editable="bottom">
+                               <field name="week_day" />    
+                               <field name="name" />    
+                           </tree>
+                           <form>
+                               <field name="week_day" />    
+                               <field name="name" />    
+                           </form>
+                       </field>
+                       
+                       <separator string="Note" colspan="4" />
+                       <field name="note" nolabel="1" colspan="4"/>               
+                   </group>
+               </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_hr_employee_workhour" model="ir.actions.act_window">
+        <field name="name">Workhour plan</field>
+        <field name="res_model">hr.employee.workhour</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_hr_employee_workhour_tree"/>
+    </record>
+
+    <!--hr.employee.festivity-->
+    <record id="view_hr_employee_festivity_search" model="ir.ui.view">
+        <field name="name">Festivity</field>
+        <field name="model">hr.employee.festivity</field>
+        <field name="arch" type="xml">
+            <search string="Festivity">
+               <field name="name"/>
+            </search>
+        </field>    
+    </record>
+    <record id="view_hr_employee_festivity_tree" model="ir.ui.view">
+        <field name="name">Festivity</field>
+        <field name="model">hr.employee.festivity</field>
+        <field name="arch" type="xml">
+            <tree string="Festivity">
+               <field name="name"/>
+               <field name="day" />
+               <field name="month" />
+               <field name="periodic" />                   
+               <field name="periodic_from" />
+               <field name="periodic_to" />
+            </tree>
+        </field>    
+    </record>
+    <record id="view_hr_employee_festivity_dynamic_tree" model="ir.ui.view">
+        <field name="name">Festivity (dynamic)</field>
+        <field name="model">hr.employee.festivity</field>
+        <field name="arch" type="xml">
+            <tree string="Festivity">
+               <field name="name"/>
+               <field name="dynamic_date" />
+            </tree>
+        </field>    
+    </record>
+    <record id="view_hr_employee_festivity_form" model="ir.ui.view">
+        <field name="name">Festivity</field>
+        <field name="model">hr.employee.festivity</field>
+        <field name="arch" type="xml">
+            <form string="Festivity" version="7.0">
+                <sheet>
+                   <group colspan="4" col="4">
+                       <field name="static" />
+                       <field name="name" />
+                       <group name="static_group" colspan="4"  attrs="{'invisible':[('static','=',False)]}">
+                           <separator string="Static date" colspan="4" />
+                           <field name="day" />
+                           <field name="month" />
+                           
+                           <group name="periodic_group" colspan="4" col="6">
+                              <field name="periodic" />                   
+                              <field name="periodic_from" attrs="{'invisible':[('periodic','!=',True)]}"/>
+                              <field name="periodic_to" attrs="{'invisible':[('periodic','!=',True)]}"/>
+                           </group>   
+                       </group>
+                       <group name="dynamic_group" colspan="4" attrs="{'invisible':[('static','=',True)]}">
+                           <separator string="Dynamic date" colspan="4" />
+                           <field name="dynamic_date" />
+                       </group>
+                   </group>
+                </sheet>
+            </form>
+        </field>    
+    </record>
+    <record model="ir.actions.act_window" id="action_hr_employee_festivity">
+        <field name="name">Festivity (static)</field>
+        <field name="res_model">hr.employee.festivity</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_hr_employee_festivity_tree"/>
+        <field name="domain">[('static','=',True)]</field>
+    </record>
+    <record model="ir.actions.act_window" id="action_hr_employee_dynamic_festivity">
+        <field name="name">Festivity (static)</field>
+        <field name="res_model">hr.employee.festivity</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_hr_employee_festivity_dynamic_tree"/>
+        <field name="domain">[('static','=',True)]</field>
+    </record>
+
+    <!-- MENUITEM -->
+    <!-- (in configuration menuitem of contract_manage) -->
+    <menuitem id="menu_hr_employee_workhour_root"
+         name="Workhour plan"
+         sequence="10"
+         parent="hr.menu_hr_configuration" />
+
+        <menuitem id="menu_hr_employee_workhour_plan"
+             name="Workhour plan"
+             sequence="10"
+             action="action_hr_employee_workhour"
+             parent="menu_hr_employee_workhour_root" />
+
+        <menuitem id="menu_hr_employee_festivity_root"
+             name="Festivity"
+             sequence="20"
+             parent="menu_hr_employee_workhour_root" />
+             
+            <menuitem id="menu_hr_employee_festivity_static"
+                 name="Static"
+                 sequence="10"
+                 action="action_hr_employee_festivity"
+                 parent="menu_hr_employee_festivity_root" />
+                 
+            <menuitem id="menu_hr_employee_festivity_dynamic"
+                 name="Dynamic"
+                 sequence="20"
+                 action="action_hr_employee_dynamic_festivity"
+                 parent="menu_hr_employee_festivity_root" />
 
     </data>
 </openerp>
