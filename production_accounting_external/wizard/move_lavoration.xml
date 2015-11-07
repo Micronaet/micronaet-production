@@ -46,7 +46,7 @@
             <field name="arch" type="xml">
                 <field name="state" position="after">                
                     <button name="%(move_lavoration_wizard)d" string="Move lavoration block" type="action" icon="STOCK_SAVE"
-                        context="{'default_scheduled_lavoration_id': active_id, 'default_workhour_id': parent.workhour_id, 'default_new_date': parent.schedule_from_date}"/>
+                        context="{'default_scheduled_lavoration_id':active_id}"/>
                 </field>
             </field>
       </record>        

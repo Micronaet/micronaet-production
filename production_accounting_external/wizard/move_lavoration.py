@@ -69,7 +69,7 @@ class MrpMoveLavoration(orm.TransientModel):
     # ------------------
     # Defaults function:
     # ------------------
-    def _get_info_in_plan(self, cr, uid, item, context=None):
+    def _get_info_in_plan(self, cr, uid, field, context=None):
         ''' Read workers in lavoration plan (first for now)
         '''
         if context is None: 
@@ -78,17 +78,30 @@ class MrpMoveLavoration(orm.TransientModel):
             active_id = context.get('active_id', False)    
             wc_pool = self.pool.get('mrp.production.workcenter.line')
             wc_proxy = wc_pool.browse(cr, uid, active_id, context=context)
-            if item == 'workers':
+            
+            # Planner:
+            if field == 'workers':
                 return wc_proxy.production_id.lavoration_ids[0].workers
-            elif item == 'wc':
+            elif field == 'workcenter_id':
                 return wc_proxy.production_id.lavoration_ids[0].line_id.id
+            
+            # Lavoration    
+            elif field == 'new_date':
+                return wc_proxy.date_planned
+            
+            # MRP:    
+            elif field == 'bom_id':
+                return wc_proxy.production_id.bom_id.id
+            elif field == 'workhour_id':
+                return wc_proxy.production_id.workhour_id.id
+                
         except:
             pass  # No error
         return False    
 
     _columns = {
         # Split info_
-        'new_date': fields.date('New date', required=True),
+        'new_date': fields.datetime('New date', required=True),
         'scheduled_lavoration_id': fields.many2one(
             'mrp.production.workcenter.line',
             'Current start point'),
@@ -106,9 +119,20 @@ class MrpMoveLavoration(orm.TransientModel):
         }
 
     _defaults = {
+        # MRP     
+        'bom_id': lambda s, cr, uid, ctx: s._get_info_in_plan(
+            cr, uid, 'bom_id', ctx),
+        'workhour_id': lambda s, cr, uid, ctx: s._get_info_in_plan(
+            cr, uid, 'workhour_id', ctx),
+
+        # Lavoration:
+        'new_date': lambda s, cr, uid, ctx: s._get_info_in_plan(
+            cr, uid, 'new_date', ctx),
+
+        # Planner:
         'workers': lambda s, cr, uid, ctx: s._get_info_in_plan(
             cr, uid, 'workers', ctx),
         'workcenter_id': lambda s, cr, uid, ctx: s._get_info_in_plan(
-            cr, uid, 'wc', ctx),
+            cr, uid, 'workcenter_id', ctx),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
