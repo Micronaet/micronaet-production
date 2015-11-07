@@ -50,7 +50,7 @@ class MrpMoveLavoration(orm.TransientModel):
     # --------------
     # Wizard button:
     # --------------
-    def action_assign_order(self, cr, uid, ids, context=None):
+    def move_lavoration_item(self, cr, uid, ids, context=None):
         ''' Assign production to selected order line
         '''
         if context is None: 
@@ -77,13 +77,9 @@ class MrpMoveLavoration(orm.TransientModel):
         'workhour_id': fields.many2one('hr.workhour'),
         'bom_id': fields.many2one('mrp.bom'),
         'workcenter_id': fields.many2one('mrp.workcenter'),
-        'workcers': fields.integer('Workers'),
+        'workers': fields.integer('Workers'),
         'scheduled_lavoration_id': fields.many2one(
             'mrp.production.workcenter.line', 
             'Current start point'),
         }
-        
-        
-        
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
