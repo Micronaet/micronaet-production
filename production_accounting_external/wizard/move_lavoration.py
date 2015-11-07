@@ -67,9 +67,9 @@ class MrpMoveLavoration(orm.TransientModel):
         # Get all lavorations to move:
         lavoration_ids = wc_pool.search(cr, uid, [
             ('production_id', '=', 
-                wiz_proxy.scheduled_lavorarion_id.production_id.id),
+                wiz_proxy.scheduled_lavoration_id.production_id.id),
             ('date_planned', '>=', 
-                wiz_proxy.scheduled_lavorarion_id.date_planned),
+                wiz_proxy.scheduled_lavoration_id.date_planned),
             ], context=context)
         
         if not lavoration_ids: # maybe deleted or moved before confirmation
@@ -77,16 +77,19 @@ class MrpMoveLavoration(orm.TransientModel):
             
         move_context = context.copy()
         move_context.update({
-            'move_lavoration_ids': lavoration_ids,
-            'move_date': wiz_proxy.new_date,
-            'move_workhour_id': wiz_proxy.workhour_id.id,
-            'move_workcenter_id': wiz_proxy.wokrcenter_id.id,
-            'move_workers': wiz_proxy.workers,
-            'move_bom_id': wiz_proxy.bom_id.id,
-            })
+            'move_parameters': {
+                'lavoration_ids': lavoration_ids,
+                'new_date': wiz_proxy.new_date,
+                'workhour_id': wiz_proxy.workhour_id.id,
+                'workcenter_id': wiz_proxy.workcenter_id.id,
+                'workers': wiz_proxy.workers,
+                'bom_id': wiz_proxy.bom_id.id,
+                }})
         
-        mrp_pool.schedule_lavoration(cr, uid, [wiz_proxy.production_id.id], 
-            context=move_context)
+        # Call button event procedure but with context modified for move wc
+        mrp_pool.schedule_lavoration(cr, uid, [
+            wiz_proxy.scheduled_lavoration_id.production_id.id], 
+                context=move_context)
 
         return {'type':'ir.actions.act_window_close'}
 

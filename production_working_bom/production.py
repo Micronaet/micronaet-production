@@ -182,28 +182,19 @@ class bom_production(orm.Model):
     def schedule_lavoration(self, cr, uid, ids, context=None):
         ''' Schedule activities (or update current scheduled)
             This procedure could be used also for move some lavoration passing            
-            in context:            
-            > move_lavoration_ids list of current lavoration to move:
-            > move_date: new date to move
-            > move_workhour_id: new workhour plan
-            > move_workcenter_id: new workcenter line
-            > move_workers: new number of workers
-            > move_bom_id: new bom parameters # TODO            
+            in context 'move_parameters' dict key with:
+            > lavoration_ids list of current lavoration to move:
+            > new_date: new date to move
+            > workhour_id: new workhour plan
+            > workcenter_id: new workcenter line
+            > workers: new number of workers
+            > bom_id: new bom parameters # TODO            
         '''
         if context is None: 
             context = {}
         
-        # Check move operation:
-        if context.get('move_lavoration_ids', False):
-            move_operation = True
-            move_lavoration_ids = context.get('move_lavoration_ids', False)
-            move_date = context.get('move_date', False)
-            move_workhour_id = context.get('move_workhour_id', False)
-            move_workcenter_id = context.get('move_workcenter_id', False)
-            move_workers = context.get('move_workers', False)
-            move_bom_id = context.get('move_bom_id', False)
-        else:
-            move_operation = False    
+        # Check move operation if present:
+        move_parameters = context.get('move_parameters', False)
         
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
         
