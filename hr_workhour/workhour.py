@@ -72,6 +72,10 @@ class HrEmployeeWorkhourLine(orm.Model):
         'workhour_id':fields.many2one(
             'hr.employee.workhour', 'Plan', ondelete='cascade'),
         }
+        
+    _defaults = {
+        'name': lambda *x: 8.0,
+        }    
 
 class HrEmployeeWorkhour(orm.Model):
     ''' Manage workhour plan as employee contract
@@ -160,14 +164,15 @@ class HrEmployee_festivity(osv.osv):
         'periodic_to': lambda *a: datetime.now().strftime('%Y'),
         }
 
-class HrEemployee(osv.osv):
-    """ Extra field form manage workhour plan
+# TODO Use he.employee? create a related field?
+class ResUsers(osv.osv):
+    """ Extra field form manage workhour plan, note: use res.users for fast
     """    
-    _inherit = 'hr.employee'
+    _inherit = 'res.users'
 
     _columns = {
         'workhour_plan_id':fields.many2one(
-            'he.employee.workhour', 'Workhour plan', 
+            'hr.employee.workhour', 'Workhour plan', 
             help="Working time for this employee like: "
                 "full time, part time etc. (for manage hour and presence)"),
         }

@@ -1,29 +1,28 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-        <!-- hr.employee -->
-        <record id="view_hr_employee_extra_fields" model="ir.ui.view">
-            <field name="name">Employee work time</field>
-            <field name="model">hr.employee</field>
-            <field name="inherit_id" ref="base_import_fraternita.view_view_employee_form_extra_field"/>
+        <!-- res.users -->
+        <record id="view_res_users_form_workhour" model="ir.ui.view">
+            <field name="name">User work time</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
             <field name="arch" type="xml">
-               <field name="patent_type" position="after">
+               <field name="active" position="after">
                   <field name="workhour_plan_id" />
                </field>               
            </field>
         </record>	  
-        <record id="view_hr_employee_tree_add_contract_type" model="ir.ui.view">
-            <field name="name">Employee contract type</field>
-            <field name="model">hr.employee</field>
-            <field name="inherit_id" ref="hr.view_employee_tree"/>
-            <field name="type">tree</field>
+        <record id="view_res_users_form_workhour" model="ir.ui.view">
+            <field name="name">User work time</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_tree"/>
             <field name="arch" type="xml">
-                 <field name="department_id" position="after">
+               <field name="login" position="after">
                   <field name="workhour_plan_id" />
-                 </field>
-            </field>
-        </record>
-
+               </field>               
+           </field>
+        </record>	  
+        
    <!-- hr.employee.workhour -->
     <record id="view_hr_employee_workhour_search" model="ir.ui.view">
         <field name="name">Workhour plan</field>
@@ -157,7 +156,7 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="view_hr_employee_festivity_dynamic_tree"/>
-        <field name="domain">[('static','=',True)]</field>
+        <field name="domain">[('static','=',False)]</field>
     </record>
 
     <!-- MENUITEM -->
@@ -165,13 +164,8 @@
     <menuitem id="menu_hr_employee_workhour_root"
          name="Workhour plan"
          sequence="10"
+         action="action_hr_employee_workhour"
          parent="hr.menu_hr_configuration" />
-
-        <menuitem id="menu_hr_employee_workhour_plan"
-             name="Workhour plan"
-             sequence="10"
-             action="action_hr_employee_workhour"
-             parent="menu_hr_employee_workhour_root" />
 
         <menuitem id="menu_hr_employee_festivity_root"
              name="Festivity"

@@ -1,0 +1,5 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_hr_employee_festivity,hr.employee.festivity,model_hr_employee_festivity,base.group_user,1,1,1,1
+access_hr_employee_workhour,hr.employee.workhour,model_hr_employee_workhour,base.group_user,1,1,1,1
+access_hr_employee_workhour_line,hr.employee.workhour.line,model_hr_employee_workhour_line,base.group_user,1,1,1,1
+
