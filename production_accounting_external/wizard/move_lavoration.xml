@@ -12,7 +12,7 @@
                        <button name="move_lavoration_item" string="Move" type="object" icon="gtk-jump-to" class="oe_highlight" />
                    </header>                   
                    <group colspan="4" col="4">
-                        <field name="datetime" />
+                        <field name="new_date" />
                         <field name="scheduled_lavoration_id" readonly="1" />
                         <!--New parameters:-->
                         <separator string="New parameter:" colspan="4" />
@@ -45,7 +45,8 @@
             <field name="inherit_id" ref="mrp_operations.mrp_production_workcenter_tree_view_inherit" />
             <field name="arch" type="xml">
                 <field name="state" position="after">                
-                    <button name="%(move_lavoration_wizard)d" string="Move lavoration block" type="action" icon="STOCK_SAVE"/>
+                    <button name="%(move_lavoration_wizard)d" string="Move lavoration block" type="action" icon="STOCK_SAVE"
+                        context="{'default_scheduled_lavoration_id': active_id, 'default_workhour_id': parent.workhour_id, 'default_new_date': parent.schedule_from_date}"/>
                 </field>
             </field>
       </record>        

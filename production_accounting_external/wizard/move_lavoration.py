@@ -66,20 +66,49 @@ class MrpMoveLavoration(orm.TransientModel):
 
         return {'type':'ir.actions.act_window_close'}
 
+    # ------------------
+    # Defaults function:
+    # ------------------
+    def _get_info_in_plan(self, cr, uid, item, context=None):
+        ''' Read workers in lavoration plan (first for now)
+        '''
+        if context is None: 
+            context = {}
+        try:    
+            active_id = context.get('active_id', False)    
+            wc_pool = self.pool.get('mrp.production.workcenter.line')
+            wc_proxy = wc_pool.browse(cr, uid, active_id, context=context)
+            if item == 'workers':
+                return wc_proxy.production_id.lavoration_ids[0].workers
+            elif item == 'wc':
+                return wc_proxy.production_id.lavoration_ids[0].line_id.id
+        except:
+            pass  # No error
+        return False    
+
     _columns = {
         # Split info_
-        'datetime': fields.date('New date', required=True),
+        'new_date': fields.date('New date', required=True),
+        'scheduled_lavoration_id': fields.many2one(
+            'mrp.production.workcenter.line',
+            'Current start point'),
         'note': fields.text(
             'Note', 
             help='Add extra info to specify why lavoration are moved'),
         
         # Parameters:
-        'workhour_id': fields.many2one('hr.workhour'),
-        'bom_id': fields.many2one('mrp.bom'),
-        'workcenter_id': fields.many2one('mrp.workcenter'),
-        'workers': fields.integer('Workers'),
-        'scheduled_lavoration_id': fields.many2one(
-            'mrp.production.workcenter.line', 
-            'Current start point'),
+        'workhour_id': fields.many2one('hr.workhour', 'Work hour', 
+            required=True),
+        'bom_id': fields.many2one('mrp.bom', 'BOM', required=True),
+        'workcenter_id': fields.many2one('mrp.workcenter', 'Workcenter',
+            required=True),
+        'workers': fields.integer('Workers', required=True),
+        }
+
+    _defaults = {
+        'workers': lambda s, cr, uid, ctx: s._get_info_in_plan(
+            cr, uid, 'workers', ctx),
+        'workcenter_id': lambda s, cr, uid, ctx: s._get_info_in_plan(
+            cr, uid, 'wc', ctx),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
