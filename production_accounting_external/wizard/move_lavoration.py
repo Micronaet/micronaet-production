@@ -56,13 +56,37 @@ class MrpMoveLavoration(orm.TransientModel):
         if context is None: 
             context = {}        
         active_id = context.get('active_id', False)    
-        
+
+        # Pool used:        
+        mrp_pool = self.pool.get('mrp.production')
+        wc_pool = self.pool.get('mrp.production.workcenter.line')
+
         # Read wizard parameters:
-        wizard_browse = self.browse(cr, uid, ids, context=context)[0]
+        wiz_proxy = self.browse(cr, uid, ids, context=context)[0]        
+
+        # Get all lavorations to move:
+        lavoration_ids = wc_pool.search(cr, uid, [
+            ('production_id', '=', 
+                wiz_proxy.scheduled_lavorarion_id.production_id.id),
+            ('date_planned', '>=', 
+                wiz_proxy.scheduled_lavorarion_id.date_planned),
+            ], context=context)
         
-        # Move lavoration after passed:
-        lavoration_pool = self.pool.get('mrp.production.workcenter.line')
+        if not lavoration_ids: # maybe deleted or moved before confirmation
+            return True
+            
+        move_context = context.copy()
+        move_context.update({
+            'move_lavoration_ids': lavoration_ids,
+            'move_date': wiz_proxy.new_date,
+            'move_workhour_id': wiz_proxy.workhour_id.id,
+            'move_workcenter_id': wiz_proxy.wokrcenter_id.id,
+            'move_workers': wiz_proxy.workers,
+            'move_bom_id': wiz_proxy.bom_id.id,
+            })
         
+        mrp_pool.schedule_lavoration(cr, uid, [wiz_proxy.production_id.id], 
+            context=move_context)
 
         return {'type':'ir.actions.act_window_close'}
 
