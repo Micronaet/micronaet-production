@@ -567,9 +567,12 @@ class CreateMrpProductionWizard(orm.TransientModel):
         ''' Get default from data if present 
             TODO >> maybe bettere with a boolean (for deletion)
         '''
-        res = self.pool.get('ir.model.data').xmlid_to_res_id(
-            cr, uid, 'production_workhour.hr_workhour_normal') or False
-        return res    
+        try:
+            res = self.pool.get('ir.model.data').xmlid_to_res_id(
+                cr, uid, 'hr_workhour.hr_workhour_normal') or False
+            return res    
+        except:
+            return False    
             
     _columns = {
         'name': fields.text('OC line', readonly=True),

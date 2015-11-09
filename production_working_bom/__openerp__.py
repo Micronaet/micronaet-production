@@ -37,7 +37,8 @@
         'mrp_operations',
         'working_bom',
         #'production_accounting_external',
-        'production_workhour',
+        #'production_workhour', # Replaced with:
+        'hr_workhour',
         #'report',
         'report_webkit',
         #'report_aeroo',
