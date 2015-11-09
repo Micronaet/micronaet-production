@@ -324,17 +324,17 @@ class bom_production(orm.Model):
                     'workcenter_id': lavoration.line_id.id,
                     'date_planned': current_date_text,
                     'date_start': current_date_text,
-                    'hour': hour,
                     'phase_id': lavoration.phase_id.id,
                     'product': mrp_proxy.product_id.id,
                     'production_id': mrp_proxy.id,
                     'lavoration_id': lavoration.id,
-                    'workers': lavoration.workers,
 
-                    # Statistic m(x):
-                    'lavoration_qty': round(
+                    # Data field that will be related on lavoration:
+                    'hour': hour,
+                    'lavoration_qty': round( # Statistic m(x):
                         hour * (
                         mrp_proxy.product_qty / lavoration.duration), 0),
+                    #'workers': lavoration.workers, # related for now                    
                     }, context=context)
         # TODO Write some date in production start / stop?                    
         return True
@@ -405,8 +405,7 @@ class bom_production(orm.Model):
             'production_id', 'Scheduled lavoration'),
         'worker_ids': fields.many2many('hr.employee', 
             'mrp_production_workcenter_employee', 'production_id', 
-            'employee_id', 
-            'Employee'),
+            'employee_id', 'Employee'),
         
         # For schedule lavoration:
         'schedule_from_date': fields.date(
@@ -422,7 +421,7 @@ class mrp_production_workcenter_line(orm.Model):
     _columns = {
         'lavoration_id': fields.many2one('mrp.bom.lavoration', 
             'Linked lavoration', ondelete='cascade'),
-            
+
         # Related fields:
         'phase_id': fields.related('lavoration_id','phase_id', type='many2one',
             relation='mrp.bom.lavoration.phase', string='Phase', store=False),            
