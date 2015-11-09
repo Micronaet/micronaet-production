@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
 	<data noupdate="1">
-		<record id="festivity_epifany" model="hr.employee.festivity">
+		<record id="festivity_epifany" model="hr.workhour.festivity">
             <field name="name">Epifania</field>
             <field name="static" eval="True" />
             <field name="day" eval="6" />
@@ -9,7 +9,7 @@
             <field name="periodic" eval="False" />
         </record>
         
-		<record id="festivity_freedom" model="hr.employee.festivity">
+		<record id="festivity_freedom" model="hr.workhour.festivity">
             <field name="name">Liberazione</field>
             <field name="static" eval="True" />
             <field name="day" eval="25" />
@@ -17,7 +17,7 @@
             <field name="periodic" eval="False" />
         </record>
         
-		<record id="festivity_labor" model="hr.employee.festivity">
+		<record id="festivity_labor" model="hr.workhour.festivity">
             <field name="name">Festa del lavoro</field>
             <field name="static" eval="True" />
             <field name="day" eval="1" />
@@ -25,7 +25,7 @@
             <field name="periodic" eval="False" />
         </record>
         
-		<record id="festivity_republic" model="hr.employee.festivity">
+		<record id="festivity_republic" model="hr.workhour.festivity">
             <field name="name">Festa della Repubblica</field>
             <field name="static" eval="True" />
             <field name="day" eval="2" />
@@ -33,7 +33,7 @@
             <field name="periodic" eval="False" />
         </record>
 
-		<record id="festivity_assuntion" model="hr.employee.festivity">
+		<record id="festivity_assuntion" model="hr.workhour.festivity">
             <field name="name">Festa dell'assunzione</field>
             <field name="static" eval="True" />
             <field name="day" eval="15" />
@@ -41,7 +41,7 @@
             <field name="periodic" eval="False" />
         </record>
 
-		<record id="festivity_imaculate_conception" model="hr.employee.festivity">
+		<record id="festivity_imaculate_conception" model="hr.workhour.festivity">
             <field name="name">Festa dell'Immacolata Concezione</field>
             <field name="static" eval="True" />
             <field name="day" eval="8" />
@@ -49,7 +49,7 @@
             <field name="periodic" eval="False" />
         </record>
 
-		<record id="festivity_christmas" model="hr.employee.festivity">
+		<record id="festivity_christmas" model="hr.workhour.festivity">
             <field name="name">Natale</field>
             <field name="static" eval="True" />
             <field name="day" eval="25" />
@@ -57,7 +57,7 @@
             <field name="periodic" eval="False" />
         </record>
 
-		<record id="festivity_steven" model="hr.employee.festivity">
+		<record id="festivity_steven" model="hr.workhour.festivity">
             <field name="name">S. Stefano</field>
             <field name="static" eval="True" />
             <field name="day" eval="26" />
@@ -65,7 +65,7 @@
             <field name="periodic" eval="False" />
         </record>
 
-		<record id="festivity_new_year" model="hr.employee.festivity">
+		<record id="festivity_new_year" model="hr.workhour.festivity">
             <field name="name">Capodanno</field>
             <field name="static" eval="True" />
             <field name="day" eval="1" />

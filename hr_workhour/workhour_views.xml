@@ -55,12 +55,12 @@
                        <separator string="Details" colspan="4" />
                        <field name="day_ids" nolabel="1" colspan="4">
                            <tree editable="bottom">
-                               <field name="week_day" />    
-                               <field name="name" />    
+                               <field name="weekday" />    
+                               <field name="hour" />    
                            </tree>
                            <form>
-                               <field name="week_day" />    
-                               <field name="name" />    
+                               <field name="weekday" />    
+                               <field name="hour" />    
                            </form>
                        </field>
                        
