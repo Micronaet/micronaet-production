@@ -1,5 +1,5 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
-access_hr_workhour_festivity,hr.workhour.festivity,model_hr_workhour_festivity,base.group_user,1,1,1,1
-access_hr_workhour,hr.workhour,model_hr_workhour,base.group_user,1,1,1,1
-access_hr_workhour_line,hr.workhour.line,model_hr_workhour_line,base.group_user,1,1,1,1
+access_hr_workhour_festivity_user,hr.workhour.festivity,model_hr_workhour_festivity,base.group_user,1,1,1,1
+access_hr_workhour_user,hr.workhour,model_hr_workhour,base.group_user,1,1,1,1
+access_hr_workhour_day_user,hr.workhour.day,model_hr_workhour_day,base.group_user,1,1,1,1
 

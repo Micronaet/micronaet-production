@@ -38,17 +38,6 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
-# python represent weekday starting from 0 = Monday
-week_days = [
-    ('mo', 'Monday'),  
-    ('tu', 'Tuesday'),     
-    ('we', 'Wednesday'),     
-    ('th', 'Thursday'),     
-    ('fr', 'Friday'),     
-    ('sa', 'Saturday'),     
-    ('su', 'Sunday'),
-    ]
-
 class HrWorkhour(orm.Model):
     ''' Manage workhour plan as employee contract
     '''    
