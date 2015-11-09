@@ -553,7 +553,7 @@
     <menuitem name="Work hour"
         parent="mrp.menu_mrp_configuration" 
         id="menu_configuration_workhour" 
-        action="hr_workhour.action_hr_workhour_tree" 
+        action="hr_workhour.action_hr_workhour" 
         sequence="40" />        
 
     <!--MENUITEM:-->
