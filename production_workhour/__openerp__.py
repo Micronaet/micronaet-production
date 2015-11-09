@@ -32,7 +32,8 @@
         'base',
         'product',
         'mrp',
-        'hr'
+        'hr',
+        'hr_workhour',
         ],
     'init_xml': [],
     'demo': [],

@@ -49,51 +49,63 @@ week_days = [
     ('su', 'Sunday'),
     ]
 
-class HrEmployeeWorkhour(orm.Model):
+class HrWorkhour(orm.Model):
     ''' Manage workhour plan as employee contract
     '''    
-    _name = 'hr.employee.workhour'
+    _name = 'hr.workhour'
     _description = 'Workhour plan'
     
     _columns = {
-        'name': fields.char('Name', size=64),
+        'name': fields.char('Name', size=64, required=True),
         'note': fields.text('Note'),
         }
 
-class HrEmployeeWorkhourLine(orm.Model):
-    ''' Manage workhour plan line
-    '''    
-    _name = 'hr.employee.workhour.line'
-    _description = 'Workhour plan line'
+class HrWorkhourDay(orm.Model):
+    ''' Class for manage Work hour for each day of the week
+    '''
     
+    _name = 'hr.workhour.day'
+    _description = 'Employee work hour'
+    _rec_name = 'weekday'
+
+    # weekday python value:
+    get_weekday = [ 
+        ('0', 'Monday'),
+        ('1', 'Tuesday'),
+        ('2', 'Wednesday'),
+        ('3', 'Thursday'),
+        ('4', 'Friday'),
+        ('5', 'Saturday'),
+        ('6', 'Sunday'),
+        ]
+            
     _columns = {
-        'name': fields.float('Tot. hours', required=True, digits=(4, 2)),
-        'week_day':fields.selection(week_days,'Week day', select=True),
-        'workhour_id':fields.many2one(
-            'hr.employee.workhour', 'Plan', ondelete='cascade'),
+        'workhour_id': fields.many2one('hr.workhour', 'Workhour'),
+        'weekday': fields.selection(
+            get_weekday, 'Weekday', select=True, readonly=False),
+        'hour': fields.integer('Label')            
         }
         
     _defaults = {
-        'name': lambda *x: 8.0,
+        'hour': lambda *x: 8,
         }    
 
-class HrEmployeeWorkhour(orm.Model):
-    ''' Manage workhour plan as employee contract
-    '''    
-    _inherit = 'hr.employee.workhour'
+class HrWorkhour(orm.Model):
+    ''' Class for manage Work hour
+    '''
 
+    _inherit = 'hr.workhour'
+    
     _columns = {
-        'line_ids': fields.one2many(
-            'hr.employee.workhour.line', 
-            'workhour_id', 'Detail'),
+        'day_ids': fields.one2many('hr.workhour.day', 'workhour_id', 'Day'),
         }
 
-class HrEmployee_festivity(osv.osv):
+class HrWorkhourFestivity(osv.osv):
     ''' Festivity manage:
         manage static festivity (also with from-to period)
         manage dynamic list of festivity (ex. Easter monday)
     '''    
-    _name = 'hr.employee.festivity'
+    _name = 'hr.workhour.festivity'
     _description = 'HR festivity'
     
     # TODO: function for compute festivity
@@ -172,10 +184,9 @@ class ResUsers(osv.osv):
 
     _columns = {
         'workhour_plan_id':fields.many2one(
-            'hr.employee.workhour', 'Workhour plan', 
+            'hr.workhour', 'Workhour plan', 
             help="Working time for this employee like: "
                 "full time, part time etc. (for manage hour and presence)"),
-        }
-    
+        }    
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

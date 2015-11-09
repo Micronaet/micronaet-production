@@ -31,6 +31,7 @@
     'depends': [
         'base',
         'hr',
+        # TODO split festivity in a module?
         ],
     'init_xml': [],
     'demo': [],

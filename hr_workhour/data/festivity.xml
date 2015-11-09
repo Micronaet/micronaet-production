@@ -73,6 +73,39 @@
             <field name="periodic" eval="False" />
         </record>
 
+        <!--hr.workhour-->
+        <!--Create a workhour template:-->
+        <record model="hr.workhour" id="hr_workhour_normal">
+            <field name="name">Normal workhour</field>
+            <field name="note">Normal workhour 5 day x 8 hour</field>
+        </record>
+
+        <!--hr.workhour.day-->
+        <record model="hr.workhour.day" id="hr_workhour_day_0">
+            <field name="weekday">0</field>
+            <field name="hour" eval="8" />
+            <field name="workhour_id" ref="hr_workhour_normal" />
+        </record>
+        <record model="hr.workhour.day" id="hr_workhour_day_1">
+            <field name="weekday">1</field>
+            <field name="hour" eval="8" />
+            <field name="workhour_id" ref="hr_workhour_normal" />
+        </record>
+        <record model="hr.workhour.day" id="hr_workhour_day_2">
+            <field name="weekday">2</field>
+            <field name="hour" eval="8" />
+            <field name="workhour_id" ref="hr_workhour_normal" />
+        </record>
+        <record model="hr.workhour.day" id="hr_workhour_day_3">
+            <field name="weekday">3</field>
+            <field name="hour" eval="8" />
+            <field name="workhour_id" ref="hr_workhour_normal" />
+        </record>
+        <record model="hr.workhour.day" id="hr_workhour_day_4">
+            <field name="weekday">4</field>
+            <field name="hour" eval="8" />
+            <field name="workhour_id" ref="hr_workhour_normal" />
+        </record>
 	</data>
 </openerp>
 

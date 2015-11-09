@@ -23,19 +23,19 @@
            </field>
         </record>	  
         
-   <!-- hr.employee.workhour -->
-    <record id="view_hr_employee_workhour_search" model="ir.ui.view">
+   <!-- hr.workhour -->
+    <record id="view_hr_workhour_search" model="ir.ui.view">
         <field name="name">Workhour plan</field>
-        <field name="model">hr.employee.workhour</field>
+        <field name="model">hr.workhour</field>
         <field name="arch" type="xml">
             <search string="Contract tipology">
                <field name="name"/>
             </search>
         </field>
     </record>
-    <record id="view_hr_employee_workhour_tree" model="ir.ui.view">
+    <record id="view_hr_workhour_tree" model="ir.ui.view">
         <field name="name">Workhour plan</field>
-        <field name="model">hr.employee.workhour</field>
+        <field name="model">hr.workhour</field>
         <field name="arch" type="xml">
             <tree string="Workhour plan">
                <field name="name" />
@@ -43,9 +43,9 @@
             </tree>
         </field>
     </record>
-    <record id="view_hr_employee_workhour_form" model="ir.ui.view">
+    <record id="view_hr_workhour_form" model="ir.ui.view">
         <field name="name">Workhour plan</field>
-        <field name="model">hr.employee.workhour</field>
+        <field name="model">hr.workhour</field>
         <field name="arch" type="xml">
             <form string="Workhour plan" version="7.0">
                <sheet>
@@ -71,27 +71,27 @@
             </form>
         </field>
     </record>
-    <record id="action_hr_employee_workhour" model="ir.actions.act_window">
+    <record id="action_hr_workhour" model="ir.actions.act_window">
         <field name="name">Workhour plan</field>
-        <field name="res_model">hr.employee.workhour</field>
+        <field name="res_model">hr.workhour</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="view_hr_employee_workhour_tree"/>
+        <field name="view_id" ref="view_hr_workhour_tree"/>
     </record>
 
-    <!--hr.employee.festivity-->
-    <record id="view_hr_employee_festivity_search" model="ir.ui.view">
+    <!--hr.workhour.festivity-->
+    <record id="view_hr_workhour_festivity_search" model="ir.ui.view">
         <field name="name">Festivity</field>
-        <field name="model">hr.employee.festivity</field>
+        <field name="model">hr.workhour.festivity</field>
         <field name="arch" type="xml">
             <search string="Festivity">
                <field name="name"/>
             </search>
         </field>    
     </record>
-    <record id="view_hr_employee_festivity_tree" model="ir.ui.view">
+    <record id="view_hr_workhour_festivity_tree" model="ir.ui.view">
         <field name="name">Festivity</field>
-        <field name="model">hr.employee.festivity</field>
+        <field name="model">hr.workhour.festivity</field>
         <field name="arch" type="xml">
             <tree string="Festivity">
                <field name="name"/>
@@ -103,9 +103,9 @@
             </tree>
         </field>    
     </record>
-    <record id="view_hr_employee_festivity_dynamic_tree" model="ir.ui.view">
+    <record id="view_hr_workhour_festivity_dynamic_tree" model="ir.ui.view">
         <field name="name">Festivity (dynamic)</field>
-        <field name="model">hr.employee.festivity</field>
+        <field name="model">hr.workhour.festivity</field>
         <field name="arch" type="xml">
             <tree string="Festivity">
                <field name="name"/>
@@ -113,9 +113,9 @@
             </tree>
         </field>    
     </record>
-    <record id="view_hr_employee_festivity_form" model="ir.ui.view">
+    <record id="view_hr_workhour_festivity_form" model="ir.ui.view">
         <field name="name">Festivity</field>
-        <field name="model">hr.employee.festivity</field>
+        <field name="model">hr.workhour.festivity</field>
         <field name="arch" type="xml">
             <form string="Festivity" version="7.0">
                 <sheet>
@@ -142,47 +142,47 @@
             </form>
         </field>    
     </record>
-    <record model="ir.actions.act_window" id="action_hr_employee_festivity">
+    <record model="ir.actions.act_window" id="action_hr_workhour_festivity">
         <field name="name">Festivity (static)</field>
-        <field name="res_model">hr.employee.festivity</field>
+        <field name="res_model">hr.workhour.festivity</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="view_hr_employee_festivity_tree"/>
+        <field name="view_id" ref="view_hr_workhour_festivity_tree"/>
         <field name="domain">[('static','=',True)]</field>
     </record>
-    <record model="ir.actions.act_window" id="action_hr_employee_dynamic_festivity">
+    <record model="ir.actions.act_window" id="action_hr_workhour_dynamic_festivity">
         <field name="name">Festivity (static)</field>
-        <field name="res_model">hr.employee.festivity</field>
+        <field name="res_model">hr.workhour.festivity</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="view_hr_employee_festivity_dynamic_tree"/>
+        <field name="view_id" ref="view_hr_workhour_festivity_dynamic_tree"/>
         <field name="domain">[('static','=',False)]</field>
     </record>
 
     <!-- MENUITEM -->
     <!-- (in configuration menuitem of contract_manage) -->
-    <menuitem id="menu_hr_employee_workhour_root"
+    <menuitem id="menu_hr_workhour_root"
          name="Workhour plan"
          sequence="10"
-         action="action_hr_employee_workhour"
+         action="action_hr_workhour"
          parent="hr.menu_hr_configuration" />
 
-        <menuitem id="menu_hr_employee_festivity_root"
+        <menuitem id="menu_hr_workhour_festivity_root"
              name="Festivity"
              sequence="20"
-             parent="menu_hr_employee_workhour_root" />
+             parent="menu_hr_workhour_root" />
              
-            <menuitem id="menu_hr_employee_festivity_static"
+            <menuitem id="menu_hr_workhour_festivity_static"
                  name="Static"
                  sequence="10"
-                 action="action_hr_employee_festivity"
-                 parent="menu_hr_employee_festivity_root" />
+                 action="action_hr_workhour_festivity"
+                 parent="menu_hr_workhour_festivity_root" />
                  
-            <menuitem id="menu_hr_employee_festivity_dynamic"
+            <menuitem id="menu_hr_workhour_festivity_dynamic"
                  name="Dynamic"
                  sequence="20"
-                 action="action_hr_employee_dynamic_festivity"
-                 parent="menu_hr_employee_festivity_root" />
+                 action="action_hr_workhour_dynamic_festivity"
+                 parent="menu_hr_workhour_festivity_root" />
 
     </data>
 </openerp>
