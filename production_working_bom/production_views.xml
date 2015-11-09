@@ -69,8 +69,7 @@
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
                 <page string="Lavoration">
-                    <!--<button name="load_lavoration" type="object" string="Load lavoration" />-->
-                    <button name="schedule_lavoration" type="object" string="Re-schedule process" />
+                    <button name="schedule_lavoration" type="object" string="Re-schedule all" />
                     <button name="open_lavoration" type="object" string="Lavorations" icon="terp-calendar"/>
                     
                     <group colspan="4" col="4">

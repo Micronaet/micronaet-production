@@ -631,9 +631,9 @@ class CreateMrpProductionWizard(orm.TransientModel):
         'calendar': fields.text('Calendar', readonly=True),
         'operation': fields.selection([
             #('create', 'Create production'),
-            ('lavoration', 'Create with lavoration'),
+            ('lavoration', 'Create'),# with lavoration'),
             #('append', 'Append'),            
-            ('append_reload', 'Append rescheduling'),
+            ('append_reload', 'Append'),# rescheduling'),
             ], 'Operation', select=True, required=True),
         }
         

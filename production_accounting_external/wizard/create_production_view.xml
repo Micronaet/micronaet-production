@@ -43,7 +43,7 @@
 
                             <field name="oc_total" />
                             <field name="extra_total" />
-                            <field name="total" on_change="onchange_total(total,oc_total)"/>
+                            <field name="total" on_change="onchange_total(total,oc_total)" readonly="1"/>
 
                             <field name="is_error" invisible="1" />
                         </group>    
