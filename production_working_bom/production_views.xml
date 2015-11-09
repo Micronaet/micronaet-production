@@ -78,15 +78,18 @@
                         <field name="worker_ids" widget="many2many_tags" colspan="4"/>
                     </group>
                     <newline />
-                    <field name="lavoration_ids" colors="blue:fixed==True">
+                    <field name="lavoration_ids" colors="blue:fixed==True" readonly="1">
                         <tree string="Lavoration" editable="bottom">
                            <field name="create_date" />
                            <field name="level" />
-                           <field name="phase_id" />
+                           <field name="phase_id"/>
                            <field name="fixed" invisible="1" />
                            <field name="workers" />
                            <field name="line_id" />
-                           <field name="duration" widget="float_time" sum="total"/>
+                           <field name="total_number" sum="lavoration"/>
+                           <field name="duration" widget="float_time" sum="total"/> <!--TODO remove after check WC generation works-->
+                           <field name="total_duration" widget="float_time" sum="duration"/>
+                           <field name="total_product" widget="float_time" sum="quantity"/>
                            <button name="open_lavoration_wc" type="object" string="" icon="terp-calendar"/>
                         </tree>
                     </field>

@@ -94,17 +94,51 @@ class mrp_bom_lavoration(orm.Model):
         return self.pool.get('mrp.production').open_view(
             cr, uid, ids, 'workcenter', context=context) or {}
 
+    # ----------------
+    # Function fields:
+    # ----------------
+    def _function_get_wc_data(self, cr, uid, ids, fields, args, context=None):
+        ''' Fields function for calculate totals depend on wc lines 
+        '''    
+        res = {}
+        for lavoration in self.browse(cr, uid, ids, context=context):
+            # Initial setup:
+            res[lavoration.id] = {}            
+            
+            res[lavoration.id]['total_number'] = len(
+                lavoration.scheduled_ids)
+            res[lavoration.id]['total_duration'] = 0.0
+            res[lavoration.id]['total_product'] = 0.0
+            
+            for wc in lavoration.scheduled_ids:
+                res[lavoration.id]['total_duration'] += wc.hour
+                res[lavoration.id]['total_product'] += wc.lavoration_qty
+        return res
+        
     _columns = {
         'production_id': fields.many2one('mrp.production', 'Production', 
             ondelete='cascade'),            
-        'total_duration': fields.float('Duration', digits=(10, 2),
-            help="Duration hour:minute for lavoration of quantity piece"),
+            
+        # Create 3 calculated field depend on child workcenter line:
+        'total_duration': fields.function(
+            _function_get_wc_data, method=True, type='float', 
+            string='Total duration', digits=(10,2), store=False, multi='wc',
+            help='Total time of this operation phase'), 
+        'total_product': fields.function(
+            _function_get_wc_data, method=True, type='float', 
+            string='Total product', digits=(10,2), store=False, multi='wc',
+            help='Total quantity of product for this operation phase'), 
+        'total_number': fields.function(
+            _function_get_wc_data, method=True, type='integer', 
+            string='Total number', store=False, multi='wc',
+            help='Total # of child lavorarion for this operation phase'),             
+                        
+        #'total_duration': fields.float('Duration', digits=(10, 2),
+        #    help="Duration hour:minute for lavoration of quantity piece"),
 
         # TODO move in another module after DEMO    
         'real_duration': fields.float('Duration', digits=(10, 2),
             help="Real duration hour:minute for lavoration of quantity piece"),
-        'scheduled_ids': fields.one2many('mrp.production.workcenter.line',
-            'lavoration_id', 'Scheduled lavorations'), 
         }
 
 class bom_production(orm.Model):
@@ -390,7 +424,7 @@ class bom_production(orm.Model):
                 'phase_id': lavoration.phase_id.id,
                 'level': lavoration.level,
                 'fixed': lavoration.fixed,
-                'duration': duration,
+                'duration': duration, # WC value depend from this!!!
                 'workers': workers,
                 'line_id': lavoration.line_id.id,
                 'bom_id': False,                        
@@ -452,4 +486,15 @@ class product_product(orm.Model):
     _columns = {
         'show_in_status': fields.boolean('Show in status report'),
         }
+
+class mrp_bom_lavoration(orm.Model):
+    ''' Add relation fields (use same element in BOM and in production)
+    '''
+
+    _inherit = 'mrp.bom.lavoration'
+    
+    _columns = {
+        'scheduled_ids': fields.one2many('mrp.production.workcenter.line',
+            'lavoration_id', 'Scheduled lavorations'), 
+        }       
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
