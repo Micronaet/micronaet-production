@@ -53,7 +53,7 @@ class res_company(orm.Model):
             help='Start hour for create working process'),
 
         # Statistic data for color report depend on cases:
-        'work_hour_day': fields.integer('Worh hour day', 
+        'work_hour_day': fields.integer('Work hour day', 
             help='Normal work hour for one man in a day'),
         'extra_hour_day': fields.integer('Extra hour day', 
             help='Normal extra work for one man in a day'),    
@@ -421,20 +421,27 @@ class mrp_production_workcenter_line(orm.Model):
     
     _columns = {
         'lavoration_id': fields.many2one('mrp.bom.lavoration', 
-            'Linked lavoration', ondelete='set null'),
+            'Linked lavoration', ondelete='cascade'),
+            
+        # Related fields:
         'phase_id': fields.related('lavoration_id','phase_id', type='many2one',
-            relation='mrp.bom.lavoration.phase', string='Phase', store=False),
-        'level': fields.related('lavoration_id','level', type='integer', 
+            relation='mrp.bom.lavoration.phase', string='Phase', store=False),            
+        'level': fields.related('lavoration_id', 'level', type='integer', 
             string='Level'),
-        'workers': fields.integer('Default workers'),
-        'worker_ids': fields.many2many('hr.employee', 
+        'workers': fields.related('lavoration_id', 'workers', type='integer', 
+            string='Workers'),
+        #'workers': fields.integer('Default workers'), # TODO not used?
+         
+        # Lavoration data:                
+        'worker_ids': fields.many2many('hr.employee', # TODO used?
             'mrp_production_workcenter_line_employee', 
             'lavoration_id', 'employee_id', 'Employee'),
         'lavoration_qty': fields.float('Lavoration qty', digits=(10, 2),
             help="Quantity lavoration"),
         'duration': fields.float('Duration', digits=(10, 2),
             help="Duration in hour:minute for lavoration of quantity piece"),
-        'updated': fields.boolean('Label', required=False),    
+
+        'updated': fields.boolean('Updated'),
         }
 
 class product_product(orm.Model):

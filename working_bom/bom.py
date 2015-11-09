@@ -57,7 +57,8 @@ class bom_lavoration(orm.Model):
     '''
     _name = 'mrp.bom.lavoration'
     _description = 'BOM Lavoration'
-    _order = 'level'
+    _order = 'create_date,level'
+    _rec_name = 'level'
     
     def name_get(self, cr, uid, ids, context=None):
         """
@@ -81,10 +82,10 @@ class bom_lavoration(orm.Model):
         return res
     
     
-    _columns = {
+    _columns = {        
+        'level': fields.integer('Level'),
         'phase_id': fields.many2one('mrp.bom.lavoration.phase', 'Phase', 
             required=True, ondelete='set null'),
-        'level': fields.integer('Level'),
         'fixed': fields.boolean('Fixed', required=False),
         'quantity': fields.float('Quantity', digits=(10, 2), 
             help="Number of piece producted in duration time"),
@@ -97,6 +98,9 @@ class bom_lavoration(orm.Model):
             required=True, ondelete='set null'),            
         'bom_id': fields.many2one('mrp.bom', 'BOM', 
             ondelete='cascade'),
+
+        # Show database fields:
+        'create_date': fields.datetime('Create date', readonly=True),
         }
         
     _defaults = {

@@ -80,6 +80,7 @@
                     <newline />
                     <field name="lavoration_ids" colors="blue:fixed==True">
                         <tree string="Lavoration" editable="bottom">
+                           <field name="create_date" />
                            <field name="level" />
                            <field name="phase_id" />
                            <field name="fixed" invisible="1" />

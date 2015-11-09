@@ -65,6 +65,7 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
            <tree string="BOM Lavoration" editable="bottom" colors="blue:fixed==True">
+               <field name="create_date" />
                <field name="level" />
                <field name="phase_id" />
                <field name="fixed" />
