@@ -206,7 +206,7 @@ class bom_production(orm.Model):
             
         # TODO load a date list for leave days >> need a module for this
         
-        # Force load of lavoration from bom:
+        # Force load of lavoration from bom (delete all phase present):
         self.load_lavoration(cr, uid, ids, context=context)
 
         # Get day of week hour totals
@@ -368,7 +368,7 @@ class bom_production(orm.Model):
             lavoration_pool.unlink(cr, uid, lavoration_ids, context=context)
         except:
             pass # TODO
-                
+
         # Create new from BOM 
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
         for lavoration in mrp_proxy.bom_id.lavoration_ids:
