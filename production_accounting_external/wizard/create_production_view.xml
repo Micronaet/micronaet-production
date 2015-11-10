@@ -20,26 +20,26 @@
                         <field name="item_hour" attrs="{'required': [('bom_id','=',False)], 'invisible': [('force_production','=',False)]}"/>
                         <field name="production_employee" attrs="{'required': [('bom_id','=',False)], 'invisible': [('force_production','=',False)]}" />
                         
-                        <separator string="Schedule:" colspan="4" attrs="{'invisible':[('operation','not in',('lavoration'))]}"/>
+                        <!--<separator string="Schedule:" colspan="4" attrs="{'invisible':[('operation','not in',('lavoration'))]}"/>-->
                         <field name="from_deadline" />
                         <field name="to_deadline" />
 
-                        <field name="schedule_from_date" on_change="onchange_schedule_date(schedule_from_date,bom_id)" attrs="{'required':[('operation','in',('lavoration'))]}" />
-                        <field name="workhour_id" create="0" attrs="{'required':[('operation','in',('lavoration'))]}" />
+                        <field name="schedule_from_date" on_change="onchange_schedule_date(schedule_from_date,bom_id)" attrs="{'required':[('operation','in',('create'))]}" />
+                        <field name="workhour_id" create="0" attrs="{'required':[('operation','in',('create'))]}" />
 
                                                 
                         <separator string="Operation:" colspan="4"/>
                         <field name="operation" on_change="onchange_operation(operation, product_tmpl_id)"/>
                         <field name="production_id" 
-                               attrs="{'invisible': [('operation','not in',('append','append_reload'))], 'required': [('operation','in',('append', 'append_reload'))]}" 
+                               attrs="{'invisible': [('operation','in',('create'))], 'required': [('operation','not in',('create'))]}" 
                                domain="[('product_id','=',product_id)]" 
                                on_change="onchange_append_production(production_id, oc_total)"/>
                         <newline />
                         
                         <group name="total" colspan="4" col="6">
-                            <field name="production_oc" attrs="{'invisible': [('operation','=','create')]}" />
-                            <field name="production_extra" attrs="{'invisible': [('operation','=','create')]}" />
-                            <field name="production_total" attrs="{'invisible': [('operation','=','create')]}" />
+                            <field name="production_oc" /> <!--attrs="{'invisible': [('operation','=','create')]}" -->
+                            <!--<field name="production_extra" attrs="{'invisible': [('operation','=','create')]}" />-->
+                            <!--<field name="production_total" attrs="{'invisible': [('operation','=','create')]}" />-->
 
                             <field name="oc_total" />
                             <field name="extra_total" />

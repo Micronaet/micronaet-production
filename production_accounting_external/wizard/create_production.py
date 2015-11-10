@@ -644,7 +644,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             cr, uid, "from_deadline", context=c),        
         'to_deadline': lambda s, cr, uid, c: s.default_oc_list(
             cr, uid, "to_deadline", context=c),        
-        'operation': lambda *x: 'lavoration',
+        'operation': lambda *x: 'create',
         'workhour_id': lambda s, cr, uid, ctx: s._get_wh_default(cr, uid, ctx),
     }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
