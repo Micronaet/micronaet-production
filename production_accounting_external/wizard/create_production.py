@@ -347,19 +347,22 @@ class CreateMrpProductionWizard(orm.TransientModel):
            context = {}
 
         wiz_browse = self.browse(cr, uid, ids, context=context)[0]
-        production_pool = self.pool.get("mrp.production")
+        production_pool = self.pool.get('mrp.production')
+        sol_pool = self.pool.get('sale.order.line')
                 
         # Save in context force production parameter:
-        context['force_production_hour'] = wiz_browse.item_hour
-        context['force_production_employee'] = wiz_browse.production_employee      
+        #context['force_production_hour'] = wiz_browse.item_hour
+        #context['force_production_employee'] = wiz_browse.production_employee      
 
         # Create a production order and open it:
-        product_id = get_product_from_template( # TODO use product_id?
+        # Not used for now:
+        product_id = get_product_from_template(
             self, cr, uid, wiz_browse.product_tmpl_id.id, context=context)
         workhour = (
             wiz_browse.workhour_id.id if wiz_browse.workhour_id else False)
-        
-        if wiz_browse.operation in ('create', 'lavoration'):
+
+        if wiz_browse.operation in ('create'):
+            # Create lavoration:
             p_id = production_pool.create(               
                 cr, uid, {
                     'name': self.pool.get(
@@ -374,48 +377,33 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     'workhour_id': workhour, 
                     'order_line_ids': [(6, 0, context.get("active_ids", []))],
                     }, context=context)
-            if wiz_browse.operation == 'lavoration':
-                # Force reschedule:
-                production_pool.schedule_lavoration(
-                    cr, uid, [p_id], context=context)
-        else: # append and and append-reload
+        else: # 'append'
             p_id = wiz_browse.production_id.id
-
-            # Assign line to production:
+            
+            # Add sale order line to production:
             self.pool.get('sale.order.line').write(
                 cr, uid, context.get("active_ids", []), {
                     'mrp_id': p_id,
                     }, context=context)
-
-            # Update total:
-            production_pool.write(
-                cr, uid, p_id, {
-                    'product_qty': (
-                        wiz_browse.total +
-                        wiz_browse.production_id.product_qty),
-                    }, context=context)
-             
-            if wiz_browse.operation == 'append_reload':        
-                # Extra write (if forced production schedule)
-                data = {}
-                if wiz_browse.schedule_from_date:
-                    data['schedule_from_date'] = wiz_browse.schedule_from_date
-                if wiz_browse.workhour_id:
-                    data['workhour_id'] = wiz_browse.workhour_id.id
-                if data:
-                    production_pool.write(cr, uid, p_id, data, context=context)
                     
-                # Force reschedule (for extra quantity):
-                production_pool.schedule_lavoration(
-                    cr, uid, [p_id], context=context)        
+        # ------------------------------------------            
+        # Update totals in mrp from sale order line:
+        # ------------------------------------------            
+        sol_ids = sol_pool.search(cr, uid, [
+            ('mrp_id', '=', p_id),
+            ], context=context)        
+        product_qty = sum([item.product_qty for item in sol_pool.browse(
+            cr, uid, sol_ids, context=context])            
+        production_pool.write(cr, uid, p_id, {
+            'product_qty': product_qty,
+            }, context=context)
 
-        # Force order in every case:
-        production_pool.force_production_sequence(
-            cr, uid, p_id, context=context)
-        
-        # Load element from BOM: # TODO 
-        #production_pool._action_load_materials_from_bom(
-        #    cr, uid, p_id, context=context)    
+        # -----------------------------------
+        # Force (re)schedule create / append:
+        # -----------------------------------
+        production_pool.create_lavoration_item(
+            cr, uid, [p_id], mode='create', context=context)
+
         return return_view(
             self, cr, uid, p_id, 
             "mrp.mrp_production_form_view", 
@@ -630,10 +618,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
         'warning': fields.text('Warning', readonly=True),
         'calendar': fields.text('Calendar', readonly=True),
         'operation': fields.selection([
-            #('create', 'Create production'),
-            ('lavoration', 'Create'),# with lavoration'),
-            #('append', 'Append'),            
-            ('append_reload', 'Append'),# rescheduling'),
+            ('create', 'Create'),
+            ('append', 'Append'),
             ], 'Operation', select=True, required=True),
         }
         

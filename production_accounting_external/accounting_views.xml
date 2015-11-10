@@ -247,7 +247,7 @@
             <xpath expr="/form/sheet/notebook" position="inside">
 		        <page string="Sale order">
 			        <group string="Order lines" colspan="4" col="4">
-			            <button name="force_production_sequence" string="Force order" type="object" />
+			            <!--<button name="force_production_sequence" string="Force order" type="object" />-->
                         <button name="close_all_production" type="object" string="All produced" icon="gtk-ok" />
                         <button name="accounting_sync" type="object" string="Accounting sync" icon="terp-gtk-jump-to-ltr" />
 			            <newline />

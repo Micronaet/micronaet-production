@@ -124,6 +124,8 @@ class mrp_bom_lavoration(orm.Model):
         # Splitted information:    
         'splitted': fields.boolean('Splitted', 
             help='This lavoration is a splitted block, else original create'),
+        'schedule_from_date': fields.date(
+            'From date', help="Scheduled from date to start lavorations"),
 
         # --------------------------------------    
         # Calculated total from workcenter_line:    
@@ -231,38 +233,37 @@ class bom_production(orm.Model):
 
         # TODO load a date list for leave days >> need a module for this
         
-        # Get day of week hour totals
-        workhour = {}
-
-        for item in mrp_proxy.workhour_id.day_ids:
-            # use int for '0' problems on write operation:
-            workhour[int(item.weekday)] = item.hour 
-
-        # ----------------------------------
         # Check possibly lavoration present:
-        # ----------------------------------
+        
         # TODO Compute total (more / less todo) hour
-        total_scheduled = {} # Dict for phase (currently only one)
-        max_date = False
-        max_sequence = 0
-        last_lavoration_hour = 0.0
 
-        # -------------------
-        # Create lavorations:
-        # -------------------
+        start_hour = 7.0
+        
+        # Production data to update after:
+        min_date = False
+        max_date = False
+
+        # ---------------------------------------------------------------------
+        #                  Create workcenter line from lavorations:
+        # ---------------------------------------------------------------------        
         for lavoration in mrp_proxy.lavoration_ids:
+            # -----------------------------------
+            # Workhour for this lavoration phase:
+            # -----------------------------------
+            workhour = {}
+            for item in lavoration.workhour_id.day_ids: # wh now in lavoration
+                # int for '0' problems on write operation:
+                workhour[int(item.weekday)] = item.hour 
+                
+            # Init variables:
+            total_hour = lavoration.duration # total hour to split                
+            remain_hour_a_day = 0.0 # for multiblock element
+            max_sequence = 0
+            schedule_from_date = lavoration.schedule_from_date # default:
             
-            total_hour = (
-                lavoration.duration - # Total
-                total_scheduled.get(lavoration.phase_id.id, 0.0) # - Scheduled
-                )
-            # TODO To delete elements!!! remove lavoration or reduce
-            
-            # TODO Check if last day there's less hour to create (or integrate!!)
-            #wd = current_date.weekday()
-            #if last_lavoration_hour:
-            #    remain_hour_a_day = last_lavoration_hour - workhour.get(wd, 0.0)
-            remain_hour_a_day = 0.0
+            # For all lav. create an appointment X hour a day
+            current_date = datetime.strptime(
+                schedule_from_date, DEFAULT_SERVER_DATE_FORMAT)
             
             # Leave loop for next developing (now only one line=production)
             while total_hour > 0.0:
@@ -274,7 +275,9 @@ class bom_production(orm.Model):
                     
                 max_sequence += 1
                 hour_a_day = workhour.get(wd, 0.0) # total H to work this day
-                if remain_hour_a_day: # for add another phase (not used yet)
+                
+                # Check remain from another phase:
+                if remain_hour_a_day:
                    hour = remain_hour_a_day
                    remain_hour_a_day = 0.0
                 else:
@@ -290,6 +293,12 @@ class bom_production(orm.Model):
                 current_date_text = "%s %02d:00:00" % (
                     current_date.strftime(DEFAULT_SERVER_DATE_FORMAT),
                     start_hour, )
+                
+                # Read data for production (write after)    
+                if not min_date:
+                    min_date = current_date_text[10]
+                if not max_date or max_date < current_date_text[:10]:
+                    max_date = current_date_text[:10]                                
                     
                 if not remain_hour_a_day: # no remain hour to fill
                     current_date = current_date + timedelta(days=1)
@@ -309,52 +318,18 @@ class bom_production(orm.Model):
                     # Data field that will be related on lavoration:
                     'hour': hour,
                     'lavoration_qty': round( # Statistic m(x):
-                        hour * (
-                        mrp_proxy.product_qty / lavoration.duration), 0),
+                        hour * lavoration.item_hour)
+                        #(mrp_proxy.product_qty / lavoration.duration), 0),
                     #'workers': lavoration.workers, # related for now                    
                     }, context=context)
-        # TODO Write some date in production start / stop?                    
-
-        
-        # ?????????????????????????????????????????????????????????????????????
-        # -----------------------------------------------
-        # Create all lavoration for all phases (in dict):
-        # -----------------------------------------------
-        '''
-        for lavoration in mrp_proxy.scheduled_lavoration_ids:
-            
-            # Max number of sequence:
-            if max_sequence < lavoration.sequence:
-                max_sequence = lavoration.sequence
-                
-            # Save max date for start point:
-            if not max_date or max_date < lavoration.date_start[:10]:
-                max_date = lavoration.date_start[:10]            
-    
-            # Save total for phase for test create or delete hour    
-            if lavoration.lavoration_id.id not in total_scheduled:
-                total_scheduled[lavoration.phase_id.id] = lavoration.hour
-            else:
-                total_scheduled[lavoration.phase_id.id] += lavoration.hour
-        else: # save last total
-            try:
-                last_lavoration_hour = lavoration.hour # last or error        
-            except:
-                last_lavoration_hour = 0.0
-        '''        
-        # ?????????????????????????????????????????????????????????????????????
-
-        # -------------------------------------------
-        # Init counters depend also on previous loop:
-        # -------------------------------------------
-        # Parse time for delta operations:
-        if max_date: # take max in lavorations (TODO + 1?)
-            current_date = datetime.strptime(
-                max_date, DEFAULT_SERVER_DATE_FORMAT)
-        else: # take from production
-            current_date = datetime.strptime(
-                mrp_proxy.schedule_from_date, DEFAULT_SERVER_DATE_FORMAT)
-        
+                    
+        # TODO Write some date in production start / stop?
+        # Write data in production from lavoration and workcenter:
+        # TODO 
+        '''self.write(cr, uid, ids, {
+            '': max_date,
+            '': min_date,
+            }, context=context)'''
         return True
         
     def create_lavoration_item(self, cr, uid, ids, mode='create', 
@@ -462,6 +437,7 @@ class bom_production(orm.Model):
             lavoration_pool.create(cr, uid, {
                 # Record data:
                 #'create_date',
+                'schedule_from_date': mrp_proxy.schedule
                 'production_id': ids[0],
                 'splitted': False, # original creation
                 'workhour_id': mrp_proxy.workhour_id.id, # same as mrp
@@ -515,7 +491,8 @@ class bom_production(orm.Model):
             'mrp_production_workcenter_employee', 'production_id', 
             'employee_id', 'Employee'),
         
-        # For schedule lavoration:
+        # For schedule lavoration (detault parameter of production:
+        # NOTE: all this parameter are also written in lavoration
         'schedule_from_date': fields.date(
             'From date', help="Scheduled from date to start lavorations"),
         'workhour_id':fields.many2one('hr.workhour', 'Work hour'), # TODO mand.
