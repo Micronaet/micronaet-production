@@ -119,25 +119,13 @@ class mrp_bom_lavoration(orm.Model):
         # ----------------------------
         # Extra fields for lavoration:
         # ----------------------------
-        'splitted': fields.boolean('Splitted', 
-            help='This lavoration is a splitted block, else original create'),
-    
-        # --------------------------
-        # Link to master production:
-        # --------------------------
+        # Link
         'production_id': fields.many2one('mrp.production', 'Production', 
             ondelete='cascade'),            
+        # Splitted information:    
+        'splitted': fields.boolean('Splitted', 
+            help='This lavoration is a splitted block, else original create'),
 
-        # ------------------------------------------
-        # Block total (elements todo by this block):
-        # ------------------------------------------
-        #'block_duration_total': fields.float(
-        #    'Block H. total', digits=(10, 2),
-        #    help="Total duration of this block"),
-        #'block_product_total': fields.float(
-        #    'Block pz. total', digits=(10, 2),
-        #    help="Total of item that will be created by this block"),
-            
         # --------------------------------------    
         # Calculated total from workcenter_line:    
         # --------------------------------------    

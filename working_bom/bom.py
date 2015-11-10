@@ -94,10 +94,10 @@ class bom_lavoration(orm.Model):
             help="Number of piece producted in duration time"),
         'duration': fields.float('BOM Duration', digits=(10, 2),
             help="Duration in hour:minute for lavoration of quantity piece"),
+        'workers': fields.integer('Default workers'),
             
         #'uom_id': fields.many2one('product.uom', 'U.M.', 
         #    ondelete='set null'),
-        'workers': fields.integer('Default workers'),
         'line_id': fields.many2one('mrp.workcenter', 'Line', 
             required=True, ondelete='set null'),            
         'bom_id': fields.many2one('mrp.bom', 'BOM', 
