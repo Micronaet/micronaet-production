@@ -358,6 +358,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         # Not used for now:
         product_id = get_product_from_template(
             self, cr, uid, wiz_browse.product_tmpl_id.id, context=context)
+
         workhour = (
             wiz_browse.workhour_id.id if wiz_browse.workhour_id else False)
 
@@ -393,7 +394,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             ('mrp_id', '=', p_id),
             ], context=context)        
         product_qty = sum([item.product_qty for item in sol_pool.browse(
-            cr, uid, sol_ids, context=context])            
+            cr, uid, sol_ids, context=context)])
         production_pool.write(cr, uid, p_id, {
             'product_qty': product_qty,
             }, context=context)

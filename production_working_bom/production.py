@@ -437,7 +437,7 @@ class bom_production(orm.Model):
             lavoration_pool.create(cr, uid, {
                 # Record data:
                 #'create_date',
-                'schedule_from_date': mrp_proxy.schedule
+                'schedule_from_date': mrp_proxy.schedule,
                 'production_id': ids[0],
                 'splitted': False, # original creation
                 'workhour_id': mrp_proxy.workhour_id.id, # same as mrp
