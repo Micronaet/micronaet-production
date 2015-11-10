@@ -147,7 +147,7 @@ class mrp_bom_lavoration(orm.Model):
 
         # TODO move in another module after DEMO    
         #'real_duration': fields.float('Duration', digits=(10, 2),
-        #    help="Real duration hour:minute for lavoration of quantity piece"),
+        #    help="Real duration hour:minute for lavoration of quantity piece")
         }
 
 class bom_production(orm.Model):
@@ -176,7 +176,9 @@ class bom_production(orm.Model):
             production_id = ids[0]
             workcenter_id = False
 
-        # Return view:
+        # -----------------------
+        # Return view parameters:
+        # -----------------------
         name = _('Production elements')
         view_type = 'form'
         view_mode = 'tree,form,calendar'
@@ -219,36 +221,92 @@ class bom_production(orm.Model):
             'type': 'ir.actions.act_window',
             }
 
-    # -------    
-    # Button:
-    # -------    
-    def schedule_lavoration(self, cr, uid, ids, context=None):
-        ''' Schedule activities (or update current scheduled)
-            This procedure could be used also for move some lavoration passing            
-            in context 'move_parameters' dict key with:
-            > lavoration_ids list of current lavoration to move:
-            > new_date: new date to move
-            > workhour_id: new workhour plan
-            > workcenter_id: new workcenter line
-            > workers: new number of workers
-            > bom_id: new bom parameters # TODO            
+    def create_wc_from_lavoration(self, cr, uid, order_id, context=None):
+        ''' Create sub workcenter from lavoration
+            @param self: instance of class
+            @param cr: cursor
+            @param uid: user ID
+            @param order_id: mrp order passed used for create all wc from lavoration
+            @param context: extra parameters
         '''
-        if context is None: 
+        # TODO read all lavoration
+
+        # TODO load a date list for leave days >> need a module for this
+        return True
+        
+    def create_lavoration_item(self, cr, uid, ids, mode='create', 
+            context=None):
+        ''' Create lavoration item (case: new, append, splitted), use a 
+            procedure for generate all workcenter line
+            @param cr: cursor
+            @param self: instance of class
+            @param uid: user ID
+            @param ids: mrp order 
+            @param context: extra parameters
+
+            @param mode:
+                'create':
+                    order_line_ids >> used for get all totals
+            
+                'update':
+                    delete all and re-create
+                
+                'split':
+                    context:
+                        data: {
+                            # Parameters:
+                            from_date: 
+                            wc_id: production line from to move
+                        
+                            # Record value:
+                            'bom_id' 
+                                get: level, phase_id, fixed, workers, item_hour, 
+                                     line_id
+                            'duration'
+                            'quantity'
+                            'item_hour' (forced)
+                            'workers' (forced)
+                            }                        
+        '''
+        if context is None:
             context = {}
-        
-        # Check move operation if present:
-        move_parameters = context.get('move_parameters', False)
-        
-        mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
-        
-        # Pool used:
-        workcenter_pool = self.pool.get('mrp.production.workcenter.line')
-        lavoration_pool = self.pool.get('mrp.production.workcenter.line')
+
 
         # Parameters to load :            
-        start_hour = 7.0 # TODO parametrize GMT
+        start_hour = 7.0 # TODO parametrize GMT       
+        mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
+
+        # Pool used:
+        wc_pool = self.pool.get('mrp.production.workcenter.line')
+        lavoration_pool = self.pool.get('mrp.bom.lavoration')
+
+        if mode in ('create', 'append'):
+            old_lavoration_ids = [item.id for item in mrp_proxy.lavoration_ids]
+            lavoration_pool.unlink(
+                cr, uid, old_lavoration_ids, context=context)
             
-        # TODO load a date list for leave days >> need a module for this
+            # Create lavoration element (using default mrp elements:
+            lavoration_pool.create(cr, uid,{
+                #'create_date'
+                
+                # BOM:
+                'bom_id': ,
+                'level': ,
+                'phase_id': ,
+                'line_id': ,
+                'fixed': ,
+                'workers': ,
+
+                # Sale order:
+                'quantity': ,
+
+                # BOM and sale order
+                'item_hour': ,
+
+                
+                
+                }, context=context)    
+
         
         # -------------------------------------------------------------
         # Force load of lavoration from bom (delete all phase present):
@@ -271,11 +329,11 @@ class bom_production(orm.Model):
         # Delete lavoration not confirmed:
         # --------------------------------
         # TODO: now all lavoration, after only opened?
-        lavoration_ids = lavoration_pool.search(cr, uid, [
+        lavoration_ids = wc_pool.search(cr, uid, [
             ('production_id', '=', ids[0])], context=context)
 
         # TODO manage error for unlink:
-        lavoration_pool.unlink(cr, uid, lavoration_ids, context=context)
+        wc_pool.unlink(cr, uid, lavoration_ids, context=context)
         
         # ----------------------------------
         # Check possibly lavoration present:
@@ -367,7 +425,7 @@ class bom_production(orm.Model):
                 if not remain_hour_a_day: # no remain hour to fill
                     current_date = current_date + timedelta(days=1)
 
-                workcenter_pool.create(cr, uid, {
+                wc_pool.create(cr, uid, {
                     'name': '%s [%s]' % (
                         mrp_proxy.name, max_sequence),
                     'sequence': max_sequence,
@@ -387,7 +445,16 @@ class bom_production(orm.Model):
                     #'workers': lavoration.workers, # related for now                    
                     }, context=context)
         # TODO Write some date in production start / stop?                    
-        return True
+        return True        
+        
+    # -------------
+    # Button event:
+    # -------------
+    def schedule_lavoration(self, cr, uid, ids, context=None):
+        ''' Force reload all lavoration-workcenter line
+        '''
+        return self.create_lavoration_item(cr, uid, ids, mode='create', 
+            context=context)
     
     def open_lavoration(self, cr, uid, ids, context=None):
         ''' Open in calendar all lavorations for this production
