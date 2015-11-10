@@ -33,7 +33,6 @@ _logger = logging.getLogger(__name__)
 class res_company(orm.Model):
     ''' Add fields for report in workcenter
     '''
-
     _inherit = 'res.company'
     
     # Utility:
@@ -155,7 +154,6 @@ class bom_production(orm.Model):
         Add totals and link to production order for use same element also 
         for exploded BOM in productions
     '''
-
     _inherit = 'mrp.production'
 
     # --------
@@ -243,6 +241,12 @@ class bom_production(orm.Model):
             @param uid: user ID
             @param ids: mrp order 
             @param context: extra parameters
+                Force value instead of bom:
+                    force_production_hour > force hour not bom
+                    force_production_employee > force employee not bom
+
+                Force split element:
+                    splip_data > dict for pass split parameters
 
             @param mode:
                 'create':
@@ -253,7 +257,7 @@ class bom_production(orm.Model):
                 
                 'split':
                     context:
-                        data: {
+                        split_data: {
                             # Parameters:
                             from_date: 
                             wc_id: production line from to move
@@ -271,47 +275,81 @@ class bom_production(orm.Model):
         if context is None:
             context = {}
 
-
-        # Parameters to load :            
+        # ---------------------------------------------------------------------
+        #                       Parameters to load:
+        # ---------------------------------------------------------------------
+        # Variables:
         start_hour = 7.0 # TODO parametrize GMT       
+
+        # Proxy element:
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
+        
+        # Context elements:
+        force_production_hour = context.get(
+            'force_production_hour', False)
+        force_production_employee = context.get(
+            'force_production_employee', False)   
+        split_data = context.get(
+            'split_data', {})   
 
         # Pool used:
         wc_pool = self.pool.get('mrp.production.workcenter.line')
         lavoration_pool = self.pool.get('mrp.bom.lavoration')
 
+        # ---------------------------------------------------------------------
+        #                            PROCEDURE:
+        # ---------------------------------------------------------------------
         if mode in ('create', 'append'):
-            old_lavoration_ids = [item.id for item in mrp_proxy.lavoration_ids]
-            lavoration_pool.unlink(
-                cr, uid, old_lavoration_ids, context=context)
+            # Remove lavoration and workcenter line
+            old_lavoration_ids = lavoration_pool.search(cr, uid, [
+                ('production_id', '=', ids[0])], context=context)
+            try:    
+                lavoration_pool.unlink(
+                    cr, uid, old_lavoration_ids, context=context)
+            except:
+                pass # TODO
+            # TODO test deletion of wc line
             
-            # Create lavoration element (using default mrp elements:
-            lavoration_pool.create(cr, uid,{
-                #'create_date'
+            # ------------------------------------
+            # Create lavoration from BOM elements:
+            # ------------------------------------
+            for lavoration in mrp_proxy.bom_id.lavoration_ids:
+                if lavoration.fixed:
+                    duration = lavoration.duration
+                else:
+                    try: 
+                        # K (coeff) could be forced:
+                        item_hour = force_production_hour or (
+                            lavoration.quantity / lavoration.duration)
+                        duration = mrp_proxy.product_qty / item_hour
+                    except:
+                        duration = 0.0                        
+            # Workers (could be forced):
+            workers = force_production_employee or lavoration.workers or 0
+
+            lavoration_pool.create(cr, uid, {
+                # Record data:
+                #'create_date',
+                'production_id': ids[0],
+                'splitted': False, # original creation
                 
                 # BOM:
-                'bom_id': ,
-                'level': ,
-                'phase_id': ,
-                'line_id': ,
-                'fixed': ,
-                'workers': ,
+                'bom_id': mpr_proxy.bom_id.id,
+                'level': lavoration.level,
+                'phase_id': lavoration.phase_id.id,
+                'line_id': lavoration.line_id.id,
+                'fixed': lavoration.fixed,
+                'workers': workers,
 
                 # Sale order:
                 'quantity': ,
 
                 # BOM and sale order
-                'item_hour': ,
-
-                
-                
-                }, context=context)    
-
-        
-        # -------------------------------------------------------------
-        # Force load of lavoration from bom (delete all phase present):
-        # -------------------------------------------------------------
-        self.load_lavoration(cr, uid, ids, context=context)
+                'item_hour': item_hour,
+                # Note: workcenter creation depend from this:
+                'duration': duration, # sum(sale order line)
+                }, context=context)
+        return True
 
         # Get day of week hour totals
         workhour = {}
@@ -462,58 +500,6 @@ class bom_production(orm.Model):
         return self.open_view(
             cr, uid, ids, 'production', context=context) or {}
         
-    def load_lavoration(self, cr, uid, ids, context=None):
-        ''' Load and calculate time based on lavoration in BOM selected
-            force mechanism for hour and employee could be generated with
-            context parameters: force_production_hour and
-            force_production_employee
-        '''
-        if context is None:
-            context = {}
-        
-        # Read parameter if present:
-        force_production_hour = context.get(
-            'force_production_hour', False)   
-        force_production_employee = context.get(
-            'force_production_employee', False)   
-    
-        # Delete current
-        lavoration_pool = self.pool.get('mrp.bom.lavoration')
-        lavoration_ids = lavoration_pool.search(cr, uid, [
-            ('production_id', '=', ids[0])], context=context)
-        try:    
-            lavoration_pool.unlink(cr, uid, lavoration_ids, context=context)
-        except:
-            pass # TODO
-
-        # Create new from BOM 
-        mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
-        for lavoration in mrp_proxy.bom_id.lavoration_ids:
-            if lavoration.fixed:
-                duration = lavoration.duration
-            else:
-                try: # K could be forced:
-                    k = force_production_hour or (
-                        lavoration.quantity /lavoration.duration )
-                    duration = mrp_proxy.product_qty / k
-                except:
-                    duration = 0.0    
-                    
-            # Workers (could be forced):
-            workers = force_production_employee or lavoration.workers or 0
-            
-            lavoration_pool.create(cr, uid, {
-                'production_id': ids[0],
-                'phase_id': lavoration.phase_id.id,
-                'level': lavoration.level,
-                'fixed': lavoration.fixed,
-                'duration': duration, # WC value depend from this!!!
-                'workers': workers,
-                'line_id': lavoration.line_id.id,
-                'bom_id': False,                        
-                }, context=context)
-        return True
-        
     _columns = {
         'lavoration_ids': fields.one2many('mrp.bom.lavoration',
             'production_id', 'Lavoration'),
@@ -563,7 +549,6 @@ class mrp_production_workcenter_line(orm.Model):
 class product_product(orm.Model):
     ''' Add extra field for status report
     '''
-    _name = 'product.product'
     _inherit = 'product.product'
     
     _columns = {
@@ -573,10 +558,10 @@ class product_product(orm.Model):
 class mrp_bom_lavoration(orm.Model):
     ''' Add relation fields (use same element in BOM and in production)
     '''
-
     _inherit = 'mrp.bom.lavoration'
     
     _columns = {
+        # workcenter depend on lavoration element
         'scheduled_ids': fields.one2many('mrp.production.workcenter.line',
             'lavoration_id', 'Scheduled lavorations'), 
         }       

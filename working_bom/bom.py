@@ -71,16 +71,15 @@ class bom_lavoration(orm.Model):
         @param context: context arguments, like lang, time zone
         
         @return: returns a list of tupples contains id, name
-        """ 
+        """
         res = []
         for item in self.browse(cr, uid, ids, context=context):
             try: 
                 res.append((item.id, item.phase_id.name))
             except:
-                res.append((item.id, _("No phase")))
-            
+                res.append((item.id, _("No phase")))            
         return res
-    
+
     _columns = {        
         # ----------------------
         # Show mandatory fields:
