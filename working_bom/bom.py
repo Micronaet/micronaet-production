@@ -81,16 +81,20 @@ class bom_lavoration(orm.Model):
             
         return res
     
-    
     _columns = {        
         'level': fields.integer('Level'),
         'phase_id': fields.many2one('mrp.bom.lavoration.phase', 'Phase', 
             required=True, ondelete='set null'),
         'fixed': fields.boolean('Fixed', required=False),
+        
+        # ------------------------------------------
+        # Block total (elements todo by this block):
+        # ------------------------------------------
         'quantity': fields.float('Quantity', digits=(10, 2), 
             help="Number of piece producted in duration time"),
         'duration': fields.float('BOM Duration', digits=(10, 2),
             help="Duration in hour:minute for lavoration of quantity piece"),
+            
         #'uom_id': fields.many2one('product.uom', 'U.M.', 
         #    ondelete='set null'),
         'workers': fields.integer('Default workers'),

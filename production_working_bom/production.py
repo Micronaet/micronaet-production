@@ -116,10 +116,31 @@ class mrp_bom_lavoration(orm.Model):
         return res
         
     _columns = {
+        # ----------------------------
+        # Extra fields for lavoration:
+        # ----------------------------
+        'splitted': fields.boolean('Splitted', 
+            help='This lavoration is a splitted block, else original create'),
+    
+        # --------------------------
+        # Link to master production:
+        # --------------------------
         'production_id': fields.many2one('mrp.production', 'Production', 
             ondelete='cascade'),            
+
+        # ------------------------------------------
+        # Block total (elements todo by this block):
+        # ------------------------------------------
+        #'block_duration_total': fields.float(
+        #    'Block H. total', digits=(10, 2),
+        #    help="Total duration of this block"),
+        #'block_product_total': fields.float(
+        #    'Block pz. total', digits=(10, 2),
+        #    help="Total of item that will be created by this block"),
             
-        # Create 3 calculated field depend on child workcenter line:
+        # --------------------------------------    
+        # Calculated total from workcenter_line:    
+        # --------------------------------------    
         'total_duration': fields.function(
             _function_get_wc_data, method=True, type='float', 
             string='Total duration', digits=(10,2), store=False, multi='wc',
@@ -232,15 +253,18 @@ class bom_production(orm.Model):
         
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
         
-        # Load information for lavoration:
+        # Pool used:
         workcenter_pool = self.pool.get('mrp.production.workcenter.line')
+        lavoration_pool = self.pool.get('mrp.production.workcenter.line')
 
         # Parameters to load :            
         start_hour = 7.0 # TODO parametrize GMT
             
         # TODO load a date list for leave days >> need a module for this
         
+        # -------------------------------------------------------------
         # Force load of lavoration from bom (delete all phase present):
+        # -------------------------------------------------------------
         self.load_lavoration(cr, uid, ids, context=context)
 
         # Get day of week hour totals
@@ -255,24 +279,29 @@ class bom_production(orm.Model):
             # use int for '0' problems on write operation:
             workhour[int(item.weekday)] = item.hour 
                     
-        # ---------------------------------------------------------------------
-        #              Delete lavoration not confirmed
-        # ---------------------------------------------------------------------
-        lavoration_pool = self.pool.get('mrp.production.workcenter.line')
+        # --------------------------------
+        # Delete lavoration not confirmed:
+        # --------------------------------
+        # TODO: now all lavoration, after only opened?
         lavoration_ids = lavoration_pool.search(cr, uid, [
             ('production_id', '=', ids[0])], context=context)
-        # TODO ^^^^ search only not confirmed or closed ^^^^^^
-        # TODO manage error vvvvvvvv
+
+        # TODO manage error for unlink:
         lavoration_pool.unlink(cr, uid, lavoration_ids, context=context)
         
-        # ---------------------------------------------------------------------
-        #               Check possibly lavoration present:
-        # ---------------------------------------------------------------------
+        # ----------------------------------
+        # Check possibly lavoration present:
+        # ----------------------------------
         # TODO Compute total (more / less todo) hour
         total_scheduled = {} # Dict for phase (currently only one)
         max_date = False
         max_sequence = 0
         last_lavoration_hour = 0.0
+        
+        
+        # -----------------------------------------------
+        # Create all lavoration for all phases (in dict):
+        # -----------------------------------------------
         for lavoration in mrp_proxy.scheduled_lavoration_ids:
             # Max number of sequence:
             if max_sequence < lavoration.sequence:
@@ -293,9 +322,9 @@ class bom_production(orm.Model):
             except:
                 last_lavoration_hour = 0.0
 
-        # ---------------------------------------------------------------------
-        #            Init counters depend also on previous loop
-        # ---------------------------------------------------------------------
+        # -------------------------------------------
+        # Init counters depend also on previous loop:
+        # -------------------------------------------
         # Parse time for delta operations:
         if max_date: # take max in lavorations (TODO + 1?)
             current_date = datetime.strptime(
@@ -304,10 +333,9 @@ class bom_production(orm.Model):
             current_date = datetime.strptime(
                 mrp_proxy.schedule_from_date, DEFAULT_SERVER_DATE_FORMAT)
         
-        # ---------------------------------------------------------------------
-        #                      Create lavorations:
-        # ---------------------------------------------------------------------
-        # Start loop:
+        # -------------------
+        # Create lavorations:
+        # -------------------
         for lavoration in mrp_proxy.lavoration_ids:
             total_hour = (
                 lavoration.duration - # Total
