@@ -351,8 +351,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
         sol_pool = self.pool.get('sale.order.line')
                 
         # Save in context force production parameter:
-        #context['force_production_hour'] = wiz_browse.item_hour
-        #context['force_production_employee'] = wiz_browse.production_employee      
+        context['force_production_hour'] = wiz_browse.item_hour
+        context['force_production_employee'] = wiz_browse.production_employee      
 
         # Create a production order and open it:
         # Not used for now:
