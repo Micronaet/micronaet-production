@@ -121,6 +121,8 @@ class mrp_bom_lavoration(orm.Model):
         # Link
         'production_id': fields.many2one('mrp.production', 'Production', 
             ondelete='cascade'),            
+        'workhour_id':fields.many2one('hr.workhour', 'Work hour', 
+            ondelete='set null'),
         # Splitted information:    
         'splitted': fields.boolean('Splitted', 
             help='This lavoration is a splitted block, else original create'),
@@ -243,9 +245,13 @@ class bom_production(orm.Model):
         min_date = False
         max_date = False
 
+        # Pools used:
+        wc_pool = self.pool.get('mrp.production.workcenter.line')
+        
         # ---------------------------------------------------------------------
         #                  Create workcenter line from lavorations:
         # ---------------------------------------------------------------------        
+        mrp_proxy = self.browse(cr, uid, order_id, context=context)
         for lavoration in mrp_proxy.lavoration_ids:
             # -----------------------------------
             # Workhour for this lavoration phase:
@@ -303,6 +309,7 @@ class bom_production(orm.Model):
                 if not remain_hour_a_day: # no remain hour to fill
                     current_date = current_date + timedelta(days=1)
 
+                import pdb; pdb.set_trace()    
                 wc_pool.create(cr, uid, {
                     'name': '%s [%s]' % (
                         mrp_proxy.name, max_sequence),
@@ -433,17 +440,16 @@ class bom_production(orm.Model):
                 raise osv.except_osv(_('Error'), _('No work hour type setted!'))
             if not mrp_proxy.schedule_from_date:
                 raise osv.except_osv(_('Error'), _('No start date for schedule!'))
-                
             lavoration_pool.create(cr, uid, {
                 # Record data:
                 #'create_date',
-                'schedule_from_date': mrp_proxy.schedule,
+                'schedule_from_date': mrp_proxy.schedule_from_date,
                 'production_id': ids[0],
                 'splitted': False, # original creation
                 'workhour_id': mrp_proxy.workhour_id.id, # same as mrp
                 
                 # BOM:
-                'bom_id': mpr_proxy.bom_id.id,
+                'bom_id': mrp_proxy.bom_id.id,
                 'level': lavoration.level,
                 'phase_id': lavoration.phase_id.id,
                 'line_id': lavoration.line_id.id,
@@ -495,7 +501,8 @@ class bom_production(orm.Model):
         # NOTE: all this parameter are also written in lavoration
         'schedule_from_date': fields.date(
             'From date', help="Scheduled from date to start lavorations"),
-        'workhour_id':fields.many2one('hr.workhour', 'Work hour'), # TODO mand.
+        'workhour_id':fields.many2one('hr.workhour', 'Work hour', 
+            required=True),
         }
 
 class mrp_production_workcenter_line(orm.Model):

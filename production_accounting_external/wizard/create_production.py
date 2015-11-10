@@ -346,6 +346,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         if context is None:
            context = {}
 
+        import pdb; pdb.set_trace()
         wiz_browse = self.browse(cr, uid, ids, context=context)[0]
         production_pool = self.pool.get('mrp.production')
         sol_pool = self.pool.get('sale.order.line')
@@ -390,10 +391,11 @@ class CreateMrpProductionWizard(orm.TransientModel):
         # ------------------------------------------            
         # Update totals in mrp from sale order line:
         # ------------------------------------------            
+        # Reload for append:
         sol_ids = sol_pool.search(cr, uid, [
             ('mrp_id', '=', p_id),
             ], context=context)        
-        product_qty = sum([item.product_qty for item in sol_pool.browse(
+        product_qty = sum([item.product_uom_qty for item in sol_pool.browse(
             cr, uid, sol_ids, context=context)])
         production_pool.write(cr, uid, p_id, {
             'product_qty': product_qty,
