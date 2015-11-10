@@ -146,8 +146,8 @@ class mrp_bom_lavoration(orm.Model):
         #    help="Duration hour:minute for lavoration of quantity piece"),
 
         # TODO move in another module after DEMO    
-        'real_duration': fields.float('Duration', digits=(10, 2),
-            help="Real duration hour:minute for lavoration of quantity piece"),
+        #'real_duration': fields.float('Duration', digits=(10, 2),
+        #    help="Real duration hour:minute for lavoration of quantity piece"),
         }
 
 class bom_production(orm.Model):

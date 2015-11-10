@@ -82,11 +82,19 @@ class bom_lavoration(orm.Model):
         return res
     
     _columns = {        
+        # ----------------------
+        # Show mandatory fields:
+        # ----------------------
+        'create_date': fields.datetime('Create date', readonly=True),
+
+        # --------------------------
+        # Info for lavoration block:
+        # --------------------------
         'level': fields.integer('Level'),
         'phase_id': fields.many2one('mrp.bom.lavoration.phase', 'Phase', 
             required=True, ondelete='set null'),
-        'fixed': fields.boolean('Fixed', required=False),
-        
+        'fixed': fields.boolean('Fixed'),
+
         # ------------------------------------------
         # Block total (elements todo by this block):
         # ------------------------------------------
@@ -94,19 +102,21 @@ class bom_lavoration(orm.Model):
             help="Number of piece producted in duration time"),
         'duration': fields.float('BOM Duration', digits=(10, 2),
             help="Duration in hour:minute for lavoration of quantity piece"),
+        'item_hour': fields.float('Item x hour', digits=(10, 2),
+            help="Number of item per hour, for possibile recalc operation"),
         'workers': fields.integer('Default workers'),
-            
-        #'uom_id': fields.many2one('product.uom', 'U.M.', 
-        #    ondelete='set null'),
+
+        # ------
+        # Links:            
+        # ------
+        # Production line of manufacturing:
         'line_id': fields.many2one('mrp.workcenter', 'Line', 
             required=True, ondelete='set null'),            
+        # Lavoration BOM:    
         'bom_id': fields.many2one('mrp.bom', 'BOM', 
             ondelete='cascade'),
-
-        # Show database fields:
-        'create_date': fields.datetime('Create date', readonly=True),
         }
-        
+
     _defaults = {
         'level': lambda *x: 1,
         'workers': lambda *x: 1,        
