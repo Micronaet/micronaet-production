@@ -161,10 +161,11 @@
         <field name="priority" eval="40"/>
         <field name="arch" type="xml">
             <tree string="OC line" editable="bottom" delete="0" colors="maroon:sync_state=='closed' or product_uom_maked_qty!=0.0;green:sync_state=='sync';blue:has_mandatory_delivery==True">
-                <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('sync_state','!=','draft')]}" />
+                <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('sync_state','!=','draft')]}" context="{'production_order_id':mrp_id}"/>
                 <field name="mrp_sequence" readonly="1" string="ord."/>
                 <field name="partner_id" readonly="1"/>
                 <field name="order_id" readonly="1"/>
+                <field name="mrp_id" invisible="1"/>
                 <field name="name" invisible="1"/>
                 <field name="default_code" readonly="1"/>
                 <field name="date_deadline" readonly="1" />                    

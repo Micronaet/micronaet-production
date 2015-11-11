@@ -128,10 +128,27 @@ class SaleOrderLine(orm.Model):
         ''' Free the line from production order 
         '''
         # Only in draft mode!
-        return self.write(cr, uid, ids, {
-            'mrp_id': False, 
-            'mrp_sequence': False, # reset order
-            }, context=context)
+        sol_proxy = self.browse(cr, uid, ids, context=context)[0]
+        if sol_proxy.order_id.forecast_mrp_id:
+            # Forecast order delete line:   
+            self.unlink(cr, uid, ids, context=context)            
+        else:    
+            # Normal order unlink from production:
+            self.write(cr, uid, ids, {
+                'mrp_id': False, 
+                'mrp_sequence': False, # reset order
+                }, context=context)
+
+        # Recalculate totals:
+        mrp_id = context.get('production_order_id', False)
+        line_ids = self.search(cr, uid, [
+            ('mrp_id', '=', mrp_id)], context=context)
+        product_qty = sum(
+            [item.product_uom_qty for item in self.browse(
+                cr, uid, line_ids, context=context)])
+        return self.pool.get('mrp.production').write(cr, uid, mrp_id, {
+            'product_qty': product_qty,
+            }, context=context)        
 
     def close_production(self, cr, uid, ids, context=None):
         ''' Close production
@@ -299,7 +316,7 @@ class MrpProduction(orm.Model):
         return self.write(cr, uid, ids, {
             'used_by_mrp_id': False, }, context=context)
 
-    def _get_totals(self, cr, uid, ids, fields=None, args=None, context=None):
+    """def _get_totals(self, cr, uid, ids, fields=None, args=None, context=None):
         ''' TODO remove part of old program and old fields
         
             Calculate all totals 
@@ -337,8 +354,24 @@ class MrpProduction(orm.Model):
             #    res[order.id]['previsional_qty']) # - Previsional
             #res[order.id]['error_qty'] = False#res[order.id]['extra_qty'] < 0.0
             #res[order.id]['has_extra_qty'] = res[order.id]['extra_qty'] > 0.0
-        return res    
+        return res"""
     
+    def _get_forecast_total(self, cr, uid, ids, fields=None, args=None, 
+            context=None):
+        ''' TODO remove part of old program and old fields
+        
+            Calculate all totals 
+            oc_qty = sum (qty for all line)
+            extra_qty = total production - oc_qty
+        '''
+        res = {}        
+        for order in self.browse(cr, uid, ids, context=context):
+            res[order.id] = 0.0
+            for line in order.order_line_ids:
+                if line.order_id.forecasted_production_id:
+                    res[order.id] += line.product_uom_qty # TODO check UM?
+        return res
+
     # Fields function:
     def _get_mandatory_delivery(
             self, cr, uid, ids, fields, args, context=None):
@@ -378,8 +411,8 @@ class MrpProduction(orm.Model):
         #    _get_totals, method=True, type='boolean', 
         #    string='Total error', store=False, readonly=True, multi=True),
         'forecast_qty': fields.function(
-            _get_totals, method=True, type='float', 
-            string='Forecast qty', store=False, readonly=True, multi=True),
+            _get_forecast_total, method=True, type='float', 
+            string='Forecast qty', store=False, readonly=True),
         
         'used_by_mrp_id': fields.many2one('mrp.production', 'Used by'),
         
