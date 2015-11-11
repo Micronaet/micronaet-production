@@ -345,8 +345,6 @@ class CreateMrpProductionWizard(orm.TransientModel):
         if context is None:
            context = {}
 
-        import pdb; pdb.set_trace()
-
         wiz_browse = self.browse(cr, uid, ids, context=context)[0]
         production_pool = self.pool.get('mrp.production')
         sol_pool = self.pool.get('sale.order.line')

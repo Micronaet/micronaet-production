@@ -128,17 +128,17 @@ class SaleOrderLine(orm.Model):
         ''' Free the line from production order 
         '''
         # Only in draft mode!
-        #sol_proxy = self.browse(cr, uid, ids, context=context)[0]
-        #if sol_proxy.order_id.forecasted_production_id:
-        #    # Forecast order delete line:   
-        #    self.unlink(cr, uid, ids, context=context)            
-        #else:    
-        # Normal order unlink from production:
-        # TODO remove line without hide gives error (for focus problem)
-        self.write(cr, uid, ids, {
-            'mrp_id': False, 
-            'mrp_sequence': False, # reset order
-            }, context=context)
+        sol_proxy = self.browse(cr, uid, ids, context=context)[0]
+        if sol_proxy.order_id.forecasted_production_id:
+            # Forecast order delete line:   
+            self.unlink(cr, uid, ids, context=context)            
+        else:    
+            # Normal order unlink from production:
+            # TODO remove line without hide gives error (for focus problem)
+            self.write(cr, uid, ids, {
+                'mrp_id': False, 
+                'mrp_sequence': False, # reset order
+                }, context=context)
 
         # Recalculate totals:
         mrp_id = context.get('production_order_id', False)

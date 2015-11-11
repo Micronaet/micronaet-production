@@ -247,7 +247,7 @@
             </xpath>
             
             <!--New notebook -->
-            <xpath expr="/form/sheet/notebook" position="inside">
+            <xpath expr="/form/sheet/notebook/page[@string='Consumed Products']" position="before">
 		        <page string="Sale order">
 			        <group string="Order lines" colspan="4" col="4">
 			            <!--<button name="force_production_sequence" string="Force order" type="object" />-->
@@ -258,7 +258,7 @@
 				        <field name="order_line_ids" nolabel="1" colspan="4" context="{
 				            'tree_view_ref': 'production_accounting_external.production_sale_order_line_tree_view',
 				            'form_view_ref': 'production_accounting_external.production_sale_order_line_form_view'
-				            }" />
+				            }" options="{'reload_on_button': true}"/>
 			        </group>
 		        </page>
 		        <!--TODO remove page-->
