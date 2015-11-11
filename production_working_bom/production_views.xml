@@ -78,12 +78,13 @@
                         <field name="worker_ids" widget="many2many_tags" colspan="4"/>
                     </group>
                     <newline />
-                    <field name="lavoration_ids" colors="blue:fixed==True" readonly="1">
+                    <field name="lavoration_ids" colors="blue:fixed==True" readonly="1"> <!--readonly all!!-->
                         <tree string="Lavoration" editable="bottom">
                            <field name="create_date" />
                            <field name="level" />
-                           <field name="phase_id"/>
-                           <field name="fixed" invisible="1" />
+                           <field name="phase_id" />
+                           <field name="production_mrp_id" />
+                           <field name="fixed" />
                            <field name="workers" />
                            <field name="line_id" />
                            <field name="total_number" sum="lavoration"/>
