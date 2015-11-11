@@ -101,8 +101,6 @@ class bom_lavoration(orm.Model):
             help="Number of piece producted in duration time"),
         'duration': fields.float('BOM Duration', digits=(10, 2),
             help="Duration in hour:minute for lavoration of quantity piece"),
-        'item_hour': fields.float('Item x hour', digits=(10, 2),
-            help="Number of item per hour, for possibile recalc operation"),
         'workers': fields.integer('Default workers'),
 
         # ------

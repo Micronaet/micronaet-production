@@ -125,6 +125,8 @@ class mrp_bom_lavoration(orm.Model):
             ondelete='cascade'),            
         'workhour_id':fields.many2one('hr.workhour', 'Work hour', 
             ondelete='set null'),
+        'item_hour': fields.float('Item x hour', digits=(10, 2),
+            help="Number of item per hour, for possibile recalc operation"),            
         # Splitted information:    
         'splitted': fields.boolean('Splitted', 
             help='This lavoration is a splitted block, else original create'),
