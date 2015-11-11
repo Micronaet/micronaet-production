@@ -81,6 +81,7 @@
                     <field name="lavoration_ids" colors="blue:fixed==True" readonly="1"> <!--readonly all!!-->
                         <tree string="Lavoration" editable="bottom">
                            <field name="create_date" />
+                           <field name="schedule_from_date" string="From"/>                           
                            <field name="level" string="Lev."/>
                            <field name="phase_id" />
                            <field name="production_bom_id" />
