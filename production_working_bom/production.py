@@ -119,7 +119,8 @@ class mrp_bom_lavoration(orm.Model):
         # Extra fields for lavoration:
         # ----------------------------
         # Link
-        'production_bom_id': fields.many2one('mrp.bom', 'Production BOM'),
+        'production_bom_id': fields.many2one('mrp.bom', 'Production BOM', 
+            ondelete='set null'),
         'production_id': fields.many2one('mrp.production', 'Production', 
             ondelete='cascade'),            
         'workhour_id':fields.many2one('hr.workhour', 'Work hour', 

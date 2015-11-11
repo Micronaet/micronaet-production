@@ -81,16 +81,17 @@
                     <field name="lavoration_ids" colors="blue:fixed==True" readonly="1"> <!--readonly all!!-->
                         <tree string="Lavoration" editable="bottom">
                            <field name="create_date" />
-                           <field name="level" />
+                           <field name="level" string="Lev."/>
                            <field name="phase_id" />
-                           <field name="production_mrp_id" />
+                           <field name="production_bom_id" />
+                           <field name="workhour_id" />
                            <field name="fixed" />
-                           <field name="workers" />
+                           <field name="workers" string="Employee"/>
                            <field name="line_id" />
-                           <field name="total_number" sum="lavoration"/>
-                           <field name="duration" widget="float_time" sum="total"/> <!--TODO remove after check WC generation works-->
-                           <field name="total_duration" widget="float_time" sum="duration"/>
-                           <field name="total_product" widget="float_time" sum="quantity"/>
+                           <field name="total_number" sum="lavoration" string="# lav."/>
+                           <field name="duration" widget="float_time" sum="total" string="BOM H."/> <!--TODO remove after check WC generation works-->
+                           <field name="total_duration" widget="float_time" sum="duration" string="H. tot."/>
+                           <field name="total_product" widget="float_time" sum="quantity" string="Pz. tot."/>
                            <button name="open_lavoration_wc" type="object" string="" icon="terp-calendar"/>
                         </tree>
                     </field>
