@@ -119,6 +119,7 @@ class mrp_bom_lavoration(orm.Model):
         # Extra fields for lavoration:
         # ----------------------------
         # Link
+        'production_bom_id': fields.many2one('mrp.bom', 'Production BOM'),
         'production_id': fields.many2one('mrp.production', 'Production', 
             ondelete='cascade'),            
         'workhour_id':fields.many2one('hr.workhour', 'Work hour', 
@@ -211,17 +212,10 @@ class bom_production(orm.Model):
                 pass
 
         return {
-            'name': name,
-            'view_type': view_type,
-            'view_mode': view_mode,
-            'res_model': model,
-            'res_id': res_id,
-            'view_id': view_id,
-            'views': views,
-            'domain': domain,
-            'context': view_context,
-            'type': 'ir.actions.act_window',
-            }
+            'name': name, 'view_type': view_type, 'view_mode': view_mode,
+            'res_model': model, 'res_id': res_id, 'view_id': view_id,
+            'views': views, 'domain': domain, 'context': view_context,
+            'type': 'ir.actions.act_window'}
 
     def create_wc_from_lavoration(self, cr, uid, order_id, context=None):
         ''' Create sub workcenter from lavoration
@@ -449,7 +443,8 @@ class bom_production(orm.Model):
                 'workhour_id': mrp_proxy.workhour_id.id, # same as mrp
                 
                 # BOM:
-                'bom_id': mrp_proxy.bom_id.id,
+                #'bom_id': mrp_proxy.bom_id.id, # TODO remove (bom line)
+                'production_bom_id': mrp_proxy.bom_id.id,
                 'level': lavoration.level,
                 'phase_id': lavoration.phase_id.id,
                 'line_id': lavoration.line_id.id,

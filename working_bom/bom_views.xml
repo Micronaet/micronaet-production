@@ -74,7 +74,8 @@
                <field name="duration" widget="float_time"/>
                <field name="workers" />
                <field name="line_id" />
-               <!--<field name="bom_id"/>-->
+               <!--<field name="bom_id"/> for BOM o2m -->
+               <!--<field name="production_bom_id"/> for production BOM o2m-->
            </tree>
         </field>
     </record>

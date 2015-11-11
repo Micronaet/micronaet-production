@@ -300,36 +300,43 @@ class MrpProduction(orm.Model):
             'used_by_mrp_id': False, }, context=context)
 
     def _get_totals(self, cr, uid, ids, fields=None, args=None, context=None):
-        ''' Calculate all totals 
+        ''' TODO remove part of old program and old fields
+        
+            Calculate all totals 
             oc_qty = sum (qty for all line)
             extra_qty = total production - oc_qty
         '''
         res = {}
         for order in self.browse(cr, uid, ids, context=context):
             res[order.id] = {}
-            res[order.id]['oc_qty'] = 0.0
-            res[order.id]['previsional_qty'] = 0.0
-            res[order.id]['use_extra_qty'] = 0.0
+            #res[order.id]['oc_qty'] = 0.0
+            #res[order.id]['previsional_qty'] = 0.0
+            #res[order.id]['use_extra_qty'] = 0.0
 
             for line in order.order_line_ids:
-                res[order.id]['oc_qty'] += line.product_uom_qty # TODO UM?
+                if line.order_id.forecasted_production_id:
+                    res[order.id]['forecast_qty'] += line.product_uom_qty 
+                    # TODO check UM?
 
-            for line in order.previsional_line_ids:
-                res[order.id]['previsional_qty'] += line.product_uom_qty 
+            #for line in order.order_line_ids:
+            #    res[order.id]['oc_qty'] += line.product_uom_qty # TODO UM?
 
-            for line in order.use_mrp_ids: # TO correct (for recursion)
-                res[order.id]['use_extra_qty'] += \
-                    self.browse(cr, uid, line.id).extra_qty
+            #for line in order.previsional_line_ids:
+            #    res[order.id]['previsional_qty'] += line.product_uom_qty 
 
-                #res[order.id]['use_extra_qty'] += line.extra_qty 
+            #for line in order.use_mrp_ids: # TO correct (for recursion)
+            #    res[order.id]['use_extra_qty'] += \
+            #        self.browse(cr, uid, line.id).extra_qty
 
-            res[order.id]['extra_qty'] = (        # Extra =
-                order.product_qty +               # Production
-                res[order.id]['use_extra_qty'] -  # + extra qty used
-                res[order.id]['oc_qty'] -         # - Ordered
-                res[order.id]['previsional_qty']) # - Previsional
-            res[order.id]['error_qty'] = res[order.id]['extra_qty'] < 0.0
-            res[order.id]['has_extra_qty'] = res[order.id]['extra_qty'] > 0.0
+            #    #res[order.id]['use_extra_qty'] += line.extra_qty 
+
+            #res[order.id]['extra_qty'] = (        # Extra =
+            #    order.product_qty +               # Production
+            #    res[order.id]['use_extra_qty'] -  # + extra qty used
+            #    res[order.id]['oc_qty'] -         # - Ordered
+            #    res[order.id]['previsional_qty']) # - Previsional
+            #res[order.id]['error_qty'] = False#res[order.id]['extra_qty'] < 0.0
+            #res[order.id]['has_extra_qty'] = res[order.id]['extra_qty'] > 0.0
         return res    
     
     # Fields function:
@@ -350,26 +357,29 @@ class MrpProduction(orm.Model):
         return res
         
     _columns = {
-        'oc_qty': fields.function(
+        #'oc_qty': fields.function(
+        #    _get_totals, method=True, type='float', 
+        #    string='OC qty', store=False, readonly=True, multi=True),
+        #'previsional_qty': fields.function(
+        #    _get_totals, method=True, type='float', 
+        #    string='Previsional qty', store=False, readonly=True, multi=True),
+        #'use_extra_qty': fields.function(
+        #    _get_totals, method=True, type='float', 
+        #    string='Use extra qty', store=False, readonly=True, multi=True),
+        #'extra_qty': fields.function(
+        #    _get_totals, method=True, type='float', 
+        #    string='Extra qty', store=False, readonly=True, multi=True),
+        #'has_extra_qty': fields.function(
+        #    _get_totals, method=True, type='boolean', string='Has extra', 
+        #    store=True,
+        #    #{'sale.order.line':(_get_extra_production,['product_uom_qty'],10)}, 
+        #    readonly=True, multi=True),
+        #'error_qty': fields.function( # TODO remove or change function?!?
+        #    _get_totals, method=True, type='boolean', 
+        #    string='Total error', store=False, readonly=True, multi=True),
+        'forecast_qty': fields.function(
             _get_totals, method=True, type='float', 
-            string='OC qty', store=False, readonly=True, multi=True),
-        'previsional_qty': fields.function(
-            _get_totals, method=True, type='float', 
-            string='Previsional qty', store=False, readonly=True, multi=True),
-        'use_extra_qty': fields.function(
-            _get_totals, method=True, type='float', 
-            string='Use extra qty', store=False, readonly=True, multi=True),
-        'extra_qty': fields.function(
-            _get_totals, method=True, type='float', 
-            string='Extra qty', store=False, readonly=True, multi=True),
-        'has_extra_qty': fields.function(
-            _get_totals, method=True, type='boolean', string='Has extra', 
-            store=True,
-            #{'sale.order.line':(_get_extra_production,['product_uom_qty'],10)}, 
-            readonly=True, multi=True),
-        'error_qty': fields.function(
-            _get_totals, method=True, type='boolean', 
-            string='Total error', store=False, readonly=True, multi=True),
+            string='Forecast qty', store=False, readonly=True, multi=True),
         
         'used_by_mrp_id': fields.many2one('mrp.production', 'Used by'),
         

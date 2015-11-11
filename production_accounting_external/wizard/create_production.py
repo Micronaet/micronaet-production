@@ -97,8 +97,7 @@ def return_view(self, cr, uid, res_id, view_name, object_name, context=None):
 
 class CreateMrpProductionWizard(orm.TransientModel):
     ''' Wizard that create a production order based on selected order lines
-    '''
-    
+    '''    
     _name = "mrp.production.create.wizard"
     
     # ---------------
@@ -342,9 +341,11 @@ class CreateMrpProductionWizard(orm.TransientModel):
     def action_create_mrp_production_order(self, cr, uid, ids, context=None):
         ''' Create production order based on product_tmpl_id depend on quantity
             Redirect mrp.production form after
-        '''        
+        '''
         if context is None:
            context = {}
+
+        import pdb; pdb.set_trace()
 
         wiz_browse = self.browse(cr, uid, ids, context=context)[0]
         production_pool = self.pool.get('mrp.production')
@@ -566,7 +567,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             
     _columns = {
         'name': fields.text('OC line', readonly=True),
-        
+
         # Total block (current order)
         'extra_total': fields.float(
             'Extra total', digits=(16, 2), readonly=True),
@@ -599,7 +600,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         'production_id': fields.many2one(
             'mrp.production', 'Production'),
         'bom_id': fields.many2one('mrp.bom', 'BOM'),
-        
+
         'from_deadline': fields.date('From deadline', 
             help='Min deadline found in order line!',
             readonly=True),
