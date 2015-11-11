@@ -167,6 +167,18 @@ class bom_production(orm.Model):
     # --------
     # Utility:
     # --------
+    def recompute_total_from_sol(self, cr, uid, ids, context=None):
+        ''' Recompute total order from sale order line (one record of mrp)
+        '''
+        mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
+        
+        product_qty = sum(
+            [item.product_uom_qty for item in mrp_proxy.order_line_ids])
+            
+        return self.write(cr, uid, ids[0], {
+            'product_qty': product_qty,
+            }, context=context)
+        
     def open_view(self, cr, uid, ids, open_mode, context=None):
         ''' Open in calendar all lavorations for this production:
             open_mode: 'production', 'workcenter' for setup filters
@@ -473,9 +485,12 @@ class bom_production(orm.Model):
     # -------------
     # Button event:
     # -------------
-    def schedule_lavoration(self, cr, uid, ids, context=None):
+    def reschedule_lavoration(self, cr, uid, ids, context=None):
         ''' Force reload all lavoration-workcenter line
         '''
+        # Recompute total from sale order line:
+        self.pool.get('mrp.production').recompute_total_from_sol(
+            cr, uid, ids, context=context)
         return self.create_lavoration_item(cr, uid, ids, mode='create', 
             context=context)
     

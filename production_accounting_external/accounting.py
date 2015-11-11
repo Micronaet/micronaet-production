@@ -144,15 +144,10 @@ class SaleOrderLine(orm.Model):
         mrp_id = context.get('production_order_id', False)
         if not mrp_id: # odd case
             return False
-            
-        line_ids = self.search(cr, uid, [
-            ('mrp_id', '=', mrp_id)], context=context)
-        product_qty = sum(
-            [item.product_uom_qty for item in self.browse(
-                cr, uid, line_ids, context=context)])
-        return self.pool.get('mrp.production').write(cr, uid, mrp_id, {
-            'product_qty': product_qty,
-            }, context=context)        
+
+        # Reload total from sale order line:        
+        return self.pool.get('mrp.production').recompute_total_from_sol(
+            cr, uid, [mrp_id], context=context)
 
     def close_production(self, cr, uid, ids, context=None):
         ''' Close production

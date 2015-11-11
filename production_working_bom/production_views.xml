@@ -69,7 +69,7 @@
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
                 <page string="Lavoration">
-                    <button name="schedule_lavoration" type="object" string="Re-schedule all" confirm="This delete all lavoration and phase and recreate with date and workhour setted up, confirm?"/>
+                    <button name="reschedule_lavoration" type="object" string="Re-schedule all" confirm="This delete all lavoration and phase and recreate with date and workhour setted up, confirm?"/>
                     <button name="open_lavoration" type="object" string="Lavorations" icon="terp-calendar"/>
                     
                     <group colspan="4" col="4">
