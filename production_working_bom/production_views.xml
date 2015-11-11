@@ -91,7 +91,7 @@
                            <field name="total_number" sum="lavoration" string="# lav."/>
                            <field name="duration" widget="float_time" sum="total" string="BOM H."/> <!--TODO remove after check WC generation works-->
                            <field name="total_duration" widget="float_time" sum="duration" string="H. tot."/>
-                           <field name="total_product" widget="float_time" sum="quantity" string="Pz. tot."/>
+                           <field name="total_product" sum="quantity" string="Pz. tot."/>
                            <button name="open_lavoration_wc" type="object" string="" icon="terp-calendar"/>
                         </tree>
                     </field>
