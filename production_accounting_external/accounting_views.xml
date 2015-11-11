@@ -160,7 +160,7 @@
         <field name="model">sale.order.line</field>
         <field name="priority" eval="40"/>
         <field name="arch" type="xml">
-            <tree string="OC line" editable="bottom" delete="0" colors="maroon:sync_state=='closed' or product_uom_maked_qty!=0.0;green:sync_state=='sync';blue:has_mandatory_delivery==True">
+            <tree string="OC line" editable="bottom" delete="0" colors="red:is_manufactured==False;maroon:sync_state=='closed' or product_uom_maked_qty!=0.0;green:sync_state=='sync';blue:has_mandatory_delivery==True">
                 <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('sync_state','!=','draft')]}" context="{'production_order_id':mrp_id}"/>
                 <field name="mrp_sequence" readonly="1" string="ord."/>
                 <field name="partner_id" readonly="1"/>
@@ -258,7 +258,7 @@
 				        <field name="order_line_ids" nolabel="1" colspan="4" context="{
 				            'tree_view_ref': 'production_accounting_external.production_sale_order_line_tree_view',
 				            'form_view_ref': 'production_accounting_external.production_sale_order_line_form_view'
-				            }" options="{'reload_on_button': true}"/>
+				            }" options="{'reload_on_button': true}"/> <!--ALSO: options="{'always_reload': true}"-->
 			        </group>
 		        </page>
 		        <!--TODO remove page-->
@@ -426,7 +426,7 @@
         <field name="inherit_id" ref="sale.view_quotation_tree" />
         <field name="arch" type="xml">
             <xpath expr="/tree" position="attributes">
-                 <attribute name="colors">green:all_produced==True;grey:state=='cancel';blue:state in ('waiting_date','manual');red:state in ('invoice_except','shipping_except')</attribute>
+                 <attribute name="colors">red:is_manufactured==False;green:all_produced==True;grey:state=='cancel';blue:state in ('waiting_date','manual');red:state in ('invoice_except','shipping_except')</attribute>
             </xpath>
             <field name='state' position="after">
                 <field name="all_produced" invisible="1" />
