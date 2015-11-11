@@ -228,7 +228,8 @@ class bom_production(orm.Model):
             @param self: instance of class
             @param cr: cursor
             @param uid: user ID
-            @param order_id: mrp order passed used for create all wc from lavoration
+            @param order_id: mrp order passed used for create all wc 
+                from lavoration
             @param context: extra parameters
         '''
         # TODO read all lavoration
@@ -309,7 +310,6 @@ class bom_production(orm.Model):
                 if not remain_hour_a_day: # no remain hour to fill
                     current_date = current_date + timedelta(days=1)
 
-                import pdb; pdb.set_trace()    
                 wc_pool.create(cr, uid, {
                     'name': '%s [%s]' % (
                         mrp_proxy.name, max_sequence),
