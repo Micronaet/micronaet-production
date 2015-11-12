@@ -264,17 +264,13 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 </style>
                 <table class='table_status'>
                 <tr><th>Date</th>
-                    <!--<th>To</th>-->
                     <th>Prod.</th>
-                    <th>Q.</th>
-                    <th>Extra</th>
+                    <th>Q.</th>                    
                 </tr>''')
         for item in production_pool.browse(
                 cr, uid, production_ids, context=context):
             res['value']['other_production'] += """
                 <tr><td>%s</td>
-                    <!--<td></td>-->
-                    <td>%s</td>
                     <td>%s</td>
                     <td>%s</td>
                 </tr>""" % (
@@ -282,14 +278,14 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     #item.name, # TODO range date!!
                     item.name,
                     item.product_qty,
-                    item.extra_qty,
                     )
         else:
             res['value']['other_production'] += '</table>'
                     
         return res
         
-    def onchange_append_production(self, cr, uid, ids, production_id, oc_total, 
+    """def onchange_append_production(self, cr, uid, ids, production_id, 
+            #oc_total, 
             context=None):
         ''' Search values for total
         ''' 
@@ -300,17 +296,17 @@ class CreateMrpProductionWizard(orm.TransientModel):
         production_proxy = production_pool.browse(
             cr, uid, production_id, context=context)
         res['value']['production_total'] = production_proxy.product_qty
-        res['value']['production_extra'] = production_proxy.extra_qty        
-        res['value']['production_oc'] = production_proxy.oc_qty        
-        return res 
+        #res['value']['production_extra'] = production_proxy.extra_qty        
+        #res['value']['production_oc'] = production_proxy.oc_qty        
+        return res """
 
-    def onchange_total(self, cr, uid, ids, total, oc_total, context=None):
-        ''' Create extra production value             
-        ''' 
-        #TODO also error
-        res = {'value': {}}
-        res['value']['extra_total'] = (total or 0.0) - (oc_total or 0.0)
-        return res 
+    #def onchange_total(self, cr, uid, ids, total, oc_total, context=None):
+    #    ''' Create extra production value             
+    #    ''' 
+    #    #TODO also error
+    #    res = {'value': {}}
+    #    res['value']['extra_total'] = (total or 0.0) - (oc_total or 0.0)
+    #    return res 
     
     def onchange_force_production(self, cr, uid, ids, force_production, bom_id,
             context=None):
@@ -401,6 +397,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
         production_pool.write(cr, uid, p_id, {
             'product_qty': product_qty,
             }, context=context)
+        production_pool.recompute_total_from_sol(
+            cr, uid, [p_id], context=context) 
 
         # -----------------------------------
         # Force (re)schedule create / append:
@@ -462,7 +460,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     <th>Deadline</th>
                 </tr>"""), 
             "is_error": False, 
-            "oc_total": 0.0, 
+            #"oc_total": 0.0, 
             "total": 0.0, 
             "product": False, 
             "from_deadline": False, 
@@ -539,7 +537,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             elif field == "error":
                 if item.__getattribute__(ref_field).id != old_product_id:
                     return True
-            elif field in ("oc_total", "total"):
+            elif field in ("total"): #"oc_total", 
                 res += item.product_uom_qty or 0.0
             elif field in ("from_deadline", "to_deadline"):
                 if not res:
@@ -572,17 +570,17 @@ class CreateMrpProductionWizard(orm.TransientModel):
         # Total block (current order)
         'extra_total': fields.float(
             'Extra total', digits=(16, 2), readonly=True),
-        'oc_total': fields.float(
-            'OC total', digits=(16, 2), readonly=True),
+        #'oc_total': fields.float(
+        #    'OC total', digits=(16, 2), readonly=True),
         'total': fields.float(
             'Total (current block)', digits=(16, 2), required=True,
             help='Total only for this block, if append will be integrated'),
 
         # Total production to update (only info)
-        'production_extra': fields.float(
-            'Production: Extra', readonly=True, digits=(16, 2), ),
-        'production_oc': fields.float(
-            'Production: OC', readonly=True, digits=(16, 2), ),
+        #'production_extra': fields.float(
+        #    'Production: Extra', readonly=True, digits=(16, 2), ),
+        #'production_oc': fields.float(
+        #    'Production: OC', readonly=True, digits=(16, 2), ),
         'production_total': fields.float(
             'Production: Total', readonly=True, digits=(16, 2), ),
 
@@ -636,8 +634,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
         #'all_in_one': lambda *a: False,
         'is_error': lambda s, cr, uid, c: s.default_oc_list(
             cr, uid, "error", context=c),
-        'oc_total': lambda s, cr, uid, c: s.default_oc_list(
-            cr, uid, "oc_total", context=c),        
+        #'oc_total': lambda s, cr, uid, c: s.default_oc_list(
+        #    cr, uid, "oc_total", context=c),        
         'total': lambda s, cr, uid, c: s.default_oc_list(
             cr, uid, "total", context=c),        
         'product_id': lambda s, cr, uid, c: s.default_oc_list(
