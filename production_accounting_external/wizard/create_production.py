@@ -326,6 +326,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
                         'item_hour': (
                             item.quantity / item.duration) if item.duration else 0.0,
                         'production_employee': item.workers,
+                        'workcenter_id': item.line_id.id,
                         })
         else:
             # reset elements:
@@ -352,6 +353,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
         # Save in context force production parameter:
         context['force_production_hour'] = wiz_browse.item_hour
         context['force_production_employee'] = wiz_browse.production_employee      
+        if wiz_browse.workcenter_id:
+            context['force_workcenter'] = wiz_browse.workcenter_id.id
 
         # Create a production order and open it:
         # Not used for now:
@@ -606,9 +609,12 @@ class CreateMrpProductionWizard(orm.TransientModel):
             help='Max deadline found in order line!',
             readonly=True),
 
+        # Force block:
         'schedule_from_date': fields.date(
             'From date', help="Scheduled from date to start lavorations"),
         'workhour_id':fields.many2one('hr.workhour', 'Work hour'), # TODO mand.
+        'workcenter_id': fields.many2one(
+            'mrp.workcenter', 'Workcenter line'), 
 
         # Error control:
         'is_error': fields.boolean('Is error'),

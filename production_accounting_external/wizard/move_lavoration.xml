@@ -46,7 +46,7 @@
             <field name="inherit_id" ref="mrp_operations.mrp_production_workcenter_tree_view_inherit" />
             <field name="arch" type="xml">
                 <field name="state" position="after">                
-                    <button name="%(move_lavoration_wizard)d" string="Move lavoration block" type="action" icon="STOCK_SAVE"
+                    <button name="%(move_lavoration_wizard)d" string="Move lavoration block" type="action" icon="terp-stock_effects-object-colorize"
                         context="{'default_scheduled_lavoration_id':active_id}"/>
                 </field>
             </field>

@@ -228,7 +228,8 @@ class bom_production(orm.Model):
         default = False # TODO default view name
         view_id = False
         views = []
-        # production_working_bom.mrp_production_workcenter_line_calendar_lavoration_view
+        # production_working_bom.
+        # mrp_production_workcenter_line_calendar_lavoration_view
         data_pool = self.pool.get('ir.model.data')
         for view in ['form', 'tree', 'calendar', 'gantt', 'graph']:
             try: # compose views parameter:

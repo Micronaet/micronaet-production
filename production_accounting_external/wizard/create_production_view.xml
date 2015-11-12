@@ -17,9 +17,12 @@
                         <field name="force_production" on_change="onchange_force_production(force_production, bom_id)"/>
                         <field name="product_id" invisible="1" /> 
 
-                        <field name="item_hour" attrs="{'required': [('bom_id','=',False)], 'invisible': [('force_production','=',False)]}"/>
-                        <field name="production_employee" attrs="{'required': [('bom_id','=',False)], 'invisible': [('force_production','=',False)]}" />
-                        
+                        <group colspan="4" col="6">
+                            <field name="item_hour" attrs="{'required': ['|',('force_production','=',True),('bom_id','=',False)], 'invisible': [('force_production','=',False)]}"/>
+                            <field name="production_employee" attrs="{'required': ['|',('force_production','=',True),('bom_id','=',False)], 'invisible': [('force_production','=',False)]}" />
+                            <field name="workcenter_id" attrs="{'required': ['|',('force_production','=',True),('bom_id','=',False)], 'invisible': [('force_production','=',False)]}" />
+                        </group>
+
                         <!--<separator string="Schedule:" colspan="4" attrs="{'invisible':[('operation','not in',('lavoration'))]}"/>-->
                         <field name="from_deadline" />
                         <field name="to_deadline" />
