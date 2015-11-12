@@ -69,8 +69,7 @@
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
                 <page string="Lavoration">
-                    <button name="reschedule_lavoration" type="object" string="Re-schedule all" confirm="This delete all lavoration and phase and recreate with date and workhour setted up, confirm?"/>
-                    <button name="open_lavoration" type="object" string="Lavorations" icon="terp-calendar"/>
+                    <!--<button name="reschedule_lavoration" type="object" string="Re-schedule all" confirm="This delete all lavoration and phase and recreate with date and workhour setted up, confirm?"/>-->
                     
                     <group colspan="4" col="8">
                         <separator string="Original setup (creation time):" colspan="8"/>
@@ -80,8 +79,8 @@
                         <separator string="Lavoration blocks:" colspan="8"/>
                     </group>
                     <field name="lavoration_ids" colors="blue:fixed==True" readonly="1"> <!--readonly all!!-->
-                        <tree string="Lavoration" editable="bottom" colors="maroon:splitted==True">
-                           <field name="splitted" invisible="1"/>
+                        <tree string="Lavoration" editable="bottom" colors="green:master==True">
+                           <field name="master" invisible="1"/>
                            <field name="create_date" />
                            <field name="schedule_from_date" string="From"/>                           
                            <field name="level" string="Lev."/>
@@ -101,7 +100,11 @@
                            <button name="open_lavoration_wc" type="object" string="" icon="terp-calendar"/>
                         </tree>
                     </field>
-                    <separator string="Scheduled" />
+                    <group colspan="4" col="4">
+                        <separator string="Scheduled" colspan="3"/>
+                        <button name="open_lavoration" type="object" string="Lavorations" icon="terp-calendar"/>
+                    </group>    
+
                     <field name="scheduled_lavoration_ids" context="{'embedded':True}"/>
                 </page>
             </xpath>

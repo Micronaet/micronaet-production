@@ -127,9 +127,9 @@ class mrp_bom_lavoration(orm.Model):
             ondelete='set null'),
         'item_hour': fields.float('Item x hour', digits=(10, 2),
             help="Number of item per hour, for possibile recalc operation"),            
-        # Splitted information:    
-        'splitted': fields.boolean('Splitted', 
-            help='This lavoration is a splitted block, else original create'),
+        # Master block;
+        'master': fields.boolean('Master', 
+            help='This lavoration is a master block, else original create'),
         'schedule_from_date': fields.date(
             'From date', help="Scheduled from date to start lavorations"),
 
@@ -473,7 +473,7 @@ class bom_production(orm.Model):
                 #'create_date',
                 'schedule_from_date': mrp_proxy.schedule_from_date,
                 'production_id': ids[0],
-                'splitted': False, # original creation
+                'master': True, # original creation
                 'workhour_id': mrp_proxy.workhour_id.id, # same as mrp
                 
                 # BOM:
