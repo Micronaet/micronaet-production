@@ -440,7 +440,7 @@ class bom_production(orm.Model):
         #                            PROCEDURE:
         # ---------------------------------------------------------------------
         if mode in ('create', 'append'):
-            # Remove lavoration and workcenter line
+            # Remove lavoration and workcenter line (TODO 2 case)
             old_lavoration_ids = lavoration_pool.search(cr, uid, [
                 ('production_id', '=', ids[0])], context=context)
             try:    
@@ -450,7 +450,7 @@ class bom_production(orm.Model):
                 pass # TODO
             # TODO test deletion of wc line
             # TODO delete only workcenter line not confirmed??
-            
+
             # ------------------------------------
             # Create lavoration from BOM elements:
             # ------------------------------------
@@ -465,14 +465,18 @@ class bom_production(orm.Model):
                         duration = mrp_proxy.product_qty / item_hour
                     except:
                         duration = 0.0                        
+
             # Workers (could be forced):
             workers = force_production_employee or lavoration.workers or 0
 
             # Check mandatory elements:
             if not mrp_proxy.workhour_id:
-                raise osv.except_osv(_('Error'), _('No work hour type setted!'))
+                raise osv.except_osv(
+                    _('Error'), _('No work hour type setted!'))
             if not mrp_proxy.schedule_from_date:
-                raise osv.except_osv(_('Error'), _('No start date for schedule!'))
+                raise osv.except_osv(
+                    _('Error'), _('No start date for schedule!'))
+
             lavoration_pool.create(cr, uid, {
                 # Record data:
                 #'create_date',
