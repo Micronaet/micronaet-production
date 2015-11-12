@@ -127,7 +127,7 @@ class MrpMoveLavoration(orm.TransientModel):
         return False    
 
     _columns = {
-        # Split info_
+        # Split info:
         'new_date': fields.datetime('New date', required=True),
         'scheduled_lavoration_id': fields.many2one(
             'mrp.production.workcenter.line',
@@ -138,14 +138,14 @@ class MrpMoveLavoration(orm.TransientModel):
         
         # Parameters:
         # TODO parametrize all for create new elements instead of move:
-        'workhour_id': fields.many2one('hr.workhour', 'Work hour', 
-            readonly=True),
-        'bom_id': fields.many2one('mrp.bom', 'BOM', 
-            readonly=True),
-        'workcenter_id': fields.many2one('mrp.workcenter', 'Workcenter',
-            readonly=True),
-        'workers': fields.integer('Workers', 
-            readonly=True),
+        'workhour_id': fields.many2one('hr.workhour', 'Work hour'),
+        'bom_id': fields.many2one('mrp.bom', 'BOM'),
+        'workcenter_id': fields.many2one('mrp.workcenter', 'Workcenter'),
+        
+        # Force or use bom:
+        'workers': fields.integer('Workers'),
+        'item_hour': fields.float('Item x hour', digits=(10, 2),
+            help="Number of item per hour, for possibile recalc operation"),            
         }
 
     _defaults = {

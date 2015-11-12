@@ -355,7 +355,7 @@ class MrpProduction(orm.Model):
             #res[order.id]['has_extra_qty'] = res[order.id]['extra_qty'] > 0.0
         return res"""
     
-    def _get_forecast_total(self, cr, uid, ids, fields=None, args=None, 
+    def _get_total_information(self, cr, uid, ids, fields=None, args=None, 
             context=None):
         ''' TODO remove part of old program and old fields
         
@@ -363,12 +363,23 @@ class MrpProduction(orm.Model):
             oc_qty = sum (qty for all line)
             extra_qty = total production - oc_qty
         '''
-        res = {}        
+        res = {}    
         for order in self.browse(cr, uid, ids, context=context):
-            res[order.id] = 0.0
+            res[order.id] = {}
+            res[order.id]['forecast_qty'] = 0.0
+            total = 0.0
+            
             for line in order.order_line_ids:
+                total += line.product_uom_qty
                 if line.order_id.forecasted_production_id:
-                    res[order.id] += line.product_uom_qty # TODO check UM?
+                    # TODO check UM?
+                    res[order.id]['forecast_qty'] += line.product_uom_qty 
+            if order.product_qty == total:
+                res[order.id]['error_total'] = False
+            else:
+                res[order.id]['error_total'] = _(
+                    'Total of order different of sum(lines) '
+                    'Need reschedule operation')
         return res
 
     # Fields function:
@@ -410,8 +421,11 @@ class MrpProduction(orm.Model):
         #    _get_totals, method=True, type='boolean', 
         #    string='Total error', store=False, readonly=True, multi=True),
         'forecast_qty': fields.function(
-            _get_forecast_total, method=True, type='float', 
-            string='Forecast qty', store=False, readonly=True),
+            _get_total_information, method=True, type='float', 
+            string='Forecast qty', store=False, readonly=True, multi=True),
+        'error_total': fields.function(
+            _get_total_information, method=True, type='char', size=80, 
+            string='Error in totals', store=False, readonly=True, multi=True),
         
         'used_by_mrp_id': fields.many2one('mrp.production', 'Used by'),
         

@@ -31,8 +31,8 @@
         <field name="inherit_id" ref="production_working_bom.mrp_production_workcenter_line_calendar_default_view" />
         <field name="arch" type="xml">
             <field name="product" position="after">
-                <field name="has_mandatory_delivery" />	            
-                <field name="mandatory_delivery" />	            
+                <field name="has_mandatory_delivery" />                
+                <field name="mandatory_delivery" />                
             </field>
         </field>
     </record>
@@ -42,8 +42,8 @@
         <field name="inherit_id" ref="production_working_bom.mrp_production_workcenter_line_calendar_lavoration_view" />
         <field name="arch" type="xml">
             <field name="product" position="after">
-                <field name="has_mandatory_delivery" />	            
-                <field name="mandatory_delivery" />	            
+                <field name="has_mandatory_delivery" />                
+                <field name="mandatory_delivery" />                
             </field>
         </field>
     </record>
@@ -160,7 +160,7 @@
         <field name="model">sale.order.line</field>
         <field name="priority" eval="40"/>
         <field name="arch" type="xml">
-            <tree string="OC line" editable="bottom" delete="0" colors="red:is_manufactured==False;maroon:sync_state=='closed' or product_uom_maked_qty!=0.0;green:sync_state=='sync';blue:has_mandatory_delivery==True">
+            <tree string="OC line" editable="bottom" delete="0" create="0" colors="red:is_manufactured==False;maroon:sync_state=='closed' or product_uom_maked_qty!=0.0;green:sync_state=='sync';blue:has_mandatory_delivery==True">
                 <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('sync_state','!=','draft')]}" context="{'production_order_id':mrp_id}"/>
                 <field name="mrp_sequence" readonly="1" string="ord."/>
                 <field name="partner_id" readonly="1"/>
@@ -204,9 +204,12 @@
                     <button name="trigger_accounting_draft" type="workflow" class="oe_highlight" string="Restart" attrs="{'invisible':[('accounting_state','not in',('cancel',))],}" />
 
                     <button name="dummy_refresh" type="object" icon="gtk-refresh" string="Refresh" attrs="{'invisible':[('accounting_state','in',('cancel','close'))],}" />
-		            <field name="accounting_state" widget="statusbar" statusbar_visible="draft,production,close,cancel" />-->
-		            <field name="state" invisible="1" />
-	            </header>       
+                    <field name="accounting_state" widget="statusbar" statusbar_visible="draft,production,close,cancel" />-->
+                    <div style="background-color: red;text-align: center;font-weight:bold;color:white;">
+                        <field name="error_total" nolabel="1" attrs="{'invisible': [('error_total', '=', False)]}" class="oe_color_red" />
+                    </div>
+                    <field name="state" invisible="1" />
+                </header>       
             </xpath>
             
             <!--<field name="product_qty" position="attributes">
@@ -248,47 +251,47 @@
             
             <!--New notebook -->
             <xpath expr="/form/sheet/notebook/page[@string='Consumed Products']" position="before">
-		        <page string="Sale order">
-			        <group string="Order lines" colspan="4" col="4">
-			            <!--<button name="force_production_sequence" string="Force order" type="object" />-->
+                <page string="Sale order">
+                    <group string="Order lines" colspan="4" col="4">
+                        <!--<button name="force_production_sequence" string="Force order" type="object" />-->
                         <button name="close_all_production" type="object" string="All produced" icon="gtk-ok" />
                         <button name="accounting_sync" type="object" string="Accounting sync" icon="terp-gtk-jump-to-ltr" />
-			            <newline />
-			            <!--embed sale.order.line modified:-->
-				        <field name="order_line_ids" nolabel="1" colspan="4" context="{
-				            'tree_view_ref': 'production_accounting_external.production_sale_order_line_tree_view',
-				            'form_view_ref': 'production_accounting_external.production_sale_order_line_form_view'
-				            }" options="{'reload_on_button': true}"/> <!--ALSO: options="{'always_reload': true}"-->
-			        </group>
-		        </page>
-		        <!--TODO remove page-->
-		        <!--<page string="Previsional order">
-			        <group string="Previsional order">				              
-			            <field name="previsional_line_ids" nolabel="1" context="{'embedded':True}"/>
-			        </group>
-			    </page>-->
+                        <newline />
+                        <!--embed sale.order.line modified:-->
+                        <field name="order_line_ids" nolabel="1" colspan="4" context="{
+                            'tree_view_ref': 'production_accounting_external.production_sale_order_line_tree_view',
+                            'form_view_ref': 'production_accounting_external.production_sale_order_line_form_view'
+                            }" options="{'reload_on_button': true}"/> <!--ALSO: options="{'always_reload': true}"-->
+                    </group>
+                </page>
+                <!--TODO remove page-->
+                <!--<page string="Previsional order">
+                    <group string="Previsional order">                              
+                        <field name="previsional_line_ids" nolabel="1" context="{'embedded':True}"/>
+                    </group>
+                </page>-->
                 <!--<page string="Use extra production">
-			        <group string="Extra production">				              
-			            <button name="%(action_assign_mrp_production_wizard_form)d" string="Assign production" type="action" />
-			            <newline />
-				        <field name="use_mrp_ids" nolabel="1" delete="0" create="0">
-				            <tree string="Extra production" editable="bottom" delete="0">
+                    <group string="Extra production">                              
+                        <button name="%(action_assign_mrp_production_wizard_form)d" string="Assign production" type="action" />
+                        <newline />
+                        <field name="use_mrp_ids" nolabel="1" delete="0" create="0">
+                            <tree string="Extra production" editable="bottom" delete="0">
                                 <field name="used_by_mrp_id" invisible="1" />
                                 <field name="name" readonly="1"/>
                                 <field name="extra_qty" readonly="1" sum="Total"/>
                                 <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" />
                             </tree>
-				            <form string="OC line">
-    		                    <group colspan="4" col="4">
+                            <form string="OC line">
+                                <group colspan="4" col="4">
                                 <field name="used_by_mrp_id" invisible="1" />
                                     <field name="name" readonly="1"/>
                                     <field name="extra_qty" readonly="1" />
                                     <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" />
                                 </group>    
                             </form>
-				        </field>
-			        </group>
-		        </page>--><!--domain="[('id','!=',parent.id),('product_id','=',parent.product_id),('has_extra_qty','=',True),('used_by_mrp_id','=',False)]"/>--><!--domain="[('id','!=',parent.id),('product_id','=',parent.product_id),('has_extra_qty','=',True),('used_by_mrp_id','=',False)]"/>-->
+                        </field>
+                    </group>
+                </page>--><!--domain="[('id','!=',parent.id),('product_id','=',parent.product_id),('has_extra_qty','=',True),('used_by_mrp_id','=',False)]"/>--><!--domain="[('id','!=',parent.id),('product_id','=',parent.product_id),('has_extra_qty','=',True),('used_by_mrp_id','=',False)]"/>-->
             </xpath>            
         </field>
     </record>        
@@ -351,14 +354,14 @@
            </form>
         </field>
     </record>
-    <record model="ir.actions.act_window" id="action_view_sale_order_line_previsional">
+    <!--<record model="ir.actions.act_window" id="action_view_sale_order_line_previsional">
         <field name="name">Sale order line previsional</field>
         <field name="res_model">sale.order.line.previsional</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="sale_order_line_previsional_search_view"/>
         <field name="view_id" ref="sale_order_line_previsional_tree_view"/>        
-    </record>    
+    </record>-->
     
     <!--sale.order.line-->
     <record model="ir.ui.view" id="sale_order_line_family_search_view">
@@ -581,11 +584,11 @@
           id="menu_view_mrp_production_extra" 
           action="action_view_mrp_production_extra" 
           sequence="20" />-->
-   <menuitem name="Previsional production"
+   <!--<menuitem name="Previsional production"
           parent="mrp.menu_mrp_production_action" 
           id="menu_view_sale_order_line_previsional" 
           action="action_view_sale_order_line_previsional" 
-          sequence="30" />
+          sequence="30" />-->
 
    <menuitem name="Sale order" 
        parent="mrp.menu_mrp_manufacturing" 
@@ -596,7 +599,7 @@
           id="menu_sale_order_line_m1" 
           action="action_view_sale_order_production_line" 
           sequence="10" />
-          <menuitem name="OC line production"
+          <menuitem name="Without family"
               parent="menu_sale_order_line_m1" 
               id="menu_sale_order_line_m1_no_family" 
               action="action_view_sale_order_production_line_no_family" 

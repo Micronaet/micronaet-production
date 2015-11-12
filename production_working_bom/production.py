@@ -167,6 +167,20 @@ class bom_production(orm.Model):
     # --------
     # Utility:
     # --------
+    def write_sequence_order_line(self, cr, uid, ids, context=None):
+        ''' Recompute total order from sale order line (one record of mrp)
+        '''
+        mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
+        sol_pool = self.pool.get('sale.order.line')
+        
+        i = 0
+        for line in mrp_proxy.order_line_ids:
+            i += 1 
+            sol_pool.write(cr, uid, line.id, {
+                'mrp_sequence': i,
+                }, context=context)
+        return True
+
     def recompute_total_from_sol(self, cr, uid, ids, context=None):
         ''' Recompute total order from sale order line (one record of mrp)
         '''
@@ -174,7 +188,8 @@ class bom_production(orm.Model):
         
         product_qty = sum(
             [item.product_uom_qty for item in mrp_proxy.order_line_ids])
-            
+        
+        self.write_sequence_order_line(cr, uid, ids, context=context)    
         return self.write(cr, uid, ids[0], {
             'product_qty': product_qty,
             }, context=context)
