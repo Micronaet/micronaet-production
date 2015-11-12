@@ -402,8 +402,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
 
         return return_view(
             self, cr, uid, p_id, 
-            "mrp.mrp_production_form_view", 
-            "mrp.production", context=context) 
+            'mrp.mrp_production_form_view', 
+            'mrp.production', context=context) 
 
     # -----------------
     # Default function:        

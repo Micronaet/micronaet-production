@@ -416,20 +416,25 @@ class bom_production(orm.Model):
 
         # Proxy element:
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
+
+        # Pool used:
+        wc_pool = self.pool.get('mrp.production.workcenter.line')
+        lavoration_pool = self.pool.get('mrp.bom.lavoration')
         
-        # Context elements:
+        # ----------------------------
+        # Context elements parameters:
+        # ----------------------------
+        # Force parameter:
         force_production_hour = context.get(
             'force_production_hour', False)
         force_production_employee = context.get(
             'force_production_employee', False)   
         force_workcenter = context.get(
             'force_workcenter', False)   
+
+        # Split context:    
         split_data = context.get(
             'split_data', {})   
-
-        # Pool used:
-        wc_pool = self.pool.get('mrp.production.workcenter.line')
-        lavoration_pool = self.pool.get('mrp.bom.lavoration')
 
         # ---------------------------------------------------------------------
         #                            PROCEDURE:
