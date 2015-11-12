@@ -504,6 +504,7 @@ class bom_production(orm.Model):
     # -------------
     # Button event:
     # -------------
+    # TODO button is removed, remove also event?
     def reschedule_lavoration(self, cr, uid, ids, context=None):
         ''' Force reload all lavoration-workcenter line
         '''

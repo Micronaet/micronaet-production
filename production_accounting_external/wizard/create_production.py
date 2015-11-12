@@ -364,17 +364,22 @@ class CreateMrpProductionWizard(orm.TransientModel):
             # Create lavoration:
             p_id = production_pool.create(               
                 cr, uid, {
+                    # Production data:
                     'name': self.pool.get(
                         'ir.sequence').get(cr, uid, 'mrp.production'),
-                    'product_id': product_id,
-                    'product_qty': wiz_browse.total,
-                    'product_uom': wiz_browse.product_id.uom_id.id,
-                    'date_planned': wiz_browse.from_deadline,
-                    'bom_id': wiz_browse.bom_id.id,
+                    'date_planned': wiz_browse.from_deadline, # TODO change
                     'user_id': uid,
+                    'order_line_ids': [(6, 0, context.get("active_ids", []))],
+                    'product_qty': wiz_browse.total, # sum(order line)
+
+                    # Not necessary for this installation:
+                    'product_id': product_id, 
+                    'product_uom': wiz_browse.product_id.uom_id.id,
+                    
+                    # TODO Move in master block:
                     'schedule_from_date': wiz_browse.schedule_from_date,
                     'workhour_id': workhour, 
-                    'order_line_ids': [(6, 0, context.get("active_ids", []))],
+                    'bom_id': wiz_browse.bom_id.id,
                     }, context=context)
         else: # 'append'
             p_id = wiz_browse.production_id.id
@@ -384,21 +389,10 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 cr, uid, context.get("active_ids", []), {
                     'mrp_id': p_id,
                     }, context=context)
-                    
-        # ------------------------------------------            
-        # Update totals in mrp from sale order line:
-        # ------------------------------------------            
-        # Reload for append:
-        sol_ids = sol_pool.search(cr, uid, [
-            ('mrp_id', '=', p_id),
-            ], context=context)        
-        product_qty = sum([item.product_uom_qty for item in sol_pool.browse(
-            cr, uid, sol_ids, context=context)])
-        production_pool.write(cr, uid, p_id, {
-            'product_qty': product_qty,
-            }, context=context)
-        production_pool.recompute_total_from_sol(
-            cr, uid, [p_id], context=context) 
+
+            # Reforce total:
+            production_pool.recompute_total_from_sol(
+                cr, uid, [p_id], context=context) 
 
         # -----------------------------------
         # Force (re)schedule create / append:
