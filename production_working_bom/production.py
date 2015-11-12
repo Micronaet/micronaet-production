@@ -376,6 +376,7 @@ class bom_production(orm.Model):
                 Force value instead of bom:
                     force_production_hour > force hour not bom
                     force_production_employee > force employee not bom
+                    force_workcenter > force workcenter not bom
 
                 Force split element:
                     splip_data > dict for pass split parameters
@@ -421,6 +422,8 @@ class bom_production(orm.Model):
             'force_production_hour', False)
         force_production_employee = context.get(
             'force_production_employee', False)   
+        force_workcenter = context.get(
+            'force_workcenter', False)   
         split_data = context.get(
             'split_data', {})   
 
@@ -478,7 +481,7 @@ class bom_production(orm.Model):
                 'production_bom_id': mrp_proxy.bom_id.id,
                 'level': lavoration.level,
                 'phase_id': lavoration.phase_id.id,
-                'line_id': lavoration.line_id.id,
+                'line_id': force_workcenter or lavoration.line_id.id,
                 'fixed': lavoration.fixed,
                 'workers': workers,
 
