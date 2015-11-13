@@ -70,7 +70,7 @@
                <field name="phase_id" />
                <field name="fixed" />
                <field name="duration" widget="float_time" attrs="{'required': [('fixed','=',True)],'readonly': [('fixed','=',False)]}"/>
-               <field name="quantity" widget="float_time" attrs="{'required': [('fixed','=',False)],'readonly': [('fixed','=',True)]}"/>
+               <field name="quantity" attrs="{'required': [('fixed','=',False)],'readonly': [('fixed','=',True)]}"/>
                <!--<field name="uom_id" />-->
                <field name="workers" />
                <field name="line_id" />
@@ -112,19 +112,21 @@
                            <field name="phase_id" />
                            <field name="line_id" />
                            <field name="workers" />
-                           <field name="duration" />
-                           <field name="quantity" />
                            <field name="fixed" />
+                           <field name="duration" widget="float_time" attrs="{'required': [('fixed','=',True)],'readonly': [('fixed','=',False)]}"/>
+                           <field name="quantity" attrs="{'required': [('fixed','=',False)],'readonly': [('fixed','=',True)]}"/>
                        </tree>
                        <form string="Lavoration" >
                            <group>
-                               <field name="level" />
-                               <field name="phase_id" />
-                               <field name="line_id" />
-                               <field name="workers" />
-                               <field name="duration" />
-                               <field name="quantity" />
-                               <field name="fixed" />
+                               <sheet>
+                                   <field name="level" />
+                                   <field name="phase_id" />
+                                   <field name="line_id" />
+                                   <field name="workers" />
+                                   <field name="fixed" />
+                                   <field name="duration" widget="float_time" attrs="{'required': [('fixed','=',True)],'readonly': [('fixed','=',False)]}"/>
+                                   <field name="quantity" attrs="{'required': [('fixed','=',False)],'readonly': [('fixed','=',True)]}"/>
+                               </sheet>
                            </group>
                        </form>
                    </field>

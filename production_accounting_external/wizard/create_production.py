@@ -314,16 +314,18 @@ class CreateMrpProductionWizard(orm.TransientModel):
         '''    
         res = {'value': {}}
         if force_production:
-            bom_pool = self.pool.get('mrp.bom')
-            bom_proxy = bom_pool.browse(cr, uid, bom_id, context=context)
-            for item in bom_proxy.lavoration_ids:
-                if item.phase_id.production_phase:
-                    res['value'].update({
-                        'item_hour': (
-                            item.quantity / item.duration) if item.duration else 0.0,
-                        'production_employee': item.workers,
-                        'workcenter_id': item.line_id.id,
-                        })
+            try:
+                bom_pool = self.pool.get('mrp.bom')
+                bom_proxy = bom_pool.browse(cr, uid, bom_id, context=context)
+                for item in bom_proxy.lavoration_ids:
+                    if item.phase_id.production_phase:
+                        res['value'].update({
+                            'item_hour': item.quantity or 0.0,
+                            'production_employee': item.workers,
+                            'workcenter_id': item.line_id.id,
+                            })
+            except:
+                return res                
         else:
             # reset elements:
             res['value'].update({
