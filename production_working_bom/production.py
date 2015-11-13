@@ -418,13 +418,13 @@ class bom_production(orm.Model):
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
 
         # Pool used:
-        wc_pool = self.pool.get('mrp.production.workcenter.line')
         lavoration_pool = self.pool.get('mrp.bom.lavoration')
+        wc_pool = self.pool.get('mrp.production.workcenter.line')
         
         # ----------------------------
         # Context elements parameters:
         # ----------------------------
-        # Force parameter:
+        # Force 3 wizard parameter:
         force_production_hour = context.get(
             'force_production_hour', False)
         force_production_employee = context.get(
@@ -439,71 +439,121 @@ class bom_production(orm.Model):
         # ---------------------------------------------------------------------
         #                            PROCEDURE:
         # ---------------------------------------------------------------------
-        if mode in ('create', 'append'):
-            # Remove lavoration and workcenter line (TODO 2 case)
-            old_lavoration_ids = lavoration_pool.search(cr, uid, [
-                ('production_id', '=', ids[0])], context=context)
-            try:    
-                lavoration_pool.unlink(
-                    cr, uid, old_lavoration_ids, context=context)
-            except:
-                pass # TODO
-            # TODO test deletion of wc line
-            # TODO delete only workcenter line not confirmed??
+        if mode == 'split':
+            pass # TODO split case
 
-            # ------------------------------------
-            # Create lavoration from BOM elements:
-            # ------------------------------------
+        else: #'create', 'append'
+            master_id = False
+            if mode == 'append': # in create doesn' exist:                                
+                # Remove lavoration and workcenter line not master TODO 2 case
+                old_lavoration_ids = lavoration_pool.search(cr, uid, [
+                    ('production_id', '=', ids[0]), #('master', '=', False),
+                    ], context=context)
+
+                for item in old_lavoration_ids:
+                    if not item.master:
+                        try:
+                            # TODO delete only workcenter line not confirmed??
+                            lavoration_pool.unlink(
+                                cr, uid, old_lavoration_ids, context=context)
+                        except:
+                            _logger.error(
+                                'Unlink error for record: %s' % item.id)
+                    else:
+                        master_id = item.id
+                if not master_id:
+                    _logger.warning(
+                        'Master not present need to be created')
+                # Set total production:
+                # TODO change because of calculate all sum of lines?
+                product_qty = mrp_proxy.product_qty
+                
+            else: # create                
+                # Check mandatory elements:
+                if not mrp_proxy.workhour_id:
+                    raise osv.except_osv(
+                        _('Error'), _('No work hour type setted!'))
+                if not mrp_proxy.schedule_from_date:
+                    raise osv.except_osv(
+                        _('Error'), _('No start date for schedule!'))
+                # Set total production (sum this + old)
+                product_qty = (
+                    mrp_proxy.production_id.product_qty + 
+                    mrp_proxy.product_qty)
+
+            # -----------------------------------------------------------------
+            #             Create lavoration from BOM elements:
+            # -----------------------------------------------------------------
+            # Get parameters:
+            # > total duration and item x hour:
             for lavoration in mrp_proxy.bom_id.lavoration_ids:
                 if lavoration.fixed:
                     duration = lavoration.duration
                 else:
                     try: 
                         # K (coeff) could be forced:
-                        item_hour = force_production_hour or (
-                            lavoration.quantity / lavoration.duration)
-                        duration = mrp_proxy.product_qty / item_hour
-                    except:
-                        duration = 0.0                        
+                        item_hour = force_production_hour or \
+                            lavoration.quantity
+                            
+                        # Total time all:    
+                        duration = product_qty / item_hour
+                    except: # end procedure:
+                        raise osv.except_osv(
+                            _('Error'),
+                            _('Cannot calculate item x hour or total duration'
+                                'check parameters'))
 
-            # Workers (could be forced):
+            # > workers (could be forced):
             workers = force_production_employee or lavoration.workers or 0
 
-            # Check mandatory elements:
-            if not mrp_proxy.workhour_id:
-                raise osv.except_osv(
-                    _('Error'), _('No work hour type setted!'))
-            if not mrp_proxy.schedule_from_date:
-                raise osv.except_osv(
-                    _('Error'), _('No start date for schedule!'))
+            # ----------------------------------------
+            # Create / Update master lavoration block:        
+            # ----------------------------------------
+            if not master_id: # not yet present
+                lavoration_pool.create(cr, uid, {
+                    # Record data:
+                    #'create_date',
+                    'schedule_from_date': mrp_proxy.schedule_from_date,
+                    'production_id': ids[0],
+                    'master': True, # original creation
+                    'workhour_id': mrp_proxy.workhour_id.id, # same as mrp
+                    
+                    # BOM:
+                    'production_bom_id': mrp_proxy.bom_id.id,
+                    'level': lavoration.level,
+                    'phase_id': lavoration.phase_id.id,
+                    'line_id': force_workcenter or lavoration.line_id.id,
+                    'fixed': lavoration.fixed,
+                    'workers': workers,
 
-            lavoration_pool.create(cr, uid, {
-                # Record data:
-                #'create_date',
-                'schedule_from_date': mrp_proxy.schedule_from_date,
-                'production_id': ids[0],
-                'master': True, # original creation
-                'workhour_id': mrp_proxy.workhour_id.id, # same as mrp
+                    # BOM and sale order
+                    'item_hour': item_hour,
+                    # Note: workcenter creation depend from this:
+                    'duration': duration, # sum(sale order line)
+                    #'quantity': ,# TODO total from sale order lines
+                    }, context=context)
+            else: # update some elements
+                data = {
+                    # BOM and sale order
+                    'production_bom_id': mrp_proxy.workhour_id.id,                   
+                    'level': lavoration.level,
+                    'phase_id': lavoration.phase_id.id,                    
+                    'line_id': force_workcenter or lavoration.line_id.id,
+                    'fixed': lavoration.fixed,        
+
+                    'workers': workers,
+                    'item_hour': item_hour,
+                    'duration': duration, # sum(sale order line)
+                    }
+                # Not mandatory elements:
+                if mrp_proxy.schedule_from_date:
+                    data['schedule_from_date'] = mrp_proxy.schedule_from_date
+                if mrp_proxy.workhour_id:
+                    data['workhour_id'] = mrp_proxy.workhour_id.id
                 
-                # BOM:
-                #'bom_id': mrp_proxy.bom_id.id, # TODO remove (bom line)
-                'production_bom_id': mrp_proxy.bom_id.id,
-                'level': lavoration.level,
-                'phase_id': lavoration.phase_id.id,
-                'line_id': force_workcenter or lavoration.line_id.id,
-                'fixed': lavoration.fixed,
-                'workers': workers,
-
-                # BOM and sale order
-                'item_hour': item_hour,
-                # Note: workcenter creation depend from this:
-                'duration': duration, # sum(sale order line)
-                #'quantity': ,# TODO total from sale order lines
-                }, context=context)
-
-        elif mode in ('split'):
-            pass # TODO split case
-        
+                # Update master element: 
+                lavoration_pool.write(cr, uid, master_id, data, context=context)
+                
         # ----------------------------------------
         # Create workcenter line under lavoration:        
         # ----------------------------------------

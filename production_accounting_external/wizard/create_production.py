@@ -348,7 +348,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         production_pool = self.pool.get('mrp.production')
         sol_pool = self.pool.get('sale.order.line')
                 
-        # Save in context force production parameter:
+        # Save in context 3 force production parameter:
         context['force_production_hour'] = wiz_browse.item_hour
         context['force_production_employee'] = wiz_browse.production_employee      
         if wiz_browse.workcenter_id:
@@ -403,8 +403,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             cr, uid, [p_id], mode='create', context=context)
 
         return return_view(
-            self, cr, uid, p_id, 
-            'mrp.mrp_production_form_view', 
+            self, cr, uid, p_id, 'mrp.mrp_production_form_view', 
             'mrp.production', context=context) 
 
     # -----------------
