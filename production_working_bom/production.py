@@ -539,7 +539,7 @@ class bom_production(orm.Model):
                     'level': lavoration.level,
                     'phase_id': lavoration.phase_id.id,                    
                     'line_id': force_workcenter or lavoration.line_id.id,
-                    'fixed': lavoration.fixed,        
+                    'fixed': lavoration.fixed,
 
                     'workers': workers,
                     'item_hour': item_hour,
@@ -552,13 +552,14 @@ class bom_production(orm.Model):
                     data['workhour_id'] = mrp_proxy.workhour_id.id
                 
                 # Update master element: 
-                lavoration_pool.write(cr, uid, master_id, data, context=context)
+                lavoration_pool.write(cr, uid, master_id, data, 
+                    context=context)
                 
         # ----------------------------------------
         # Create workcenter line under lavoration:        
         # ----------------------------------------
         self.create_wc_from_lavoration(cr, uid, ids, context=context)
-        return True        
+        return True      
         
     # -------------
     # Button event:
