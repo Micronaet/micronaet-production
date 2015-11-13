@@ -85,7 +85,7 @@
                            <field name="schedule_from_date" string="From"/>                           
                            <field name="level" string="Lev."/>
                            <field name="phase_id" />
-                           <field name="line_id" />
+                           <field name="workcenter_id" />
                            <field name="production_bom_id" />
                            <field name="workhour_id" />
                            <field name="fixed" invisible="1"/><!--TODO for now too much information-->

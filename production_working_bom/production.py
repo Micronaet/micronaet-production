@@ -204,7 +204,7 @@ class bom_production(orm.Model):
                 'mrp.bom.lavoration').browse(
                     cr, uid, ids, context=context)[0]            
             production_id = lavoration_proxy.production_id.id
-            workcenter_id = lavoration_proxy.line_id.id
+            workcenter_id = lavoration_proxy.workcenter_id.id
         else:
             production_id = ids[0]
             workcenter_id = False
@@ -339,7 +339,7 @@ class bom_production(orm.Model):
                     'name': '%s [%s]' % (
                         mrp_proxy.name, max_sequence),
                     'sequence': max_sequence,
-                    'workcenter_id': lavoration.line_id.id,
+                    'workcenter_id': lavoration.workcenter_id.id,
                     'date_planned': current_date_text,
                     'date_start': current_date_text,
                     'phase_id': lavoration.phase_id.id,
@@ -383,7 +383,7 @@ class bom_production(orm.Model):
                     > phase_id
                     > fixed
                     # forced or not:
-                    > line_id
+                    > workcenter_id
                     > workers
                     > item_hour
 
@@ -497,7 +497,7 @@ class bom_production(orm.Model):
                 # BOM:
                 'level': lavoration.level,
                 'phase_id': lavoration.phase_id.id,                    
-                'line_id': mrp_input['line_id'], # TODO force_workcenter or lavoration.line_id.id,
+                'workcenter_id': mrp_input['workcenter_id'], # TODO force_workcenter or lavoration.workcenter_id.id,
                 'fixed': lavoration.fixed,
                 'workers': mrp_input['workers'],
                 'item_hour': mrp_input['item_hour'],
@@ -586,7 +586,6 @@ class mrp_production_workcenter_line(orm.Model):
             string='Level'),
         'workers': fields.related('lavoration_id', 'workers', type='integer', 
             string='Workers'),
-        #'workers': fields.integer('Default workers'), # TODO not used?
          
         # Lavoration data:                
         'worker_ids': fields.many2many('hr.employee', # TODO used?

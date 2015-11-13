@@ -38,7 +38,7 @@ class bom_lavoration_phase(orm.Model):
     
     _columns = {
         'name': fields.char('Phase', size=64, required=True),
-        'line_id': fields.many2one('mrp.workcenter', 
+        'workcenter_id': fields.many2one('mrp.workcenter', 
             'Default line', required=True, ondelete='set null'),            
         'unload_material': fields.boolean('Unload material', 
             help='This phase unload material from stock'),
@@ -107,7 +107,7 @@ class bom_lavoration(orm.Model):
         # Links:            
         # ------
         # Production line of manufacturing:
-        'line_id': fields.many2one('mrp.workcenter', 'Line', 
+        'workcenter_id': fields.many2one('mrp.workcenter', 'Line', 
             required=True, ondelete='set null'),            
         # Lavoration BOM:    
         'bom_id': fields.many2one('mrp.bom', 'BOM', 

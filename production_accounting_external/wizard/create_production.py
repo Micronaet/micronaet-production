@@ -340,7 +340,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
            context = {}
 
         # Wizard proxy:
-        wiz_browse = self.browse(cr, uid, ids, context=context)[0]
+        wiz_proxy = self.browse(cr, uid, ids, context=context)[0]
         
         # Pool used:
         production_pool = self.pool.get('mrp.production')
@@ -348,57 +348,62 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 
         # Context dict for pass parameter to create lavoration procedure:        
         mrp_data = {
-            'bom_id': wiz_browse.bom_id, 
-            'operation': wiz_browse.operation, # create or append
+            'bom_id': wiz_proxy.bom_id, 
+            'operation': wiz_proxy.operation, # create or append
             }
-        if wiz_browse.force_production:
+        if wiz_proxy.force_production:
             # Use forced value (now mandatory)
             mrp_data.append({
-                'item_hour': wiz_browse.item_hour,
-                'workers': wiz_browse.workers,
-                'workcenter_id': wiz_browse.workcenter_id,                
+                'item_hour': wiz_proxy.item_hour,
+                'workers': wiz_proxy.workers,
+                'workcenter_id': wiz_proxy.workcenter_id,                
+                # Not used for now:
+                # fixed
+                # phase_id
+                # line_id 
                 })
         else:
             # Call onchange function for calculate from BOM:
-            res = self.onchange_force_production(cr, uid, ids, True, 
-                wiz_browse.bom_id.id, context=context)['value']
-            mrp_data.append({
-                'item_hour': wiz_browse.bom_id.lavoration_ids[],
-                'workers': wiz_browse.workers,
-                'workcenter_id': wiz_browse.workcenter_id,                
-                })
+            try:
+                mrp_data.append(
+                    self.onchange_force_production(cr, uid, ids, True, 
+                        wiz_proxy.bom_id.id, context=context)['value'])
+            except:
+                raise osv.except_osv(
+                    _('Error'),
+                    _('Error reading parameter in BOM (for lavoration)'))
         
         # Create a production order and open it:
         # Not used for now:
         product_id = get_product_from_template(
-            self, cr, uid, wiz_browse.product_tmpl_id.id, context=context)
+            self, cr, uid, wiz_proxy.product_tmpl_id.id, context=context)
 
         workhour = (
-            wiz_browse.workhour_id.id if wiz_browse.workhour_id else False)
+            wiz_proxy.workhour_id.id if wiz_proxy.workhour_id else False)
 
-        if wiz_browse.operation in ('create'):
+        if wiz_proxy.operation in ('create'):
             # Create lavoration:
             p_id = production_pool.create(               
                 cr, uid, {
                     # Production data:
                     'name': self.pool.get(
                         'ir.sequence').get(cr, uid, 'mrp.production'),
-                    'date_planned': wiz_browse.from_deadline, # TODO change
+                    'date_planned': wiz_proxy.from_deadline, # TODO change
                     'user_id': uid,
                     'order_line_ids': [(6, 0, context.get("active_ids", []))],
-                    'product_qty': wiz_browse.total, # sum(order line)
+                    'product_qty': wiz_proxy.total, # sum(order line)
 
                     # Not necessary for this installation:
                     'product_id': product_id, 
-                    'product_uom': wiz_browse.product_id.uom_id.id,
+                    'product_uom': wiz_proxy.product_id.uom_id.id,
                     
                     # TODO remove and put in master block:
-                    #'schedule_from_date': wiz_browse.schedule_from_date,
+                    #'schedule_from_date': wiz_proxy.schedule_from_date,
                     #'workhour_id': workhour, 
-                    #'bom_id': wiz_browse.bom_id.id,
+                    #'bom_id': wiz_proxy.bom_id.id,
                     }, context=context)
         else: # 'append'
-            p_id = wiz_browse.production_id.id
+            p_id = wiz_proxy.production_id.id
             
             # Add sale order line to production:
             self.pool.get('sale.order.line').write(

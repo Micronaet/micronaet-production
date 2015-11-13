@@ -11,7 +11,7 @@
                <sheet>                   
                    <group colspan="4" col="4">
                        <field name="name" />
-                       <field name="line_id" />
+                       <field name="workcenter_id" />
 
                        <field name="unload_material" />
                        <field name="production_phase" />
@@ -30,7 +30,7 @@
         <field name="arch" type="xml">
            <tree string="BOM Lavoration" color="blue:production_phase==True">
                <field name="name" />
-               <field name="line_id" />
+               <field name="workcenter_id" />
                <field name="unload_material" />
                <field name="production_phase" />
                <field name="note" colspan="4" nolabel="1" />                   
@@ -52,7 +52,7 @@
                    <!--<field name="uom_id" />-->
                    <field name="duration" widget="float_time"/>
                    <field name="workers" />
-                   <field name="line_id" />
+                   <field name="workcenter_id" />
                    <!--<field name="bom_id" />-->
                </sheet>
            </form> 
@@ -73,7 +73,7 @@
                <field name="item_hour" attrs="{'required': [('fixed','=',False)],'readonly': [('fixed','=',True)]}"/>
                <!--<field name="uom_id" />-->
                <field name="workers" />
-               <field name="line_id" />
+               <field name="workcenter_id" />
                <!--<field name="bom_id"/> for BOM o2m -->
                <!--<field name="production_bom_id"/> for production BOM o2m-->
            </tree>
@@ -110,7 +110,7 @@
                        <tree string="Lavoration" editable="bottom">
                            <field name="level" />
                            <field name="phase_id" />
-                           <field name="line_id" />
+                           <field name="workcenter_id" />
                            <field name="workers" />
                            <field name="fixed" />
                            <field name="duration" widget="float_time" attrs="{'required': [('fixed','=',True)],'readonly': [('fixed','=',False)]}"/>
@@ -121,7 +121,7 @@
                                <sheet>
                                    <field name="level" />
                                    <field name="phase_id" />
-                                   <field name="line_id" />
+                                   <field name="workcenter_id" />
                                    <field name="workers" />
                                    <field name="fixed" />
                                    <field name="duration" widget="float_time" attrs="{'required': [('fixed','=',True)],'readonly': [('fixed','=',False)]}"/>
