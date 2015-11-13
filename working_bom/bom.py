@@ -97,10 +97,10 @@ class bom_lavoration(orm.Model):
         # ------------------------------------------
         # Block total (elements todo by this block):
         # ------------------------------------------
-        'quantity': fields.float('Quantity', digits=(10, 2), 
-            help="Number of piece producted in duration time"),
+        'quantity': fields.float('Item / H.', digits=(10, 2), 
+            help="Number of piece producted in a hour"),
         'duration': fields.float('BOM Duration', digits=(10, 2),
-            help="Duration in hour:minute for lavoration of quantity piece"),
+            help="Duration in hour:minute for fixed lavoration"),
         'workers': fields.integer('Default workers'),
 
         # ------
@@ -116,7 +116,7 @@ class bom_lavoration(orm.Model):
 
     _defaults = {
         'level': lambda *x: 1,
-        'workers': lambda *x: 1,        
+        'workers': lambda *x: 1,
         'duration': lambda *x: 1.0,
         'quantity': lambda *x: 1,
         }

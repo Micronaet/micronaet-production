@@ -69,9 +69,9 @@
                <field name="level" />
                <field name="phase_id" />
                <field name="fixed" />
-               <field name="quantity" />
+               <field name="duration" widget="float_time" attrs="{'required': [('fixed','=',True)],'readonly': [('fixed','=',False)]}"/>
+               <field name="quantity" widget="float_time" attrs="{'required': [('fixed','=',False)],'readonly': [('fixed','=',True)]}"/>
                <!--<field name="uom_id" />-->
-               <field name="duration" widget="float_time"/>
                <field name="workers" />
                <field name="line_id" />
                <!--<field name="bom_id"/> for BOM o2m -->

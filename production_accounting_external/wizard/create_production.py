@@ -376,7 +376,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     'product_id': product_id, 
                     'product_uom': wiz_browse.product_id.uom_id.id,
                     
-                    # TODO Move in master block:
+                    # TODO remove and put in master block:
                     'schedule_from_date': wiz_browse.schedule_from_date,
                     'workhour_id': workhour, 
                     'bom_id': wiz_browse.bom_id.id,
@@ -397,7 +397,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         # -----------------------------------
         # Force (re)schedule create / append:
         # -----------------------------------
-        production_pool.create_lavoration_item(
+        production_pool.create_lavoration_item( # and workcenter line
             cr, uid, [p_id], mode='create', context=context)
 
         return return_view(
