@@ -48,7 +48,7 @@
                    <field name="level" />
                    <field name="phase_id" />
                    <field name="fixed" />
-                   <field name="quantity" />
+                   <field name="item_hour" />
                    <!--<field name="uom_id" />-->
                    <field name="duration" widget="float_time"/>
                    <field name="workers" />
@@ -70,7 +70,7 @@
                <field name="phase_id" />
                <field name="fixed" />
                <field name="duration" widget="float_time" attrs="{'required': [('fixed','=',True)],'readonly': [('fixed','=',False)]}"/>
-               <field name="quantity" attrs="{'required': [('fixed','=',False)],'readonly': [('fixed','=',True)]}"/>
+               <field name="item_hour" attrs="{'required': [('fixed','=',False)],'readonly': [('fixed','=',True)]}"/>
                <!--<field name="uom_id" />-->
                <field name="workers" />
                <field name="line_id" />
@@ -114,7 +114,7 @@
                            <field name="workers" />
                            <field name="fixed" />
                            <field name="duration" widget="float_time" attrs="{'required': [('fixed','=',True)],'readonly': [('fixed','=',False)]}"/>
-                           <field name="quantity" attrs="{'required': [('fixed','=',False)],'readonly': [('fixed','=',True)]}"/>
+                           <field name="item_hour" attrs="{'required': [('fixed','=',False)],'readonly': [('fixed','=',True)]}"/>
                        </tree>
                        <form string="Lavoration" >
                            <group>
@@ -125,7 +125,7 @@
                                    <field name="workers" />
                                    <field name="fixed" />
                                    <field name="duration" widget="float_time" attrs="{'required': [('fixed','=',True)],'readonly': [('fixed','=',False)]}"/>
-                                   <field name="quantity" attrs="{'required': [('fixed','=',False)],'readonly': [('fixed','=',True)]}"/>
+                                   <field name="item_hour" attrs="{'required': [('fixed','=',False)],'readonly': [('fixed','=',True)]}"/>
                                </sheet>
                            </group>
                        </form>

@@ -97,7 +97,7 @@ class bom_lavoration(orm.Model):
         # ------------------------------------------
         # Block total (elements todo by this block):
         # ------------------------------------------
-        'quantity': fields.float('Item / H.', digits=(10, 2), 
+        'item_hour': fields.float('Item / H.', digits=(10, 2), 
             help="Number of piece producted in a hour"),
         'duration': fields.float('BOM Duration', digits=(10, 2),
             help="Duration in hour:minute for fixed lavoration"),
@@ -118,7 +118,7 @@ class bom_lavoration(orm.Model):
         'level': lambda *x: 1,
         'workers': lambda *x: 1,
         'duration': lambda *x: 1.0,
-        'quantity': lambda *x: 1,
+        'item_hour': lambda *x: 1,
         }
         
 class mrp_bom(orm.Model):

@@ -313,10 +313,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         ''' Reset parameter or set as bom production one's
         '''
         res = {'value': {
-            'item_hour': False,
-            'workers': False,
-            'workcenter_id': False,            
-            }}
+            'item_hour': False, 'workers': False, 'workcenter_id': False}}
         if force_production:
             try:
                 bom_pool = self.pool.get('mrp.bom')
