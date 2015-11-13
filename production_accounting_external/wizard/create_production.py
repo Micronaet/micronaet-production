@@ -350,17 +350,15 @@ class CreateMrpProductionWizard(orm.TransientModel):
         # Not used for now:
         product_id = get_product_from_template(
             self, cr, uid, wiz_proxy.product_tmpl_id.id, context=context)
-        append_production_id = (
-            wiz_proxy.production_id.id if wiz_proxy.production_id or False)
             
         # Context dict for pass parameter to create lavoration procedure:        
         mrp_data = {
             'bom_id': wiz_proxy.bom_id, 
             'operation': wiz_proxy.operation, # create or append
+            'total': wiz_proxy.total,
+            # Not mandatory in append:
             'schedule_from_date': wiz_proxy.schedule_from_date,
             'workhour_id': wiz_proxy.workhour_id, 
-            'total': wiz_proxy.total,
-            'append_production_id': append_production_id,
             }            
         if wiz_proxy.force_production:
             # Use forced value (now mandatory)
@@ -382,7 +380,18 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 raise osv.except_osv(
                     _('Error'),
                     _('Error reading parameter in BOM (for lavoration)'))
-        
+
+        if wiz_proxy.operation == 'append':
+            # Append extra parameter:
+            mrp_data.update({
+                'append_production_id':wiz_proxy.production_id.id,
+                'append_product_qty': wiz_proxy.production_id.product_qty,
+                })
+        else:        
+            mrp_data.update({
+                'append_production_id': False,
+                'append_product_qty': False,
+                })        
 
         # Create a production order:
         if wiz_proxy.operation in ('create'):
@@ -403,7 +412,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     }, context=context)
 
         else: # 'append'
-            p_id = append_production_id
+            p_id = mrp_data['append_production_id']
             # Add sale order line to production:
             self.pool.get('sale.order.line').write(
                 cr, uid, context.get("active_ids", []), {
