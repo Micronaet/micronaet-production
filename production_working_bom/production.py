@@ -373,27 +373,7 @@ class bom_production(orm.Model):
             @param uid: user ID
             @param ids: mrp order 
             @param context: extra parameters
-                mrp_input = {
-                    schedule_from_date
-                    
-                    # BOM:
-                    production_bom_id                    
-                    # browse of BOM:
-                    > level
-                    > phase_id
-                    > fixed
-                    # forced or not:
-                    > workcenter_id
-                    > workers
-                    > item_hour
-
-                    duration 
-                    
-                    # TODO
-                    split_workcenter_id 
-                    wc_id: production line from to move
-                    from_date
-                    }                        
+                mrp_input dict               
         '''
         if context is None:
             context = {}
@@ -402,7 +382,7 @@ class bom_production(orm.Model):
         #                       Parameters to load:
         # ---------------------------------------------------------------------
         # Context elements parameters:
-        mrp_input = context.get('mrp_input', {})
+        mrp_input = context.get('mrp_input', {})        
         if not mrp_input:
             raise osv.except_osv(
                 _('Error'),
@@ -429,12 +409,12 @@ class bom_production(orm.Model):
         # ---------------------------------------------------------------------
         #                            PROCEDURE:
         # ---------------------------------------------------------------------
-        if mode == 'split':
+        if mrp_input['mode'] == 'split':
             pass # TODO split case
 
         else: #'create', 'append'
             master_id = False
-            if mode == 'append': # in create doesn' exist:                                
+            if mrp_input['mode'] == 'append': # in create doesn' exist:                                
                 # Remove lavoration and workcenter line not master TODO 2 case
                 old_lavoration_ids = lavoration_pool.search(cr, uid, [
                     ('production_id', '=', ids[0]),
@@ -534,16 +514,6 @@ class bom_production(orm.Model):
     # -------------
     # Button event:
     # -------------
-    # TODO button is removed, remove also event?
-    def reschedule_lavoration(self, cr, uid, ids, context=None):
-        ''' Force reload all lavoration-workcenter line
-        '''
-        # Recompute total from sale order line:
-        self.pool.get('mrp.production').recompute_total_from_sol(
-            cr, uid, ids, context=context)
-        return self.create_lavoration_item(cr, uid, ids, mode='create', 
-            context=context)
-    
     def open_lavoration(self, cr, uid, ids, context=None):
         ''' Open in calendar all lavorations for this production
         '''

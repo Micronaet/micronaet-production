@@ -143,8 +143,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
         try:
             wc_proxy = self.pool.get('mrp.bom').browse(
                 cr, uid, bom_id, context=None)
-            workcenter_id = wc_proxy.lavoration_ids[0].line_id.id
-            workcenter_name = wc_proxy.lavoration_ids[0].line_id.name
+            workcenter_id = wc_proxy.lavoration_ids[0].workcenter_id.id
+            workcenter_name = wc_proxy.lavoration_ids[0].workcenter_id.name
             workers = wc_proxy.lavoration_ids[0].workers or 0
                 
         except:
@@ -319,12 +319,13 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 bom_pool = self.pool.get('mrp.bom')
                 bom_proxy = bom_pool.browse(cr, uid, bom_id, context=context)
                 for item in bom_proxy.lavoration_ids:
-                    if item.phase_id.production_phase: # first production 
+                    if item.phase_id.production_phase: # first production                         
                         res['value'].update({
-                            'item_hour': item.quantity or 0.0,
+                            'item_hour': item.item_hour or 0.0,
                             'workers': item.workers or False,
-                            'workcenter_id': item.line_id.id,
+                            'workcenter_id': item.workcenter_id.id,
                             })
+                        print res    
             except:
                 pass
         return res      
@@ -346,11 +347,21 @@ class CreateMrpProductionWizard(orm.TransientModel):
         production_pool = self.pool.get('mrp.production')
         sol_pool = self.pool.get('sale.order.line')
                 
+        # Not used for now:
+        product_id = get_product_from_template(
+            self, cr, uid, wiz_proxy.product_tmpl_id.id, context=context)
+        append_production_id = (
+            wiz_proxy.production_id.id if wiz_proxy.production_id or False)
+            
         # Context dict for pass parameter to create lavoration procedure:        
         mrp_data = {
             'bom_id': wiz_proxy.bom_id, 
             'operation': wiz_proxy.operation, # create or append
-            }
+            'schedule_from_date': wiz_proxy.schedule_from_date,
+            'workhour_id': wiz_proxy.workhour_id, 
+            'total': wiz_proxy.total,
+            'append_production_id': append_production_id,
+            }            
         if wiz_proxy.force_production:
             # Use forced value (now mandatory)
             mrp_data.append({
@@ -360,7 +371,6 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 # Not used for now:
                 # fixed
                 # phase_id
-                # line_id 
                 })
         else:
             # Call onchange function for calculate from BOM:
@@ -373,14 +383,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     _('Error'),
                     _('Error reading parameter in BOM (for lavoration)'))
         
-        # Create a production order and open it:
-        # Not used for now:
-        product_id = get_product_from_template(
-            self, cr, uid, wiz_proxy.product_tmpl_id.id, context=context)
 
-        workhour = (
-            wiz_proxy.workhour_id.id if wiz_proxy.workhour_id else False)
-
+        # Create a production order:
         if wiz_proxy.operation in ('create'):
             # Create lavoration:
             p_id = production_pool.create(               
@@ -388,37 +392,30 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     # Production data:
                     'name': self.pool.get(
                         'ir.sequence').get(cr, uid, 'mrp.production'),
-                    'date_planned': wiz_proxy.from_deadline, # TODO change
+                    'date_planned': mrp_data['schedule_from_date'],#TODO right?
                     'user_id': uid,
                     'order_line_ids': [(6, 0, context.get("active_ids", []))],
-                    'product_qty': wiz_proxy.total, # sum(order line)
+                    'product_qty': mrp_data['total'], # sum(order line)
 
                     # Not necessary for this installation:
-                    'product_id': product_id, 
-                    'product_uom': wiz_proxy.product_id.uom_id.id,
-                    
-                    # TODO remove and put in master block:
-                    #'schedule_from_date': wiz_proxy.schedule_from_date,
-                    #'workhour_id': workhour, 
-                    #'bom_id': wiz_proxy.bom_id.id,
+                    'product_id': product_id,
+                    'product_uom': wiz_proxy.product_id.uom_id.id,                    
                     }, context=context)
+
         else: # 'append'
-            p_id = wiz_proxy.production_id.id
-            
+            p_id = append_production_id
             # Add sale order line to production:
             self.pool.get('sale.order.line').write(
                 cr, uid, context.get("active_ids", []), {
                     'mrp_id': p_id,
                     }, context=context)
 
-        # Reforce total:
+        # Reforce total from sale order line:
         production_pool.recompute_total_from_sol(
             cr, uid, [p_id], context=context) 
 
-        # -----------------------------------
-        # Force (re)schedule create / append:
-        # -----------------------------------
-        production_pool.create_lavoration_item( # and workcenter line
+        # Force (re)schedule (create / append):
+        production_pool.create_lavoration_item(# and workcenter line
             cr, uid, [p_id], mode='create', context=context)
 
         return return_view(
