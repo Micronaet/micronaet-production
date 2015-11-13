@@ -373,7 +373,7 @@ class bom_production(orm.Model):
             @param uid: user ID
             @param ids: mrp order 
             @param context: extra parameters
-                mrp_input dict
+                mrp_data dict
         '''
         if context is None:
             context = {}
@@ -382,11 +382,11 @@ class bom_production(orm.Model):
         #                       Parameters to load:
         # ---------------------------------------------------------------------
         # Context elements parameters:
-        mrp_input = context.get('mrp_input', {})        
-        if not mrp_input:
+        mrp_data = context.get('mrp_data', {})        
+        if not mrp_data:
             raise osv.except_osv(
                 _('Error'),
-                _('Parameter for creation not passed (mrp_input)'))
+                _('Parameter for creation not passed (mrp_data)'))
         
         # Variables:
         start_hour = 7.0 # TODO parametrize GMT       
@@ -401,13 +401,14 @@ class bom_production(orm.Model):
         # ---------------------------------------------------------------------
         #                            PROCEDURE:
         # ---------------------------------------------------------------------
-        if mrp_input['mode'] == 'split':
+        import pdb; pdb.set_trace()
+        if mrp_data['mode'] == 'split':
             # TODO split case
             pass 
 
         else: #'create', 'append'
             master_id = False
-            if mrp_input['mode'] == 'append': # in create doesn' exist:                                
+            if mrp_data['mode'] == 'append': # in create doesn' exist:                                
                 # Remove lavoration and workcenter line not master TODO 2 case
                 old_lavoration_ids = lavoration_pool.search(cr, uid, [
                     ('production_id', '=', ids[0]),
@@ -427,14 +428,14 @@ class bom_production(orm.Model):
 
                 # Set total production (sum this + old)
                 product_qty = (mrp_proxy.product_qty + 
-                    mrp_input['append_product_qty'])
+                    mrp_data['append_product_qty'])
                 
             else: # create                
                 # Check mandatory elements:
-                if not mrp_input['workhour_id']:
+                if not mrp_data['workhour_id']:
                     raise osv.except_osv(
                         _('Error'), _('No work hour type setted!'))
-                if not mrp_input['schedule_from_date']:
+                if not mrp_data['schedule_from_date']:
                     raise osv.except_osv(
                         _('Error'), _('No start date for schedule!'))
                 # Set total only line selected
@@ -445,13 +446,14 @@ class bom_production(orm.Model):
             # -----------------------------------------------------------------
             # Get parameters:
             # > total duration and item x hour:
+            import pdb; pdb.set_trace()
             for lavoration in mrp_proxy.bom_id.lavoration_ids:
                 if lavoration.fixed:
                     duration = lavoration.duration
                 else:
                     try: 
                         # Total time all:    
-                        duration = product_qty / mrp_input['item_hour']
+                        duration = product_qty / mrp_data['item_hour']
                     except: # end procedure:
                         raise osv.except_osv(
                             _('Error'),
@@ -462,23 +464,23 @@ class bom_production(orm.Model):
             # Create / Update master lavoration block:        
             # ----------------------------------------
             data = {
-                'production_bom_id': mrp_input['bom_id'],
+                'production_bom_id': mrp_data['bom_id'],
                 # BOM:
                 # TODO Not showed!!!
                 #'level': lavoration.level,
                 #'phase_id': lavoration.phase_id.id,                    
                 #'fixed': lavoration.fixed,
-                'workcenter_id': mrp_input['workcenter_id'], # TODO force_workcenter or lavoration.workcenter_id.id,
-                'workers': mrp_input['workers'],
-                'item_hour': mrp_input['item_hour'],
+                'workcenter_id': mrp_data['workcenter_id'], # TODO force_workcenter or lavoration.workcenter_id.id,
+                'workers': mrp_data['workers'],
+                'item_hour': mrp_data['item_hour'],
                 'duration': duration, # H. total
-                'workhour_id': mrp_input['workhour_id'], #TODO mrp_roxy.workhour_id.id, # same as mrp
+                'workhour_id': mrp_data['workhour_id'], #TODO mrp_roxy.workhour_id.id, # same as mrp
                 }
 
             if not master_id: # not yet present            
                 data.update({
-                    'schedule_from_date': mrp_input['schedule_from_date'],
-                    'workhour_id': mrp_input['workhour_id'],
+                    'schedule_from_date': mrp_data['schedule_from_date'],
+                    'workhour_id': mrp_data['workhour_id'],
                     'production_id': ids[0],
                     'master': True, # original creation
                     })
@@ -486,10 +488,10 @@ class bom_production(orm.Model):
 
             else: # update some elements
                 # Not mandatory elements (else use yet present):
-                if mrp_input['workhour_id']:
-                    data['workhour_id'] = mrp_input['workhour_id']
-                if mrp_input['schedule_from_date']:
-                    data['schedule_from_date'] = mrp_input[
+                if mrp_data['workhour_id']:
+                    data['workhour_id'] = mrp_data['workhour_id']
+                if mrp_data['schedule_from_date']:
+                    data['schedule_from_date'] = mrp_data[
                         'schedule_from_date']
 
                 # Update master element: 

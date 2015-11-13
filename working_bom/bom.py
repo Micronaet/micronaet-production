@@ -91,7 +91,7 @@ class bom_lavoration(orm.Model):
         # --------------------------
         'level': fields.integer('Level'),
         'phase_id': fields.many2one('mrp.bom.lavoration.phase', 'Phase', 
-            required=True, ondelete='set null'),
+            ondelete='set null'), # TODO required on bom
         'fixed': fields.boolean('Fixed'),
 
         # ------------------------------------------

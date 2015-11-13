@@ -109,7 +109,7 @@
                    <field name="lavoration_ids" attrs="{'invisible':[('has_lavoration','=',False)]}"> 
                        <tree string="Lavoration" editable="bottom">
                            <field name="level" />
-                           <field name="phase_id" />
+                           <field name="phase_id" required="1"/>
                            <field name="workcenter_id" />
                            <field name="workers" />
                            <field name="fixed" />
@@ -120,7 +120,7 @@
                            <group>
                                <sheet>
                                    <field name="level" />
-                                   <field name="phase_id" />
+                                   <field name="phase_id" required="1" />
                                    <field name="workcenter_id" />
                                    <field name="workers" />
                                    <field name="fixed" />

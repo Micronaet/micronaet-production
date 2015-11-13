@@ -337,6 +337,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         ''' Create production order based on product_tmpl_id depend on quantity
             Redirect mrp.production form after
         '''
+        import pdb; pdb.set_trace()
         if context is None:
            context = {}
 
@@ -351,21 +352,23 @@ class CreateMrpProductionWizard(orm.TransientModel):
         product_id = get_product_from_template(
             self, cr, uid, wiz_proxy.product_tmpl_id.id, context=context)
             
-        # Context dict for pass parameter to create lavoration procedure:        
-        mrp_data = {
-            'bom_id': wiz_proxy.bom_id, 
+        # Context dict for pass parameter to create lavoration procedure:
+              
+        context['mrp_data'] = {
+            'bom_id': wiz_proxy.bom_id.id, 
             'operation': wiz_proxy.operation, # create or append
             'total': wiz_proxy.total,
             # Not mandatory in append:
             'schedule_from_date': wiz_proxy.schedule_from_date,
-            'workhour_id': wiz_proxy.workhour_id, 
+            'workhour_id': wiz_proxy.workhour_id.id, 
+            'mode': wiz_proxy.operation, # TODO split!!!
             }            
         if wiz_proxy.force_production:
             # Use forced value (now mandatory)
-            mrp_data.append({
+            context['mrp_data'].update({
                 'item_hour': wiz_proxy.item_hour,
                 'workers': wiz_proxy.workers,
-                'workcenter_id': wiz_proxy.workcenter_id,                
+                'workcenter_id': wiz_proxy.workcenter_id.id,                
                 # Not used for now:
                 # fixed
                 # phase_id
@@ -373,7 +376,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         else:
             # Call onchange function for calculate from BOM:
             try:
-                mrp_data.append(
+                context['mrp_data'].update(
                     self.onchange_force_production(cr, uid, ids, True, 
                         wiz_proxy.bom_id.id, context=context)['value'])
             except:
@@ -383,12 +386,12 @@ class CreateMrpProductionWizard(orm.TransientModel):
 
         if wiz_proxy.operation == 'append':
             # Append extra parameter:
-            mrp_data.update({
+            context['mrp_data'].update({
                 'append_production_id':wiz_proxy.production_id.id,
                 'append_product_qty': wiz_proxy.production_id.product_qty,
                 })
         else:        
-            mrp_data.update({
+            context['mrp_data'].update({
                 'append_production_id': False,
                 'append_product_qty': False,
                 })        
@@ -401,10 +404,12 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     # Production data:
                     'name': self.pool.get(
                         'ir.sequence').get(cr, uid, 'mrp.production'),
-                    'date_planned': mrp_data['schedule_from_date'],#TODO right?
+                    'date_planned': context['mrp_data']['schedule_from_date'],#TODO right?
                     'user_id': uid,
                     'order_line_ids': [(6, 0, context.get("active_ids", []))],
-                    'product_qty': mrp_data['total'], # sum(order line)
+                    'product_qty': context['mrp_data']['total'], # sum(order line)
+                    # Keep for mandatory fields in production
+                    'bom_id': wiz_proxy.bom_id.id,
 
                     # Not necessary for this installation:
                     'product_id': product_id,
@@ -412,7 +417,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     }, context=context)
 
         else: # 'append'
-            p_id = mrp_data['append_production_id']
+            p_id = context['mrp_data']['append_production_id']
             # Add sale order line to production:
             self.pool.get('sale.order.line').write(
                 cr, uid, context.get("active_ids", []), {
