@@ -431,7 +431,7 @@ class bom_production(orm.Model):
                 
             else: # create                
                 # Check mandatory elements:
-                if not mrp_input['workhour_id']
+                if not mrp_input['workhour_id']:
                     raise osv.except_osv(
                         _('Error'), _('No work hour type setted!'))
                 if not mrp_input['schedule_from_date']:
