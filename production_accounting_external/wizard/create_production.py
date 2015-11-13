@@ -314,7 +314,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         '''
         res = {'value': {
             'item_hour': False,
-            'production_employee': False,
+            'workers': False,
             'workcenter_id': False,            
             }}
         if force_production:
@@ -325,7 +325,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     if item.phase_id.production_phase: # first production 
                         res['value'].update({
                             'item_hour': item.quantity or 0.0,
-                            'production_employee': item.workers or False,
+                            'workers': item.workers or False,
                             'workcenter_id': item.line_id.id,
                             })
             except:
@@ -342,12 +342,35 @@ class CreateMrpProductionWizard(orm.TransientModel):
         if context is None:
            context = {}
 
+        # Wizard proxy:
         wiz_browse = self.browse(cr, uid, ids, context=context)[0]
+        
+        # Pool used:
         production_pool = self.pool.get('mrp.production')
         sol_pool = self.pool.get('sale.order.line')
                 
+        # Context dict for pass parameter to create lavoration procedure:        
+        mrp_data = {
+            'bom_id': wiz_browse.bom_id, 
+            'operation': wiz_browse.operation, # create or append
+            }
+        if wiz_browse.force_production:
+            mrp_data.append({
+                'item_hour': wiz_browse.item_hour,
+                'workers': wiz_browse.workers,
+                'workcenter_id': wiz_browse.workcenter_id,                
+                })
+        else:
+            res = self.onchange_force_production(cr, uid, ids, True, 
+                wiz_browse.bom_id.id, context=context)['value']
+            mrp_data.append({
+                'item_hour': wiz_browse.bom_id.lavoration_ids[],
+                'workers': wiz_browse.workers,
+                'workcenter_id': wiz_browse.workcenter_id,                
+                })
+        
         # Save in context 3 force production parameter:
-        context['force_production_hour'] = wiz_browse.item_hour
+        context['force_production_hour'] = 0 # TODO
         context['force_production_employee'] = wiz_browse.production_employee      
         if wiz_browse.workcenter_id:
             context['force_workcenter'] = wiz_browse.workcenter_id.id
@@ -582,8 +605,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         'item_hour': fields.float(
             'Item per hour', digits=(16, 2),
             help="For generare lavoration (required when BOM not present"),
-        'production_employee': fields.integer(
-            'Production employee'),
+        'workers': fields.integer('Workers'),
 
         'product_id': fields.many2one(
             'product.product', 'Product/Family'), # only for filter BOM

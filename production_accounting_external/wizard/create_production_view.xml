@@ -19,7 +19,7 @@
 
                         <group colspan="4" col="6">
                             <field name="item_hour" attrs="{'required': ['|',('force_production','=',True),('bom_id','=',False)], 'invisible': [('force_production','=',False)]}"/>
-                            <field name="production_employee" attrs="{'required': ['|',('force_production','=',True),('bom_id','=',False)], 'invisible': [('force_production','=',False)]}" />
+                            <field name="workers" attrs="{'required': ['|',('force_production','=',True),('bom_id','=',False)], 'invisible': [('force_production','=',False)]}" />
                             <field name="workcenter_id" attrs="{'required': ['|',('force_production','=',True),('bom_id','=',False)], 'invisible': [('force_production','=',False)]}" />
                         </group>
 
