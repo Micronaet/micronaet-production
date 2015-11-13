@@ -352,12 +352,14 @@ class CreateMrpProductionWizard(orm.TransientModel):
             'operation': wiz_browse.operation, # create or append
             }
         if wiz_browse.force_production:
+            # Use forced value (now mandatory)
             mrp_data.append({
                 'item_hour': wiz_browse.item_hour,
                 'workers': wiz_browse.workers,
                 'workcenter_id': wiz_browse.workcenter_id,                
                 })
         else:
+            # Call onchange function for calculate from BOM:
             res = self.onchange_force_production(cr, uid, ids, True, 
                 wiz_browse.bom_id.id, context=context)['value']
             mrp_data.append({
@@ -366,12 +368,6 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 'workcenter_id': wiz_browse.workcenter_id,                
                 })
         
-        # Save in context 3 force production parameter:
-        context['force_production_hour'] = 0 # TODO
-        context['force_production_employee'] = wiz_browse.production_employee      
-        if wiz_browse.workcenter_id:
-            context['force_workcenter'] = wiz_browse.workcenter_id.id
-
         # Create a production order and open it:
         # Not used for now:
         product_id = get_product_from_template(
@@ -397,9 +393,9 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     'product_uom': wiz_browse.product_id.uom_id.id,
                     
                     # TODO remove and put in master block:
-                    'schedule_from_date': wiz_browse.schedule_from_date,
-                    'workhour_id': workhour, 
-                    'bom_id': wiz_browse.bom_id.id,
+                    #'schedule_from_date': wiz_browse.schedule_from_date,
+                    #'workhour_id': workhour, 
+                    #'bom_id': wiz_browse.bom_id.id,
                     }, context=context)
         else: # 'append'
             p_id = wiz_browse.production_id.id

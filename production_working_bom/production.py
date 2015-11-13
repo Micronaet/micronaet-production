@@ -556,16 +556,18 @@ class bom_production(orm.Model):
         'scheduled_lavoration_ids': fields.one2many(
             'mrp.production.workcenter.line',
             'production_id', 'Scheduled lavoration'),
+            
+        # TODO Need?    
         'worker_ids': fields.many2many('hr.employee', 
             'mrp_production_workcenter_employee', 'production_id', 
             'employee_id', 'Employee'),
         
         # For schedule lavoration (detault parameter of production:
         # NOTE: all this parameter are also written in lavoration
-        'schedule_from_date': fields.date(
-            'From date', help="Scheduled from date to start lavorations"),
-        'workhour_id':fields.many2one('hr.workhour', 'Work hour', 
-            required=True),
+        #'schedule_from_date': fields.date(
+        #    'From date', help="Scheduled from date to start lavorations"),
+        #'workhour_id':fields.many2one('hr.workhour', 'Work hour', 
+        #    required=True),
         }
 
 class mrp_production_workcenter_line(orm.Model):

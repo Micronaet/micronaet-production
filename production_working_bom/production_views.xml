@@ -70,11 +70,11 @@
             <xpath expr="//notebook" position="inside">
                 <page string="Lavoration">
                     <!--<button name="reschedule_lavoration" type="object" string="Re-schedule all" confirm="This delete all lavoration and phase and recreate with date and workhour setted up, confirm?"/>-->
-                    
+
                     <group colspan="4" col="8">
                         <separator string="Original setup (creation time):" colspan="8"/>
-                        <field name="workhour_id" string="Workhour"/>
-                        <field name="schedule_from_date" string="Start date"/>
+                        <!--<field name="workhour_id" string="Workhour"/>-->
+                        <!--<field name="schedule_from_date" string="Start date"/>-->
                         <field name="worker_ids" widget="many2many_tags" colspan="4" string="Workers"/>
                         <separator string="Lavoration blocks:" colspan="8"/>
                     </group>
