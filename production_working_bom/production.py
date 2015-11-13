@@ -432,9 +432,10 @@ class bom_production(orm.Model):
         force_workcenter = context.get(
             'force_workcenter', False)   
 
-        # Split context:    
+        # Split context:
         split_data = context.get(
-            'split_data', {})   
+            'split_data', {})
+        import pdb; pdb.set_trace()
 
         # ---------------------------------------------------------------------
         #                            PROCEDURE:
@@ -452,21 +453,20 @@ class bom_production(orm.Model):
 
                 for item in old_lavoration_ids:
                     if not item.master:
-                        try:
-                            # TODO delete only workcenter line not confirmed??
+                        try: # TODO after check status of WC line:
                             lavoration_pool.unlink(
                                 cr, uid, old_lavoration_ids, context=context)
                         except:
-                            _logger.error(
-                                'Unlink error for record: %s' % item.id)
+                            _logger.error('Unlink error record: %s' % item.id)
                     else:
                         master_id = item.id
                 if not master_id:
                     _logger.warning(
                         'Master not present need to be created')
-                # Set total production:
-                # TODO change because of calculate all sum of lines?
-                product_qty = mrp_proxy.product_qty
+                # Set total production (sum this + old)
+                product_qty = (
+                    mrp_proxy.production_id.product_qty + 
+                    mrp_proxy.product_qty)
                 
             else: # create                
                 # Check mandatory elements:
@@ -476,10 +476,8 @@ class bom_production(orm.Model):
                 if not mrp_proxy.schedule_from_date:
                     raise osv.except_osv(
                         _('Error'), _('No start date for schedule!'))
-                # Set total production (sum this + old)
-                product_qty = (
-                    mrp_proxy.production_id.product_qty + 
-                    mrp_proxy.product_qty)
+                # Set total only line selected
+                product_qty = mrp_proxy.product_qty
 
             # -----------------------------------------------------------------
             #             Create lavoration from BOM elements:
@@ -554,11 +552,12 @@ class bom_production(orm.Model):
                 # Update master element: 
                 lavoration_pool.write(cr, uid, master_id, data, 
                     context=context)
-                
+
         # ----------------------------------------
         # Create workcenter line under lavoration:        
         # ----------------------------------------
         self.create_wc_from_lavoration(cr, uid, ids, context=context)
+        
         return True      
         
     # -------------

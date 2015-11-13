@@ -311,28 +311,26 @@ class CreateMrpProductionWizard(orm.TransientModel):
     def onchange_force_production(self, cr, uid, ids, force_production, bom_id,
             context=None):
         ''' Reset parameter or set as bom production one's
-        '''    
-        res = {'value': {}}
+        '''
+        res = {'value': {
+            'item_hour': False,
+            'production_employee': False,
+            'workcenter_id': False,            
+            }}
         if force_production:
             try:
                 bom_pool = self.pool.get('mrp.bom')
                 bom_proxy = bom_pool.browse(cr, uid, bom_id, context=context)
                 for item in bom_proxy.lavoration_ids:
-                    if item.phase_id.production_phase:
+                    if item.phase_id.production_phase: # first production 
                         res['value'].update({
                             'item_hour': item.quantity or 0.0,
-                            'production_employee': item.workers,
+                            'production_employee': item.workers or False,
                             'workcenter_id': item.line_id.id,
                             })
             except:
-                return res                
-        else:
-            # reset elements:
-            res['value'].update({
-                'item_hour': False,
-                'production_employee': False,
-                })
-        return res        
+                pass
+        return res      
                 
     # --------------
     # Wizard button:
@@ -392,9 +390,9 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     'mrp_id': p_id,
                     }, context=context)
 
-            # Reforce total:
-            production_pool.recompute_total_from_sol(
-                cr, uid, [p_id], context=context) 
+        # Reforce total:
+        production_pool.recompute_total_from_sol(
+            cr, uid, [p_id], context=context) 
 
         # -----------------------------------
         # Force (re)schedule create / append:
