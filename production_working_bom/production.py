@@ -282,7 +282,6 @@ class bom_production(orm.Model):
             # -----------------------------------
             # Workhour for this lavoration phase:
             # -----------------------------------
-            import pdb; pdb.set_trace()
             workhour = {}
             for item in lavoration.workhour_id.day_ids: # wh now in lavoration
                 # int for '0' problems on write operation:
@@ -425,28 +424,35 @@ class bom_production(orm.Model):
                         try: # TODO after check status of WC line:
                             lavoration_pool.unlink(
                                 cr, uid, old_lavoration_ids, context=context)
+                            # Note and sublaboration    
                         except:
                             _logger.error('Unlink error record: %s' % item.id)
                     else:
                         master_id = item.id
+                        # Unlink only sublavoration (append mode):
+                        wc_ids = wc_pool.search(cr, uid, [
+                            ('lavoration_id', '=', master_id)
+                            ], context=context)
+                        if wc_ids:
+                            wc_pool.unlink(cr, uid, wc_ids, context=context)  
                         
-                        # Update WC if not present in wizard:
-                        mrp_data['workcenter_id'] = mrp_data[
-                            'workcenter_id'] or item.workcenter_id.id
+                        
+                        # Update WH if not present in wizard (mandatory):
+                        mrp_data['workhour_id'] = mrp_data[
+                            'workhour_id'] or item.workhour_id.id
                         mrp_data['schedule_from_date'] = mrp_data[
                             'schedule_from_date'] or item.schedule_from_date
 
                 if not master_id:
                     _logger.warning('Master not present need to be created')
-                
-            else: # create                
-                # Check mandatory elements:
-                if not mrp_data['workhour_id']:
-                    raise osv.except_osv(
-                        _('Error'), _('No work hour type setted!'))
-                if not mrp_data['schedule_from_date']:
-                    raise osv.except_osv(
-                        _('Error'), _('No start date for schedule!'))
+                           
+            # Check mandatory elements (create and append need to):
+            if not mrp_data['workhour_id']:
+                raise osv.except_osv(
+                    _('Error'), _('No work hour type setted!'))
+            if not mrp_data['schedule_from_date']:
+                raise osv.except_osv(
+                    _('Error'), _('No start date for schedule!'))
                         
             # Set total only line selected (append recalculate total > correct)
             product_qty = mrp_proxy.product_qty
