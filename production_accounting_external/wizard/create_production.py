@@ -423,12 +423,14 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 cr, uid, context.get("active_ids", []), {
                     'mrp_id': p_id,
                     }, context=context)
+                    
             # Udate start date:        
-            production_pool.write(               
-                cr, uid, p_id, {
-                    'date_planned': context['mrp_data']['schedule_from_date'],
-                    #'order_line_ids': [(6, 0, context.get("active_ids", []))],
-                    }, context=context)
+            if context['mrp_data']['schedule_from_date']:
+                production_pool.write(               
+                    cr, uid, p_id, {
+                        'date_planned': context['mrp_data'][
+                            'schedule_from_date'],
+                        }, context=context)
 
         # Reforce total from sale order line:
         production_pool.recompute_total_from_sol(

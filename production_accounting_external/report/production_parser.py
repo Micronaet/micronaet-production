@@ -73,7 +73,7 @@ class Parser(report_sxw.rml_parse):
     def get_date(self, ):
         ''' For report time
         '''
-        return datetime.now()
+        return datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
     def get_object_remain(self, ):
         ''' Get as browse obj all record with unsync elements
