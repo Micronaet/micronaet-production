@@ -429,9 +429,10 @@
         <field name="inherit_id" ref="sale.view_quotation_tree" />
         <field name="arch" type="xml">
             <xpath expr="/tree" position="attributes">
-                 <attribute name="colors">red:is_manufactured==False;green:all_produced==True;grey:state=='cancel';blue:state in ('waiting_date','manual');red:state in ('invoice_except','shipping_except')</attribute>
+                 <attribute name="colors">green:all_produced==True;grey:state=='cancel';blue:state in ('waiting_date','manual');red:state in ('invoice_except','shipping_except')</attribute> red:is_manufactured==False;
             </xpath>
             <field name='state' position="after">
+               <!--<field name="is_manufactured" invisible="1" />-->
                 <field name="all_produced" invisible="1" />
                 <button name="nothing" string="" type="object" icon="gtk-yes" attrs="{'invisible':[('all_produced','=',False)]}"/>                
             </field>
