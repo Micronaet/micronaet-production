@@ -337,7 +337,6 @@ class CreateMrpProductionWizard(orm.TransientModel):
         ''' Create production order based on product_tmpl_id depend on quantity
             Redirect mrp.production form after
         '''
-        import pdb; pdb.set_trace()
         if context is None:
            context = {}
 
@@ -417,6 +416,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     }, context=context)
 
         else: # 'append'
+            # TODO Update start date:
+            
             p_id = context['mrp_data']['append_production_id']
             # Add sale order line to production:
             self.pool.get('sale.order.line').write(

@@ -282,11 +282,17 @@ class bom_production(orm.Model):
             # -----------------------------------
             # Workhour for this lavoration phase:
             # -----------------------------------
+            import pdb; pdb.set_trace()
             workhour = {}
             for item in lavoration.workhour_id.day_ids: # wh now in lavoration
                 # int for '0' problems on write operation:
                 workhour[int(item.weekday)] = item.hour 
-                
+            
+            if not workhour:
+                raise osv.except_osv(
+                    _('Error'),
+                    _('No workhour time planned!'))
+                    
             # Init variables:
             total_hour = lavoration.duration # total hour to split                
             remain_hour_a_day = 0.0 # for multiblock element
@@ -401,7 +407,6 @@ class bom_production(orm.Model):
         # ---------------------------------------------------------------------
         #                            PROCEDURE:
         # ---------------------------------------------------------------------
-        import pdb; pdb.set_trace()
         if mrp_data['mode'] == 'split':
             # TODO split case
             pass 
@@ -414,7 +419,8 @@ class bom_production(orm.Model):
                     ('production_id', '=', ids[0]),
                     ], context=context)
 
-                for item in old_lavoration_ids:
+                for item in lavoration_pool.browse(cr, uid, old_lavoration_ids, 
+                        context=context):
                     if not item.master:
                         try: # TODO after check status of WC line:
                             lavoration_pool.unlink(
@@ -423,12 +429,15 @@ class bom_production(orm.Model):
                             _logger.error('Unlink error record: %s' % item.id)
                     else:
                         master_id = item.id
+                        
+                        # Update WC if not present in wizard:
+                        mrp_data['workcenter_id'] = mrp_data[
+                            'workcenter_id'] or item.workcenter_id.id
+                        mrp_data['schedule_from_date'] = mrp_data[
+                            'schedule_from_date'] or item.schedule_from_date
+
                 if not master_id:
                     _logger.warning('Master not present need to be created')
-
-                # Set total production (sum this + old)
-                product_qty = (mrp_proxy.product_qty + 
-                    mrp_data['append_product_qty'])
                 
             else: # create                
                 # Check mandatory elements:
@@ -438,15 +447,15 @@ class bom_production(orm.Model):
                 if not mrp_data['schedule_from_date']:
                     raise osv.except_osv(
                         _('Error'), _('No start date for schedule!'))
-                # Set total only line selected
-                product_qty = mrp_proxy.product_qty
+                        
+            # Set total only line selected (append recalculate total > correct)
+            product_qty = mrp_proxy.product_qty
 
             # -----------------------------------------------------------------
             #             Create lavoration from BOM elements:
             # -----------------------------------------------------------------
             # Get parameters:
             # > total duration and item x hour:
-            import pdb; pdb.set_trace()
             for lavoration in mrp_proxy.bom_id.lavoration_ids:
                 if lavoration.fixed:
                     duration = lavoration.duration
