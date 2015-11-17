@@ -36,6 +36,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT, 
     DATETIME_FORMATS_MAP, 
     float_compare)
+from utility import * 
 
 
 _logger = logging.getLogger(__name__)
@@ -57,12 +58,12 @@ class MrpMoveLavoration(orm.TransientModel):
             context = {}        
         active_id = context.get('active_id', False)    
 
+        # Read wizard parameters:
+        wiz_proxy = self.browse(cr, uid, ids, context=context)[0]        
+
         # Pool used:        
         mrp_pool = self.pool.get('mrp.production')
         wc_pool = self.pool.get('mrp.production.workcenter.line')
-
-        # Read wizard parameters:
-        wiz_proxy = self.browse(cr, uid, ids, context=context)[0]        
 
         # Get all lavorations to move:
         lavoration_ids = wc_pool.search(cr, uid, [
@@ -72,26 +73,59 @@ class MrpMoveLavoration(orm.TransientModel):
                 wiz_proxy.scheduled_lavoration_id.date_planned),
             ], context=context)
         
+        # TODO generate total for block?
+        total = 0.0
+        
         if not lavoration_ids: # maybe deleted or moved before confirmation
             return True
-            
-        move_context = context.copy()
-        move_context.update({
-            'move_parameters': {
-                'lavoration_ids': lavoration_ids,
-                'new_date': wiz_proxy.new_date,
-                'workhour_id': wiz_proxy.workhour_id.id,
-                'workcenter_id': wiz_proxy.workcenter_id.id,
-                'workers': wiz_proxy.workers,
-                'bom_id': wiz_proxy.bom_id.id,
-                }})
-        
-        # Call button event procedure but with context modified for move wc
-        mrp_pool.schedule_lavoration(cr, uid, [
-            wiz_proxy.scheduled_lavoration_id.production_id.id], 
-                context=move_context)
 
-        return {'type':'ir.actions.act_window_close'}
+        # Production:          
+        production_proxy = wiz_proxy.scheduled_lavoration_id.production_id
+        p_id = production_proxy.id
+
+        context['mrp_data'] = {
+            # TODO: set empty value:
+            # Always force:
+            'bom_id': wiz_proxy.bom_id.id,            
+            'workhour_id': wiz_proxy.workhour_id.id, 
+            'item_hour': wiz_proxy.item_hour,
+            'workers': wiz_proxy.workers,
+            'workcenter_id': wiz_proxy.workcenter_id.id,                
+
+            'schedule_from_date': wiz_proxy.new_date,
+
+            'operation': 'append', # 'split'
+            'total': total,
+
+            # Not mandatory in append:
+            'append_production_id': p_id,
+            'append_product_qty': 0.0, # TODO wiz_proxy.production_id.product_qty,
+            }
+
+        # Check if all:
+        if len(lavoration_ids) == len(
+                production_proxy.scheduled_lavoration_ids):
+            # Like update
+            context['mrp_data']['mode'] = 'append'
+        else:
+            # only a block
+            context['mrp_data']['mode'] = 'split'            
+            # TODO for now exit in future go ahead:            
+            raise osv.except_osv(
+                _('Error'),
+                _('Split not available'))
+
+        # Call button event procedure but with context modified for move wc
+        # Reforce total from sale order line:
+        mrp_pool.recompute_total_from_sol(
+            cr, uid, [p_id], context=context) 
+
+        # Force (re)schedule (create / append):
+        mrp_pool.create_lavoration_item(# and workcenter line
+            cr, uid, [p_id], mode='create', context=context)
+        return return_view(
+            self, cr, uid, p_id, 'mrp.mrp_production_form_view', 
+            'mrp.production', context=context) 
 
     # ------------------
     # Defaults function:
