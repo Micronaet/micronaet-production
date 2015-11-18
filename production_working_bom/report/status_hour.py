@@ -185,13 +185,14 @@ class ReportStatusHour(models.AbstractModel):
             start = "%s 00:00:00" % day
             end = "%s 23:59:59" % day
             
+            # TODO min(workers)
             self.env.cr.execute("""
                 SELECT rr.name, q.hour, q.workers, q.prod 
                 FROM (
                     SELECT 
                         workcenter_id AS wc, 
                         sum(hour) AS hour, 
-                        min(workers) AS workers,
+                        6 AS workers,
                         production_id AS prod 
                     FROM mrp_production_workcenter_line 
                     WHERE date_planned >= %s and date_planned <= %s 
