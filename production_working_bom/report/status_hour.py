@@ -184,19 +184,18 @@ class ReportStatusHour(models.AbstractModel):
             
             start = "%s 00:00:00" % day
             end = "%s 23:59:59" % day
-            
-            # TODO min(workers)
+
+            workers = 6.0  # TODO change method for calculate!!
             self.env.cr.execute("""
-                SELECT rr.name, q.hour, q.workers, q.prod 
+                SELECT rr.name, q.hour, q.prod 
                 FROM (
                     SELECT 
                         workcenter_id AS wc, 
                         sum(hour) AS hour, 
-                        6 AS workers,
                         production_id AS prod 
                     FROM mrp_production_workcenter_line 
                     WHERE date_planned >= %s and date_planned <= %s 
-                    GROUP BY workcenter_id, production_id, workers) AS q 
+                    GROUP BY workcenter_id, production_id) AS q 
                     
                     JOIN mrp_workcenter wc ON (q.wc = wc.id) 
                     JOIN resource_resource rr ON (wc.resource_id = rr.id) 
@@ -216,10 +215,10 @@ class ReportStatusHour(models.AbstractModel):
                         [], # Products
                         ]
 
-                self.table[k][0] += record[1] * record[2]
+                self.table[k][0] += record[1] * workers
                 self.table[k][1] += record[1]
                 self.table[k][2].append(
-                    production_converter.get(record[3], "??")) # production_id > default_code
+                    production_converter.get(record[2], "??")) # production_id > default_code
                 
         self.rows.sort() # only row
         return True
