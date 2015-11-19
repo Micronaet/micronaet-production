@@ -23,8 +23,8 @@
              <!--COLORS?-->             
              <field name="state" position="after">
                  <field name="mandatory_order" invisible="1" />
-                 <button name="force_mandatory_state" string="Fix" type="object" attrs="{'invisible': [('mandatory_order', '=', 'yes')]}"/>
-                 <button name="unforce_mandatory_state" string="Unfix" type="object" attrs="{'invisible': [('mandatory_order', '=', 'not')]}" />
+                 <button name="force_mandatory_state" string="Fix" type="object" attrs="{'invisible': [('mandatory_order', '=', 'yes')]}" icon="terp-locked"/>
+                 <button name="unforce_mandatory_state" string="Unfix" type="object" attrs="{'invisible': [('mandatory_order', 'in', ('partner', 'not'))]}" icon="STOCK_UNDO" />
              </field>
          </field>
      </record>    
