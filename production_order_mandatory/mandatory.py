@@ -131,14 +131,14 @@ class SaleOrderSql(orm.Model):
         '''
         # Unforce order:
         self.write(cr, uid, ids, {
-            'mandatory_order': 'yes' if state == True else 'not',
+            'mandatory_order': 'yes' if state==True else 'not',
             }, context=context)
         
         # Unforce line:    
         line_pool = self.pool.get('sale.order.line')    
         line_ids = line_pool.search(cr, uid, [
             ('order_id', '=', ids[0])], context=context)
-        self.write(cr, uid, ids, {
+        line_pool.write(cr, uid, line_ids, {
             'has_mandatory_delivery': state,
             }, context=context)
         return True    

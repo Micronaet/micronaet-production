@@ -28,7 +28,8 @@
              </field>
          </field>
      </record>    
-
+     <!--TODO sale.view_sales_order_filter-->
+     
      <!--sale.order.line-->
      <record model="ir.ui.view" id="view_sale_order_line_mandatory">
          <field name="name">Order line mandatory</field>
