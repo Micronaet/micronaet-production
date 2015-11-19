@@ -83,7 +83,7 @@ class SaleOrderSql(orm.Model):
     #                                 Override function
     # -------------------------------------------------------------------------
     def schedule_etl_sale_order(self, cr, uid, context=None):
-        """ Import order but after 
+        """ Import order but after check partner as mandatory
         """
         # Import as usual orders:
         super(SaleOrderSql, self).schedule_etl_sale_order(
@@ -97,25 +97,75 @@ class SaleOrderSql(orm.Model):
         partner_ids = partner_pool.search(cr, uid, [
             ('has_mandatory_delivery', '=', True)], context=context)
         if partner_ids:
+            # --------------------------------------------
             # Reset parameter for current imported orders:
+            # --------------------------------------------
             line_pool = self.pool.get('sale.order.line')
             line_ids = line_pool.search(cr, uid, [
                 ('has_mandatory_delivery', '=', True)], context=context)
             line_pool.write(cr, uid, line_ids, {
                 'has_mandatory_delivery': False}, context=context)    
                 
+            # --------------------------------
             # Force all order of this partner:
+            # --------------------------------
             order_pool = self.pool.get('sale.order')
             order_ids = order_pool.search(cr, uid, [
-                ('partner_id', 'in', partner_ids)], context=context)
+                ('partner_id', 'in', partner_ids),
+                ('mandatory_order', '=', 'partner'), # only partner state
+                ], context=context)
             line_ids = line_pool.search(cr, uid, [
-                ('order_id', 'in', order_ids)], context=context)                
+                ('order_id', 'in', order_ids)], context=context)       
             line_pool.write(cr, uid, line_ids, {
-                'has_mandatory_delivery': True}, context=context)    
-                
-        # CASE 2: Force line with deadline from accounting TODO
-            
+                'has_mandatory_delivery': True}, context=context)                    
+        # CASE 2: Force line with deadline from accounting TODO            
         return
+    
+    # ----------------
+    # Button function:
+    # ----------------
+    # Utility:
+    def _force_mandatory_state(self, cr, uid, ids, state, context=None):
+        ''' Force / Unforce utility
+            NOTE: 'partner' state will never come back!
+        '''
+        # Unforce order:
+        self.write(cr, uid, ids, {
+            'mandatory_order': 'yes' if state == True else 'not',
+            }, context=context)
         
+        # Unforce line:    
+        line_pool = self.pool.get('sale.order.line')    
+        line_ids = line_pool.search(cr, uid, [
+            ('order_id', '=', ids[0])], context=context)
+        self.write(cr, uid, ids, {
+            'has_mandatory_delivery': state,
+            }, context=context)
+        return True    
+            
+    # Events:        
+    def unforce_mandatory_state(self, cr, uid, ids, context=None):
+        ''' Unforce button
+        '''
+        return self._force_mandatory_state(
+            cr, uid, ids, False, context=context)
+        
+    def force_mandatory_state(self, cr, uid, ids, context=None):
+        ''' Unforce button
+        '''
+        return self._force_mandatory_state(
+            cr, uid, ids, True, context=context)
+    
+    _columns = {
+        'mandatory_order': fields.selection([
+            ('partner', 'Depend on partner'),
+            ('not', 'Not mandatory'),
+            ('yes', 'Mandatory'),
+            ], 'Mandatory order'),
+        }    
+    _defaults = {    
+        # Default value:
+        'mandatory_order': lambda *x: 'partner',
+        }        
         
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

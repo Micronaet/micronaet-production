@@ -14,6 +14,21 @@
          </field>
      </record>         
 
+     <!--sale.order-->
+     <record model="ir.ui.view" id="view_sale_order_mandatory_button_tree">
+         <field name="name">Order force mandatory</field>
+         <field name="model">sale.order</field>
+         <field name="inherit_id" ref="sale.view_quotation_tree"/>
+         <field name="arch" type="xml">
+             <!--COLORS?-->             
+             <field name="state" position="after">
+                 <field name="mandatory_order" invisible="1" />
+                 <button name="force_mandatory_state" string="Fix" type="object" />
+                 <button name="unforce_mandatory_state" string="Unfix" type="object" />
+             </field>
+         </field>
+     </record>    
+
      <!--sale.order.line-->
      <record model="ir.ui.view" id="view_sale_order_line_mandatory">
          <field name="name">Order line mandatory</field>
@@ -50,7 +65,7 @@
             </filter>     
          </field>
      </record>
-     
+
   </data>
 </openerp>
 

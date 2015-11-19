@@ -92,7 +92,8 @@ class bom_lavoration(orm.Model):
         'level': fields.integer('Level'),
         'phase_id': fields.many2one('mrp.bom.lavoration.phase', 'Phase', 
             ondelete='set null'), # TODO required on bom
-        'fixed': fields.boolean('Fixed'),
+        'fixed': fields.boolean('Fixed', 
+            help='Fixed time, not function of total items'),
 
         # ------------------------------------------
         # Block total (elements todo by this block):
@@ -120,7 +121,7 @@ class bom_lavoration(orm.Model):
         'duration': lambda *x: 1.0,
         'item_hour': lambda *x: 1,
         }
-        
+
 class mrp_bom(orm.Model):
     ''' Add relation fields
     '''

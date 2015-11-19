@@ -26,6 +26,9 @@
         deadline mandatory, this module import that information from 
         accounting program but also manage partner that has always
         mandatory orders.
+        Note:
+        There's Partner thas has all mandatory order
+        There's Order that could be mandatory or not.
         """,
     'author': 'Micronaet S.r.l. - Nicola Riolini',
     'website': 'http://www.micronaet.it',
