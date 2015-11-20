@@ -171,6 +171,9 @@ class SaleOrder(orm.Model):
         fake_ids = fake_pool.search(cr, uid, [], context=context)
         fake_proxy = fake_pool.browse(cr, uid, fake_ids, context=context)
         
+        # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        #                         Header analysis:
+        # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         # Loop on all fake order first:
         for fake in fake_proxy:
             # Get right format (key)
@@ -196,7 +199,12 @@ class SaleOrder(orm.Model):
             for real_line in real.order_line:
                 real_lines[real_line.product_id.default_code] = real_line
                 
-            # Loop on fake lines:    
+            
+            # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            #                     Line analysis:
+            # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                
+            # Loop on fake lines:
             for line in fake.line_ids:
 
                 # Import description:
@@ -211,17 +219,25 @@ class SaleOrder(orm.Model):
                     _logger.error(
                         'Order line accounting not in oerp order: %s' % (
                             line.code))
-                    continue        
+                    continue       
+                     
                 # --------------------------------
                 # Subcase 2 (try a sync operation)
                 # --------------------------------                
                 # TODO test totals and decide 3 cases
+                #make_production_line_ids.append()
+                
 
             # ---------------------------------------------------
             # Case 3 (need production for real line not in fake):
             # ---------------------------------------------------
             for item in real_lines:
-                # TODO all line in production
+                # All line in production
+                # TODO check:
+                make_production_line_ids.append(
+                    [line.id for line in real_lines[
+                        item]])
+            # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
                        
             # -----------------------------------------------------------------
             #                   Case 3 (all real order produced):
