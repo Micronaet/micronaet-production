@@ -43,6 +43,65 @@ class MrpProduction(orm.Model):
     '''
     _inherit = 'mrp.production'
     
+    # -----------------
+    # Utility function:
+    # -----------------
+    def _get_family_fake_order(self, cr, uid, line, context=None):
+        ''' Create or search fake master order for that family
+            TODO: one for year?
+        '''
+        bom_pool = self.pool.get('mrp.bom')
+
+        family_id = line.product_id.family_id.id
+        fake_ids = self.search(cr, uid, [
+            ('family_id', '=', family_id),
+            ('fake_order', '=', True),
+            ], context=context)
+        if fake_ids:
+            return face_ids[0]
+        
+        # get_bom_id for family:
+        bom_ids = bom_pool.searc(cr, uid, [
+            ('product_tmpl_id', '=', family_id),
+            ('has_lavoration', '=', True),
+            ], context=context)
+        if not bom_ids:
+            _logger.error('No bom found for family selected')
+            # TODO create one?
+                
+        # Create a fake mrp order:
+        return self.create(cr, uid, {
+            'fake_order': True,
+            'product_id': line.product_id.id,
+            'product_uom': line.product_id.uom_id,
+            'bom_id': bom_ids[0],            
+            # TODO enought fields?
+            }, context=context)
+    
+    
+    def _add_to_fake_production(self, cr, uid, order_ids, context=None):
+        ''' Function that create fake production order and add all order_ids
+            line passed (every line go in mrp order with right family code
+        '''
+        line_pool = self.pool.get('sale.order.line')
+        buffer_mrp = {}
+        for line in line_pool.browse(cr, uid, order_ids, context=context):
+            family_id = line.product_id.family_id.id
+            # TODO manager error for no family line
+            # TODO check production product <<<<<< IMPORTANT
+            if family_id not in buffer_mrp:                    
+                buffer_mrp[family_id] = self._get_family_fake_order(
+                    cr, uid, line, context=context)
+            
+            # Add line to order:
+            line_pool.write(cr, uid, [line.id], {
+                'mrp_id': buffer_mrp[family_id] # TODO correct fields?
+                }, context=context)
+                    
+        # Update totals and order in all bufferd order managed here:
+        # TODO    
+        return True
+
     _columns = {
         'fake_order': fields.boolean('Fake order', 
             help='Fake production order that is used for put all produced'
@@ -55,7 +114,7 @@ class SaleOrder(orm.Model):
     ''' Add extra field for sync order
     '''
     _inherit = 'sale.order'
-    
+        
     # -----------------
     # Scheduled action:
     # -----------------
@@ -114,15 +173,18 @@ class SaleOrder(orm.Model):
                 fake.date[-4:], # year
                 )                
             
-            # Case 1 (error):    
+            # -----------------------------------------------------------------
+            #                            Case 1 (error):
+            # -----------------------------------------------------------------
             if name not in real: 
                 _logger.error(
                     'Order from accounting not present in real order: %s' % (
                         code))
                 continue
                 
-            # Case 2 (need line sync):
-            
+            # -----------------------------------------------------------------
+            #                        Case 2 (need line sync):
+            # -----------------------------------------------------------------
             # Read real lines:
             real_lines = {}
             for real_line in real.order_line:
@@ -130,36 +192,34 @@ class SaleOrder(orm.Model):
                 
             # Loop on fake lines:    
             for line in fake.line_ids:
-                if line.type == 'd':
-                    # TODO Save description
-                    pass
-                else: # a(tricle)
-                    # Subcase 1 (error):
-                    if line.code not in real_lines:
-                        _logger.error(
-                            'Order line accounting not in oerp order: %s' % (
-                                line.code))
-                        continue        
-                    # Subcase 2 (try a sync operation)
-                    # TODO test totals and decide 3 cases
-            
+
+                # Import description:
+                if line.type == 'd':                    
+                    pass # TODO Save description
+                    continue
+
+                # ------------------
+                # Subcase 1 (error):
+                # ------------------
+                if line.code not in real_lines:
+                    _logger.error(
+                        'Order line accounting not in oerp order: %s' % (
+                            line.code))
+                    continue        
+                # --------------------------------
+                # Subcase 2 (try a sync operation)
+                # --------------------------------                
+                # TODO test totals and decide 3 cases
+
+            # ---------------------------------------------------
             # Case 3 (need production for real line not in fake):
+            # ---------------------------------------------------
             for item in real_lines:
-                pass # TODO
+                pass # TODO all produced order
                        
-                        
-                                                
-            
-            
-            
-                        
-                    
-                
-        #    3 Case: Present fake obj, presente both, present real obj
-        
-        # 3. Sync line in middle case
-        # > Create fake production order and put there all line 
-        
+            # -----------------------------------------------------------------
+            #                   Case 3 (all real order produced):
+            # -----------------------------------------------------------------
         return True
         
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
