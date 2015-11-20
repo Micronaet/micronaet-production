@@ -2,6 +2,22 @@
 <openerp>
     <data>
 
+    <record model="ir.actions.act_window" id="action_view_mrp_production_fake_order">
+        <field name="name">Fake order</field>
+        <field name="res_model">mrp.production</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="mrp.mrp_production_tree_view"/> 
+        <field name="domain">[('fake_order','=',True)]</field>
+    </record>
+    <menuitem 
+        name="Fake order"
+        parent="mrp.menu_mrp_production_action" 
+        id="menu_action_openerp_model_tree" 
+        action="action_view_mrp_production_fake_order"
+        sequence="10"
+        />
+       
     </data>
 </openerp>
 

@@ -39,7 +39,7 @@
     'demo': [],
     'data': [
         #'security/ir.model.access.csv',    
-        'startup_views.xml', # after wizard 
+        'startup_view.xml', # after wizard 
         'scheduler.xml',     
         ],
     'active': False,
