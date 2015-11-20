@@ -88,7 +88,7 @@ class MrpProduction(orm.Model):
         for line in line_pool.browse(cr, uid, order_ids, context=context):
             family_id = line.product_id.family_id.id
             # TODO manager error for no family line
-            # TODO check production product <<<<<< IMPORTANT
+            # TODO check if it is a production product <<<<<< IMPORTANT
             if family_id not in buffer_mrp:                    
                 buffer_mrp[family_id] = self._get_family_fake_order(
                     cr, uid, line, context=context)
@@ -131,9 +131,15 @@ class SaleOrder(orm.Model):
                 1. order in fake only > error
                 2. order in both fake and real > sync line
                 3. order only in real > all order product
+            
+            Note: All line will be marked at the end of procedure!    
         '''
         # Pool used:
         fake_pool = self.pool.get('statistic.header')
+        mrp_pool = self.pool.get('mrp.production')
+        
+        # Variables:
+        make_production_line_ids = []
         
         # ----------------------------------------------
         # Import all csv file in temporary order object:
@@ -215,11 +221,20 @@ class SaleOrder(orm.Model):
             # Case 3 (need production for real line not in fake):
             # ---------------------------------------------------
             for item in real_lines:
-                pass # TODO all produced order
+                # TODO all line in production
                        
             # -----------------------------------------------------------------
             #                   Case 3 (all real order produced):
             # -----------------------------------------------------------------
+            for item in real:                
+                # Append all line of this order:
+                # TODO test for production line etc.:
+                make_production_line_ids.append(
+                    [line.id for line in real[item].order_line])
+            
+            # Update all lines marked for production:
+            mrp_pool._add_to_fake_production(cr, uid, make_production_line_ids, 
+                context=context)
         return True
         
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
