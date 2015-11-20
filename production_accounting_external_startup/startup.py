@@ -92,30 +92,66 @@ class SaleOrder(orm.Model):
         # Load the two order block, fake and real:
         # ----------------------------------------
         # > Load real order:    
-        real_orders = {} # dict for manage key and keep trace of imported
-        real_order_ids = self.search(cr, uid, [
+        real = {} # dict for manage key and keep trace of imported
+        real_ids = self.search(cr, uid, [
             ('accounting_order', '=', True),
             ], context=context)
-        real_orders = [item.name for item in self.browse(
-            cr, uid, real_order_ids, context=context)]            
+            
+        # Save records for sync operation:
+        for item in self.browse(
+                cr, uid, real_ids, context=context):    
+            real[item.name] = item
 
         # > Load fake order:        
         fake_ids = fake_pool.search(cr, uid, [], context=context)
         fake_proxy = fake_pool.browse(cr, uid, fake_ids, context=context)
         
         # Loop on all fake order first:
-        for fake_order in fake_proxy:
-            # Get right format_
+        for fake in fake_proxy:
+            # Get right format (key)
             name = 'MX-%s/%s' % (
-                fake_order.name, # number     
-                fake_order.date[-4:], # year
+                fake.name, # number     
+                fake.date[-4:], # year
                 )                
-                
-            if not real_order_ids:
-                # Case 1: Error:
+            
+            # Case 1 (error):    
+            if name not in real: 
                 _logger.error(
                     'Order from accounting not present in real order: %s' % (
                         code))
+                continue
+                
+            # Case 2 (need line sync):
+            
+            # Read real lines:
+            real_lines = {}
+            for real_line in real.order_line:
+                real_lines[real_line.product_id.default_code] = real_line
+                
+            # Loop on fake lines:    
+            for line in fake.line_ids:
+                if line.type == 'd':
+                    # TODO Save description
+                    pass
+                else: # a(tricle)
+                    # Subcase 1 (error):
+                    if line.code not in real_lines:
+                        _logger.error(
+                            'Order line accounting not in oerp order: %s' % (
+                                line.code))
+                        continue        
+                    # Subcase 2 (try a sync operation)
+                    # TODO test totals and decide 3 cases
+            
+            # Case 3 (need production for real line not in fake):
+            for item in real_lines:
+                pass # TODO
+                       
+                        
+                                                
+            
+            
+            
                         
                     
                 
