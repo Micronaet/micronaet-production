@@ -207,7 +207,9 @@ class SaleOrder(orm.Model):
             # Loop on fake lines:
             for line in fake.line_ids:
 
-                # Import description:
+                # ------------------------
+                # Subcase 0 (description):
+                # ------------------------
                 if line.type == 'd':                    
                     pass # TODO Save description
                     continue
@@ -219,13 +221,23 @@ class SaleOrder(orm.Model):
                     _logger.error(
                         'Order line accounting not in oerp order: %s' % (
                             line.code))
-                    continue       
+                    # TODO import? better not!        
+                    continue
                      
                 # --------------------------------
                 # Subcase 2 (try a sync operation)
                 # --------------------------------                
                 # TODO test totals and decide 3 cases
                 #make_production_line_ids.append()
+                #if line.
+                # TODO:
+                '''
+                Problemi riscontrati:
+                Nelle righe sono presenti sdoppiate se hanno B e non B (per la parte rimanente)
+                Trovato casi con 3 volte B e il residuo
+                Trovato casi con prodotti doppi non ancora consegnati e scadenza diversa                
+                '''
+                
                 
 
             # ---------------------------------------------------
