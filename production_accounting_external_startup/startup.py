@@ -149,9 +149,7 @@ class SaleOrder(orm.Model):
         
         # Load fake order:
         fake_pool.scheduled_import_order(
-            cr, uid, ids, 
-            csv_file, separator, header, verbose, 
-            context=context)
+            cr, uid, csv_file, separator, header, verbose, context=context)
         
         # ----------------------------------------
         # Load the two order block, fake and real:
