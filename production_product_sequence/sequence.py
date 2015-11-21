@@ -45,67 +45,15 @@ class MrpProductionSequence(orm.Model):
     _description = 'MRP production sequence'
     _order = 'sequence, name'    
     
-    # Button function:
-    def load_parent_list(self, cr, uid, ids, context=None):
-        ''' Load list of parent for se the order
-        '''
-        seq_pool = self.pool.get('mrp.production.sequence')
-        parents = []
-        for line in self.browse(cr, uid, ids, context=context).order_line_ids:
-            parent = line.product_id.default_code[:3]
-            if parent not in parents:
-                parents.append(parent)
-        
-        i = 0
-        parents.sort()
-        for parent in parents:
-            i += 1
-            seq_pool.create(cr, uid, {
-                'sequence': i,
-                'name': parent,                
-                }, context=context)            
-        return True
-
-    def force_order_sequence(self, cr, uid, ids, context=None):
-        ''' Force order line sequence depend on this list of parent
-        '''
-        return True
-        
     # ----------------
     # Field functions:
     # ----------------
-    def _get_total_order_lines(self, cr, uid, ids, fields, args, context=None):
-        ''' Fields function for calculate 
-        '''
-        res = {}
-        total = {}
-        parent_len = 3 # TODO 
-        
-        line_pool = self.pool.get('sale.order.line')
-        line_ids = line_pool.search(cr, uid, [
-            ('mrp_id', '=', item.mrp_id.id),
-            ], context=context)
-        for line in line_pool.browse(cr, uid, line_ids, context=context):
-            parent = line.product_id.default_code[:parent_len]
-            if parent not in total:    
-                total[parent] = 1
-            else:    
-                total[parent] = +1
-                
-        for item in self.browse(cr, uid, ids, context=context):
-            parent = item.product_id.default_code[:parent_len]
-            res[item.id] = total.get(parent, 0)            
-        return res 
-        
     _columns = {
         'sequence': fields.integer('Sequence'), 
         'name': fields.char(
             'Parent', size=15, required=True), 
         'mrp_id': fields.many2one('mrp.production', 'MRP order'),
-        'total': fields.function(
-            _get_total_order_lines, method=True, 
-            type='integer', string='# line', 
-            store=False),                         
+        'total': fields.integer('# line'),
         }
     _defaults = {
         'sequence': lambda *x: 1000, # New line go bottom
@@ -116,6 +64,68 @@ class MrpProduction(orm.Model):
     '''
     _inherit = 'mrp.production'
     
+    # ------------------
+    # Override function:
+    # ------------------
+    def force_production_sequence(self, cr, uid, ids, context=None):
+        ''' Force new order on sale order line depend on parent code
+            and default code
+        '''
+        # Read setup order:
+        
+        # Force sequence order:
+        mrp_proxy = self.browse(cr, uid, ids, context=context)
+        order = []
+        for line in mrp_proxy.order_line_ids:
+            order.append((line.default_code, line.id))
+        line_pool = self.pool.get('sale.order.line')        
+        i = 0
+        for code, item_id in sorted(order):
+            i += 1
+            line_pool.write(cr, uid, item_id, {
+                'mrp_sequence': i,
+                }, context=context)
+        return True
+
+    # ----------------
+    # Button function:
+    # ----------------
+    def load_parent_list(self, cr, uid, ids, context=None):
+        ''' Load list of parent for se the order
+        '''
+        seq_pool = self.pool.get('mrp.production.sequence')
+        # Delete all before create:
+        seq_ids = seq_pool.search(cr, uid, [
+            ('mrp_id', '=', ids[0])], context=context)
+        seq_pool.unlink(cr, uid, seq_ids, context=context)    
+        
+        # Reload parent:    
+        parents = {}
+        for line in self.browse(cr, uid, ids, context=context).order_line_ids:
+            parent = line.product_id.default_code[:3]
+            if parent not in parents:
+                parents[parent] = line.product_uom_qty or 1
+            else:
+                parents[parent] += line.product_uom_qty or 1
+        
+        i = 0
+        for parent in sorted(parents):
+            i += 1            
+            seq_pool.create(cr, uid, {
+                'sequence': i,
+                'name': parent,      
+                'mrp_id': ids[0],          
+                'total': parents[parent]
+                }, context=context)            
+        return True
+
+    def force_order_sequence(self, cr, uid, ids, context=None):
+        ''' Force order line sequence depend on this list of parent
+        '''
+        # Force overrided function sequence:
+        self.force_production_sequence(cr, uid, ids, context=context)
+        return True
+        
     _columns = {
         'sequence_ids': fields.one2many(
             'mrp.production.sequence', 'mrp_id', 'Parent order', 

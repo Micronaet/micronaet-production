@@ -11,7 +11,7 @@
                      <group colspan="2" col="2">
                          <field name="sequence_ids" nolabel="1" >
                              <tree string="Sequence from parent" editable="bottom">
-                                 <field name="sequence" readonly="1"/>
+                                 <field name="sequence" invisible="1"/>
                                  <field name="name" readonly="1"/>
                                  <field name="total" readonly="1"/>
                              </tree>                         
