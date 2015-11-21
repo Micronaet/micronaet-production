@@ -25,8 +25,8 @@
                          </field>
                      </group>
                      <group colspan="2" col="2">
-                         <button name="load_parent_list" string="Load list" type="object" />
-                         <button name="force_order_sequence" string="Force order" type="object" />                         
+                         <button name="load_parent_list" string="Load list" type="object" icon="STOCK_REFRESH"/>
+                         <button name="force_order_sequence" string="Force order" type="object" icon="gtk-sort-descending"/>
                      </group>
              </group>
              </group>

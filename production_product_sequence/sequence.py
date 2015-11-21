@@ -71,10 +71,13 @@ class MrpProduction(orm.Model):
         ''' Force new order on sale order line depend on parent code
             and default code
         '''
-        # Read setup order:
-        
-        # Force sequence order:
         mrp_proxy = self.browse(cr, uid, ids, context=context)
+
+        # Read setup order:
+        parent_order = [item.name for item in mrp_proxy.sequence_ids]
+        print parent_order
+        return True
+        
         order = []
         for line in mrp_proxy.order_line_ids:
             order.append((line.default_code, line.id))
