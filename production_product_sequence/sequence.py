@@ -71,23 +71,31 @@ class MrpProduction(orm.Model):
         ''' Force new order on sale order line depend on parent code
             and default code
         '''
+        # Pool used:
+        line_pool = self.pool.get('sale.order.line')        
+        
         mrp_proxy = self.browse(cr, uid, ids, context=context)
 
-        # Read setup order:
-        parent_order = [item.name for item in mrp_proxy.sequence_ids]
-        print parent_order
-        return True
+        # Reload parent element for include new (TODO necesary?):
+        self.load_parent_list(cr, uid, ids, context=context)
         
-        order = []
-        for line in mrp_proxy.order_line_ids:
-            order.append((line.default_code, line.id))
-        line_pool = self.pool.get('sale.order.line')        
-        i = 0
-        for code, item_id in sorted(order):
-            i += 1
-            line_pool.write(cr, uid, item_id, {
-                'mrp_sequence': i,
-                }, context=context)
+        # Read parent order:
+        master_order = {}
+        for parent in mrp_proxy.sequence_ids
+            master_order[parent] = {}
+        
+        for line in mrp_proxy.order_line_ids: 
+                   
+            master_order[line.product_id.default_code] = line.id
+            
+        for parent, item_ids in master_order: #sorted(order):
+            i = 0
+            for default_code in sorted(line_ids): 
+                i += 1
+                line_pool.write(cr, uid, 
+                    line_ids[default_code], {
+                        'mrp_sequence': i,
+                        }, context=context)
         return True
 
     # ----------------
@@ -97,20 +105,21 @@ class MrpProduction(orm.Model):
         ''' Load list of parent for se the order
         '''
         seq_pool = self.pool.get('mrp.production.sequence')
-        # Delete all before create:
-        seq_ids = seq_pool.search(cr, uid, [
-            ('mrp_id', '=', ids[0])], context=context)
-        seq_pool.unlink(cr, uid, seq_ids, context=context)    
         
-        # Reload parent:    
+        # Load current parent:
         parents = {}
-        for line in self.browse(cr, uid, ids, context=context).order_line_ids:
+        mrp_proxy = self.browse(cr, uid, ids, context=context)
+        for seq in mrp_proxy.sequence_ids:
+            parents[seq.name] = 0
+        
+        # Append parent with line:
+        for line in mrp_proxy.order_line_ids:
             parent = line.product_id.default_code[:3]
             if parent not in parents:
                 parents[parent] = line.product_uom_qty or 1
             else:
                 parents[parent] += line.product_uom_qty or 1
-        
+
         i = 0
         for parent in sorted(parents):
             i += 1            
