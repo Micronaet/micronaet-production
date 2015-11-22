@@ -73,7 +73,6 @@ class MrpProduction(orm.Model):
         '''
         # Pool used:
         line_pool = self.pool.get('sale.order.line')        
-        
         mrp_proxy = self.browse(cr, uid, ids, context=context)
 
         # Reload parent element for include new (TODO necesary?):
@@ -82,20 +81,19 @@ class MrpProduction(orm.Model):
         # Read parent order:
         master_order = {}
         for parent in mrp_proxy.sequence_ids
-            master_order[parent] = {}
+            master_order[parent] = []
         
-        for line in mrp_proxy.order_line_ids: 
-                   
-            master_order[line.product_id.default_code] = line.id
-            
-        for parent, item_ids in master_order: #sorted(order):
-            i = 0
-            for default_code in sorted(line_ids): 
+        for line in mrp_proxy.order_line_ids:                    
+            master_order.append(
+                (line.product_id.default_code, line.id)
+                        
+        i = 0
+        for parent, sol_ids in master_order: #sorted(order):
+            for default_code, item_id in sorted(sol_ids): 
                 i += 1
-                line_pool.write(cr, uid, 
-                    line_ids[default_code], {
-                        'mrp_sequence': i,
-                        }, context=context)
+                line_pool.write(cr, uid, item_id, {
+                    'mrp_sequence': i,
+                    }, context=context)
         return True
 
     # ----------------
