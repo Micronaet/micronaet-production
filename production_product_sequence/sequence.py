@@ -80,12 +80,12 @@ class MrpProduction(orm.Model):
         
         # Read parent order:
         master_order = {}
-        for parent in mrp_proxy.sequence_ids
+        for parent in mrp_proxy.sequence_ids:
             master_order[parent] = []
         
-        for line in mrp_proxy.order_line_ids:                    
+        for line in mrp_proxy.order_line_ids:
             master_order.append(
-                (line.product_id.default_code, line.id)
+                (line.product_id.default_code, line.id))
                         
         i = 0
         for parent, sol_ids in master_order: #sorted(order):
@@ -103,12 +103,17 @@ class MrpProduction(orm.Model):
         ''' Load list of parent for se the order
         '''
         seq_pool = self.pool.get('mrp.production.sequence')
-        
+
         # Load current parent:
         parents = {}
+        old_parents = {}
         mrp_proxy = self.browse(cr, uid, ids, context=context)
+        max_sequence = 0
         for seq in mrp_proxy.sequence_ids:
             parents[seq.name] = 0
+            old_parents[seq.name] = seq.id
+            if seq.sequence < max_sequence:
+                max_sequence = seq.sequence
         
         # Append parent with line:
         for line in mrp_proxy.order_line_ids:
@@ -120,13 +125,26 @@ class MrpProduction(orm.Model):
 
         i = 0
         for parent in sorted(parents):
-            i += 1            
-            seq_pool.create(cr, uid, {
-                'sequence': i,
-                'name': parent,      
-                'mrp_id': ids[0],          
-                'total': parents[parent]
-                }, context=context)            
+            i += 1
+            if parent in old_parents:
+                # Delete in no elements:
+                if parents[parent] == 0:
+                    seq_pool.unlink(cr, uid, old_parents[parent], 
+                        context=context)
+                else:        
+                    seq_pool.write(cr, uid, old_parents[parent], {
+                        #'sequence': i,
+                        #'name': parent,      
+                        #'mrp_id': ids[0],          
+                        'total': parents[parent]
+                        }, context=context)            
+            else:
+                seq_pool.create(cr, uid, {
+                    'sequence': max_sequence + i, # in order but append to org.
+                    'name': parent,      
+                    'mrp_id': ids[0],          
+                    'total': parents[parent]
+                    }, context=context)            
         return True
 
     def force_order_sequence(self, cr, uid, ids, context=None):
