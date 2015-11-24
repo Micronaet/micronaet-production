@@ -149,12 +149,14 @@ class SaleOrder(orm.Model):
         # Load account order:
         account_pool.scheduled_import_order(
             cr, uid, csv_file, separator, header, verbose, context=context)
+
+        # TODO Sync new order?
         
         # -------------------------------------------
         # Load the two order block, account and odoo:
         # -------------------------------------------
         # > Load odoo order:
-        odoo = {} # dict for manage key and keep trace of imported: [name]=id
+        odoo = {} # dict for manage odoo order
         odoo_ids = self.search(cr, uid, [
             ('accounting_order', '=', True), # Order for production
             ], context=context)
@@ -172,23 +174,24 @@ class SaleOrder(orm.Model):
         # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         # Loop on all account order first:
         for account in account_proxy:
-            # Get right format (key)
+            # Get right format name
             name = 'MX-%s/%s' % (
                 account.name, # number     
                 account.date[-4:], # year
                 )                
             
             # -----------------------------------------------------------------
-            #          Case 1: Account - ODOO  >> error no sync:
+            #       Case 1: Account - ODOO  >> error no sync:
             # -----------------------------------------------------------------
             if name not in odoo: 
                 _logger.error(
-                    'Order from accounting not present in odoo order: %s' % (
+                    'Order accounting not in odoo, sync! [%s]' % (
                         code))
                 continue
                 
             # -----------------------------------------------------------------
-            #          Case 2: Account AND ODOO  >> need line sync:
+            #       Case 2: Account AND ODOO  >> need line sync:
+            #       Case 3: ODOO - Account  >> all delivered:
             # -----------------------------------------------------------------
             # Read odoo lines archived with key = code, deadline:
             master_line_db = {}
@@ -205,7 +208,7 @@ class SaleOrder(orm.Model):
                     odoo_line.deadline,
                     )
                     
-                # Save master line database (populated with ODOO lines:
+                # Save master line database (populated with ODOO lines):
                 master_line_db[key] = [
                     # ----------------
                     # ODOO order line:
@@ -261,6 +264,7 @@ class SaleOrder(orm.Model):
                      
                 # ----------------------------------------------------
                 # Subcase 2: Account AND ODOO >> try a sync operation:
+                # Subcase 3: ODOO - Account (all delivered):
                 # ----------------------------------------------------
                 # Update values in master DB (will be check after)
                 if line.type = 'b': # maked quantity
@@ -268,10 +272,6 @@ class SaleOrder(orm.Model):
                 else: # not maked:
                     master_line_db[key][4] += quantity # append value
 
-                # ------------------------------------------------------
-                # Subcase 3: ODOO - Account (all delivered):
-                # ------------------------------------------------------
-                # All record with 4, 5 position empty
                         
             # Correct status of line with master database (3 subcases)
             for (item_id, order, temp, maked, 
@@ -296,29 +296,7 @@ class SaleOrder(orm.Model):
                         }, context=context)
                     continue
 
-            # ------------------------------------------------------
-            # Case 3 (need production for odoo line not in account):
-            # ------------------------------------------------------
-            for item in odoo_lines:
-                # All line in production
-                # TODO check:
-                make_production_line_ids.append(
-                    [line.id for line in odoo_lines[
-                        item]])
-            # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-                       
-            # -----------------------------------------------------------------
-            #        Case 3: ODOO - Account  >>  all odoo order produced:
-            # -----------------------------------------------------------------
-            for item in odoo:                
-                # Append all line of this order:
-                # TODO test for production line etc.:
-                make_production_line_ids.append(
-                    [line.id for line in odoo[item].order_line])
-            
-            # Update all lines marked for production:
-            mrp_pool._add_to_account_production(
-                cr, uid, make_production_line_ids, context=context)
+            # TODO manage production fake inline!
         return True
         
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
