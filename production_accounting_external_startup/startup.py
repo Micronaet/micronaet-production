@@ -46,7 +46,7 @@ class MrpProduction(orm.Model):
     # -----------------
     # Utility function:
     # -----------------
-    def _get_family_fake_order(self, cr, uid, line, context=None):
+    def _get_fake_order(self, cr, uid, line, context=None):
         ''' Create or search fake master order for that family
             TODO: one for year?
         '''
@@ -139,8 +139,8 @@ class SaleOrder(orm.Model):
         mrp_pool = self.pool.get('mrp.production')
         sol_pool = self.pool.get('sale.order.line')
         
-        # Variables:
-        make_production_line_ids = [] # B lines
+        # Fake database of production:
+        fake_mrp = {}
         
         # ----------------------------------------------
         # Import all csv file in temporary order object:
@@ -151,7 +151,7 @@ class SaleOrder(orm.Model):
             cr, uid, csv_file, separator, header, verbose, context=context)
 
         # TODO Sync new order?
-        
+
         # -------------------------------------------
         # Load the two order block, account and odoo:
         # -------------------------------------------
@@ -166,14 +166,13 @@ class SaleOrder(orm.Model):
 
         # > Load account order:        
         account_ids = account_pool.search(cr, uid, [], context=context)
-        account_proxy = account_pool.browse(
-            cr, uid, account_ids, context=context)
         
         # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         #                         Header analysis:
         # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         # Loop on all account order first:
-        for account in account_proxy:
+        for account in account_pool.browse(
+                cr, uid, account_ids, context=context):
             # Get right format name
             name = 'MX-%s/%s' % (
                 account.name, # number     
@@ -193,8 +192,14 @@ class SaleOrder(orm.Model):
             #       Case 2: Account AND ODOO  >> need line sync:
             #       Case 3: ODOO - Account  >> all delivered:
             # -----------------------------------------------------------------
+
+            # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            #                     Line analysis:
+            # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             # Read odoo lines archived with key = code, deadline:
             master_line_db = {}
+            
+            # 1. Loop on ODOO order line:
             for odoo_line in odoo.order_line:
             
                 # Create a Key    
@@ -210,32 +215,15 @@ class SaleOrder(orm.Model):
                     
                 # Save master line database (populated with ODOO lines):
                 master_line_db[key] = [
-                    # ----------------
-                    # ODOO order line:
-                    # ----------------
-                    # 0. ID line
-                    odoo_line.id
+                    # ODOO order line:                    
+                    odoo_line, # 0. Browse obj for odoo order line:
                     
-                    # 1. Total ordered
-                    odoo_line.product_uom_qty,
-                    # 2. TODO temp value <<< manage 
-                    odoo_line.product_uom_maked_qty, 
-                    # 3. B in account:
-                    odoo_line.product_uom_maked_sync_qty, 
-                    
-                    # -------------------
-                    # Account order line:
-                    # -------------------
-                    # 4. To make (remain maybe not all ordered)
-                    0.0, 
-                    # 5. Maked
-                    0.0, 
+                    # Account order line:                    
+                    0.0, # 1. To make (remain maybe not all ordered)                    
+                    0.0, # 2. Maked
                     ]
             
-            # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-            #                     Line analysis:
-            # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-            # Loop on account order > lines:
+            # 2. Loop on Account order line:
             for line in account.line_ids:
 
                 # ------------------------
@@ -248,7 +236,7 @@ class SaleOrder(orm.Model):
                 # Create key:    
                 if not line.code or not line.deadline:
                     _logger.error('Account order without code/deadline: %s' % (
-                        odoo_line.order_id.name))
+                        line.order_id.name))
                     continue
                 key = (line.code, line.deadline)
 
@@ -267,33 +255,58 @@ class SaleOrder(orm.Model):
                 # Subcase 3: ODOO - Account (all delivered):
                 # ----------------------------------------------------
                 # Update values in master DB (will be check after)
-                if line.type = 'b': # maked quantity
-                    master_line_db[key][5] += quantity # append value (multi)
+                if line.type == 'b': # maked quantity
+                    master_line_db[key][2] += quantity # append value (multi)
                 else: # not maked:
-                    master_line_db[key][4] += quantity # append value
+                    master_line_db[key][1] += quantity # append value
 
                         
-            # Correct status of line with master database (3 subcases)
-            for (item_id, order, temp, maked, 
-                    acc_remain, acc_maked) in master_line_db:
-                
-                # Subcase 1 not present:                
-                
-                if any([acc_remain, acc_maked]):
-                    # Subcase 2 Account AND ODOO (Much cases to manage)
+            # 3. Update database ODOO status:
+            for (odoo_line, acc_remain, acc_maked) in master_line_db:
+                # Get element from browse odoo line:
+                item_id = odoo_line.id
+                mrp_id = odoo_line.mrp_id.id
+                family_id = odoo_line.product_id.family_id.id
+                order = odoo_line.product_uom_qty
+                temp = odoo_line.product_uom_maked_qty
+                maked = odoo_line.product_uom_maked_sync_qty
 
+                # (Mode 1: not present):
+                
+                if any([acc_remain, acc_maked]): # Mode 2 Account AND ODOO
                     # Maked/Not maked and delivered/not delivered:                    
                     delivered = order - acc_remain - acc_maked
-                    sol_pool.write(cr, uid, item_id, {
-                        'product_uom_maked_sync_qty': acc_maked + delivered,
+                    acc_maked += delivered # (maked and delivered = maked)
+                    
+                    data = {
+                        'product_uom_maked_qty': 0, # reset
+                        'product_uom_maked_sync_qty': acc_maked,
                         'product_uom_delivered_qty': delivered,
-                        }, context=context)
-                else: 
-                    # Subcase 3: all delivered: odoo - account                    
-                    sol_pool.write(cr, uid, item_id, {
+                        #'sync_state': 'closed', # all close TODO
+                        }
+
+                    # There's some production create in not pres.   
+                    if acc_maked and not mrp_id:
+                        # Create or get fake production:
+                        if family_id not in fake_mrp:
+                            fake_mrp[family_id] = mrp_pool._get_fake_order(
+                                cr, uid, odoo_line, context=context)                           
+                        
+                    sol_pool.write(cr, uid, item_id, data, context=context)
+                else: # Mode 3: all delivered: odoo - account                    
+                    if not mrp_id: # so all produced
+                        # Create or get fake production:
+                        if family_id not in fake_mrp:
+                            fake_mrp[family_id] = mrp_pool._get_fake_order(
+                                cr, uid, odoo_line, context=context)                           
+                    
+                    data = {
+                        'product_uom_maked_qty': 0, # reset
                         'product_uom_maked_sync_qty': order,
                         'product_uom_delivered_qty': order, # all
-                        }, context=context)
+                        #'sync_state': 'closed', # all close TODO
+                        }
+                    sol_pool.write(cr, uid, item_id, data, context=context)
                     continue
 
             # TODO manage production fake inline!
