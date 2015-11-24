@@ -182,13 +182,12 @@ class SaleOrder(orm.Model):
             master_line_db = {}
             
             # 1. Loop on ODOO order line:
-            import pdb; pdb.set_trace()
             for odoo_line in odoo[name].order_line:
             
                 # Create a Key
                 try:
                     if (not odoo_line.product_id.default_code) or (
-                            not odoo_line.deadline):
+                            not odoo_line.date_deadline):
                         _logger.error('ODOO order without code/deadline: %s' % (
                             odoo_line.order_id.name))
                         continue                
@@ -198,7 +197,7 @@ class SaleOrder(orm.Model):
                             
                 key = (
                     odoo_line.product_id.default_code, 
-                    odoo_line.deadline,
+                    odoo_line.date_deadline,
                     )
                     
                 # Save master line database (populated with ODOO lines):
@@ -212,12 +211,13 @@ class SaleOrder(orm.Model):
                     ]
             
             # 2. Loop on Account order line:
+            import pdb; pdb.set_trace()
             for line in account.line_ids:
 
                 # ------------------------
                 # Subcase 0 (description):
                 # ------------------------
-                if line.type == 'd': # else 'a' for article!
+                if line.line_type == 'd': # else 'a' for article!
                     pass # TODO Save description for order purposes
                     continue
                 
@@ -244,9 +244,9 @@ class SaleOrder(orm.Model):
                 # ----------------------------------------------------
                 # Update values in master DB (will be check after)
                 if line.type == 'b': # maked quantity
-                    master_line_db[key][2] += quantity # append value (multi)
+                    master_line_db[key][2] += line.quantity # multi
                 else: # not maked:
-                    master_line_db[key][1] += quantity # append value
+                    master_line_db[key][1] += line.quantity # append value
                         
             # 3. Update database ODOO status:
             for (odoo_line, acc_remain, acc_maked) in master_line_db:
