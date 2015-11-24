@@ -192,14 +192,13 @@ class SaleOrder(orm.Model):
             # Read odoo lines archived with key = code, deadline:
             master_line_db = {}
             for odoo_line in odoo.order_line:
-                # Test key element:
+            
+                # Create a Key    
                 if (not odoo_line.product_id.default_code) or (
                         not odoo_line.deadline):
                     _logger.error('ODOO order without code/deadline: %s' % (
                         odoo_line.order_id.name))
-                    continue
-                
-                # Make a Key    
+                    continue                
                 key = (
                     odoo_line.product_id.default_code, 
                     odoo_line.deadline,
@@ -241,13 +240,12 @@ class SaleOrder(orm.Model):
                 if line.type == 'd': # else 'a' for article!
                     pass # TODO Save description for order purposes
                     continue
-
+                
+                # Create key:    
                 if not line.code or not line.deadline:
                     _logger.error('Account order without code/deadline: %s' % (
                         odoo_line.order_id.name))
-                    continue    
-                    
-                # Create key:    
+                    continue
                 key = (line.code, line.deadline)
 
                 # -----------------------------------
