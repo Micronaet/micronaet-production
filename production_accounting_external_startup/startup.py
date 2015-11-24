@@ -128,139 +128,184 @@ class SaleOrder(orm.Model):
                     importation header and lines (after import directly form 
                     here for by pass old procedure                    
             3 cases:
-                1. order in fake only > error
-                2. order in both fake and real > sync line
+                1. order in account only > error
+                2. order in both account and real > sync line
                 3. order only in real > all order product
             
             Note: All line will be marked at the end of procedure!    
         '''
         # Pool used:
-        fake_pool = self.pool.get('statistic.header')
+        account_pool = self.pool.get('statistic.header')
         mrp_pool = self.pool.get('mrp.production')
         
         # Variables:
-        make_production_line_ids = []
+        make_production_line_ids = [] # B lines
         
         # ----------------------------------------------
         # Import all csv file in temporary order object:
         # ----------------------------------------------
-        # Force scheduled importation from here 
-        # TODO deactivate other scheduler activity
-        
-        # Load fake order:
-        fake_pool.scheduled_import_order(
+        # Force scheduled importation from here # TODO deactivate other
+        # Load account order:
+        account_pool.scheduled_import_order(
             cr, uid, csv_file, separator, header, verbose, context=context)
         
-        # ----------------------------------------
-        # Load the two order block, fake and real:
-        # ----------------------------------------
-        # > Load real order:    
-        real = {} # dict for manage key and keep trace of imported
-        real_ids = self.search(cr, uid, [
-            ('accounting_order', '=', True),
+        # -------------------------------------------
+        # Load the two order block, account and odoo:
+        # -------------------------------------------
+        # > Load odoo order:
+        odoo = {} # dict for manage key and keep trace of imported: [name]=id
+        odoo_ids = self.search(cr, uid, [
+            ('accounting_order', '=', True), # Order for production
             ], context=context)
-            
-        # Save records for sync operation:
         for item in self.browse(
-                cr, uid, real_ids, context=context):    
-            real[item.name] = item
+                cr, uid, odoo_ids, context=context):    
+            odoo[item.name] = item # order proxy
 
-        # > Load fake order:        
-        fake_ids = fake_pool.search(cr, uid, [], context=context)
-        fake_proxy = fake_pool.browse(cr, uid, fake_ids, context=context)
+        # > Load account order:        
+        account_ids = account_pool.search(cr, uid, [], context=context)
+        account_proxy = account_pool.browse(
+            cr, uid, account_ids, context=context)
         
         # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         #                         Header analysis:
         # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        # Loop on all fake order first:
-        for fake in fake_proxy:
+        # Loop on all account order first:
+        for account in account_proxy:
             # Get right format (key)
             name = 'MX-%s/%s' % (
-                fake.name, # number     
-                fake.date[-4:], # year
+                account.name, # number     
+                account.date[-4:], # year
                 )                
             
             # -----------------------------------------------------------------
-            #                            Case 1 (error):
+            #          Case 1: Account - ODOO  >> error no sync:
             # -----------------------------------------------------------------
-            if name not in real: 
+            if name not in odoo: 
                 _logger.error(
-                    'Order from accounting not present in real order: %s' % (
+                    'Order from accounting not present in odoo order: %s' % (
                         code))
                 continue
                 
             # -----------------------------------------------------------------
-            #                        Case 2 (need line sync):
+            #          Case 2: Account AND ODOO  >> need line sync:
             # -----------------------------------------------------------------
-            # Read real lines:
-            real_lines = {}
-            for real_line in real.order_line:
-                real_lines[real_line.product_id.default_code] = real_line
+            # Read odoo lines archived with key = code, deadline:
+            master_line_db = {}
+            for odoo_line in odoo.order_line:
+                # Test key element:
+                if (not odoo_line.product_id.default_code) or (
+                        not odoo_line.deadline):
+                    _logger.error('ODOO order without code/deadline: %s' % (
+                        odoo_line.order_id.name))
+                    continue
                 
+                # Make a Key    
+                key = (
+                    odoo_line.product_id.default_code, 
+                    odoo_line.deadline,
+                    )
+                    
+                # Save master line database (populated with ODOO lines:
+                master_line_db[key] = [
+                    # ----------------
+                    # ODOO order line:
+                    # ----------------
+                    # 0. ID line
+                    odoo_line.id
+                    
+                    # 1. Total ordered
+                    odoo_line.product_uom_qty,
+                    # 2. TODO temp value <<< manage 
+                    odoo_line.product_uom_maked_qty, 
+                    # 2. B in account:
+                    odoo_line.product_uom_maked_sync_qty, 
+                    
+                    # -------------------
+                    # Account order line:
+                    # -------------------
+                    # 3. To make (remain maybe not all ordered)
+                    0.0, 
+                    # 4. Maked
+                    0.0, 
+                    ]
             
             # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             #                     Line analysis:
             # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-                
-            # Loop on fake lines:
-            for line in fake.line_ids:
+            # Loop on account order > lines:
+            for line in account.line_ids:
 
                 # ------------------------
                 # Subcase 0 (description):
                 # ------------------------
-                if line.type == 'd':                    
-                    pass # TODO Save description
+                if line.type == 'd': # else 'a' for article!
+                    pass # TODO Save description for order purposes
                     continue
 
-                # ------------------
-                # Subcase 1 (error):
-                # ------------------
-                if line.code not in real_lines:
+                if not line.code or not line.deadline:
+                    _logger.error('Account order without code/deadline: %s' % (
+                        odoo_line.order_id.name))
+                    continue    
+                    
+                # Create key:    
+                key = (line.code, line.deadline)
+
+                # -----------------------------------
+                # Subcase 1: Account - ODOO >> Error:
+                # -----------------------------------
+                if key not in master_line_db: 
                     _logger.error(
                         'Order line accounting not in oerp order: %s' % (
                             line.code))
-                    # TODO import? better not!        
+                    # TODO import? better not!
                     continue
                      
-                # --------------------------------
-                # Subcase 2 (try a sync operation)
-                # --------------------------------                
-                # TODO test totals and decide 3 cases
-                #make_production_line_ids.append()
-                #if line.
-                # TODO:
-                '''
-                Problemi riscontrati:
-                Nelle righe sono presenti sdoppiate se hanno B e non B (per la parte rimanente)
-                Trovato casi con 3 volte B e il residuo
-                Trovato casi con prodotti doppi non ancora consegnati e scadenza diversa                
-                '''
+                # ----------------------------------------------------
+                # Subcase 2: Account AND ODOO >> try a sync operation:
+                # ----------------------------------------------------
+                # Update values in master DB (will be check after)
+                if line.type = 'b': # maked quantity
+                    master_line_db[key][3] += quantity # append value (multi)
+                else: # not maked:
+                    master_line_db[key][2] += quantity # append value
+
+                # ------------------------------------------------------
+                # Case 3 (need production for odoo line not in account):
+                # ------------------------------------------------------
+                # All record with 3, 4 position empty
+            
+            # Correct status of line with master database (3 subcases)
+            for (order, temp, maked, acc_remain, acc_maked) in master_line_db:
+                # Case all maked:
+                if not acc_remain ann not acc_maked:
+                    
+                    
                 
                 
 
-            # ---------------------------------------------------
-            # Case 3 (need production for real line not in fake):
-            # ---------------------------------------------------
-            for item in real_lines:
+            # ------------------------------------------------------
+            # Case 3 (need production for odoo line not in account):
+            # ------------------------------------------------------
+            for item in odoo_lines:
                 # All line in production
                 # TODO check:
                 make_production_line_ids.append(
-                    [line.id for line in real_lines[
+                    [line.id for line in odoo_lines[
                         item]])
             # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
                        
             # -----------------------------------------------------------------
-            #                   Case 3 (all real order produced):
+            #        Case 3: ODOO - Account  >>  all odoo order produced:
             # -----------------------------------------------------------------
-            for item in real:                
+            for item in odoo:                
                 # Append all line of this order:
                 # TODO test for production line etc.:
                 make_production_line_ids.append(
-                    [line.id for line in real[item].order_line])
+                    [line.id for line in odoo[item].order_line])
             
             # Update all lines marked for production:
-            mrp_pool._add_to_fake_production(cr, uid, make_production_line_ids, 
-                context=context)
+            mrp_pool._add_to_account_production(
+                cr, uid, make_production_line_ids, context=context)
         return True
         
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
