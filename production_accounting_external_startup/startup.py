@@ -153,13 +153,12 @@ class SaleOrder(orm.Model):
         #                         Header analysis:
         # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         # Loop on all account order first:
-        import pdb; pdb.set_trace()
         for account in account_pool.browse(
                 cr, uid, account_ids, context=context):
             # Get right format name
             name = 'MX-%s/%s' % (
                 account.name, # number     
-                account.date[-4:], # year
+                account.date[:4], # year
                 )                
             
             # -----------------------------------------------------------------
@@ -183,14 +182,20 @@ class SaleOrder(orm.Model):
             master_line_db = {}
             
             # 1. Loop on ODOO order line:
-            for odoo_line in odoo.order_line:
+            import pdb; pdb.set_trace()
+            for odoo_line in odoo[name].order_line:
             
-                # Create a Key    
-                if (not odoo_line.product_id.default_code) or (
-                        not odoo_line.deadline):
-                    _logger.error('ODOO order without code/deadline: %s' % (
-                        odoo_line.order_id.name))
+                # Create a Key
+                try:
+                    if (not odoo_line.product_id.default_code) or (
+                            not odoo_line.deadline):
+                        _logger.error('ODOO order without code/deadline: %s' % (
+                            odoo_line.order_id.name))
+                        continue                
+                except:
+                    _logger.error('%s' % (sys.exc_info()))
                     continue                
+                            
                 key = (
                     odoo_line.product_id.default_code, 
                     odoo_line.deadline,
