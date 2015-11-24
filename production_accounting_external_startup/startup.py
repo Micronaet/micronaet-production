@@ -269,25 +269,32 @@ class SaleOrder(orm.Model):
                     master_line_db[key][4] += quantity # append value
 
                 # ------------------------------------------------------
-                # Case 3 (need production for odoo line not in account):
+                # Subcase 3: ODOO - Account (all delivered):
                 # ------------------------------------------------------
                 # All record with 4, 5 position empty
-            
+                        
             # Correct status of line with master database (3 subcases)
             for (item_id, order, temp, maked, 
                     acc_remain, acc_maked) in master_line_db:
-                # Case all maked:
-                if not acc_remain and not acc_maked:
-                    # case: odoo - account  >>> all delivered
+                
+                # Subcase 1 not present:                
+                
+                if any([acc_remain, acc_maked]):
+                    # Subcase 2 Account AND ODOO (Much cases to manage)
+
+                    # Maked/Not maked and delivered/not delivered:                    
+                    delivered = order - acc_remain - acc_maked
+                    sol_pool.write(cr, uid, item_id, {
+                        'product_uom_maked_sync_qty': acc_maked + delivered,
+                        'product_uom_delivered_qty': delivered,
+                        }, context=context)
+                else: 
+                    # Subcase 3: all delivered: odoo - account                    
                     sol_pool.write(cr, uid, item_id, {
                         'product_uom_maked_sync_qty': order,
                         'product_uom_delivered_qty': order, # all
                         }, context=context)
-                    
-                    
-                    
-                
-                
+                    continue
 
             # ------------------------------------------------------
             # Case 3 (need production for odoo line not in account):
