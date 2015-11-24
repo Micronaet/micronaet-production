@@ -47,7 +47,8 @@ class MrpProduction(orm.Model):
     # Utility function:
     # -----------------
     def _get_fake_order(self, cr, uid, line, context=None):
-        ''' Create or search fake master order for that family
+        ''' Create or search fake master order for that sale order line passed
+            line is a browse obj for get all extra data needed
             TODO: one for year?
         '''
         bom_pool = self.pool.get('mrp.bom')
@@ -78,30 +79,6 @@ class MrpProduction(orm.Model):
             # TODO enought fields?
             }, context=context)
     
-    
-    def _add_to_fake_production(self, cr, uid, order_ids, context=None):
-        ''' Function that create fake production order and add all order_ids
-            line passed (every line go in mrp order with right family code
-        '''
-        line_pool = self.pool.get('sale.order.line')
-        buffer_mrp = {}
-        for line in line_pool.browse(cr, uid, order_ids, context=context):
-            family_id = line.product_id.family_id.id
-            # TODO manager error for no family line
-            # TODO check if it is a production product <<<<<< IMPORTANT
-            if family_id not in buffer_mrp:                    
-                buffer_mrp[family_id] = self._get_family_fake_order(
-                    cr, uid, line, context=context)
-            
-            # Add line to order:
-            line_pool.write(cr, uid, [line.id], {
-                'mrp_id': buffer_mrp[family_id] # TODO correct fields?
-                }, context=context)
-                    
-        # Update totals and order in all bufferd order managed here:
-        # TODO    
-        return True
-
     _columns = {
         'fake_order': fields.boolean('Fake order', 
             help='Fake production order that is used for put all produced'
@@ -149,9 +126,10 @@ class SaleOrder(orm.Model):
         # Load account order:
         account_pool.scheduled_import_order(
             cr, uid, csv_file, separator, header, verbose, context=context)
+        
+        # TODO Sync new order (for remove account - odoo cases?
 
-        # TODO Sync new order?
-
+        import pdb; pdb.set_trace()
         # -------------------------------------------
         # Load the two order block, account and odoo:
         # -------------------------------------------
