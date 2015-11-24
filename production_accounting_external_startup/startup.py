@@ -139,12 +139,15 @@ class SaleOrder(orm.Model):
             ('accounting_order', '=', True), # Order for production
             ('forecasted_production_id', '=', False) # No forecast order!
             ], context=context)
+        _logger.info('Found ODOO order (not forecast): %s' % len(odoo_ids))
+        
         for item in self.browse(
                 cr, uid, odoo_ids, context=context):    
             odoo[item.name] = item # order proxy
 
         # > Load account order:        
         account_ids = account_pool.search(cr, uid, [], context=context)
+        _logger.info('Found Account order: %s' % len(account_ids))
         
         # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         #                         Header analysis:
