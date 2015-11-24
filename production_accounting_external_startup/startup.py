@@ -137,6 +137,7 @@ class SaleOrder(orm.Model):
         odoo = {} # dict for manage odoo order
         odoo_ids = self.search(cr, uid, [
             ('accounting_order', '=', True), # Order for production
+            ('forecasted_production_id', '=', False) # No forecast order!
             ], context=context)
         for item in self.browse(
                 cr, uid, odoo_ids, context=context):    
@@ -270,6 +271,8 @@ class SaleOrder(orm.Model):
                     data['sync_state'] = 'closed'
 
                 sol_pool.write(cr, uid, item_id, data, context=context)
+                
+            # TODO update fake production for totals and order?
         return True
         
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
