@@ -55,26 +55,28 @@ class MrpProduction(orm.Model):
 
         family_id = line.product_id.family_id.id
         fake_ids = self.search(cr, uid, [
-            ('family_id', '=', family_id),
+            ('product_id', '=', family_id),
             ('fake_order', '=', True),
             ], context=context)
         if fake_ids:
-            return face_ids[0]
+            return fake_ids[0]
         
         # get_bom_id for family:
-        bom_ids = bom_pool.searc(cr, uid, [
+        bom_ids = bom_pool.search(cr, uid, [
             ('product_tmpl_id', '=', family_id),
             ('has_lavoration', '=', True),
             ], context=context)
         if not bom_ids:
-            _logger.error('No bom found for family selected')
+            _logger.error('No bom found for family selected %s' % (
+                line.product_id.family_id.name))
+            return False
             # TODO create one?
                 
         # Create a fake mrp order:
         return self.create(cr, uid, {
             'fake_order': True,
-            'product_id': line.product_id.id,
-            'product_uom': line.product_id.uom_id,
+            'product_id': family_id,
+            'product_uom': line.product_id.uom_id.id,
             'bom_id': bom_ids[0],            
             # TODO enought fields?
             }, context=context)
@@ -179,11 +181,10 @@ class SaleOrder(orm.Model):
             #                     Line analysis:
             # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             # Read odoo lines archived with key = code, deadline:
-            master_line_db = {}
+            current_odoo_order = {} # one order a time
             
             # 1. Loop on ODOO order line:
-            for odoo_line in odoo[name].order_line:
-            
+            for odoo_line in odoo[name].order_line:            
                 # Create a Key
                 try:
                     if (not odoo_line.product_id.default_code) or (
@@ -201,7 +202,7 @@ class SaleOrder(orm.Model):
                     )
                     
                 # Save master line database (populated with ODOO lines):
-                master_line_db[key] = [
+                current_odoo_order[key] = [
                     # ODOO order line:                    
                     odoo_line, # 0. Browse obj for odoo order line:
                     
@@ -211,9 +212,7 @@ class SaleOrder(orm.Model):
                     ]
             
             # 2. Loop on Account order line:
-            import pdb; pdb.set_trace()
             for line in account.line_ids:
-
                 # ------------------------
                 # Subcase 0 (description):
                 # ------------------------
@@ -224,14 +223,14 @@ class SaleOrder(orm.Model):
                 # Create key:    
                 if not line.code or not line.deadline:
                     _logger.error('Account order without code/deadline: %s' % (
-                        line.order_id.name))
+                        line.header_id.name))
                     continue
                 key = (line.code, line.deadline)
 
                 # -----------------------------------
                 # Subcase 1: Account - ODOO >> Error:
                 # -----------------------------------
-                if key not in master_line_db: 
+                if key not in current_odoo_order: 
                     _logger.error(
                         'Order line accounting not in oerp order: %s' % (
                             line.code))
@@ -244,13 +243,21 @@ class SaleOrder(orm.Model):
                 # ----------------------------------------------------
                 # Update values in master DB (will be check after)
                 if line.type == 'b': # maked quantity
-                    master_line_db[key][2] += line.quantity # multi
+                    current_odoo_order[key][2] += line.quantity # multi
                 else: # not maked:
-                    master_line_db[key][1] += line.quantity # append value
+                    current_odoo_order[key][1] += line.quantity # append value
                         
             # 3. Update database ODOO status:
-            for (odoo_line, acc_remain, acc_maked) in master_line_db:
-                # Get element from browse odoo line:
+            for k, (odoo_line, 
+                    acc_remain, 
+                    acc_maked,
+                    ) in current_odoo_order.iteritems():
+
+                if not odoo_line.product_id.internal_manufacture:
+                    _logger.warning('Jumped, not produce: %s' % (
+                        odoo_line.product_id.default_code))
+                
+                # Get element from browse odoo line:                
                 item_id = odoo_line.id
                 mrp_id = odoo_line.mrp_id.id
                 family_id = odoo_line.product_id.family_id.id
