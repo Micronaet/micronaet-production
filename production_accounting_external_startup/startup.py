@@ -124,12 +124,12 @@ class SaleOrder(orm.Model):
         # ----------------------------------------------
         # Force scheduled importation from here # TODO deactivate other
         # Load account order:
-        account_pool.scheduled_import_order(
-            cr, uid, csv_file, separator, header, verbose, context=context)
-        
-        # TODO Sync new order (for remove account - odoo cases?
+        # TODO remove comment after!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #account_pool.scheduled_import_order(
+        #    cr, uid, csv_file, separator, header, verbose, context=context)
 
-        import pdb; pdb.set_trace()
+        # TODO Sync alse new odoo order (for remove account - odoo cases?
+
         # -------------------------------------------
         # Load the two order block, account and odoo:
         # -------------------------------------------
@@ -153,6 +153,7 @@ class SaleOrder(orm.Model):
         #                         Header analysis:
         # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         # Loop on all account order first:
+        import pdb; pdb.set_trace()
         for account in account_pool.browse(
                 cr, uid, account_ids, context=context):
             # Get right format name
@@ -167,7 +168,7 @@ class SaleOrder(orm.Model):
             if name not in odoo: 
                 _logger.error(
                     'Order accounting not in odoo, sync! [%s]' % (
-                        code))
+                        name))
                 continue
                 
             # -----------------------------------------------------------------
