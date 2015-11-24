@@ -259,7 +259,6 @@ class SaleOrder(orm.Model):
                     master_line_db[key][2] += quantity # append value (multi)
                 else: # not maked:
                     master_line_db[key][1] += quantity # append value
-
                         
             # 3. Update database ODOO status:
             for (odoo_line, acc_remain, acc_maked) in master_line_db:
@@ -271,45 +270,28 @@ class SaleOrder(orm.Model):
                 temp = odoo_line.product_uom_maked_qty
                 maked = odoo_line.product_uom_maked_sync_qty
 
-                # (Mode 1: not present):
-                
-                if any([acc_remain, acc_maked]): # Mode 2 Account AND ODOO
-                    # Maked/Not maked and delivered/not delivered:                    
-                    delivered = order - acc_remain - acc_maked
-                    acc_maked += delivered # (maked and delivered = maked)
-                    
-                    data = {
-                        'product_uom_maked_qty': 0, # reset
-                        'product_uom_maked_sync_qty': acc_maked,
-                        'product_uom_delivered_qty': delivered,
-                        #'sync_state': 'closed', # all close TODO
-                        }
+                delivered = order - acc_remain - acc_maked
+                acc_maked += delivered # (maked and delivered = maked)
 
-                    # There's some production create in not pres.   
-                    if acc_maked and not mrp_id:
-                        # Create or get fake production:
-                        if family_id not in fake_mrp:
-                            fake_mrp[family_id] = mrp_pool._get_fake_order(
-                                cr, uid, odoo_line, context=context)                           
-                        
-                    sol_pool.write(cr, uid, item_id, data, context=context)
-                else: # Mode 3: all delivered: odoo - account                    
-                    if not mrp_id: # so all produced
-                        # Create or get fake production:
-                        if family_id not in fake_mrp:
-                            fake_mrp[family_id] = mrp_pool._get_fake_order(
-                                cr, uid, odoo_line, context=context)                           
-                    
-                    data = {
-                        'product_uom_maked_qty': 0, # reset
-                        'product_uom_maked_sync_qty': order,
-                        'product_uom_delivered_qty': order, # all
-                        #'sync_state': 'closed', # all close TODO
-                        }
-                    sol_pool.write(cr, uid, item_id, data, context=context)
-                    continue
+                data = {
+                    'product_uom_maked_qty': 0, # reset
+                    'product_uom_maked_sync_qty': acc_maked,
+                    'product_uom_delivered_qty': delivered,
+                    }
 
-            # TODO manage production fake inline!
+                # Need mrp_id (not present so fake generation):
+                if acc_maked and not mrp_id:
+                    # Create or get fake production:
+                    if family_id not in fake_mrp:
+                        fake_mrp[family_id] = mrp_pool._get_fake_order(
+                            cr, uid, odoo_line, context=context)                           
+                    data['mrp_id'] = fake_mrp[family_id]
+
+                # Need to close production:
+                if order == acc_maked:
+                    data['sync_state'] = 'closed'
+
+                sol_pool.write(cr, uid, item_id, data, context=context)
         return True
         
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
