@@ -137,6 +137,7 @@ class SaleOrder(orm.Model):
         # Pool used:
         account_pool = self.pool.get('statistic.header')
         mrp_pool = self.pool.get('mrp.production')
+        sol_pool = self.pool.get('sale.order.line')
         
         # Variables:
         make_production_line_ids = [] # B lines
@@ -216,15 +217,15 @@ class SaleOrder(orm.Model):
                     odoo_line.product_uom_qty,
                     # 2. TODO temp value <<< manage 
                     odoo_line.product_uom_maked_qty, 
-                    # 2. B in account:
+                    # 3. B in account:
                     odoo_line.product_uom_maked_sync_qty, 
                     
                     # -------------------
                     # Account order line:
                     # -------------------
-                    # 3. To make (remain maybe not all ordered)
+                    # 4. To make (remain maybe not all ordered)
                     0.0, 
-                    # 4. Maked
+                    # 5. Maked
                     0.0, 
                     ]
             
@@ -263,19 +264,26 @@ class SaleOrder(orm.Model):
                 # ----------------------------------------------------
                 # Update values in master DB (will be check after)
                 if line.type = 'b': # maked quantity
-                    master_line_db[key][3] += quantity # append value (multi)
+                    master_line_db[key][5] += quantity # append value (multi)
                 else: # not maked:
-                    master_line_db[key][2] += quantity # append value
+                    master_line_db[key][4] += quantity # append value
 
                 # ------------------------------------------------------
                 # Case 3 (need production for odoo line not in account):
                 # ------------------------------------------------------
-                # All record with 3, 4 position empty
+                # All record with 4, 5 position empty
             
             # Correct status of line with master database (3 subcases)
-            for (order, temp, maked, acc_remain, acc_maked) in master_line_db:
+            for (item_id, order, temp, maked, 
+                    acc_remain, acc_maked) in master_line_db:
                 # Case all maked:
-                if not acc_remain ann not acc_maked:
+                if not acc_remain and not acc_maked:
+                    # case: odoo - account  >>> all delivered
+                    sol_pool.write(cr, uid, item_id, {
+                        'product_uom_maked_sync_qty': order,
+                        'product_uom_delivered_qty': order, # all
+                        }, context=context)
+                    
                     
                     
                 

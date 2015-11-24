@@ -175,6 +175,13 @@ class SaleOrderLine(orm.Model):
     _columns = {
         'mrp_id': fields.many2one(
             'mrp.production', 'Production', ondelete='set null', ),
+            
+        # Delivered:    
+        'product_uom_delivered_qty': fields.float(
+            'Delivered', digits=(16, 2), 
+            help='Quantity delivered (info from account)'),
+            
+        # Produced:
         'product_uom_maked_qty': fields.float(
             'Maked (temp.)', digits=(16, 2), 
             help='Partial position till not sync in accounting'),
