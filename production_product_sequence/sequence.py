@@ -53,7 +53,7 @@ class MrpProductionSequence(orm.Model):
         'name': fields.char(
             'Parent', size=15, required=True), 
         'mrp_id': fields.many2one('mrp.production', 'MRP order'),
-        'total': fields.integer('# line'),
+        'total': fields.integer('Quantity'),
         }
     _defaults = {
         'sequence': lambda *x: 1000, # New line go bottom
@@ -77,18 +77,25 @@ class MrpProduction(orm.Model):
 
         # Reload parent element for include new (TODO necessary?):
         self.load_parent_list(cr, uid, ids, context=context)
-        
+
         # Read parent order:
         master_order = {}
+        order = []
         for parent in mrp_proxy.sequence_ids:
-            master_order[parent] = []
+            order.append(parent.name) # keep in order (unlike dict)
+            master_order[parent.name] = []
         
         for line in mrp_proxy.order_line_ids:
-            master_order.append(
+            parent_code = line.product_id.default_code[:3]
+            master_order[parent_code].append(
                 (line.product_id.default_code, line.id))
                         
         i = 0
-        for parent, sol_ids in master_order: #sorted(order):
+        # Loop on forced order parent:
+        for parent in order:
+            sol_ids = master_order[parent]
+            
+            # Loop on code order child:
             for default_code, item_id in sorted(sol_ids): 
                 i += 1
                 line_pool.write(cr, uid, item_id, {
