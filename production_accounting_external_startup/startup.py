@@ -126,9 +126,8 @@ class SaleOrder(orm.Model):
         # ----------------------------------------------
         # Force scheduled importation from here # TODO deactivate other
         # Load account order:
-        # TODO remove comment after!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        #account_pool.scheduled_import_order(
-        #    cr, uid, csv_file, separator, header, verbose, context=context)
+        account_pool.scheduled_import_order(
+            cr, uid, csv_file, separator, header, verbose, context=context)
 
         # TODO Sync alse new odoo order (for remove account - odoo cases?
 

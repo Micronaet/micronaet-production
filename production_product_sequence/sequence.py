@@ -75,7 +75,7 @@ class MrpProduction(orm.Model):
         line_pool = self.pool.get('sale.order.line')        
         mrp_proxy = self.browse(cr, uid, ids, context=context)
 
-        # Reload parent element for include new (TODO necesary?):
+        # Reload parent element for include new (TODO necessary?):
         self.load_parent_list(cr, uid, ids, context=context)
         
         # Read parent order:
