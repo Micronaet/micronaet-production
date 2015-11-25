@@ -217,8 +217,8 @@ class SaleOrder(orm.Model):
                 # Subcase 0 (description):
                 # ------------------------
                 if line.line_type == 'd': # else 'a' for article!
-                    order_id = line.order_id.id
-                    if order_id not in note_order:
+                    order_id = odoo[name].id
+                    if order_id not in note_order:                    
                         note_order[order_id] = ''
                     note_order[order_id] += '%s\n' % line.article
                     continue
