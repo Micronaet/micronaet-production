@@ -120,14 +120,15 @@ class SaleOrder(orm.Model):
         
         # Fake database of production:
         fake_mrp = {}
+        note_order = {} # Save order note
         
         # ----------------------------------------------
         # Import all csv file in temporary order object:
         # ----------------------------------------------
         # Force scheduled importation from here # TODO deactivate other
         # Load account order:
-        account_pool.scheduled_import_order(
-            cr, uid, csv_file, separator, header, verbose, context=context)
+        #account_pool.scheduled_import_order(
+        #    cr, uid, csv_file, separator, header, verbose, context=context)
 
         # TODO Sync alse new odoo order (for remove account - odoo cases?
 
@@ -216,7 +217,10 @@ class SaleOrder(orm.Model):
                 # Subcase 0 (description):
                 # ------------------------
                 if line.line_type == 'd': # else 'a' for article!
-                    pass # TODO Save description for order purposes
+                    order_id = line.order_id.id
+                    if order_id not in note_order:
+                        note_order[order_id] = ''
+                    note_order[order_id] += '%s\n' % line.article
                     continue
                 
                 # Create key:    
@@ -286,8 +290,13 @@ class SaleOrder(orm.Model):
                     data['sync_state'] = 'closed'
 
                 sol_pool.write(cr, uid, item_id, data, context=context)
-                
+            
+            # Write order note_
+            for order_id in note_order:
+                self.write(cr, uid, order_id, {
+                    'note': note_order[order_id]}, context=context)    
             # TODO update fake production for totals and order?
+            
         return True
         
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
