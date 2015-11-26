@@ -436,12 +436,20 @@ class bom_production(orm.Model):
                         if wc_ids:
                             wc_pool.unlink(cr, uid, wc_ids, context=context)  
                         
-                        
                         # Update WH if not present in wizard (mandatory):
-                        mrp_data['workhour_id'] = mrp_data[
-                            'workhour_id'] or item.workhour_id.id
-                        mrp_data['schedule_from_date'] = mrp_data[
-                            'schedule_from_date'] or item.schedule_from_date
+                        # >> used also for reschedule all button
+                        mrp_data['workcenter_id'] = mrp_data.get(
+                            'workcenter_id', item.workcenter_id.id)
+                        mrp_data['workhour_id'] = mrp_data.get(
+                            'workhour_id', item.workhour_id.id)
+                        mrp_data['schedule_from_date'] = mrp_data.get(
+                            'schedule_from_date', item.schedule_from_date)
+                        mrp_data['item_hour'] = mrp_data.get(
+                            'item_hour', item.item_hour)    
+                        mrp_data['bom_id'] = mrp_data.get(
+                            'mrp_bom', item.bom_id.id)
+                        mrp_data['workers'] = mrp_data.get(
+                            'workers', item.workers)
 
                 if not master_id:
                     _logger.warning('Master not present need to be created')
@@ -522,6 +530,17 @@ class bom_production(orm.Model):
     # -------------
     # Button event:
     # -------------
+    def reschedule_lavoration(self, cr, uid, ids, context=None):
+        # TODO will be correct with split lavoration?!?
+        # Reforce total from sale order line:
+        self.recompute_total_from_sol(
+            cr, uid, ids, context=context) 
+
+        # Force (re)schedule (create / append):
+        context['mrp_data'] = {'mode': 'append'}
+        self.create_lavoration_item(# and workcenter line
+            cr, uid, ids, mode='create', context=context)
+
     def open_lavoration(self, cr, uid, ids, context=None):
         ''' Open in calendar all lavorations for this production
         '''

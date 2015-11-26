@@ -228,12 +228,7 @@
             </field>
             
             <field name="date_planned" position="before">
-                <!--<field name="use_extra_qty" /> NO MORE USED -->
-                <!--<field name="oc_qty" /> NO MORE USED -->
-                <!--<field name="previsional_qty" /> NO MORE USED -->
                 <field name="forecast_qty" />
-                <!--<field name="extra_qty" /> NO MORE USED -->
-                <!--<field name="error_qty" invisible="1"/>--><!--TODO alert-->
             </field>
             
             <!--Hide notebook page-->
@@ -265,46 +260,9 @@
                             }" options="{'reload_on_button': true}"/> <!--ALSO: options="{'always_reload': true}"-->
                     </group>
                 </page>
-                <!--TODO remove page-->
-                <!--<page string="Previsional order">
-                    <group string="Previsional order">                              
-                        <field name="previsional_line_ids" nolabel="1" context="{'embedded':True}"/>
-                    </group>
-                </page>-->
-                <!--<page string="Use extra production">
-                    <group string="Extra production">                              
-                        <button name="%(action_assign_mrp_production_wizard_form)d" string="Assign production" type="action" />
-                        <newline />
-                        <field name="use_mrp_ids" nolabel="1" delete="0" create="0">
-                            <tree string="Extra production" editable="bottom" delete="0">
-                                <field name="used_by_mrp_id" invisible="1" />
-                                <field name="name" readonly="1"/>
-                                <field name="extra_qty" readonly="1" sum="Total"/>
-                                <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" />
-                            </tree>
-                            <form string="OC line">
-                                <group colspan="4" col="4">
-                                <field name="used_by_mrp_id" invisible="1" />
-                                    <field name="name" readonly="1"/>
-                                    <field name="extra_qty" readonly="1" />
-                                    <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" />
-                                </group>    
-                            </form>
-                        </field>
-                    </group>
-                </page>--><!--domain="[('id','!=',parent.id),('product_id','=',parent.product_id),('has_extra_qty','=',True),('used_by_mrp_id','=',False)]"/>--><!--domain="[('id','!=',parent.id),('product_id','=',parent.product_id),('has_extra_qty','=',True),('used_by_mrp_id','=',False)]"/>-->
             </xpath>            
         </field>
     </record>        
-
-    <!--<record model="ir.actions.act_window" id="action_view_mrp_production_extra">
-        <field name="name">Extra production</field>
-        <field name="res_model">mrp.production</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="mrp.mrp_production_tree_view"/> 
-        <field name="domain">[('has_extra_qty','=',True),('used_by_mrp_id','=',False)]</field>
-    </record>-->
 
     <!--sale.order.line.previsional-->
     <record model="ir.ui.view" id="sale_order_line_previsional_search_view">
@@ -355,14 +313,6 @@
            </form>
         </field>
     </record>
-    <!--<record model="ir.actions.act_window" id="action_view_sale_order_line_previsional">
-        <field name="name">Sale order line previsional</field>
-        <field name="res_model">sale.order.line.previsional</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">tree,form</field>
-        <field name="search_view_id" ref="sale_order_line_previsional_search_view"/>
-        <field name="view_id" ref="sale_order_line_previsional_tree_view"/>        
-    </record>-->
     
     <!--sale.order.line-->
     <record model="ir.ui.view" id="sale_order_line_family_search_view">
@@ -581,17 +531,6 @@
 
     <!--                       MENUITEM:                                    -->
    <!-- PRODUCTION -->
-   <!--<menuitem name="Extra production"
-          parent="mrp.menu_mrp_production_action" 
-          id="menu_view_mrp_production_extra" 
-          action="action_view_mrp_production_extra" 
-          sequence="20" />-->
-   <!--<menuitem name="Previsional production"
-          parent="mrp.menu_mrp_production_action" 
-          id="menu_view_sale_order_line_previsional" 
-          action="action_view_sale_order_line_previsional" 
-          sequence="30" />-->
-
    <menuitem name="Sale order" 
        parent="mrp.menu_mrp_manufacturing" 
        id="menu_base_sale_order_root" 

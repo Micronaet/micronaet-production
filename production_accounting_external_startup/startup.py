@@ -225,8 +225,8 @@ class SaleOrder(orm.Model):
                 
                 # Create key:    
                 if not line.code or not line.deadline:
-                    _logger.error('Account order without code/deadline: %s' % (
-                        line.header_id.name))
+                    _logger.error('Account order %s no code/deadline' % (
+                        line.name))
                     continue
                 key = (line.code, line.deadline)
 
@@ -235,8 +235,8 @@ class SaleOrder(orm.Model):
                 # -----------------------------------
                 if key not in current_odoo_order: 
                     _logger.error(
-                        'Order line accounting not in oerp order: %s' % (
-                            line.code))
+                        'Product %s (accounting) not in oerp order: %s' % (
+                            line.code, line.name))
                     # TODO import? better not!
                     continue
                      
@@ -257,7 +257,7 @@ class SaleOrder(orm.Model):
                     ) in current_odoo_order.iteritems():
 
                 if not odoo_line.product_id.internal_manufacture:
-                    _logger.warning('Jumped, not produce: %s' % (
+                    _logger.warning('Jumped, not to produce: %s' % (
                         odoo_line.product_id.default_code))
                 
                 # Get element from browse odoo line:                

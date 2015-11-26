@@ -69,13 +69,13 @@
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
                 <page string="Lavoration">
-                    <!--<button name="reschedule_lavoration" type="object" string="Re-schedule all" confirm="This delete all lavoration and phase and recreate with date and workhour setted up, confirm?"/>-->
 
                     <group colspan="4" col="8">
                         <!--<separator string="Original setup (creation time):" colspan="8"/>-->
                         <!--<field name="workhour_id" string="Workhour"/>-->
                         <!--<field name="schedule_from_date" string="Start date"/>-->
-                        <field name="worker_ids" widget="many2many_tags" colspan="4" string="Workers"/>
+                        <field name="worker_ids" widget="many2many_tags" colspan="6" string="Workers"/>
+                        <button name="reschedule_lavoration" type="object" colspan="2" string="Re-schedule all" confirm="This delete all lavoration and phase and recreate with date and workhour setted up, confirm?"/>
                         <separator string="Lavoration blocks:" colspan="8"/>
                     </group>
                     <field name="lavoration_ids" colors="blue:fixed==True" readonly="1"> <!--readonly all!!-->

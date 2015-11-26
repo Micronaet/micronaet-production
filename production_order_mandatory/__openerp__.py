@@ -37,7 +37,8 @@
         'base',
         'product',
         'mrp',
-        'sql_sale_order', # for schedule importation
+        'sql_sale_order',
+        #'production_accounting_external',
         ],
     'init_xml': [],
     'demo': [],

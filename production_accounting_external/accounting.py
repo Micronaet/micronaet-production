@@ -320,7 +320,7 @@ class MrpProduction(orm.Model):
         ''' Free the line from production order 
         '''
         return self.write(cr, uid, ids, {
-            'used_by_mrp_id': False, }, context=context)
+            'used_by_mrp_id': False}, context=context)
 
     def _get_total_information(self, cr, uid, ids, fields=None, args=None, 
             context=None):

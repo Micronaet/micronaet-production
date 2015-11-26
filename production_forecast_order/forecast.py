@@ -87,7 +87,9 @@ class MrpProduction(orm.Model):
     '''    
     _inherit = 'mrp.production'
 
+    # -------------
     # Button event:
+    # -------------
     def create_open_forecast_order(self, cr, uid, ids, context=None):
         ''' Create if not present the forecast order and open (if exist only
             open)
@@ -113,6 +115,7 @@ class MrpProduction(orm.Model):
             self.write(cr, uid, ids, {
                 'forecast_order_id': order_id, 
                 }, context=context)    
+            # Update totals    
 
         # Open order for adding lines:        
         return {
