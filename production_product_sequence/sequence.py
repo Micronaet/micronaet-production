@@ -45,6 +45,24 @@ class MrpProductionSequence(orm.Model):
     _description = 'MRP production sequence'
     _order = 'sequence, name'    
     
+    # Button:
+    def remove_parent_block(self, cr, uid, ids, context=None):
+        ''' Remove block and all element of this bloc
+        '''
+        block_proxy = self.browse(cr, uid, ids, context=context)[0]
+        parent_code = block_proxy.name
+        
+        #TODO Duplicate block, better as a function?
+        free_ids = 
+        for line in block_proxy.mrp_id.order_line_ids:
+            if parent_code = line.product_id.default_code[:3]
+                free_ids.append(line.id)
+        self.pool.get('sale.order.line').write(cr, uid, free_ids, {
+            'mrp_id': False, 
+            'mrp_sequence': False, # reset order
+            }, context=context)        
+        return True
+        
     # ----------------
     # Field functions:
     # ----------------

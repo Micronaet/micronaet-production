@@ -10,10 +10,11 @@
                  <group string="Sequence" colspan="4" col="4">
                      <group colspan="2" col="2">
                          <field name="sequence_ids" nolabel="1" >
-                             <tree string="Sequence from parent" delete="false"> <!-- editable="bottom"-->
+                             <tree string="Sequence from parent" delete="false" options="{'reload_on_button': true}" editable="bottom">
                                  <field name="sequence" invisible="1"/>
                                  <field name="name" readonly="1"/>
                                  <field name="total" readonly="1"/>
+                                 <button name="remove_parent_block" string="Free all block" type="object" icon="gtk-disconnect"/>
                              </tree>                         
                              <form string="Sequence from parent" version="7.0">
                                  <group string="Sequence" colspan="4" col="4">
