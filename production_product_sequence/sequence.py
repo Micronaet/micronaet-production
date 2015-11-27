@@ -47,20 +47,25 @@ class MrpProductionSequence(orm.Model):
     
     # Button:
     def remove_parent_block(self, cr, uid, ids, context=None):
-        ''' Remove block and all element of this bloc
+        ''' Remove block and all element of this block
         '''
         block_proxy = self.browse(cr, uid, ids, context=context)[0]
         parent_code = block_proxy.name
         
         #TODO Duplicate block, better as a function?
-        free_ids = 
+        free_ids = []
         for line in block_proxy.mrp_id.order_line_ids:
-            if parent_code = line.product_id.default_code[:3]
+            if parent_code == line.product_id.default_code[:3]:
                 free_ids.append(line.id)
+        
+        # Free all sol in block        
         self.pool.get('sale.order.line').write(cr, uid, free_ids, {
             'mrp_id': False, 
             'mrp_sequence': False, # reset order
-            }, context=context)        
+            }, context=context)
+        
+        # Delete record block:    
+        self.unlink(cr, uid, ids, context=context)            
         return True
         
     # ----------------
