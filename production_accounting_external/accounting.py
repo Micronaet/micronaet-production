@@ -332,6 +332,8 @@ class MrpProduction(orm.Model):
         '''
         res = {}    
         for order in self.browse(cr, uid, ids, context=context):
+        
+            # Check for total order and total production:
             res[order.id] = {}
             res[order.id]['forecast_qty'] = 0.0
             total = 0.0
@@ -341,12 +343,25 @@ class MrpProduction(orm.Model):
                 if line.order_id.forecasted_production_id:
                     # TODO check UM?
                     res[order.id]['forecast_qty'] += line.product_uom_qty 
+
             if order.product_qty == total:
                 res[order.id]['error_total'] = False
             else:
                 res[order.id]['error_total'] = _(
-                    'Total of order different of sum(lines) '
-                    'Need reschedule operation')
+                    'Total of order line different of sum(lines)'
+                    'Need reschedule operation (button)!')
+                return res
+                    
+            # Check for total order and total scheduled:    
+            scheduled_qty = sum([
+                item.lavoration_qty for item in order.scheduled_lavoration_ids
+                ])        
+            if order.product_qty == scheduled_qty:
+                res[order.id]['error_total'] = False
+            else:
+                res[order.id]['error_total'] = _(
+                    'Total of order different of sum(scheduled lines)'
+                    'Need reschedule operation (button)!')
         return res
 
     # Fields function:
