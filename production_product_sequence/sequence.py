@@ -65,7 +65,7 @@ class MrpProductionSequence(orm.Model):
             }, context=context)
         
         # Delete record block:    
-        self.unlink(cr, uid, ids, context=context)            
+        #TODO give error: self.unlink(cr, uid, ids, context=context)
         return True
         
     # ----------------
