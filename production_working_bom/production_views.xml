@@ -157,7 +157,7 @@
         <field name="res_model">mrp.production.workcenter.line</field>
         <field name="view_type">form</field>
         <field name="view_mode">calendar,tree,form</field>
-        <field name="view_id" ref="mrp_production_workcenter_line_calendar_default_view"/>
+        <field name="view_id" ref="mrp_production_workcenter_line_calendar_lavoration_view"/>
         <field name="context">{}</field>
         <field name="domain">[]</field>
     </record>
