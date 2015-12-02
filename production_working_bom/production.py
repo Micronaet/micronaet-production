@@ -273,6 +273,7 @@ class bom_production(orm.Model):
 
         # Pools used:
         wc_pool = self.pool.get('mrp.production.workcenter.line')
+        festivity_pool = self.pool.get('hr.workhour.festivity')
         
         # ---------------------------------------------------------------------
         #                  Create workcenter line from lavorations:
@@ -302,6 +303,9 @@ class bom_production(orm.Model):
             current_date = datetime.strptime(
                 schedule_from_date, DEFAULT_SERVER_DATE_FORMAT)
             
+            if festivity_pool.is_festivity(cr, uid, date, context=context):
+                continue
+
             # Leave loop for next developing (now only one line=production)
             while total_hour > 0.0:
                 # Not work days for workhour plan:
@@ -455,7 +459,7 @@ class bom_production(orm.Model):
                     _logger.warning('Master not present need to be created')
                            
             # Check mandatory elements (create and append need to):
-            if not mrp_data['workhour_id']:
+            if 'workhour_id' not in mrp_data or not mrp_data['workhour_id']:
                 raise osv.except_osv(
                     _('Error'), _('No work hour type setted!'))
             if not mrp_data['schedule_from_date']:
@@ -493,11 +497,13 @@ class bom_production(orm.Model):
                 #'level': lavoration.level,
                 #'phase_id': lavoration.phase_id.id,                    
                 #'fixed': lavoration.fixed,
-                'workcenter_id': mrp_data['workcenter_id'], # TODO force_workcenter or lavoration.workcenter_id.id,
+                # TODO force_workcenter or lavoration.workcenter_id.id,
+                'workcenter_id': mrp_data['workcenter_id'], 
                 'workers': mrp_data['workers'],
                 'item_hour': mrp_data['item_hour'],
                 'duration': duration, # H. total
-                'workhour_id': mrp_data['workhour_id'], #TODO mrp_roxy.workhour_id.id, # same as mrp
+                # TODO mrp_roxy.workhour_id.id, # same as mrp
+                'workhour_id': mrp_data['workhour_id'], 
                 }
 
             if not master_id: # not yet present            

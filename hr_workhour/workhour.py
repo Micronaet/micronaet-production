@@ -115,7 +115,7 @@ class HrWorkhourFestivity(osv.osv):
             ('month', '=', date.month),
             ('periodic_from', '>=', date.year),
             ('periodic_to', '<=', date.year),
-            ]) 
+            ])
         if date_ids:
             return True
 
@@ -145,7 +145,7 @@ class HrWorkhourFestivity(osv.osv):
         # static festivity:
         'static': fields.boolean('Static festivity', 
             help='It means that every year this festivity is the same day '
-                '(ex. Christmas = 25 of dec.), if not it's dynamic '
+                '(ex. Christmas = 25 of dec.), if not it\'s dynamic '
                 '(ex. Easter monday)'),
         'day': fields.integer('Static day'),
         'month': fields.integer('Static month'),
