@@ -303,11 +303,14 @@ class bom_production(orm.Model):
             current_date = datetime.strptime(
                 schedule_from_date, DEFAULT_SERVER_DATE_FORMAT)
             
-            if festivity_pool.is_festivity(cr, uid, date, context=context):
-                continue
-
             # Leave loop for next developing (now only one line=production)
             while total_hour > 0.0:
+                # Check festivity:
+                if festivity_pool.is_festivity(cr, uid, current_date, 
+                        context=context):
+                    current_date = current_date + timedelta(days=1)
+                    continue
+
                 # Not work days for workhour plan:
                 wd = current_date.weekday()
                 if wd not in workhour: 

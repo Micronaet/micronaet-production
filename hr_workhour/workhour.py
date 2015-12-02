@@ -113,8 +113,8 @@ class HrWorkhourFestivity(osv.osv):
             ('periodic', '=', True), 
             ('day', '=', date.day),
             ('month', '=', date.month),
-            ('periodic_from', '>=', date.year),
-            ('periodic_to', '<=', date.year),
+            ('periodic_from', '<=', date.year),
+            ('periodic_to', '>=', date.year),
             ])
         if date_ids:
             return True
@@ -132,11 +132,12 @@ class HrWorkhourFestivity(osv.osv):
         # Dinamic festivity:
         date_ids = self.search(cr, uid, [
             ('static', '=', False), 
-            ('dynamic_from_date', '>=', date.strftime('%Y-%m-%d')),
-            ('dynamic_to_date', '<=', date.strftime('%Y-%m-%d')),
+            ('dynamic_from_date', '<=', date.strftime('%Y-%m-%d')),
+            ('dynamic_to_date', '>=', date.strftime('%Y-%m-%d')),
             ])
         if date_ids:
             return True
+
         return False
     
     _columns = {
