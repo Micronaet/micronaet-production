@@ -132,7 +132,8 @@ class HrWorkhourFestivity(osv.osv):
         # Dinamic festivity:
         date_ids = self.search(cr, uid, [
             ('static', '=', False), 
-            ('dynamic_date', '=', date.strftime("%Y-%m-%d")),
+            ('dynamic_from_date', '>=', date.strftime('%Y-%m-%d')),
+            ('dynamic_to_date', '<=', date.strftime('%Y-%m-%d')),
             ])
         if date_ids:
             return True
@@ -143,21 +144,23 @@ class HrWorkhourFestivity(osv.osv):
 
         # static festivity:
         'static': fields.boolean('Static festivity', 
-            help="It means that every year this festivity is the same day "
-                "(ex. Christmas = 25 of dec.), if not it's dynamic "
-                "(ex. Easter monday)"),
+            help='It means that every year this festivity is the same day '
+                '(ex. Christmas = 25 of dec.), if not it's dynamic '
+                '(ex. Easter monday)'),
         'day': fields.integer('Static day'),
         'month': fields.integer('Static month'),
 
         # static but periodic:
         'periodic': fields.boolean('Periodic festivity', 
-            help="Festivity is only for a from-to period "
-                "(ex.: Patronal festivity but for a period because of changing city)"),
-        'periodic_from': fields.integer('From year'),
-        'periodic_to': fields.integer('To year'),
+            help='Festivity is only for a from-to period '
+                '(ex.: Patronal festivity but for a period because of '
+                'changing city)'),
+        'periodic_from': fields.integer('From year >='),
+        'periodic_to': fields.integer('To year <='),
         
         # dinamic festivity (no periodic is allowed):
-        'dynamic_date': fields.date('Dynamic Date'),
+        'dynamic_from_date': fields.date('From date >='),
+        'dynamic_to_date': fields.date('To date <='),
         }
 
     _defaults = {
@@ -167,15 +170,15 @@ class HrWorkhourFestivity(osv.osv):
 
 # TODO Use he.employee? create a related field?
 class ResUsers(osv.osv):
-    """ Extra field form manage workhour plan, note: use res.users for fast
-    """    
+    ''' Extra field form manage workhour plan, note: use res.users for fast
+    '''    
     _inherit = 'res.users'
 
     _columns = {
         'workhour_plan_id':fields.many2one(
             'hr.workhour', 'Workhour plan', 
-            help="Working time for this employee like: "
-                "full time, part time etc. (for manage hour and presence)"),
+            help='Working time for this employee like: '
+                'full time, part time etc. (for manage hour and presence)'),
         }    
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

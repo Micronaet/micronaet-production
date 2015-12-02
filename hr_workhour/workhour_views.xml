@@ -109,7 +109,8 @@
         <field name="arch" type="xml">
             <tree string="Festivity">
                <field name="name"/>
-               <field name="dynamic_date" />
+               <field name="dynamic_from_date" />
+               <field name="dynamic_to_date" />
             </tree>
         </field>    
     </record>
@@ -135,7 +136,8 @@
                        </group>
                        <group name="dynamic_group" colspan="4" attrs="{'invisible':[('static','=',True)]}">
                            <separator string="Dynamic date" colspan="4" />
-                           <field name="dynamic_date" />
+                           <field name="dynamic_from_date" attrs="{'required':[('static','=',False)]}"/>
+                           <field name="dynamic_to_date" attrs="{'required':[('static','=',False)]}"/>
                        </group>
                    </group>
                 </sheet>
