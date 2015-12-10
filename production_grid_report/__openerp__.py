@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ###############################################################################
 #
 #    Copyright (C) 2001-2014 Micronaet SRL (<http://www.micronaet.it>).
@@ -18,8 +17,27 @@
 #
 ###############################################################################
 
-
-import prodution_grid
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-
+{
+    'name': 'Production grid report',
+    'version': '0.1',
+    'category': 'Report',
+    'description': ''' 
+        Add a report for transform linear production order in a grid with
+        row > product code and cols > order production elements       
+        ''',
+    'author': 'Micronaet S.r.l. - Nicola Riolini',
+    'website': 'http://www.micronaet.it',
+    'license': 'AGPL-3',
+    'depends': [
+        'base',
+        'mrp',
+        ],
+    'init_xml': [],
+    'demo': [],
+    'data': [
+        'report/production_grid_report.xml',
+        ],
+    'active': False,
+    'installable': True,
+    'auto_install': False,
+    }
