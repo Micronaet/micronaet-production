@@ -111,8 +111,15 @@ class SaleOrder(orm.Model):
                 2. order in both account and real > sync line
                 3. order only in real > all order product
             
-            Note: All line will be marked at the end of procedure!    
+            Note: All line will be marked at the end of procedure!
+            
+            Note: use context > only_name parameter for force sync of one order
         '''
+        context = context or {}
+
+        # Parameters:
+        only_name = context.get('only_name', False)
+        
         # Pool used:
         account_pool = self.pool.get('statistic.header')
         mrp_pool = self.pool.get('mrp.production')
@@ -137,10 +144,15 @@ class SaleOrder(orm.Model):
         # -------------------------------------------
         # > Load odoo order:
         odoo = {} # dict for manage odoo order
-        odoo_ids = self.search(cr, uid, [
+        domain = [
             ('accounting_order', '=', True), # Order for production
             ('forecasted_production_id', '=', False) # No forecast order!
-            ], context=context)
+            ]
+        if only_name:
+            _logger.info('Sync only order: %s' % only_name)
+            domain.append(('name', '=', only_name))
+
+        odoo_ids = self.search(cr, uid, domain, context=context)
         _logger.info('Found ODOO order (not forecast): %s' % len(odoo_ids))
         
         for item in self.browse(
@@ -162,7 +174,9 @@ class SaleOrder(orm.Model):
                 account.name, # number     
                 account.date[:4], # year
                 )                
-            
+            if only_name and only_name != name:
+                continue
+
             # -----------------------------------------------------------------
             #       Case 1: Account - ODOO  >> error no sync:
             # -----------------------------------------------------------------
