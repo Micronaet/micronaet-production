@@ -25,6 +25,9 @@
             .w100px {
                 min-width: 100px;
                 }    
+            .f6 {
+                font-size: 6px;
+                }
         </style>        
         <t t-foreach="docs" t-as="o">
             <div class="page">
@@ -33,10 +36,10 @@
                          <!-- HEADER -->
                          <thead>
                              <tr>
-                                 <th>Cliente</th>
-                                 <th rowspan="3">Totale</th>
+                                 <th class="center">Cliente</th>
+                                 <th class="center" rowspan="3">Totale</th>
                                  <t t-foreach="get_cols()" t-as="col">
-                                    <th class="center">
+                                    <th class="center f6">
                                         <t t-esc="col[2]"/><br/>
                                     </th>
                                  </t>
@@ -52,9 +55,8 @@
                              <tr>
                                  <th>Scadenza<br/>Articolo</th>
                                  <t t-foreach="get_cols()" t-as="col">
-                                    <th class="center">
-                                        
-                                        <t t-esc="col[0]"/><br/>
+                                    <th class="center">                                        
+                                        <t t-esc="format_date(col[0])"/><br/>
                                     </th>
                                  </t>
                              </tr>
@@ -64,9 +66,9 @@
                          <tbody>
                              <t t-foreach="get_rows()" t-as="row">
                                  <tr>
-                                      <!--First col:-->
+                                      <!--First columns:-->
                                       <td class="w100px"><t t-esc="row"/></td>
-                                      <td><t t-esc="get_row_total()"/></td>
+                                      <td class="center"><t t-esc="get_row_total(row)"/></td>
 
                                       <!--Other col:-->
                                       <t t-foreach="get_cols()" t-as="col">
