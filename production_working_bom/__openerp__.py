@@ -40,7 +40,7 @@
         #'production_workhour', # Replaced with:
         'hr_workhour',
         #'report',
-        'report_webkit',
+        'report_webkit', # TODO remove
         #'report_aeroo',
         #'report_aeroo_ooo',
         ],

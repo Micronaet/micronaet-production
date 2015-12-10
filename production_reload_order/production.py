@@ -62,15 +62,14 @@ class SaleOrder(orm.Model):
              raise osv.except_osv(
                  'Error', 
                  'No header for that order found (maybe all delivered?)')
-                 
         return {
             'name': 'Original order',
             'view_type': 'form',
-            'view_mode': 'form',
-            'res_model': 'sale.order',
+            'view_mode': 'tree,form',
+            'res_model': 'statistic.header',
+            #'ref_id': header_ids[0],
             'domain': [('id', '=', header_ids[0])],
-            #'view_id': view_id, ref_id
-            'context': context,
+            #'context': context,
             'type': 'ir.actions.act_window',
             'target': 'current',
         }
@@ -89,7 +88,8 @@ class SaleOrder(orm.Model):
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
         
         cron_ids = cron_pool.search(cr, uid, [
-            ('function', '=', 'scheduled_import_order_and_sync')], context=context)        
+            ('function', '=', 'scheduled_import_order_and_sync')], 
+            context=context)        
         if not cron_ids:
             _logger.error(
                 'Procedure scheduled "scheduled_import_order_and_sync" '
