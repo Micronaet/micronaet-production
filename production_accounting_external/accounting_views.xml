@@ -191,26 +191,12 @@
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_form_view" />
         <field name="arch" type="xml">
-            <!--<field name="user_id" position="after">
-                <field name="state_info" />
-            </field>-->
-
             <!-- New header -->
             <xpath expr="/form/header/field[@name='state']" position="after">
                 <div style="background-color: red;text-align: center;font-weight:bold;color:white;">
                     <field name="error_total" nolabel="1" attrs="{'invisible': [('error_total', '=', False)]}" class="oe_color_red" />
                 </div>
             </xpath>
-            
-            <!--<field name="origin" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </field>
-            <field name="location_src_id" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </field>
-            <field name="location_dest_id" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </field>-->
             
             <field name="date_planned" position="before">
                 <field name="forecast_qty" />
