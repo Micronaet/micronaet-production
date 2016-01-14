@@ -18,14 +18,11 @@
 ###############################################################################
 
 {
-    'name': 'Accounting external for production',
+    'name': 'Production Note',
     'version': '0.1',
-    'category': '',
-    'description': '''
-        Add extra field for import account information like:
-        Min. stock value
-        Max. stock value
-        Accounting stock status
+    'category': 'Customization',
+    'description': '''        
+        Add every case for manage note in production
         ''',
     'author': 'Micronaet S.r.l. - Nicola Riolini',
     'website': 'http://www.micronaet.it',
@@ -33,35 +30,14 @@
     'depends': [
         'base',
         'product',
-        'stock',
         'sale',
-        'sql_sale_order',
-        'production_family',
-        'production_working_bom',
         'mrp',
-        'mrp_operations',
-        'report_aeroo',        
-        'sql_sale_order',
-        'production_order_mandatory',
-        'pricelist_order',
-        
-        #'production_workhour', # Replaced with:
-        'hr_workhour',
-        
-        # Family in sale.order.line:
-        'production_order_line_family', # Micronaet/micronaet-mx8.git 
-        'order_line_view', # Micronaet/micronaet-mx8.git
+        'partner_product_partic_base',
         ],
     'init_xml': [],
     'demo': [],
     'data': [
-        'security/ir.model.access.csv',    
-        'wizard/assign_production.xml',
-        'wizard/create_production_view.xml',
-        'wizard/partial_production.xml',
-        'wizard/move_lavoration.xml',
-        'accounting_views.xml', # after wizard      
-        'report/production_report.xml',
+        'note_view.xml',
         ],
     'active': False,
     'installable': True,
