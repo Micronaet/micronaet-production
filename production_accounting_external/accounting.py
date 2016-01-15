@@ -66,6 +66,20 @@ class SaleOrder(orm.Model):
     ''' Add control fields for sale order
     '''    
     _inherit = 'sale.order'
+
+    # -----------------------    
+    # Override button action:
+    # -----------------------    
+    def action_button_confirm(self, cr, uid, ids, context=None):
+        super(SaleOrder, self).action_button_confirm(
+            cr, uid, ids, context=context)
+        # Extra action mark order line as order (for production):
+        sol_pool = self.pool.get('sale.order.line')
+        sol_ids = sol_pool.search(cr, uid, [
+            ('order_id', '=', ids[0])], context=context)
+        sol_pool.write(cr, uid, sol_ids, {
+            'order_confirmed': True}, context=context)    
+        return True
     
     # -------------
     # Button event:
@@ -175,6 +189,8 @@ class SaleOrderLine(orm.Model):
     _columns = {
         'mrp_id': fields.many2one(
             'mrp.production', 'Production', ondelete='set null', ),
+        'order_confirmed': fields.boolean('Order confirmed',
+            help='Used for filter in production (T when order in confirmed'),
             
         # Delivered:    
         'product_uom_delivered_qty': fields.float(
@@ -196,6 +212,7 @@ class SaleOrderLine(orm.Model):
         #'is_produced': fields.boolean('Is produced', required=False),
         'mrp_sequence': fields.integer('MRP order'),
         
+        # TODO remove?
         'sync_state': fields.selection([
             ('draft', 'Draft'), # Not produced
             ('partial', 'Partial'),# Partial produced
