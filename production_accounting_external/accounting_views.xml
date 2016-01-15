@@ -431,6 +431,31 @@
     </record>
 
     <!--Override actions-->
+    <record id="sql_sale_order.action_quotations_accounting" model="ir.actions.act_window">
+        <field name="name">Order for production</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="sale.view_quotation_tree"/>
+        <field name="view_mode">tree,form,calendar,graph</field>
+        <field name="context">{}</field>
+        <field name="domain">[('pricelist_order','=',False)]</field>
+        <field name="search_view_id" ref="sale.view_sales_order_filter"/>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            Click to create a quotation, the first step of a new sale.
+          </p><p>
+            Odoo will help you handle efficiently the complete sale flow:
+            from the quotation to the sales order, the
+            delivery, the invoicing and the payment collection.
+          </p><p>
+            The social feature helps you organize discussions on each sales
+            order, and allow your customers to keep track of the evolution
+            of the sales order.
+          </p>
+        </field>
+    </record>
+    
     <!--<record id="action_orders" model="ir.actions.act_window">
         <field name="name">Sales Orders</field>
         <field name="type">ir.actions.act_window</field>
@@ -529,13 +554,20 @@
           sequence="30" />
 
      <!-- SALES -->
-     <menuitem 
+     <!--<menuitem 
          action="action_production_orders" 
          id="menu_sale_production_order" 
          parent="sale.menu_sale_order" 
          sequence="20" 
          groups="base.group_sale_salesman,base.group_sale_manager"
-         />
+         />-->
+     <!--<menuitem 
+         parent="sale.menu_sale_order" 
+         id="menu_sale_order_for_production" 
+         action="sql_sale_order.action_quotations_accounting"
+         sequence="20" 
+         groups="base.group_sale_salesman,base.group_sale_manager"
+         />-->
 
      <!-- CONFIGURATION -->
     <menuitem action="mrp.mrp_workcenter_action" 

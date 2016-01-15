@@ -52,7 +52,7 @@ class ProductTemplateAccounting(orm.Model):
     ''' Accounting external fields
     '''
     _inherit = 'product.template'
-    
+
     _columns = {
         'minimum_qty': fields.float('Min. quantity', digits=(10, 2), 
             help="Minimum value for stock"),
@@ -74,7 +74,7 @@ class SaleOrder(orm.Model):
         ''' Button event does nothing
         '''
         return True
-        
+
     # ---------------
     # Function field:
     # ---------------
