@@ -67,7 +67,7 @@ class SaleOrder(orm.Model):
     '''    
     _inherit = 'sale.order'
 
-    # -----------------------    
+    """# -----------------------    
     # Override button action:
     # -----------------------    
     def action_button_confirm(self, cr, uid, ids, context=None):
@@ -79,7 +79,7 @@ class SaleOrder(orm.Model):
             ('order_id', '=', ids[0])], context=context)
         sol_pool.write(cr, uid, sol_ids, {
             'order_confirmed': True}, context=context)    
-        return True
+        return True"""
     
     # -------------
     # Button event:
@@ -186,11 +186,49 @@ class SaleOrderLine(orm.Model):
             'sync_state': 'draft',
             }, context=context)                
            
+           
+           
+class SaleOrderLine(orm.Model):
+    ''' Manage family in sale.order.line
+    '''
+    _inherit = 'sale.order.line'
+
+    # Function fields
+    def _go_in_production_from_state(
+            self, cr, uid, ids, fields, args, context=None):
+        ''' Fields function for calculate state of production from order
+        '''    
+        res = {}
+        
+        for item in self.browse(cr, uid, ids, context=context):
+            # check state fot not to go in production:
+            if item.order_id.state in ('draft', 'sent', 'cancel', 'done'):
+                res[item.id] = False                  
+            else:
+                res[item.id] = True
+        return res        
+           
+    # Store function fields:
+    def _refresh_in_production(self, cr, uid, ids, context=None):
+        ''' Get state of production from state of order
+        '''        
+        return self.pool.get('sale.order.line').search(cr, uid, [
+            ('order_id', 'in', ids)], context=context)            
+
     _columns = {
         'mrp_id': fields.many2one(
             'mrp.production', 'Production', ondelete='set null', ),
+
+        # TODO remove:    
         'order_confirmed': fields.boolean('Order confirmed',
             help='Used for filter in production (T when order in confirmed'),
+        'go_in_production': fields.function(
+            _go_in_production_from_state, method=True, type='boolean', 
+            string='Go in production', store={
+                'sale.order': (
+                    _refresh_in_production, ['state'], 10),
+                }), 
+                        
             
         # Delivered:    
         'product_uom_delivered_qty': fields.float(

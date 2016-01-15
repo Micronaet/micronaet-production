@@ -1,6 +1,20 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <record model="ir.ui.view" id="view_res_partner_production_note_form">
+            <field name="name">res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <field name="comment" position="before">
+                    <separator string="Generic note" colspan="4"/>
+                </field>    
+                <field name="comment" position="after">
+                    <separator string="Production note" colspan="4"/>
+                    <field name="mrp_note" nolabel="1" colspan="4" />
+                </field>
+            </field>
+        </record>
 
     </data>
 </openerp>

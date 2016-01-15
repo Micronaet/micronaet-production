@@ -394,7 +394,7 @@
         <field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>
         <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>        
         <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form','search_default_group_family':True}</field>
-        <field name="domain">[('mrp_id','=',False),('pricelist_order','=',False),('order_confirmed','=',True),('is_manufactured','=',True)]</field>
+        <field name="domain">[('mrp_id','=',False),('pricelist_order','=',False),('go_in_production','=',True),('is_manufactured','=',True)]</field>
         <!--TODO remove filter for accounting when accounting will not be present! -->
     </record>
     <record model="ir.actions.act_window" id="action_view_sale_order_production_line_no_family">
@@ -405,7 +405,7 @@
         <field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>
         <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>        
         <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form','search_default_group_product':True}</field>
-        <field name="domain">[('mrp_id','=',False),('pricelist_order','=',False),('order_confirmed','=',True),('family_id','=',False)]</field>
+        <field name="domain">[('mrp_id','=',False),('pricelist_order','=',False),('go_in_production','=',True),('family_id','=',False)]</field>
         <!--TODO remove filter for accounting when accounting will not be present! -->
     </record>
 
