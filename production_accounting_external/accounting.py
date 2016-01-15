@@ -212,11 +212,9 @@ class SaleOrderLine(orm.Model):
     def _refresh_in_production(self, cr, uid, ids, context=None):
         ''' Get state of production from state of order
         '''
-        res = self.pool.get('sale.order.line').search(cr, uid, [
+        return self.pool.get('sale.order.line').search(cr, uid, [
             ('order_id', 'in', ids)], context=context)            
-        print "****** ", res    
-        return res    
-
+        
     _columns = {
         'mrp_id': fields.many2one(
             'mrp.production', 'Production', ondelete='set null', ),
