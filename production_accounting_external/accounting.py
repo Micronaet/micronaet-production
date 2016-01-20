@@ -133,10 +133,23 @@ class SaleOrderLine(orm.Model):
     # -------------
     # Button event:
     # -------------
-    def open_production_form(self, cr, uids, ids, context=None):
+    def open_production_form(self, cr, uid, ids, context=None):
         ''' Button that open form of MRP linked
         '''
-        return True
+        line_proxy = self.browse(cr, uid, ids, context=context)[0]
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Production',
+            'res_model': 'mrp.production',
+            'res_id': line_proxy.mrp_id.id,
+            'view_type': 'form',
+            'view_mode': 'form,tree',
+            #'view_id': view_id,
+            #'target': 'new',
+            #'nodestroy': True,
+            }
+
 
     def free_line(self, cr, uid, ids, context=None):
         ''' Free the line from production order 
