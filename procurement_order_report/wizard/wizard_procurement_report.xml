@@ -1,0 +1,60 @@
+<?xml version="1.0" ?>
+<openerp>
+  <data>
+       <!-- mrp.production.status.wizard -->
+       <record id="sale_order_procurement_report_wizard_view" model="ir.ui.view">
+            <field name="name">Procurement on sale wizard</field>
+            <field name="model">sale.order.procurement.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Analytic report" version="7.0">
+                    <head>
+                        <button string="Cancel" special="cancel" colspan="2" />                   
+                        <button name="print_report" type="object" string="Print" icon="gtk-print" colspan="2" class="oe_highlight"/>
+                    </head>
+                    <sheet>
+                        <group colspan="4" col="4" attrs="{'invisible': [('report_type', '!=', 'analytic')]}">
+                            <separator string="Code filter:" colspan="4" />
+                            <field name="code_from" />
+                            <field name="code_length" />
+                              
+                            <separator string="Date filter:" colspan="4" />
+                            <field name="from_date" />
+                            <field name="to_date" />
+
+                            <field name="from_deadline" />
+                            <field name="to_deadline" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+      </record>
+      
+      <record id="action_sale_order_procurement_report_wizard" model="ir.actions.act_window">
+        <field name="name">Procurement order wizard</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.order.procurement.report.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+
+    <!--needed?-->
+    <act_window
+        id="act_sale_order_procurement_report_wizard"
+        name="Procurement wizard"
+        view_mode="form"
+        target="new"
+        res_model="sale.order.procurement.report.wizard"
+        key2="client_action_multi"
+        src_model="sale.order"/>
+
+   <menuitem name="Procurements order report"
+          parent="sale.menu_sale_order" 
+          id="menu_sale_order_procurement_report" 
+          action="action_sale_order_procurement_report_wizard" 
+          groups="base.group_hr_manager"
+          sequence="20" 
+          />
+  </data>
+</openerp>
+

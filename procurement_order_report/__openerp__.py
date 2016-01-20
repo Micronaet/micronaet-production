@@ -18,10 +18,12 @@
 ###############################################################################
 
 {
-    'name': '',
+    'name': 'Procurement report wizard',
     'version': '0.1',
     'category': '',
     'description': '''        
+        Add wizard reporot for procurements depend on order 
+        Groupable with part of code
         ''',
     'author': 'Micronaet S.r.l. - Nicola Riolini',
     'website': 'http://www.micronaet.it',
@@ -35,7 +37,7 @@
         #'security/ir.model.access.csv',    
         'procurement_view.xml',
         'report/procurement_report.xml',
-        # 'wizard/XXX.xml',
+        'wizard/wizard_procurement_report.xml',
         ],
     'active': False,
     'installable': True,
