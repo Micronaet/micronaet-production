@@ -62,7 +62,6 @@ class Parser(report_sxw.rml_parse):
     def get_object_line(self, data):
         ''' Selected object + print object
         '''
-        import pdb; pdb.set_trace()
         products = {}
         res = []
         sale_pool = self.pool.get('sale.order')
@@ -122,14 +121,13 @@ class Parser(report_sxw.rml_parse):
         line_ids = line_pool.search(self.cr, self.uid, domain)
 
         # Loop on order:
-        import pdb; pdb.set_trace()
         for line in line_pool.browse(
                 self.cr, self.uid, line_ids): 
             # ------------------
             # Quantity analysis:
             # ------------------
             mrp_remain = line.product_uom_qty - \
-                line.product_uom_marked_sync_qty
+                line.product_uom_maked_sync_qty
             delivery_remain = line.product_uom_qty - \
                 line.delivered_qty    
             
