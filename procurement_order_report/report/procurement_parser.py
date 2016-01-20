@@ -39,8 +39,44 @@ class Parser(report_sxw.rml_parse):
 
             'get_object_line': self.get_object_line,
             'get_datetime': self.get_datetime,
+            
+            'level_break': self.level_break,
+            'is_last': self.is_last,
+            'get_totals': self.get_totals,
         })
+        
+        # Paramters for report management:
+        self.level_break_last = False
+        self.counters = {}
+        self.last = False
 
+    def get_totals(self, item):
+        ''' return elements
+        '''
+        return self.totals[item]
+        
+    def is_last(self, line):
+        ''' Check if last line is current
+        '''
+        return self.last == line
+            
+
+    def level_break(self, code, totals):
+        if self.level_break_last == False:
+            self.level_break_last = code
+            self.totals = list(totals) # Start up total counters
+        
+        if self.level_break_last == code:
+            # Add passet totals to total:
+            i = 0
+            for item in totals:
+                self.totals[i] += totals[i]
+                i += 1                 
+            return False
+        else:
+            self.level_break_last == code
+            return True    
+        
     def get_datetime(self):
         ''' Return datetime obj
         '''
@@ -62,6 +98,11 @@ class Parser(report_sxw.rml_parse):
     def get_object_line(self, data):
         ''' Selected object + print object
         '''
+        # Parameters for report management:
+        self.level_break_last = False
+        self.counters = {}
+        self.last = False
+
         products = {}
         res = []
         sale_pool = self.pool.get('sale.order')
@@ -152,5 +193,10 @@ class Parser(report_sxw.rml_parse):
         # create a res order by product code
         for code in sorted(products):
             res.extend(products[code])        
+        
+        # Save last for print total at the end    
+        if len(res):    
+            self.last = res[-1]
+            
         return res
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
