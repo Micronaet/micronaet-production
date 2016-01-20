@@ -20,9 +20,9 @@
                             <field name="code_start" />
                             <newline />
                             
-                            <separator string="Group clause:" colspan="4" />
+                            <!--<separator string="Group clause:" colspan="4" />
                             <field name="code_from" />
-                            <field name="code_length" />
+                            <field name="code_length" />-->
                               
                             <separator string="Date filter:" colspan="4" />
                             <field name="from_date" />

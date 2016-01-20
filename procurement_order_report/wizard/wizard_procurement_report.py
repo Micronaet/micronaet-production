@@ -69,8 +69,8 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         
         datas['code_start'] = wiz_proxy.code_start
         
-        datas['code_from'] = wiz_proxy.code_from
-        datas['code_length'] = wiz_proxy.code_length
+        #datas['code_from'] = wiz_proxy.code_from
+        #datas['code_length'] = wiz_proxy.code_length
 
         return {
             'type': 'ir.actions.report.xml',

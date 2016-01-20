@@ -71,12 +71,12 @@ class Parser(report_sxw.rml_parse):
         # Get wizard information:
         code_start = data.get('code_start', False)
                 
-        from_code = data.get('from_code', 0) - 1
-        to_code = from_code + data.get('code_length', 0)
-        if from_code > 0 and to_code > 0:
-            grouped = True
-        else:
-            grouped = False     
+        #from_code = data.get('from_code', 0) - 1
+        #to_code = from_code + data.get('code_length', 0)
+        #if from_code > 0 and to_code > 0:
+        #    grouped = True
+        #else:
+        grouped = False     
 
         from_date = data.get('from_date', False)
         to_date = data.get('to_date', False)
@@ -86,10 +86,17 @@ class Parser(report_sxw.rml_parse):
         # ---------------------------------------------------------------------
         #                      Sale order filter
         # ---------------------------------------------------------------------
+        # Default:
         domain = [
+            # Order confirmed or forecast:
+            '|',
             ('state', 'not in', ('cancel', 'draft', 'sent')), # 'done'
+            ('forecasted_production_id', '!=', False), # include forecast order
+            
+            # Order for send pricelist:
+            ('pricelist_order', '=', False), 
             ]
-        # TODOdomain.append(('order_closed', '=', False)) 
+        # TODO domain.append(('order_closed', '=', False)) << all delivered
         
         if from_date:
             domain.append(('date_order', '>=', from_date))
