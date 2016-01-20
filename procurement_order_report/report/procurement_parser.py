@@ -59,33 +59,66 @@ class Parser(report_sxw.rml_parse):
         self.counters[name] = value
         return "" # empty so no write in module
 
-    def _get_fully_list(self, objects):
-        ''' Return list of object browse id list merged with no replication 
-            with al record masked for print 
-        '''
-        sale_pool = self.pool.get('sale.order')
-        active_ids = [x.id for x in objects]        
-
-        print_ids = sale_pool.search(self.cr, self.uid, [
-            ('print', '=', True),])
-        active_ids.extend(print_ids)    
-        return list(set(active_ids))
-
-    def get_object_line(self, objects):
+    def get_object_line(self, data):
         ''' Selected object + print object
         '''
         products = {}
         res = []
         sale_pool = self.pool.get('sale.order')
-                
+
+        # Get wizard information:
+        from_code = data.get('from_code', 0) - 1
+        to_code = from_code + data.get('code_length', 0)
+
+        from_date = data.get('from_date', False)
+        to_date = data.get('to_date', False)
+        from_deadline = data.get('to_deadline', False)
+        to_deadline = data.get('to_deadline', False)
+
+        # ---------------------------------------------------------------------
+        #                      Sale order filter
+        # ---------------------------------------------------------------------
+        domain = []
+        # TODOdomain.append(('order_closed', '=', False)) 
+        
+        if from_date:
+            domain.append(('order_date', '>=', from_date))
+        if to_date:
+            domain.append(('order_date', '<', from_date))
+        
+        order_ids = sale_pool.search(self.cr, self.uid, domain)
+        
+        # ---------------------------------------------------------------------
+        #                      Sale order line filter
+        # ---------------------------------------------------------------------
+        domain = [('order_id', 'in', order_ids)]        
+
+        if from_date:
+            domain.append(('order_date', '>=', from_date))
+        if to_date:
+            domain.append(('order_date', '<', from_date))
+
+        # Loop on order:
         for order in sale_pool.browse(
-                self.cr, self.uid, self._get_fully_list(objects)):
+                self.cr, self.uid, sale_ids):
  
             for line in order.order_line:
-                # TODO parametrize (jump delivered all):
-                if line.product_uom_qty - line.delivered_qty == 0:
-                    continue
-                code = line.product_id.default_code
+                # ------------------
+                # Quantity analysis:
+                # ------------------
+                mrp_remain = line.product_uom_qty - \
+                    line.line.product_uom_marked_sync_qty
+                delivery_remain = line.product_uom_qty - \
+                    line.line.delivered_qty    
+                
+                # if no production remaon or all delivered:    
+                if mrp_remain <= 0 or delivery_remain <= 0: # TODO use <=
+                    continue # jump line
+ 
+                # --------------
+                # Code analysis:
+                # --------------
+                code = line.product_id.default_code[from_code: to_code]
                 if code not in products:
                     products[code] = []
                     

@@ -40,7 +40,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
-class SaleOrderProcurementReportWizard(osv.osv_memory):
+class SaleOrderProcurementReportWizard(orm.TransientModel):
     ''' Procurements depend on sale
     '''    
     _name = 'sale.order.procurement.report.wizard'
@@ -53,12 +53,15 @@ class SaleOrderProcurementReportWizard(osv.osv_memory):
         ''' Redirect to report passing parameters
         ''' 
         wiz_proxy = self.browse(cr, uid, ids)[0]
-
-        report_name = 'mx_procurement_report'
             
         datas = {}
         datas['wizard'] = True # started from wizard
         
+        if wiz_proxy.report_type == 'detail':
+            report_name = 'mx_procurement_report' 
+        else:
+            report_name = 'mx_procurement_report' # TODO change
+               
         datas['from_date'] = wiz_proxy.from_date or False
         datas['to_date'] = wiz_proxy.to_date or False
         datas['from_deadline'] = wiz_proxy.from_deadline or False
@@ -69,16 +72,16 @@ class SaleOrderProcurementReportWizard(osv.osv_memory):
 
         return {
             'type': 'ir.actions.report.xml',
-            'report_name': report_name,
+            'report_name': 'mx_procurement_report',
             'datas': datas,
             }
         
     _columns = {
-        #'report_type': fields.selection([
-        #    ('analytic', 'Analytic report'),
-        #    ('timesheet', 'Timesheet report'),
-        #    ], 'Report type', required=True),
-        #'partner_id': fields.many2one('res.partner', 'Partner'),
+        'report_type': fields.selection([
+            ('detail', 'Detail'),
+            ('summary', 'Summary'),
+            ], 'Report type', required=True),
+        'partner_id': fields.many2one('res.partner', 'Partner'),
         
         'from_date': fields.date('From', help='Date >='),
         'to_date': fields.date('To', help='Date <'),
@@ -90,6 +93,7 @@ class SaleOrderProcurementReportWizard(osv.osv_memory):
         }
         
     _defaults = {
+        'report_type': lambda *x: 'detail',
         #'to_date': datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
