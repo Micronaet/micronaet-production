@@ -7,7 +7,7 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <xpath expr="/form/sheet/notebook/page/field[@name='order_line']" position="after">
-                    <button name="reload_production" string="Reload from accounting" type="object" icon="STOCK_REFRESH"/>
+                    <!--<button name="reload_production" string="Reload from accounting" type="object" icon="STOCK_REFRESH"/>-->
                     <button name="open_csv_order" string="Original order" type="object" icon="gtk-justify-fill"/>
                 </xpath>
             </field>
