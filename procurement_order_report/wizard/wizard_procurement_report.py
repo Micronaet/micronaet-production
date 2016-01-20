@@ -57,15 +57,17 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         datas = {}
         datas['wizard'] = True # started from wizard
         
-        if wiz_proxy.report_type == 'detail':
+        if wiz_proxy.report_type == 'detailed':
             report_name = 'mx_procurement_report' 
-        else:
-            report_name = 'mx_procurement_report' # TODO change
+        else: # gropuped
+            report_name = 'mx_procurement_grouped_report' # TODO change
                
         datas['from_date'] = wiz_proxy.from_date or False
         datas['to_date'] = wiz_proxy.to_date or False
         datas['from_deadline'] = wiz_proxy.from_deadline or False
         datas['to_deadline'] = wiz_proxy.to_deadline or False
+        
+        datas['code_start'] = wiz_proxy.code_start
         
         datas['code_from'] = wiz_proxy.code_from
         datas['code_length'] = wiz_proxy.code_length
@@ -78,8 +80,8 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         
     _columns = {
         'report_type': fields.selection([
-            ('detail', 'Detail'),
-            ('summary', 'Summary'),
+            ('detailed', 'Order in detail'),
+            ('grouped', 'Order grouped by frame'),
             ], 'Report type', required=True),
         'partner_id': fields.many2one('res.partner', 'Partner'),
         
@@ -87,13 +89,17 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         'to_date': fields.date('To', help='Date <'),
         'from_deadline': fields.date('From deadline', help='Date deadline >='),
         'to_deadline': fields.date('To deadline', help='Date deadline <'),
-        
+
+        # Code filter:
+        'code_start': fields.char('Code start', size=20), 
+
+        # Group option:        
         'code_from': fields.integer('Code from char', required=True), 
         'code_length': fields.integer('Code from char', required=True), 
         }
         
     _defaults = {
-        'report_type': lambda *x: 'detail',
+        'report_type': lambda *x: 'detailed',
         #'to_date': datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

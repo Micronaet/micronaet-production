@@ -62,13 +62,14 @@ class Parser(report_sxw.rml_parse):
     def get_object_line(self, data):
         ''' Selected object + print object
         '''
-        import pdb; pdb.set_trace()
         products = {}
         res = []
         sale_pool = self.pool.get('sale.order')
         line_pool = self.pool.get('sale.order.line')
 
         # Get wizard information:
+        code_start = data.get('code_start', False)
+        
         from_code = data.get('from_code', 0) - 1
         to_code = from_code + data.get('code_length', 0)
 
@@ -99,19 +100,24 @@ class Parser(report_sxw.rml_parse):
             domain.append(('date_deadline', '>=', from_deadline))
         if to_deadline:
             domain.append(('date_deadline', '<', to_deadline))
+            
+        if code_start:  
+            domain.append(('default_code', '=ilike', '%s%s' % (
+                code_start, '%')))  
         
         line_ids = line_pool.search(self.cr, self.uid, domain)
 
         # Loop on order:
+        import pdb; pdb.set_trace()
         for line in line_pool.browse(
                 self.cr, self.uid, line_ids): 
             # ------------------
             # Quantity analysis:
             # ------------------
             mrp_remain = line.product_uom_qty - \
-                line.line.product_uom_marked_sync_qty
+                line.product_uom_marked_sync_qty
             delivery_remain = line.product_uom_qty - \
-                line.line.delivered_qty    
+                line.delivered_qty    
             
             # if no production remaon or all delivered:    
             if mrp_remain <= 0 or delivery_remain <= 0: # TODO use <=
