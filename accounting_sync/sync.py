@@ -113,6 +113,7 @@ class MrpProduction(orm.Model):
         ''' Read all line to sync in accounting and produce it for 
             XMLRPC call
         '''
+        return True # XXX DEAD MODULE FUNCTION
         if self.pool.get('res.company').get_xmlrpc_is_manual(
                 cr, uid, False, context=context):
                 

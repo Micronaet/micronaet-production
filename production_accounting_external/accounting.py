@@ -182,7 +182,7 @@ class SaleOrderLine(orm.Model):
         line_proxy = self.browse(cr, uid, ids, context=context)[0]
         
         return self.write(cr, uid, ids, {
-            'product_uom_maked_qty': 
+            'product_uom_maked_sync_qty': 
                 line_proxy.product_uom_qty,
             'sync_state': 'closed',
             }, context=context)                
@@ -194,7 +194,7 @@ class SaleOrderLine(orm.Model):
         
         # TODO manage if there's partial!!
         return self.write(cr, uid, ids, {
-            'product_uom_maked_qty': 0.0,
+            #'product_uom_maked_qty': 0.0,
             'product_uom_maked_sync_qty': 0.0,
             'sync_state': 'draft',
             }, context=context)                
@@ -249,9 +249,11 @@ class SaleOrderLine(orm.Model):
             help='Quantity delivered (info from account)'),
             
         # Produced:
+        # TODO remove field:
         'product_uom_maked_qty': fields.float(
             'Maked (temp.)', digits=(16, 2), 
             help='Partial position till not sync in accounting'),
+
         'product_uom_maked_sync_qty': fields.float(
             'Maked (acc.)', digits=(16, 2), 
             help='This quantity is the sync quantity maked in accounting'),
@@ -278,8 +280,7 @@ class SaleOrderLine(orm.Model):
 
 class SaleOrderLinePrevisional(orm.Model):
     ''' Previsional production
-    '''
-    
+    '''    
     _name = 'sale.order.line.previsional'
     _description = 'Previsional line'
     _rec_name = 'partner_id'
@@ -326,6 +327,7 @@ class MrpProduction(orm.Model):
             
             @return: True on success, False otherwise
         """
+        # TODO maybe rewrite when unlink anc keep maked qty!!!!!!!!!!!!!!!!!!!!
         # Test if line has accounting element sync:
         order_locked = ''
         for production in self.browse(cr, uid, ids, context=context):
