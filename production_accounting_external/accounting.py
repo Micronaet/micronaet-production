@@ -160,6 +160,7 @@ class SaleOrderLine(orm.Model):
             # Forecast order delete line:   
             self.unlink(cr, uid, ids, context=context)            
         else:    
+            # TODO test if maked qty!!!
             # Normal order unlink from production:
             # TODO remove line without hide gives error (for focus problem)
             self.write(cr, uid, ids, {
@@ -184,7 +185,7 @@ class SaleOrderLine(orm.Model):
         return self.write(cr, uid, ids, {
             'product_uom_maked_sync_qty': 
                 line_proxy.product_uom_qty,
-            'sync_state': 'closed',
+            'sync_state': 'sync',
             }, context=context)                
 
     def undo_close_production(self, cr, uid, ids, context=None):
