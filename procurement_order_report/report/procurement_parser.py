@@ -62,6 +62,7 @@ class Parser(report_sxw.rml_parse):
     def get_object_line(self, data):
         ''' Selected object + print object
         '''
+        import pdb; pdb.set_trace()
         products = {}
         res = []
         sale_pool = self.pool.get('sale.order')
@@ -69,9 +70,13 @@ class Parser(report_sxw.rml_parse):
 
         # Get wizard information:
         code_start = data.get('code_start', False)
-        
+                
         from_code = data.get('from_code', 0) - 1
         to_code = from_code + data.get('code_length', 0)
+        if from_code > 0 and to_code > 0:
+            grouped = True
+        else:
+            grouped = False     
 
         from_date = data.get('from_date', False)
         to_date = data.get('to_date', False)
@@ -81,7 +86,9 @@ class Parser(report_sxw.rml_parse):
         # ---------------------------------------------------------------------
         #                      Sale order filter
         # ---------------------------------------------------------------------
-        domain = []
+        domain = [
+            ('state', 'not in', ('cancel', 'draft', 'sent')), # 'done'
+            ]
         # TODOdomain.append(('order_closed', '=', False)) 
         
         if from_date:
@@ -126,7 +133,11 @@ class Parser(report_sxw.rml_parse):
             # --------------
             # Code analysis:
             # --------------
-            code = line.product_id.default_code[from_code: to_code]
+            if grouped:
+                code = line.product_id.default_code[from_code: to_code]
+            else:   
+                code = line.product_id.default_code # all code
+                
             if code not in products:
                 products[code] = []
                 

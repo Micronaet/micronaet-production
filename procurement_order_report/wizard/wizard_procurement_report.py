@@ -94,8 +94,8 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         'code_start': fields.char('Code start', size=20), 
 
         # Group option:        
-        'code_from': fields.integer('Code from char', required=True), 
-        'code_length': fields.integer('Code from char', required=True), 
+        'code_from': fields.integer('Code from char'), 
+        'code_length': fields.integer('Code from char'),
         }
         
     _defaults = {
