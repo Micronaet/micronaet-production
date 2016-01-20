@@ -62,9 +62,11 @@ class Parser(report_sxw.rml_parse):
     def get_object_line(self, data):
         ''' Selected object + print object
         '''
+        import pdb; pdb.set_trace()
         products = {}
         res = []
         sale_pool = self.pool.get('sale.order')
+        line_pool = self.pool.get('sale.order.line')
 
         # Get wizard information:
         from_code = data.get('from_code', 0) - 1
@@ -82,9 +84,9 @@ class Parser(report_sxw.rml_parse):
         # TODOdomain.append(('order_closed', '=', False)) 
         
         if from_date:
-            domain.append(('order_date', '>=', from_date))
+            domain.append(('date_order', '>=', from_date))
         if to_date:
-            domain.append(('order_date', '<', from_date))
+            domain.append(('date_order', '<', from_date))
         
         order_ids = sale_pool.search(self.cr, self.uid, domain)
         
@@ -93,37 +95,37 @@ class Parser(report_sxw.rml_parse):
         # ---------------------------------------------------------------------
         domain = [('order_id', 'in', order_ids)]        
 
-        if from_date:
-            domain.append(('order_date', '>=', from_date))
-        if to_date:
-            domain.append(('order_date', '<', from_date))
+        if from_deadline:
+            domain.append(('date_deadline', '>=', from_deadline))
+        if to_deadline:
+            domain.append(('date_deadline', '<', to_deadline))
+        
+        line_ids = line_pool.search(self.cr, self.uid, domain)
 
         # Loop on order:
-        for order in sale_pool.browse(
-                self.cr, self.uid, sale_ids):
- 
-            for line in order.order_line:
-                # ------------------
-                # Quantity analysis:
-                # ------------------
-                mrp_remain = line.product_uom_qty - \
-                    line.line.product_uom_marked_sync_qty
-                delivery_remain = line.product_uom_qty - \
-                    line.line.delivered_qty    
+        for line in line_pool.browse(
+                self.cr, self.uid, line_ids): 
+            # ------------------
+            # Quantity analysis:
+            # ------------------
+            mrp_remain = line.product_uom_qty - \
+                line.line.product_uom_marked_sync_qty
+            delivery_remain = line.product_uom_qty - \
+                line.line.delivered_qty    
+            
+            # if no production remaon or all delivered:    
+            if mrp_remain <= 0 or delivery_remain <= 0: # TODO use <=
+                continue # jump line
+
+            # --------------
+            # Code analysis:
+            # --------------
+            code = line.product_id.default_code[from_code: to_code]
+            if code not in products:
+                products[code] = []
                 
-                # if no production remaon or all delivered:    
-                if mrp_remain <= 0 or delivery_remain <= 0: # TODO use <=
-                    continue # jump line
- 
-                # --------------
-                # Code analysis:
-                # --------------
-                code = line.product_id.default_code[from_code: to_code]
-                if code not in products:
-                    products[code] = []
-                    
-                #res.append(line) # unsorted
-                products[code].append(line)
+            #res.append(line) # unsorted
+            products[code].append(line)
         
         # create a res order by product code
         for code in sorted(products):
