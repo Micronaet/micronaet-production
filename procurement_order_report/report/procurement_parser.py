@@ -43,12 +43,19 @@ class Parser(report_sxw.rml_parse):
             'level_break': self.level_break,
             'is_last': self.is_last,
             'get_totals': self.get_totals,
+            'reset_totals': self.reset_totals,
         })
         
         # Paramters for report management:
         self.level_break_last = False
         self.counters = {}
         self.last = False
+
+    def reset_totals(self):
+        ''' return elements
+        '''
+        self.totals = [0, 0, 0]
+        return ''
 
     def get_totals(self, item):
         ''' return elements
@@ -62,9 +69,12 @@ class Parser(report_sxw.rml_parse):
             
 
     def level_break(self, code, totals):
+        ''' Check if code break level and update totals
+        '''
         if self.level_break_last == False:
             self.level_break_last = code
             self.totals = list(totals) # Start up total counters
+            return False
         
         if self.level_break_last == code:
             # Add passet totals to total:
