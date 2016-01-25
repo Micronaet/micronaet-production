@@ -74,7 +74,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
 
         return {
             'type': 'ir.actions.report.xml',
-            'report_name': 'mx_procurement_report',
+            'report_name': report_name,
             'datas': datas,
             }
         

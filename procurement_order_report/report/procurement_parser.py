@@ -132,7 +132,7 @@ class Parser(report_sxw.rml_parse):
 
         # Get wizard information:
         code_start = data.get('code_start', False)
-                
+
         #from_code = data.get('from_code', 0) - 1
         #to_code = from_code + data.get('code_length', 0)
         #if from_code > 0 and to_code > 0:
