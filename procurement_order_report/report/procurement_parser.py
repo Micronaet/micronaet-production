@@ -24,6 +24,7 @@
 from openerp.report import report_sxw
 from openerp.report.report_sxw import rml_parse
 from datetime import datetime, timedelta
+from openerp.tools.translate import _
 
 
 class Parser(report_sxw.rml_parse):
@@ -43,31 +44,43 @@ class Parser(report_sxw.rml_parse):
             'level_break': self.level_break,
             'is_last': self.is_last,
             'get_totals': self.get_totals,
-            'reset_totals': self.reset_totals,
+            
+            'get_filter_description': self.get_filter_description,
         })
         
         # Paramters for report management:
         self.level_break_last = False
         self.counters = {}
         self.last = False
-
-    def reset_totals(self):
-        ''' return elements
+    
+    def get_filter_description(self, ):
         '''
-        self.totals = [0, 0, 0]
-        return ''
-
+        '''
+        return self.filter_description or ''
+        
+    def add_totals(self, totals, reset=False): 
+        i = 0
+        for item in totals:
+            if reset:
+                self.totals[i] = totals[i]
+            else:
+                self.totals[i] += totals[i]
+            i += 1                 
+      
     def get_totals(self, item):
         ''' return elements
         '''
-        return self.totals[item]
+        return self.last_totals[item]
         
     def is_last(self, line):
         ''' Check if last line is current
-        '''
-        return self.last == line
+        '''        
+        if self.last == line:
+            self.last_totals = tuple(self.totals)            
+            return True
+        else:
+            return False    
             
-
     def level_break(self, code, totals):
         ''' Check if code break level and update totals
         '''
@@ -77,14 +90,13 @@ class Parser(report_sxw.rml_parse):
             return False
         
         if self.level_break_last == code:
-            # Add passet totals to total:
-            i = 0
-            for item in totals:
-                self.totals[i] += totals[i]
-                i += 1                 
+            # Add passed totals to total:
+            self.add_totals(totals)
             return False
         else:
             self.level_break_last == code
+            self.last_totals = tuple(self.totals)
+            self.add_totals(totals, reset=True)
             return True    
         
     def get_datetime(self):
@@ -146,12 +158,19 @@ class Parser(report_sxw.rml_parse):
             # Order for send pricelist:
             ('pricelist_order', '=', False), 
             ]
+        # -------------------------    
+        # Start filter description:    
+        # -------------------------    
+        self.filter_description = _('Order open, not pricelist order')
+
         # TODO domain.append(('order_closed', '=', False)) << all delivered
         
         if from_date:
             domain.append(('date_order', '>=', from_date))
+            self.filter_description += _(', date >= %') % from_date
         if to_date:
             domain.append(('date_order', '<', from_date))
+            self.filter_description += _(', date < %') % to_date
         
         order_ids = sale_pool.search(self.cr, self.uid, domain)
         
@@ -162,12 +181,15 @@ class Parser(report_sxw.rml_parse):
 
         if from_deadline:
             domain.append(('date_deadline', '>=', from_deadline))
+            self.filter_description += _(', deadline >= %') % from_deadline
         if to_deadline:
             domain.append(('date_deadline', '<', to_deadline))
+            self.filter_description += _(', deadline < %') % to_deadline
             
         if code_start:  
             domain.append(('default_code', '=ilike', '%s%s' % (
                 code_start, '%')))  
+            self.filter_description += _(', code start %s') % code_start
         
         line_ids = line_pool.search(self.cr, self.uid, domain)
 
