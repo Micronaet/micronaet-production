@@ -77,7 +77,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
             'report_name': report_name,
             'datas': datas,
             }
-        
+
     _columns = {
         'report_type': fields.selection([
             ('detailed', 'Order in detail'),

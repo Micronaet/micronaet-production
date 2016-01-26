@@ -42,7 +42,7 @@
             <field eval="'client_print_multi'" name="key2"/>
             <field eval="['sale.order']" name="models"/>
             <field name="name">action_mx_procurement_grouped_report</field>
-            <field eval="'ir.actions.report.xml,'+str(aeroo_mx_procurement_grouped:report_id)" name="value"/>
+            <field eval="'ir.actions.report.xml,'+str(aeroo_mx_procurement_grouped_report_id)" name="value"/>
             <field eval="True" name="isobject"/>
             <field eval="True" name="replace"/>
         </ir_set>
