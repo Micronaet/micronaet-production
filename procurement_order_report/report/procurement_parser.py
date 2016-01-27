@@ -46,6 +46,10 @@ class Parser(report_sxw.rml_parse):
             'get_totals': self.get_totals,
             
             'get_filter_description': self.get_filter_description,
+            
+            # Grouped report:
+            'get_object_grouped_line': self.get_object_grouped_line,
+            
         })
         
         # Paramters for report management:
