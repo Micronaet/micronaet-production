@@ -49,6 +49,7 @@ class Parser(report_sxw.rml_parse):
 
             'get_object_line': self.get_object_line,
             'get_object_grouped_line': self.get_object_grouped_line,
+            'get_orders_selected': self.get_orders_selected,
 
             'get_datetime': self.get_datetime,
             'get_date': self.get_date,
@@ -105,7 +106,7 @@ class Parser(report_sxw.rml_parse):
 
         from_date = data.get('from_date', False)
         to_date = data.get('to_date', False)
-        from_deadline = data.get('to_deadline', False)
+        from_deadline = data.get('from_deadline', False)
         to_deadline = data.get('to_deadline', False)
 
         # ---------------------------------------------------------------------
@@ -131,10 +132,10 @@ class Parser(report_sxw.rml_parse):
         
         if from_date:
             domain.append(('date_order', '>=', from_date))
-            self.filter_description += _(', date >= %') % from_date
+            self.filter_description += _(', date >= %s') % from_date
         if to_date:
-            domain.append(('date_order', '<', from_date))
-            self.filter_description += _(', date < %') % to_date
+            domain.append(('date_order', '<', to_date))
+            self.filter_description += _(', date < %s') % to_date
         
         order_ids = sale_pool.search(self.cr, self.uid, domain)
 
@@ -145,10 +146,10 @@ class Parser(report_sxw.rml_parse):
 
         if from_deadline:
             domain.append(('date_deadline', '>=', from_deadline))
-            self.filter_description += _(', deadline >= %') % from_deadline
+            self.filter_description += _(', deadline >= %s') % from_deadline
         if to_deadline:
             domain.append(('date_deadline', '<', to_deadline))
-            self.filter_description += _(', deadline < %') % to_deadline
+            self.filter_description += _(', deadline < %s') % to_deadline
             
         if code_start:  
             domain.append(('product_id.default_code', '=ilike', '%s%s' % (
@@ -163,7 +164,8 @@ class Parser(report_sxw.rml_parse):
         '''
         # Loop on order:
         products = {}
-        for line in self.browse_order_line(data):
+        browse_line = self.browse_order_line(data)
+        for line in browse_line:
             mrp_remain = line.product_uom_qty - line.product_uom_maked_sync_qty
             delivery_remain = line.product_uom_qty - line.delivered_qty                
             if mrp_remain <= 0 or delivery_remain <= 0: # TODO use <=
@@ -175,11 +177,11 @@ class Parser(report_sxw.rml_parse):
         
         # create a res order by product code
         res = []
-        keys = sorted(products)
-        for key in keys:
+        codes = sorted(products)
+        for code in codes:
             total = [0, 0, 0]
             # Add product line:
-            for line in products[key]:
+            for line in products[code]:
                 res.append(('P', line))
                 total[0] += line.product_uom_qty
                 total[1] += line.product_uom_maked_sync_qty
@@ -194,11 +196,16 @@ class Parser(report_sxw.rml_parse):
         '''
         # Loop on order:
         products = {}
-        for line in self.browse_order_line(data):
+        browse_line = self.browse_order_line(data)
+        self.order_ids = [] # list of order interessed from movement
+        for line in browse_line:
             mrp_remain = line.product_uom_qty - line.product_uom_maked_sync_qty
             delivery_remain = line.product_uom_qty - line.delivered_qty                
             if mrp_remain <= 0 or delivery_remain <= 0: # TODO use <=
                 continue # jump if no item or all produced
+            if line.order_id.id not in self.order_ids:
+                self.order_ids.append(line.order_id.id)
+                
             code = '%s...%s' % (
                 line.product_id.default_code[0:3],
                 line.product_id.default_code[6:8],
@@ -209,22 +216,22 @@ class Parser(report_sxw.rml_parse):
         
         # create a res order by product code
         res = []
-        keys = sorted(products)
+        codes = sorted(products)
         last_parent = False
         parent_total = [0, 0, 0]
-        key = ''
-        for key in keys:
+        code = ''
+        for code in codes:
             if not last_parent:
-                last_parent = key[:3] # first 3
+                last_parent = code[:3] # first 3
                 
-            if key[:3] != last_parent:
-                last_parent = key[:3]
+            if code[:3] != last_parent:
+                last_parent = code[:3]
                 parent_total = [0, 0, 0]
-                res.append(('T', key[:3], parent_total))
+                res.append(('T', code[:3], parent_total))
                 
             total = [0, 0, 0]
             # Add product line:
-            for line in products[key]:
+            for line in products[code]:
                 #res.append(('P', line))
                 total[0] += line.product_uom_qty
                 total[1] += line.product_uom_maked_sync_qty
@@ -237,9 +244,13 @@ class Parser(report_sxw.rml_parse):
                     line.product_uom_maked_sync_qty
                     
             # Add total line:    
-            res.append(('L', key, total))                
+            res.append(('L', code, total))                
         # last record_
-        res.append(('T', key[:3], parent_total))
+        res.append(('T', code[:3], parent_total))
         return res
+
+    def get_orders_selected(self):
+        order_pool = self.pool.get('sale.order')
+        return order_pool.browse(self.cr, self.uid, self.order_ids)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
