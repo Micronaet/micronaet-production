@@ -21,10 +21,19 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+import os
+import sys
+import logging
 from openerp.report import report_sxw
 from openerp.report.report_sxw import rml_parse
 from datetime import datetime, timedelta
 from openerp.tools.translate import _
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
+    DEFAULT_SERVER_DATETIME_FORMAT, 
+    DATETIME_FORMATS_MAP, 
+    float_compare)
+
+_logger = logging.getLogger(__name__)
 
 
 class Parser(report_sxw.rml_parse):
@@ -40,6 +49,7 @@ class Parser(report_sxw.rml_parse):
 
             'get_object_line': self.get_object_line,
             'get_datetime': self.get_datetime,
+            'get_date': self.get_date,
             
             'get_filter_description': self.get_filter_description,
         })
@@ -53,6 +63,11 @@ class Parser(report_sxw.rml_parse):
         ''' Return datetime obj
         '''
         return datetime
+
+    def get_date(self):
+        ''' Return datetime obj
+        '''
+        return datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
 
     def get_counter(self, name):
         ''' Get counter with name passed (else create an empty)
@@ -70,8 +85,9 @@ class Parser(report_sxw.rml_parse):
     def get_object_line(self, data):
         ''' Selected object + print object
         '''
+        _logger.info('Start report data: %s' % data)
+        
         # Parameters for report management:
-        products = {}
         sale_pool = self.pool.get('sale.order')
         line_pool = self.pool.get('sale.order.line')
 
@@ -133,13 +149,14 @@ class Parser(report_sxw.rml_parse):
             self.filter_description += _(', deadline < %') % to_deadline
             
         if code_start:  
-            domain.append(('default_code', '=ilike', '%s%s' % (
+            domain.append(('product_id.default_code', '=ilike', '%s%s' % (
                 code_start, '%')))  
             self.filter_description += _(', code start %s') % code_start
         
         line_ids = line_pool.search(self.cr, self.uid, domain)
 
         # Loop on order:
+        products = {}
         for line in line_pool.browse(self.cr, self.uid, line_ids):             
             # ------------------
             # Quantity analysis:
@@ -158,20 +175,20 @@ class Parser(report_sxw.rml_parse):
         
         # create a res order by product code
         res = []
-        for key in sorted(products):
+        keys = sorted(products)
+        _logger.info('Product group: %s' % len(keys))
+        for key in keys:
             total = [0, 0, 0]
+            # Add product line:
             for line in products[key]:
                 res.append(('P', line))
                 total[0] += line.product_uom_qty
                 total[1] += line.product_uom_maked_sync_qty
                 total[2] += line.product_uom_qty - \
                     line.product_uom_maked_sync_qty
-                
+
+            # Add total line:    
             res.append(('T', total))
                 
-            if not last_code:
-                last_code = line[0].default_code
-            res.extend(products[code])        
-        
         return res
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
