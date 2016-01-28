@@ -41,13 +41,67 @@ class Parser(report_sxw.rml_parse):
             'get_object_line': self.get_object_line,
             'get_datetime': self.get_datetime,
             
+            'level_break': self.level_break,
+            'is_last': self.is_last,
+            'get_totals': self.get_totals,
+            
             'get_filter_description': self.get_filter_description,
+            
+            # Grouped report:
+            'get_object_grouped_line': self.get_object_grouped_line,
+            
         })
+        
+        # Paramters for report management:
+        self.level_break_last = False
+        self.counters = {}
+        self.last = False
     
     def get_filter_description(self, ):
         '''
         '''
         return self.filter_description or ''
+        
+    def add_totals(self, totals, reset=False): 
+        i = 0
+        for item in totals:
+            if reset:
+                self.totals[i] = totals[i]
+            else:
+                self.totals[i] += totals[i]
+            i += 1                 
+      
+    def get_totals(self, item):
+        ''' return elements
+        '''
+        return self.last_totals[item]
+        
+    def is_last(self, line):
+        ''' Check if last line is current
+        '''        
+        if self.last == line:
+            self.last_totals = tuple(self.totals)            
+            return True
+        else:
+            return False    
+            
+    def level_break(self, code, totals):
+        ''' Check if code break level and update totals
+        '''
+        if self.level_break_last == False:
+            self.level_break_last = code
+            self.totals = list(totals) # Start up total counters
+            return False
+        
+        if self.level_break_last == code:
+            # Add passed totals to total:
+            self.add_totals(totals)
+            return False
+        else:
+            self.level_break_last == code
+            self.last_totals = tuple(self.totals)
+            self.add_totals(totals, reset=True)
+            return True    
         
     def get_datetime(self):
         ''' Return datetime obj
@@ -71,7 +125,12 @@ class Parser(report_sxw.rml_parse):
         ''' Selected object + print object
         '''
         # Parameters for report management:
+        self.level_break_last = False
+        self.counters = {}
+        self.last = False
+
         products = {}
+        res = []
         sale_pool = self.pool.get('sale.order')
         line_pool = self.pool.get('sale.order.line')
 
@@ -104,9 +163,9 @@ class Parser(report_sxw.rml_parse):
             ('pricelist_order', '=', False), 
             ]
 
-        # -------------------------
-        # Start filter description:
-        # -------------------------
+        # -------------------------    
+        # Start filter description:    
+        # -------------------------    
         self.filter_description = _('Order open, not pricelist order')
 
         # TODO domain.append(('order_closed', '=', False)) << all delivered
@@ -140,38 +199,41 @@ class Parser(report_sxw.rml_parse):
         line_ids = line_pool.search(self.cr, self.uid, domain)
 
         # Loop on order:
-        for line in line_pool.browse(self.cr, self.uid, line_ids):             
+        for line in line_pool.browse(
+                self.cr, self.uid, line_ids): 
             # ------------------
             # Quantity analysis:
             # ------------------
-            mrp_remain = line.product_uom_qty - line.product_uom_maked_sync_qty
-            delivery_remain = line.product_uom_qty - line.delivered_qty    
+            mrp_remain = line.product_uom_qty - \
+                line.product_uom_maked_sync_qty
+            delivery_remain = line.product_uom_qty - \
+                line.delivered_qty    
             
             # if no production remaon or all delivered:    
             if mrp_remain <= 0 or delivery_remain <= 0: # TODO use <=
                 continue # jump line
-            code = line.product_id.default_code    
 
+            # --------------
+            # Code analysis:
+            # --------------
+            if grouped:
+                code = line.product_id.default_code[from_code: to_code]
+            else:   
+                code = line.product_id.default_code # all code
+                
             if code not in products:
                 products[code] = []
+                
+            #res.append(line) # unsorted
             products[code].append(line)
         
         # create a res order by product code
-        res = []
-        for key in sorted(products):
-            total = [0, 0, 0]
-            for line in products[key]:
-                res.append(('P', line))
-                total[0] += line.product_uom_qty
-                total[1] += line.product_uom_maked_sync_qty
-                total[2] += line.product_uom_qty - \
-                    line.product_uom_maked_sync_qty
-                
-            res.append(('T', total))
-                
-            if not last_code:
-                last_code = line[0].default_code
+        for code in sorted(products):
             res.extend(products[code])        
         
+        # Save last for print total at the end    
+        if len(res):    
+            self.last = res[-1]
+            
         return res
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
