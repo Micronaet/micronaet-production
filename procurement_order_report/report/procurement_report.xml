@@ -8,9 +8,9 @@
             <field name="model">sale.order</field>
             <field name="report_name">mx_procurement_report</field>
             <field name="report_type">aeroo</field>
-            <field name="in_format">oo-ods</field>
+            <field name="in_format">oo-odt</field>
             <field name="parser_loc">procurement_order_report/report/procurement_parser.py</field>
-            <field name="report_rml">procurement_order_report/report/procurement_report.ods</field>
+            <field name="report_rml">procurement_order_report/report/procurement_report.odt</field>
             <field name="parser_state">loc</field>
             <field name="tml_source">file</field>
         </record>
@@ -31,9 +31,9 @@
             <field name="model">sale.order</field>
             <field name="report_name">mx_procurement_grouped_report</field>
             <field name="report_type">aeroo</field>
-            <field name="in_format">oo-ods</field>
+            <field name="in_format">oo-odt</field>
             <field name="parser_loc">procurement_order_report/report/procurement_parser.py</field>
-            <field name="report_rml">procurement_order_report/report/procurement_grouped_report.ods</field>
+            <field name="report_rml">procurement_order_report/report/procurement_grouped_report.odt</field>
             <field name="parser_state">loc</field>
             <field name="tml_source">file</field>
         </record>
