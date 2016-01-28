@@ -48,6 +48,8 @@ class Parser(report_sxw.rml_parse):
             'set_counter': self.set_counter,
 
             'get_object_line': self.get_object_line,
+            'get_object_grouped_line': self.get_object_grouped_line,
+
             'get_datetime': self.get_datetime,
             'get_date': self.get_date,
             
@@ -82,15 +84,15 @@ class Parser(report_sxw.rml_parse):
         self.counters[name] = value
         return "" # empty so no write in module
 
-    def get_object_line(self, data):
-        ''' Selected object + print object
+    # Utility for 2 report:
+    def browse_order_line(self, data):
+        ''' Return line (used from 2 report)
         '''
         _logger.info('Start report data: %s' % data)
-        
         # Parameters for report management:
         sale_pool = self.pool.get('sale.order')
         line_pool = self.pool.get('sale.order.line')
-
+        
         # Get wizard information:
         code_start = data.get('code_start', False)
 
@@ -135,7 +137,7 @@ class Parser(report_sxw.rml_parse):
             self.filter_description += _(', date < %') % to_date
         
         order_ids = sale_pool.search(self.cr, self.uid, domain)
-        
+
         # ---------------------------------------------------------------------
         #                      Sale order line filter
         # ---------------------------------------------------------------------
@@ -154,21 +156,19 @@ class Parser(report_sxw.rml_parse):
             self.filter_description += _(', code start %s') % code_start
         
         line_ids = line_pool.search(self.cr, self.uid, domain)
-
+        return line_pool.browse(self.cr, self.uid, line_ids)
+    
+    def get_object_line(self, data):
+        ''' Selected object + print object
+        '''
         # Loop on order:
         products = {}
-        for line in line_pool.browse(self.cr, self.uid, line_ids):             
-            # ------------------
-            # Quantity analysis:
-            # ------------------
+        for line in self.browse_order_line(data):
             mrp_remain = line.product_uom_qty - line.product_uom_maked_sync_qty
-            delivery_remain = line.product_uom_qty - line.delivered_qty    
-            
-            # if no production remaon or all delivered:    
+            delivery_remain = line.product_uom_qty - line.delivered_qty                
             if mrp_remain <= 0 or delivery_remain <= 0: # TODO use <=
-                continue # jump line
-            code = line.product_id.default_code    
-
+                continue # jump if no item or all produced
+            code = line.product_id.default_code
             if code not in products:
                 products[code] = []
             products[code].append(line)
@@ -176,7 +176,6 @@ class Parser(report_sxw.rml_parse):
         # create a res order by product code
         res = []
         keys = sorted(products)
-        _logger.info('Product group: %s' % len(keys))
         for key in keys:
             total = [0, 0, 0]
             # Add product line:
@@ -186,9 +185,61 @@ class Parser(report_sxw.rml_parse):
                 total[1] += line.product_uom_maked_sync_qty
                 total[2] += line.product_uom_qty - \
                     line.product_uom_maked_sync_qty
-
             # Add total line:    
-            res.append(('T', total))
-                
+            res.append(('T', total))                
         return res
+
+    def get_object_grouped_line(self, data):
+        ''' Selected object + print object
+        '''
+        # Loop on order:
+        products = {}
+        for line in self.browse_order_line(data):
+            mrp_remain = line.product_uom_qty - line.product_uom_maked_sync_qty
+            delivery_remain = line.product_uom_qty - line.delivered_qty                
+            if mrp_remain <= 0 or delivery_remain <= 0: # TODO use <=
+                continue # jump if no item or all produced
+            code = '%s...%s' % (
+                line.product_id.default_code[0:3],
+                line.product_id.default_code[6:8],
+                )
+            if code not in products:
+                products[code] = []
+            products[code].append(line)
+        
+        # create a res order by product code
+        res = []
+        keys = sorted(products)
+        last_parent = False
+        parent_total = [0, 0, 0]
+        key = ''
+        for key in keys:
+            if not last_parent:
+                last_parent = key[:3] # first 3
+                
+            if key[:3] != last_parent:
+                last_parent = key[:3]
+                parent_total = [0, 0, 0]
+                res.append(('T', key[:3], parent_total))
+                
+            total = [0, 0, 0]
+            # Add product line:
+            for line in products[key]:
+                #res.append(('P', line))
+                total[0] += line.product_uom_qty
+                total[1] += line.product_uom_maked_sync_qty
+                total[2] += line.product_uom_qty - \
+                    line.product_uom_maked_sync_qty
+
+                parent_total[0] += line.product_uom_qty # TODO better!!
+                parent_total[1] += line.product_uom_maked_sync_qty
+                parent_total[2] += line.product_uom_qty - \
+                    line.product_uom_maked_sync_qty
+                    
+            # Add total line:    
+            res.append(('L', key, total))                
+        # last record_
+        res.append(('T', key[:3], parent_total))
+        return res
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
