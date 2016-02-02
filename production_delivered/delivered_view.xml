@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="production_sale_order_line_delivered_tree_view">
+            <field name="name">Production deliverd</field>
+            <field name="model">sale.order.line</field>
+            <field name="inherit_id" ref="production_accounting_external.production_sale_order_line_tree_view"/>            
+            <field name="arch" type="xml">
+                <field name="product_uom_maked_sync_qty" position="after"/>
+                    <field name="delivered_qty" readonly="1"/>
+                </field>    
+            </field>    
+        </record>
+    </data>
+</openerp>
+
