@@ -55,7 +55,14 @@ class Parser(report_sxw.rml_parse):
             'get_date': self.get_date,
             
             'get_filter_description': self.get_filter_description,
+            
+            'get_general_total': self.get_general_total,
         })
+
+    def get_general_total(self, ):
+        '''
+        '''
+        return self.general_total
     
     def get_filter_description(self, ):
         '''
@@ -168,7 +175,8 @@ class Parser(report_sxw.rml_parse):
         for line in browse_line:
             mrp_remain = line.product_uom_qty - line.product_uom_maked_sync_qty
             delivery_remain = line.product_uom_qty - line.delivered_qty                
-            if mrp_remain <= 0 or delivery_remain <= 0: # TODO use <=
+            if data.get('only_remain', False) and (
+                    mrp_remain <= 0 or delivery_remain <= 0): # TODO use <=
                 continue # jump if no item or all produced
             code = line.product_id.default_code
             if code not in products:
@@ -178,15 +186,27 @@ class Parser(report_sxw.rml_parse):
         # create a res order by product code
         res = []
         codes = sorted(products)
+        self.general_total = [0, 0, 0, 0]
         for code in codes:
-            total = [0, 0, 0]
+            total = [0, 0, 0, 0]
             # Add product line:
             for line in products[code]:
                 res.append(('P', line))
+                
+                # Block total:
                 total[0] += line.product_uom_qty
                 total[1] += line.product_uom_maked_sync_qty
                 total[2] += line.product_uom_qty - \
                     line.product_uom_maked_sync_qty
+                total[3] += line.delivered_qty
+                
+                # General Total:
+                self.general_total[0] += line.product_uom_qty
+                self.general_total[1] += line.product_uom_maked_sync_qty
+                self.general_total[2] += line.product_uom_qty - \
+                    line.product_uom_maked_sync_qty
+                self.general_total[3] += line.delivered_qty
+    
             # Add total line:    
             res.append(('T', total))                
         return res
@@ -200,9 +220,12 @@ class Parser(report_sxw.rml_parse):
         self.order_ids = [] # list of order interessed from movement
         for line in browse_line:
             mrp_remain = line.product_uom_qty - line.product_uom_maked_sync_qty
-            delivery_remain = line.product_uom_qty - line.delivered_qty                
-            if mrp_remain <= 0 or delivery_remain <= 0: # TODO use <=
+            delivery_remain = line.product_uom_qty - line.delivered_qty     
+               
+            if data.get('only_remain', False) and (
+                    mrp_remain <= 0 or delivery_remain <= 0): # TODO use <=
                 continue # jump if no item or all produced
+            
             if line.order_id.id not in self.order_ids:
                 self.order_ids.append(line.order_id.id)
                 
@@ -218,30 +241,44 @@ class Parser(report_sxw.rml_parse):
         res = []
         codes = sorted(products)
         last_parent = False
-        parent_total = [0, 0, 0]
+        parent_total = [0, 0, 0, 0]
         code = ''
+
+        self.general_total = [0, 0, 0, 0]        
         for code in codes:
             if not last_parent:
                 last_parent = code[:3] # first 3
                 
             if code[:3] != last_parent:
                 last_parent = code[:3]
-                parent_total = [0, 0, 0]
+                parent_total = [0, 0, 0, 0]
                 res.append(('T', code[:3], parent_total))
                 
-            total = [0, 0, 0]
+            total = [0, 0, 0, 0]
             # Add product line:
             for line in products[code]:
                 #res.append(('P', line))
+                
+                # Line total:
                 total[0] += line.product_uom_qty
                 total[1] += line.product_uom_maked_sync_qty
                 total[2] += line.product_uom_qty - \
                     line.product_uom_maked_sync_qty
+                total[3] += line.delivered_qty
 
+                # Block total
                 parent_total[0] += line.product_uom_qty # TODO better!!
                 parent_total[1] += line.product_uom_maked_sync_qty
                 parent_total[2] += line.product_uom_qty - \
                     line.product_uom_maked_sync_qty
+                parent_total[3] += line.delivered_qty
+                
+                # General Total:
+                self.general_total[0] += line.product_uom_qty
+                self.general_total[1] += line.product_uom_maked_sync_qty
+                self.general_total[2] += line.product_uom_qty - \
+                    line.product_uom_maked_sync_qty
+                self.general_total[3] += line.delivered_qty    
                     
             # Add total line:    
             res.append(('L', code, total))                
