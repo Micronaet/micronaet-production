@@ -181,11 +181,18 @@ class Parser(report_sxw.rml_parse):
         products = {}
         browse_line = self.browse_order_line(data)
         for line in browse_line:
-            mrp_remain = line.product_uom_qty - line.product_uom_maked_sync_qty
-            delivery_remain = line.product_uom_qty - line.delivered_qty                
-            if data.get('only_remain', False) and (
-                    mrp_remain <= 0 or delivery_remain <= 0): # TODO use <=
+            product_uom_qty = line.product_uom_qty
+            product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
+            delivered_qty = line.delivered_qty
+            
+            if delivered_qty > product_uom_maked_sync_qty:
+                mrp_remain = product_uom_qty - delivered_qty
+            else:
+                mrp_remain = product_uom_qty - product_uom_maked_sync_qty
+
+            if data.get('only_remain', False) and mrp_remain <= 0:
                 continue # jump if no item or all produced
+
             code = line.product_id.default_code
             if code not in products:
                 products[code] = []
@@ -234,11 +241,15 @@ class Parser(report_sxw.rml_parse):
         browse_line = self.browse_order_line(data)
         self.order_ids = [] # list of order interessed from movement
         for line in browse_line:
-            mrp_remain = line.product_uom_qty - line.product_uom_maked_sync_qty
-            delivery_remain = line.product_uom_qty - line.delivered_qty     
-               
-            if data.get('only_remain', False) and (
-                    mrp_remain <= 0 or delivery_remain <= 0): # TODO use <=
+            product_uom_qty = line.product_uom_qty
+            product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
+            delivered_qty = line.delivered_qty
+            if delivered_qty > product_uom_maked_sync_qty:
+                mrp_remain = product_uom_qty - delivered_qty
+            else:
+                mrp_remain = product_uom_qty - product_uom_maked_sync_qty
+
+            if data.get('only_remain', False) and mrp_remain <= 0:
                 continue # jump if no item or all produced
             
             if line.order_id.id not in self.order_ids:
