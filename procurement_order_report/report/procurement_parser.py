@@ -103,6 +103,8 @@ class Parser(report_sxw.rml_parse):
         
         # Get wizard information:
         code_start = data.get('code_start', False)
+        
+        only_remain = data.get('only_remain', False)
 
         #from_code = data.get('from_code', 0) - 1
         #to_code = from_code + data.get('code_length', 0)
@@ -143,6 +145,12 @@ class Parser(report_sxw.rml_parse):
         if to_date:
             domain.append(('date_order', '<', to_date))
             self.filter_description += _(', date < %s') % to_date
+        
+        if only_remain:
+            self.filter_description += _(', only remain to produce')
+        else:    
+            self.filter_description += _(', all order line')
+             
         
         order_ids = sale_pool.search(self.cr, self.uid, domain)
 
