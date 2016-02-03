@@ -174,6 +174,7 @@
                 <field name="product_uom_qty" sum="Total" readonly="1" />                                
                 <field name="product_uom_maked_qty" invisible="1"/> <!--TODO remove-->
                 <field name="product_uom_maked_sync_qty" string="Maked (B)" attrs="{'readonly':[('sync_state','in',('sync'))]}"/><!--TODO onchange event-->
+                <field name="product_uom_assigned_qty" />
                 <field name="product_uom_delivered_qty" readonly="1" invisible="1"/>                
                 <!--<button name="%(action_assign_mrp_production_partial_wizard_form)d" string="Partial production" type="action" icon="gtk-add" attrs="{'invisible': [('sync_state','in',('closed','sync'))]}"/>-->
                 <field name="production_note" readonly="1" />                                
@@ -375,6 +376,7 @@
             </xpath>
             <xpath expr="//page/field[@name='order_line']/tree/field[@name='product_uom_qty']" position="after">
                 <field name="product_uom_maked_sync_qty" />
+                <field name="product_uom_assigned_qty" />
             </xpath>
             <xpath expr="//page/field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
                 <field name="is_manufactured" invisible="1"/>

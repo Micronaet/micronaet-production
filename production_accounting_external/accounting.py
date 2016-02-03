@@ -260,8 +260,14 @@ class SaleOrderLine(orm.Model):
             help='Partial position till not sync in accounting'),
 
         'product_uom_maked_sync_qty': fields.float(
-            'Maked (acc.)', digits=(16, 2), 
-            help='This quantity is the sync quantity maked in accounting'),
+            'Maked', digits=(16, 2), 
+            help='This quantity is the quantity currently maked'),
+
+        'product_uom_assigned_qty': fields.float(
+            '(Assigned) not use!', digits=(16, 2),  # TODO change after add
+            help='This quantity is the stock qty present and assigned to'
+                'this current line'),
+
         'production_note': fields.char('Note', size=100),    
 
         #'default_code': fields.related('product_id','default_code', 
