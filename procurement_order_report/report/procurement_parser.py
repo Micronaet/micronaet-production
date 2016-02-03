@@ -201,19 +201,26 @@ class Parser(report_sxw.rml_parse):
             for line in products[code]:
                 res.append(('P', line))
                 
-                # Block total:
-                total[0] += line.product_uom_qty
-                total[1] += line.product_uom_maked_sync_qty
-                total[2] += line.product_uom_qty - \
-                    line.product_uom_maked_sync_qty
-                total[3] += line.delivered_qty
+                # Quantity used:
+                product_uom_qty = line.product_uom_qty
+                product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
+                delivered_qty = line.delivered_qty
+                if delivered_qty > product_uom_maked_sync_qty:
+                    remain = product_uom_qty - delivered_qty
+                else:
+                    remain = product_uom_qty - product_uom_maked_sync_qty
                 
+                # Block total:
+                total[0] += product_uom_qty
+                total[1] += product_uom_maked_sync_qty
+                total[2] += remain
+                total[3] += delivered_qty
+                                
                 # General Total:
-                self.general_total[0] += line.product_uom_qty
-                self.general_total[1] += line.product_uom_maked_sync_qty
-                self.general_total[2] += line.product_uom_qty - \
-                    line.product_uom_maked_sync_qty
-                self.general_total[3] += line.delivered_qty
+                self.general_total[0] += product_uom_qty
+                self.general_total[1] += product_uom_maked_sync_qty
+                self.general_total[2] += remain
+                self.general_total[3] += delivered_qty
     
             # Add total line:    
             res.append(('T', total))                
@@ -266,19 +273,26 @@ class Parser(report_sxw.rml_parse):
             for line in products[code]:
                 #res.append(('P', line))
                 
+                # Quantity used:
+                product_uom_qty = line.product_uom_qty
+                product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
+                delivered_qty = line.delivered_qty
+                if delivered_qty > product_uom_maked_sync_qty:
+                    remain = product_uom_qty - delivered_qty
+                else:
+                    remain = product_uom_qty - product_uom_maked_sync_qty
+                
                 # Line total:
-                total[0] += line.product_uom_qty
-                total[1] += line.product_uom_maked_sync_qty
-                total[2] += line.product_uom_qty - \
-                    line.product_uom_maked_sync_qty
-                total[3] += line.delivered_qty
+                total[0] += product_uom_qty
+                total[1] += product_uom_maked_sync_qty
+                total[2] += remain
+                total[3] += delivered_qty
 
                 # Block total
-                parent_total[0] += line.product_uom_qty # TODO better!!
-                parent_total[1] += line.product_uom_maked_sync_qty
-                parent_total[2] += line.product_uom_qty - \
-                    line.product_uom_maked_sync_qty
-                parent_total[3] += line.delivered_qty
+                parent_total[0] += product_uom_qty # TODO better!!
+                parent_total[1] += product_uom_maked_sync_qty
+                parent_total[2] += remain
+                parent_total[3] += delivered_qty
 
             # Add total line:    
             res.append(('L', code, total))                
