@@ -18,11 +18,11 @@
 
                             <separator string="Code filter:" colspan="4" />
                             <field name="code_start" />
-                            <newline />
+                            <field name="only_remain" />
                             
-                            <!--<separator string="Group clause:" colspan="4" />
+                            <separator string="Group clause:" colspan="4" />
+                            <field name="code_partial" />
                             <field name="code_from" />
-                            <field name="code_length" />-->
                               
                             <separator string="Date filter:" colspan="4" />
                             <field name="from_date" />

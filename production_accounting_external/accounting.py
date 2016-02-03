@@ -200,8 +200,6 @@ class SaleOrderLine(orm.Model):
             'sync_state': 'draft',
             }, context=context)                
            
-           
-           
 class SaleOrderLine(orm.Model):
     ''' Manage family in sale.order.line
     '''
@@ -228,6 +226,11 @@ class SaleOrderLine(orm.Model):
         '''
         return self.pool.get('sale.order.line').search(cr, uid, [
             ('order_id', 'in', ids)], context=context)            
+
+    def _refresh_line_in_production(self, cr, uid, ids, context=None):
+        ''' Get state of production from state of order
+        '''
+        return ids
         
     _columns = {
         'mrp_id': fields.many2one(
@@ -241,9 +244,10 @@ class SaleOrderLine(orm.Model):
             string='Go in production', store={
                 'sale.order': (
                     _refresh_in_production, ['state'], 10),
+                'sale.order.line': (
+                    _refresh_line_in_production, ['order_id'], 10),
                 }), 
-                        
-            
+                 
         # Delivered:    
         'product_uom_delivered_qty': fields.float(
             'Delivered', digits=(16, 2), 

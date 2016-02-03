@@ -68,9 +68,10 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         datas['to_deadline'] = wiz_proxy.to_deadline or False
         
         datas['code_start'] = wiz_proxy.code_start
+        datas['code_partial'] = wiz_proxy.code_partial
         
-        #datas['code_from'] = wiz_proxy.code_from
-        #datas['code_length'] = wiz_proxy.code_length
+        datas['code_from'] = wiz_proxy.code_from
+        datas['only_remain'] = wiz_proxy.only_remain
 
         return {
             'type': 'ir.actions.report.xml',
@@ -84,6 +85,8 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
             ('grouped', 'Order grouped by frame'),
             ], 'Report type', required=True),
         'partner_id': fields.many2one('res.partner', 'Partner'),
+        'only_remain':fields.boolean('Only remain', 
+            help='Show only element to procuce'),
         
         'from_date': fields.date('From', help='Date >='),
         'to_date': fields.date('To', help='Date <'),
@@ -92,14 +95,15 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
 
         # Code filter:
         'code_start': fields.char('Code start', size=20), 
+        'code_partial': fields.char('Code partial', size=20), 
 
         # Group option:        
         'code_from': fields.integer('Code from char'), 
-        'code_length': fields.integer('Code from char'),
         }
         
     _defaults = {
         'report_type': lambda *x: 'detailed',
+        'only_remain': lambda *x: True,
         #'to_date': datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
