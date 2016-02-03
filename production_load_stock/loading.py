@@ -62,7 +62,7 @@ class StockMove(orm.Model):
 class SaleOrder(orm.Model):
     """ Model name: Sale order for production
     """    
-    _inherit = 'sale.order'
+    _inherit = 'sale.order.line'
 
     # Utility:
     def _search_bom_for_product(self, cr, uid, product_id, context=None):
@@ -79,6 +79,14 @@ class SaleOrder(orm.Model):
         
         return bom_pool.browse(cr, uid, bom_ids, context=context)[0]
     
+    def _create_stock_move_for_production(self, cr, uid, line, bom, 
+            context=None):
+        ''' Generate dict for stock production move
+        '''    
+        pass
+        # TODO
+        return {}
+        
     def _recreate_production_sol_move(self, cr, uid, sol_ids, 
             context=None):    
         ''' Generic function used for create / update stock move,
@@ -95,10 +103,10 @@ class SaleOrder(orm.Model):
         line_proxy = self.browse(cr, uid, sol_ids, context=context)[0]
 
         # get product BOM for materials:
-        bom_proxy = self.search_bom_for_product(cr, uid, 
+        bom_proxy = self._search_bom_for_product(cr, uid, 
             line_proxy.product_id.id, context=context)
 
-        maked_qty = line_proxy.production_maked_sync_qty or 0.0
+        maked_qty = line_proxy.product_uom_maked_sync_qty or 0.0
 
         # Unlink all stock move (always):
         move_ids = move_pool.search(cr, uid, [
@@ -113,19 +121,50 @@ class SaleOrder(orm.Model):
         if bom_proxy:
             # Unload materials:
             for bom in bom_proxy.bom_line_ids:
+                unload_qty = bom.product_qty * maked_qty
+                continue
                 move_pool.create(cr, uid, {
                     'production_sol_id': line_proxy.id,
-                    'production_load_type': 'sl',                    
-                    # TODO maked_qty *                     
+                    'production_load_type': 'sl',
+                    'product_id': bom.product_id.id,
+                    'product_qty': unload_qty, 
+                    'product_uom': line.product_id.uom_id.id,
+                    #'product_uom_qty',
+                    #'product_uos',
+                    #'product_uos_qty',
+                    'state': 'done', # confirmed, available
+                    'date_expected': datetime.now().strftime(
+                        DEFAULT_SERVER_DATE_FORMAT),
+                    'origin': line_proxy.mrp_id.name,
+                    'display_name': 'SL: %s' % line_proxy.product_id.name,
+                    'name': 'SL: %s' % line_proxy.product_id.name,
+                    'location_dest_id': 0, # TODO
+                    'location_id': 0, # TODO
+                    #'warehouse_id',
+                    #'picking_type_id',
+
+                    #'weight'
+                    #'weight_net',
+                    #'picking_id'
+                    #'group_id'
+                    #'production_id'
+                    #'product_packaging'                    
+                    #'company_id'
+                    #'date':
+                    #date_expexted'
+                    #'note':,
+                    #'partner_id':
+                    #'price_unit',
+                    #'priority',.                    
                     }, context=context)
         
         # Load end product:    
-        # TODO
-        move_pool.create(cr, uid, {
-            'production_sol_id': line_proxy.id,
-            'production_load_type': 'sl',
-            'product_uom_qty': maked_qty,
-            }, context=context)
+        # TODO        
+        #move_pool.create(cr, uid, {
+        #    'production_sol_id': line_proxy.id,
+        #    'production_load_type': 'cl',
+        #    'product_uom_qty': maked_qty,
+        #    }, context=context)
         return True
         
     def write(self, cr, uid, ids, vals, context=None):
@@ -139,11 +178,12 @@ class SaleOrder(orm.Model):
             
             @return: True on success, False otherwise
         """
+        import pdb; pdb.set_trace()
         res = super(SaleOrder, self).write(
             cr, uid, ids, vals, context=context)
 
         # Check maked qty for create production moves:
-        if 'production_maked_sync_qty' in vals:
+        if 'product_uom_maked_sync_qty' in vals:
             self._recreate_production_sol_move(cr, uid, ids, 
                 context=context)
         return res
@@ -157,6 +197,7 @@ class SaleOrder(orm.Model):
             
             @return: returns a id of new record
         """    
+        import pdb; pdb.set_trace()
         res_id = super(SaleOrder, self).create(
             cr, uid, vals, context=context)
         

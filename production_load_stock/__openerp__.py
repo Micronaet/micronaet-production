@@ -32,6 +32,9 @@
     'license': 'AGPL-3',
     'depends': [
         'base',
+        'sale',
+        'stock',
+        'production_accounting_external',
         ],
     'init_xml': [],
     'demo': [],
