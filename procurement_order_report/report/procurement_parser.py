@@ -252,7 +252,6 @@ class Parser(report_sxw.rml_parse):
         parent_total = [0, 0, 0, 0]
         code = ''
 
-        self.general_total = [0, 0, 0, 0]        
         for code in codes:
             if not last_parent:
                 last_parent = code[:3] # first 3
@@ -280,14 +279,7 @@ class Parser(report_sxw.rml_parse):
                 parent_total[2] += line.product_uom_qty - \
                     line.product_uom_maked_sync_qty
                 parent_total[3] += line.delivered_qty
-                
-                # General Total:
-                self.general_total[0] += line.product_uom_qty
-                self.general_total[1] += line.product_uom_maked_sync_qty
-                self.general_total[2] += line.product_uom_qty - \
-                    line.product_uom_maked_sync_qty
-                self.general_total[3] += line.delivered_qty    
-                    
+
             # Add total line:    
             res.append(('L', code, total))                
         # last record_
