@@ -51,6 +51,7 @@ class Parser(report_sxw.rml_parse):
             'get_hour': self.get_hour,
             
             'get_object_with_total': self.get_object_with_total,
+            'get_frames': self.get_frames,
             
             # remain report:
             'get_object_remain': self.get_object_remain,
@@ -77,6 +78,11 @@ class Parser(report_sxw.rml_parse):
         '''
         return datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
+    def get_frames(self, ):    
+        ''' Return frames object:
+        '''
+        return self.frames
+
     def get_object_with_total(self, o):
         ''' Get object with totals for normal report
         '''
@@ -89,7 +95,17 @@ class Parser(report_sxw.rml_parse):
         total1 = total2 = 0.0
         records = []
 
+        self.frames = {}
         for line in lines:
+            # -------------
+            # Check Frames:
+            # -------------
+            # France total:
+            frame = line.default_code.replace(' ', '.')[6:8]
+            if frame not in self.frames:
+                self.frames[frame] = 0.0
+            self.frames[frame] += line.product_uom_qty
+            
             # -----------------
             # Check for totals:
             # -----------------
