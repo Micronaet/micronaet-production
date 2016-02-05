@@ -82,49 +82,51 @@ class Parser(report_sxw.rml_parse):
         '''
         lines = []
         for line in o.order_line_ids: # jet ordered:
-            lines.append(line, 0, 0)
+            lines.append(line)
 
         # Total for code break:
         code1 = code2 = False
         total1 = total2 = 0.0
         records = []
-        
+
         for line in lines:
-            # -------------------
-            # Append record line:
-            # -------------------
-            records.append(('L', line))
-            
             # -----------------
             # Check for totals:
             # -----------------
             # Color total:
-            color = line.default_code[6:8]
+            color = line.default_code[8:12]
             if not code1: # first loop
+                total1 = 0.0
                 code1 = color
                 
             if code1 == color:
                 total1 += line.product_uom_qty
             else:
                 code1 = color
-                records.append('T1', total1)
-                total1 = 0.0
+                records.append(('T1', line, total1))
+                total1 = line.product_uom_qty
 
             # Code general total:
             if not code2: # first loop
+                total2 = 0.0
                 code2 = line.default_code
                 
             if code2 == line.default_code:
                 total2 += line.product_uom_qty
             else: 
                 code2 = line.default_code
-                records.append('T2', total2)
-                total2 = 0.0
+                records.append(('T2', line, total2))
+                total2 = line.product_uom_qty
+
+            # -------------------
+            # Append record line:
+            # -------------------
+            records.append(('L', line, False))
 
         # Append last totals if there's records:
         if records:                
-            records.append('T1', total1)
-            records.append('T2', total2)
+            records.append(('T1', line, total1))
+            records.append(('T2', line, total2))
             
         return records
         
