@@ -35,6 +35,7 @@
         'sale',
         'stock',
         'production_accounting_external',
+        'mx_stock_status_multicompany', # for parameters in company!! XXX
         ],
     'init_xml': [],
     'demo': [],

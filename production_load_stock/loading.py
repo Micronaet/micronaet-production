@@ -96,10 +96,19 @@ class SaleOrder(orm.Model):
         
         # Pool used:
         move_pool = self.pool.get('stock.move')
+        company_pool = self.pool.get('res.company')
 
         # Parameter for location:
-        # TODO 
-                
+        company_ids = company_pool.search(cr, uid, [], context=context)
+        company_proxy = company_pool.browse(cr, uid, company_ids, 
+            context=context)[0]
+        stock_location = company_proxy.stock_location_id.id
+        mrp_location = company_proxy.stock_mrp_location_id.id
+        if not(mrp_location and stock_location):
+            raise osv.except_osv(
+                _('Error'), 
+                _('Set up in company location for stock and mrp1!'))
+        
         line_proxy = self.browse(cr, uid, sol_ids, context=context)[0]
 
         # get product BOM for materials:
@@ -112,6 +121,11 @@ class SaleOrder(orm.Model):
         move_ids = move_pool.search(cr, uid, [
             ('production_sol_id', '=', line_proxy.id)], context=context)
         if move_ids:
+            # Set to draft:
+            move_pool.write(cr, uid, move_ids, {
+                'state': 'draft',
+                }, context=context)
+            # delete:    
             move_pool.unlink(cr, uid, move_ids, context=context)
 
         if not maked_qty:   
@@ -122,24 +136,26 @@ class SaleOrder(orm.Model):
             # Unload materials:
             for bom in bom_proxy.bom_line_ids:
                 unload_qty = bom.product_qty * maked_qty
-                continue
+                if unload_qty <= 0.0:
+                    continue# jump line
                 move_pool.create(cr, uid, {
-                    'production_sol_id': line_proxy.id,
                     'production_load_type': 'sl',
+                    'location_dest_id': mrp_location,
+                    'location_id': stock_location,
                     'product_id': bom.product_id.id,
-                    'product_qty': unload_qty, 
-                    'product_uom': line.product_id.uom_id.id,
+                    'product_uom_qty': unload_qty, 
+                    'product_uom': bom.product_id.uom_id.id,
+
                     #'product_uom_qty',
                     #'product_uos',
                     #'product_uos_qty',
+                    'production_sol_id': line_proxy.id,
                     'state': 'done', # confirmed, available
                     'date_expected': datetime.now().strftime(
                         DEFAULT_SERVER_DATE_FORMAT),
                     'origin': line_proxy.mrp_id.name,
                     'display_name': 'SL: %s' % line_proxy.product_id.name,
                     'name': 'SL: %s' % line_proxy.product_id.name,
-                    'location_dest_id': 0, # TODO
-                    'location_id': 0, # TODO
                     #'warehouse_id',
                     #'picking_type_id',
 
@@ -160,11 +176,41 @@ class SaleOrder(orm.Model):
         
         # Load end product:    
         # TODO        
-        #move_pool.create(cr, uid, {
-        #    'production_sol_id': line_proxy.id,
-        #    'production_load_type': 'cl',
-        #    'product_uom_qty': maked_qty,
-        #    }, context=context)
+        move_pool.create(cr, uid, {
+            'production_load_type': 'cl',
+            'location_dest_id': stock_location,
+            'location_id': mrp_location,
+            'product_id': line_proxy.product_id.id,
+            'product_uom_qty': maked_qty, 
+            'product_uom': line_proxy.product_id.uom_id.id,
+
+            'production_sol_id': line_proxy.id,
+            #'product_uom_qty',
+            #'product_uos',
+            #'product_uos_qty',
+            'state': 'done', # confirmed, available
+            'date_expected': datetime.now().strftime(
+                DEFAULT_SERVER_DATE_FORMAT),
+            'origin': line_proxy.mrp_id.name,
+            'display_name': 'CL: %s' % line_proxy.product_id.name,
+            'name': 'CL: %s' % line_proxy.product_id.name,
+            #'warehouse_id',
+            #'picking_type_id',
+
+            #'weight'
+            #'weight_net',
+            #'picking_id'
+            #'group_id'
+            #'production_id'
+            #'product_packaging'                    
+            #'company_id'
+            #'date':
+            #date_expexted'
+            #'note':,
+            #'partner_id':
+            #'price_unit',
+            #'priority',.                    
+            }, context=context)
         return True
         
     def write(self, cr, uid, ids, vals, context=None):
@@ -178,7 +224,6 @@ class SaleOrder(orm.Model):
             
             @return: True on success, False otherwise
         """
-        import pdb; pdb.set_trace()
         res = super(SaleOrder, self).write(
             cr, uid, ids, vals, context=context)
 

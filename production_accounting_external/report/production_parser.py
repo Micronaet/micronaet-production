@@ -50,6 +50,8 @@ class Parser(report_sxw.rml_parse):
             # production report:
             'get_hour': self.get_hour,
             
+            'get_object_with_total': self.get_object_with_total,
+            
             # remain report:
             'get_object_remain': self.get_object_remain,
             'previous_record': self.previous_record,
@@ -75,6 +77,57 @@ class Parser(report_sxw.rml_parse):
         '''
         return datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
+    def get_object_with_total(self, o):
+        ''' Get object with totals for normal report
+        '''
+        lines = []
+        for line in o.order_line_ids: # jet ordered:
+            lines.append(line, 0, 0)
+
+        # Total for code break:
+        code1 = code2 = False
+        total1 = total2 = 0.0
+        records = []
+        
+        for line in lines:
+            # -------------------
+            # Append record line:
+            # -------------------
+            records.append(('L', line))
+            
+            # -----------------
+            # Check for totals:
+            # -----------------
+            # Color total:
+            color = line.default_code[6:8]
+            if not code1: # first loop
+                code1 = color
+                
+            if code1 == color:
+                total1 += line.product_uom_qty
+            else:
+                code1 = color
+                records.append('T1', total1)
+                total1 = 0.0
+
+            # Code general total:
+            if not code2: # first loop
+                code2 = line.default_code
+                
+            if code2 == line.default_code:
+                total2 += line.product_uom_qty
+            else: 
+                code2 = line.default_code
+                records.append('T2', total2)
+                total2 = 0.0
+
+        # Append last totals if there's records:
+        if records:                
+            records.append('T1', total1)
+            records.append('T2', total2)
+            
+        return records
+        
     def get_object_remain(self, ):
         ''' Get as browse obj all record with unsync elements
         '''
