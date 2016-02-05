@@ -242,14 +242,14 @@ class SaleOrder(orm.Model):
             
             @return: returns a id of new record
         """    
-        import pdb; pdb.set_trace()
         res_id = super(SaleOrder, self).create(
             cr, uid, vals, context=context)
         
         # Check maked qty for create production moves:
-        self._recreate_production_sol_move(cr, uid, ids, 
-            context=context)
-            
+        maked_qty = vals.get('product_uom_maked_sync_qty', 0.0)
+        if maked_qty:
+            self._recreate_production_sol_move(cr, uid, [res_ids], 
+                context=context)            
         return res_id
     
     _columns = {
