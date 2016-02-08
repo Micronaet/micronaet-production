@@ -339,6 +339,7 @@ class Parser(report_sxw.rml_parse):
 
             # Add total line:    
             res.append(('L', code, total))                
+        
         # last record_
         res.append(('T', code[:3], parent_total))
         return res
