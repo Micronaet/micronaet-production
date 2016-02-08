@@ -117,6 +117,9 @@ class Parser(report_sxw.rml_parse):
         to_date = data.get('to_date', False)
         from_deadline = data.get('from_deadline', False)
         to_deadline = data.get('to_deadline', False)
+        code_from = int(data.get('code_from', 1))
+        code_partial = data.get('code_partial', '')
+        
 
         # ---------------------------------------------------------------------
         #                      Sale order filter
@@ -180,7 +183,20 @@ class Parser(report_sxw.rml_parse):
         # Loop on order:
         products = {}
         browse_line = self.browse_order_line(data)
+        
+        # Manage partial code
+        code_from = int(data.get('code_from', 1))
+        code_partial = data.get('code_partial', '')
+        if code_partial:
+            from_partial = code_from - 1
+            to_partial = from_partial + len(code_partial)
+
         for line in browse_line:
+            # Filter for partial:.
+            if code_partial and line.product_id.default_code[
+                    from_partial: to_partial] != code_partial:
+                continue # jump line
+                
             product_uom_qty = line.product_uom_qty
             product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
             delivered_qty = line.delivered_qty
@@ -240,7 +256,21 @@ class Parser(report_sxw.rml_parse):
         products = {}
         browse_line = self.browse_order_line(data)
         self.order_ids = [] # list of order interessed from movement
+
+        # Manage partial code
+        code_from = int(data.get('code_from', 1))
+        code_partial = data.get('code_partial', '')
+        if code_partial:
+            from_partial = code_from - 1
+            to_partial = from_partial + len(code_partial)
+
+
         for line in browse_line:
+            # Filter for partial:.
+            if code_partial and line.product_id.default_code[
+                    from_partial: to_partial] != code_partial:
+                continue # jump line
+
             product_uom_qty = line.product_uom_qty
             product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
             delivered_qty = line.delivered_qty
