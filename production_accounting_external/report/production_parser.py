@@ -111,7 +111,7 @@ class Parser(report_sxw.rml_parse):
             # -----------------
             # Color total:
             color = line.default_code[8:12]
-            if not code1: # first loop
+            if code1 == False: # XXX first loop
                 total1 = 0.0
                 code1 = color
                 
@@ -123,7 +123,7 @@ class Parser(report_sxw.rml_parse):
                 total1 = line.product_uom_qty
 
             # Code general total:
-            if not code2: # first loop
+            if code2 == False: # XXX first loop
                 total2 = 0.0
                 code2 = line.default_code
                 
