@@ -144,7 +144,7 @@ class SaleOrder(orm.Model):
         # -----------------------
         # Unlink all stock quant:
         # -----------------------
-        quant_ids = move_pool.search(cr, uid, [
+        quant_ids = quant_pool.search(cr, uid, [
             ('production_sol_id', '=', line_proxy.id)], context=context)
         if quant_ids:
             # Set to draft:
@@ -200,9 +200,10 @@ class SaleOrder(orm.Model):
                  
                 # Quants create:    
                 quant_pool.create(cr, uid, {
-                    # cost?
-                    # in_date
-                    'location_id': mrp_location,
+                    'in_date': datetime.now().strftime(
+                        DEFAULT_SERVER_DATETIME_FORMAT),
+                    'cost': 0.0, # TODO
+                    'location_id': stock_location,
                     'product_id': bom.product_id.id,
                     'qty': - unload_qty, 
                     #'product_uom': bom.product_id.uom_id.id,
@@ -248,6 +249,9 @@ class SaleOrder(orm.Model):
             
         # Quants create:    
         quant_pool.create(cr, uid, {
+            'in_date': datetime.now().strftime(
+                DEFAULT_SERVER_DATETIME_FORMAT),
+            'cost': 0.0, # TODO
             'location_id': stock_location,
             'product_id': line_proxy.product_id.id,
             'qty': maked_qty, 
