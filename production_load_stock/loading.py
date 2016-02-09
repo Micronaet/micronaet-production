@@ -38,6 +38,16 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+class StockQuant(orm.Model):
+    """ Model name: Sale order for production
+    """    
+    _inherit = 'stock.quant'
+
+    _columns = {
+        'production_sol_id': fields.many2one(
+            'sale.order.line', 'Sale line linked', ondelete='cascade',
+            help='Line linked for load / unload for production'),
+        }     
 
 class StockMove(orm.Model):
     """ Model name: Sale order for production
@@ -96,6 +106,7 @@ class SaleOrder(orm.Model):
         
         # Pool used:
         move_pool = self.pool.get('stock.move')
+        quant_pool = self.pool.get('stock.quant')
         company_pool = self.pool.get('res.company')
 
         # Parameter for location:
@@ -117,7 +128,9 @@ class SaleOrder(orm.Model):
 
         maked_qty = line_proxy.product_uom_maked_sync_qty or 0.0
 
+        # -------------------------------
         # Unlink all stock move (always):
+        # -------------------------------
         move_ids = move_pool.search(cr, uid, [
             ('production_sol_id', '=', line_proxy.id)], context=context)
         if move_ids:
@@ -127,6 +140,15 @@ class SaleOrder(orm.Model):
                 }, context=context)
             # delete:    
             move_pool.unlink(cr, uid, move_ids, context=context)
+
+        # -----------------------
+        # Unlink all stock quant:
+        # -----------------------
+        quant_ids = move_pool.search(cr, uid, [
+            ('production_sol_id', '=', line_proxy.id)], context=context)
+        if quant_ids:
+            # Set to draft:
+            quant_pool.unlink(cr, uid, quant_ids, context=context)
 
         if not maked_qty:   
             return True
@@ -138,6 +160,8 @@ class SaleOrder(orm.Model):
                 unload_qty = bom.product_qty * maked_qty
                 if unload_qty <= 0.0:
                     continue# jump line
+                    
+                # Move create:    
                 move_pool.create(cr, uid, {
                     'production_load_type': 'sl',
                     'location_dest_id': mrp_location,
@@ -173,6 +197,17 @@ class SaleOrder(orm.Model):
                     #'price_unit',
                     #'priority',.                    
                     }, context=context)
+                 
+                # Quants create:    
+                quant_pool.create(cr, uid, {
+                    # cost?
+                    # in_date
+                    'location_id': mrp_location,
+                    'product_id': bom.product_id.id,
+                    'qty': - unload_qty, 
+                    #'product_uom': bom.product_id.uom_id.id,
+                    'production_sol_id': line_proxy.id,
+                    }, context=context)   
         
         # Load end product:    
         # TODO        
@@ -183,7 +218,6 @@ class SaleOrder(orm.Model):
             'product_id': line_proxy.product_id.id,
             'product_uom_qty': maked_qty, 
             'product_uom': line_proxy.product_id.uom_id.id,
-
             'production_sol_id': line_proxy.id,
             #'product_uom_qty',
             #'product_uos',
@@ -211,6 +245,15 @@ class SaleOrder(orm.Model):
             #'price_unit',
             #'priority',.                    
             }, context=context)
+            
+        # Quants create:    
+        quant_pool.create(cr, uid, {
+            'location_id': stock_location,
+            'product_id': line_proxy.product_id.id,
+            'qty': maked_qty, 
+            'production_sol_id': line_proxy.id,
+            }, context=context)
+   
         return True
         
     def write(self, cr, uid, ids, vals, context=None):
