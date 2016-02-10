@@ -48,7 +48,7 @@ class StockPicking(orm.Model):
             context=None):
         ''' Search or create pick lined to mrp (bf or cl)
         '''
-        pick_ids = self.browse(cr, uid, [
+        pick_ids = self.search(cr, uid, [
             ('production_id', '=', mrp_proxy.id),
             ('production_load_type', '=', mode),
             ], context=context)
@@ -56,9 +56,10 @@ class StockPicking(orm.Model):
             return pick_ids[0]
             
         return self.create(cr, uid, {
+            'production_id': mrp_proxy.id,
+            'production_load_type': mode,
             'origin': mrp_proxy.name,
             'partner_id': mrp_proxy.company_id.partner_id.id,
-            'production_load_type': mode,
             'picking_type_id': picking_type_id,
             'state': 'done', 
             }, context=context)    
