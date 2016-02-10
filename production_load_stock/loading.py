@@ -38,6 +38,41 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+class StockPicking(orm.Model):
+    """ Model name: Stock picking for production
+    """    
+    _inherit = 'stock.picking'
+    
+    # Utility:
+    def get_mrp_picking(self, cr, uid, mrp_proxy, mode, picking_type_id, 
+            context=None):
+        ''' Search or create pick lined to mrp (bf or cl)
+        '''
+        pick_ids = self.browse(cr, uid, [
+            ('production_id', '=', mrp_proxy.id),
+            ('production_load_type', '=', mode),
+            ], context=context)
+        if pick_ids:
+            return pick_ids[0]
+            
+        return self.create(cr, uid, {
+            'origin': mrp_proxy.name,
+            'partner_id': mrp_proxy.company_id.partner_id.id,
+            'production_load_type': mode,
+            'picking_type_id': picking_type_id,
+            'state': 'done', 
+            }, context=context)    
+
+    _columns = {
+        'production_id': fields.many2one(
+            'mrp.production', 'MRP', ondelete='cascade',
+            help='Link pick to production'),
+        'production_load_type': fields.selection([
+            ('cl', 'Product load'),
+            ('sl', 'Material unload'),
+            ], 'Production load type'),
+        }
+
 class StockQuant(orm.Model):
     """ Model name: Sale order for production
     """    
@@ -105,6 +140,7 @@ class SaleOrder(orm.Model):
         assert len(sol_ids), 'Only one row a time!'
         
         # Pool used:
+        pick_pool = self.pool.get('stock.picking')
         move_pool = self.pool.get('stock.move')
         quant_pool = self.pool.get('stock.quant')
         company_pool = self.pool.get('res.company')
@@ -113,14 +149,35 @@ class SaleOrder(orm.Model):
         company_ids = company_pool.search(cr, uid, [], context=context)
         company_proxy = company_pool.browse(cr, uid, company_ids, 
             context=context)[0]
+
+        # TODO remove stock elements (use type)?:
         stock_location = company_proxy.stock_location_id.id
         mrp_location = company_proxy.stock_mrp_location_id.id
+        
+        if company_proxy.stock_report_mrp_in_ids: # XXX only first
+            mrp_type_in =  company_proxy.stock_report_mrp_in_ids[0].id
+        else:
+            mrp_type_in = False    
+            
+        if company_proxy.stock_report_mrp_out_ids:    
+            mrp_type_out = company_proxy.stock_report_mrp_out_ids[0].id
+        else:
+            mrp_type_out = False
+        
         if not(mrp_location and stock_location):
             raise osv.except_osv(
                 _('Error'), 
                 _('Set up in company location for stock and mrp1!'))
         
         line_proxy = self.browse(cr, uid, sol_ids, context=context)[0]
+        
+        # Get pick document linked to MRP production:
+        mrp_picking_in = pick_pool.get_mrp_picking(
+            cr, uid, line_proxy.mrp_id, 'cl', mrp_type_in, 
+            context=context)
+        mrp_picking_out = pick_pool.get_mrp_picking(
+            cr, uid, line_proxy.mrp_id, 'sl', mrp_type_out, 
+            context=context)
 
         # get product BOM for materials:
         bom_proxy = self._search_bom_for_product(cr, uid, 
@@ -163,9 +220,11 @@ class SaleOrder(orm.Model):
                     
                 # Move create:    
                 move_pool.create(cr, uid, {
+                    'picking_id': mrp_picking_out,
                     'production_load_type': 'sl',
                     'location_dest_id': mrp_location,
                     'location_id': stock_location,
+                    'picking_type_id': mrp_type_out,
                     'product_id': bom.product_id.id,
                     'product_uom_qty': unload_qty, 
                     'product_uom': bom.product_id.uom_id.id,
@@ -181,11 +240,9 @@ class SaleOrder(orm.Model):
                     'display_name': 'SL: %s' % line_proxy.product_id.name,
                     'name': 'SL: %s' % line_proxy.product_id.name,
                     #'warehouse_id',
-                    #'picking_type_id',
 
                     #'weight'
                     #'weight_net',
-                    #'picking_id'
                     #'group_id'
                     #'production_id'
                     #'product_packaging'                    
@@ -213,7 +270,9 @@ class SaleOrder(orm.Model):
         # Load end product:    
         # TODO        
         move_pool.create(cr, uid, {
+            'picking_id': mrp_picking_in,
             'production_load_type': 'cl',
+            'picking_type_id': mrp_type_in,
             'location_dest_id': stock_location,
             'location_id': mrp_location,
             'product_id': line_proxy.product_id.id,
