@@ -29,6 +29,20 @@
          </field>
      </record>    
      <!--TODO sale.view_sales_order_filter-->
+
+     <record model="ir.ui.view" id="view_sale_order_mandatory_button_order_list_tree">
+         <field name="name">Order force mandatory tree</field>
+         <field name="model">sale.order</field>
+         <field name="inherit_id" ref="sale.view_order_tree"/>
+         <field name="arch" type="xml">
+             <!--COLORS?-->             
+             <field name="state" position="after">
+                 <field name="mandatory_order" invisible="1" />
+                 <button name="force_mandatory_state" string="Fix" type="object" attrs="{'invisible': [('mandatory_order', '=', 'yes')]}" icon="terp-locked"/>
+                 <button name="unforce_mandatory_state" string="Unfix" type="object" attrs="{'invisible': [('mandatory_order', 'in', ('partner', 'not'))]}" icon="STOCK_UNDO" />
+             </field>
+         </field>
+     </record>    
      
      <!--sale.order.line-->
      <record model="ir.ui.view" id="view_sale_order_line_mandatory">
