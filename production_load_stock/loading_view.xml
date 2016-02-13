@@ -1,6 +1,17 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <!--TODO remove!!!-->
+        <record model="ir.ui.view" id="mrp_production_form_temp_view">         
+            <field name="name">mrp.production.temp.form</field>
+            <field name="model">mrp.production</field>
+            <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                     <button name="update_all_mrp_production" string="Update all stock" type="object" />
+                </field>
+            </field>
+        </record>
 
     </data>
 </openerp>

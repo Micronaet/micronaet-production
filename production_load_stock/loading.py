@@ -38,6 +38,65 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+# TODO delete vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+class MrpProduction(orm.Model):
+    """ Model name: Temp procedure for update stock
+    """    
+    _inherit = 'mrp.production'
+    
+    def update_all_mrp_production(self, cr, uid, ids, context=None):
+        ''' Rewrite all production in all order
+        '''
+        log_file = 'update_production.csv'
+        log_path = os.path.expanduser('~')
+        log_filename = os.path.join(log_path, log_file)
+        log_f = open(log_filename, 'w')
+        
+        start_date = '2016-01-01'
+        sol_pool = self.pool.get('sale.order.line')
+        mrp_id = self.search(cr, uid, [
+            #('date_planned', '>=', start_date),
+            ], context=context)
+            
+        log_f.write('Start update procedure')
+        
+        i = 0
+        for mrp in self.browse(cr, uid, mrp_id, context=context):
+            i += 1
+            if i == 10:
+                break
+            date_planned = mrp.date_planned
+
+            if date_planned >= start_date:
+                state = 'MAKED'
+            else:    
+                state = 'JUMPED'
+                
+            log_f.write('[%s] Order: %s dated %s [%s]' % (
+                state,
+                mrp.name, 
+                mrp.date_planned,
+                mrp.product_id.name,
+                ))
+                
+            for line in mrp.order_line_ids:
+                if state == 'MAKED':
+                    sol.write(cr, uid, line.id, {
+                        'product_uom_maked_sync_qty': 
+                            line.product_uom_maked_sync_qty,
+                        }, context=context)
+
+                log_f.write('>>> [%s] Production: %s OC: %s B: %s' % (
+                    state,
+                    line.product_id.name, 
+                    line.product_uom_qty,
+                    line.product_uom_maked_sync_qty,                    
+                    ))
+        log_f.write('End update procedure')
+        
+        return True
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 class StockPicking(orm.Model):
     """ Model name: Stock picking for production
     """    
