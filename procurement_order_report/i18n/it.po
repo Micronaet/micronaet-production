@@ -1,0 +1,242 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* procurement_order_report
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-02-15 12:01+0000\n"
+"PO-Revision-Date: 2016-02-15 13:07+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/report/procurement_parser.py:164
+#, python-format
+msgid ", Partial code filter: %s (from char: %s) "
+msgstr ", Fitro per codice parziale: %s (da carattere: %s) "
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/report/procurement_parser.py:154
+#, python-format
+msgid ", all order line"
+msgstr ", tutte le righe ordine"
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/report/procurement_parser.py:178
+#, python-format
+msgid ", code start %s"
+msgstr ", inizio codice %s"
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/report/procurement_parser.py:149
+#, python-format
+msgid ", date < %s"
+msgstr ", data < %s"
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/report/procurement_parser.py:146
+#, python-format
+msgid ", date >= %s"
+msgstr ", data >= %s"
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/report/procurement_parser.py:173
+#, python-format
+msgid ", deadline < %s"
+msgstr ", scadenza < %s"
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/report/procurement_parser.py:170
+#, python-format
+msgid ", deadline >= %s"
+msgstr ", scadenza >= %s"
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/report/procurement_parser.py:152
+#, python-format
+msgid ", only remain to produce"
+msgstr ", solo la produzione da fare"
+
+#. module: procurement_order_report
+#: view:sale.order.procurement.report.wizard:procurement_order_report.sale_order_procurement_report_wizard_view
+msgid "Analytic report"
+msgstr "Report analitico"
+
+#. module: procurement_order_report
+#: view:sale.order.procurement.report.wizard:procurement_order_report.sale_order_procurement_report_wizard_view
+msgid "Cancel"
+msgstr "Annulla"
+
+#. module: procurement_order_report
+#: view:sale.order.procurement.report.wizard:procurement_order_report.sale_order_procurement_report_wizard_view
+msgid "Code filter:"
+msgstr "Filtro per codice:"
+
+#. module: procurement_order_report
+#: field:sale.order.procurement.report.wizard,code_from:0
+msgid "Code from char"
+msgstr "Codice dal carattere"
+
+#. module: procurement_order_report
+#: field:sale.order.procurement.report.wizard,code_partial:0
+msgid "Code partial"
+msgstr "Codice parziale"
+
+#. module: procurement_order_report
+#: field:sale.order.procurement.report.wizard,code_start:0
+msgid "Code start"
+msgstr "Inizio codice"
+
+#. module: procurement_order_report
+#: field:sale.order.procurement.report.wizard,create_uid:0
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: procurement_order_report
+#: field:sale.order.procurement.report.wizard,create_date:0
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: procurement_order_report
+#: help:sale.order.procurement.report.wizard,to_date:0
+msgid "Date <"
+msgstr "Data <"
+
+#. module: procurement_order_report
+#: help:sale.order.procurement.report.wizard,from_date:0
+msgid "Date >="
+msgstr "Data >="
+
+#. module: procurement_order_report
+#: help:sale.order.procurement.report.wizard,to_deadline:0
+msgid "Date deadline <"
+msgstr "Data scadenza <"
+
+#. module: procurement_order_report
+#: help:sale.order.procurement.report.wizard,from_deadline:0
+msgid "Date deadline >="
+msgstr "Data scadenza >="
+
+#. module: procurement_order_report
+#: view:sale.order.procurement.report.wizard:procurement_order_report.sale_order_procurement_report_wizard_view
+msgid "Date filter:"
+msgstr "fitro data:"
+
+#. module: procurement_order_report
+#: field:sale.order.procurement.report.wizard,from_date:0
+msgid "From"
+msgstr "Da"
+
+#. module: procurement_order_report
+#: field:sale.order.procurement.report.wizard,from_deadline:0
+msgid "From deadline"
+msgstr "Da scadenza"
+
+#. module: procurement_order_report
+#: view:sale.order.procurement.report.wizard:procurement_order_report.sale_order_procurement_report_wizard_view
+msgid "Group clause:"
+msgstr "Clausole di raggruppamento:"
+
+#. module: procurement_order_report
+#: field:sale.order.procurement.report.wizard,id:0
+msgid "ID"
+msgstr "ID"
+
+#. module: procurement_order_report
+#: field:sale.order.procurement.report.wizard,write_uid:0
+msgid "Last Updated by"
+msgstr "Ultimo aggiornamento da"
+
+#. module: procurement_order_report
+#: field:sale.order.procurement.report.wizard,write_date:0
+msgid "Last Updated on"
+msgstr "Ultimo aggiornamento il"
+
+#. module: procurement_order_report
+#: model:ir.actions.report.xml,name:procurement_order_report.aeroo_mx_procurement_grouped_report_id
+msgid "Mx procurement groupedreport"
+msgstr "Report approvvigionamenti raggr."
+
+#. module: procurement_order_report
+#: model:ir.actions.report.xml,name:procurement_order_report.aeroo_mx_procurement_report_id
+msgid "Mx procurement report"
+msgstr "Report approvvigionamenti"
+
+#. module: procurement_order_report
+#: field:sale.order.procurement.report.wizard,only_remain:0
+msgid "Only remain"
+msgstr "Solo i rimanenti"
+
+#. module: procurement_order_report
+#: selection:sale.order.procurement.report.wizard,report_type:0
+msgid "Order grouped by frame"
+msgstr "Ordine raggruppato per telaio"
+
+#. module: procurement_order_report
+#: selection:sale.order.procurement.report.wizard,report_type:0
+msgid "Order in detail"
+msgstr "Ordine in dettaglio"
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/report/procurement_parser.py:140
+#, python-format
+msgid "Order open, not pricelist order"
+msgstr "Ordine aperto, non ordine listino"
+
+#. module: procurement_order_report
+#: field:sale.order.procurement.report.wizard,partner_id:0
+msgid "Partner"
+msgstr "Partner"
+
+#. module: procurement_order_report
+#: view:sale.order.procurement.report.wizard:procurement_order_report.sale_order_procurement_report_wizard_view
+msgid "Print"
+msgstr "Stampa"
+
+#. module: procurement_order_report
+#: model:ir.actions.act_window,name:procurement_order_report.action_sale_order_procurement_report_wizard
+msgid "Procurement order wizard"
+msgstr "Report approvvigionamenti"
+
+#. module: procurement_order_report
+#: model:ir.actions.act_window,name:procurement_order_report.act_sale_order_procurement_report_wizard
+msgid "Procurement wizard"
+msgstr "Wizard approvvigionamenti"
+
+#. module: procurement_order_report
+#: model:ir.ui.menu,name:procurement_order_report.menu_sale_order_procurement_report
+msgid "Procurements order report"
+msgstr "Report approvvigionamenti"
+
+#. module: procurement_order_report
+#: field:sale.order.procurement.report.wizard,report_type:0
+msgid "Report type"
+msgstr "Tipo di report"
+
+#. module: procurement_order_report
+#: model:ir.model,name:procurement_order_report.model_sale_order_procurement_report_wizard
+msgid "Sale produrement wizard"
+msgstr "Wizard approvv. su vendite"
+
+#. module: procurement_order_report
+#: help:sale.order.procurement.report.wizard,only_remain:0
+msgid "Show only element to procuce"
+msgstr "Mostra solo elementi da produrre"
+
+#. module: procurement_order_report
+#: field:sale.order.procurement.report.wizard,to_date:0
+msgid "To"
+msgstr "A"
+
+#. module: procurement_order_report
+#: field:sale.order.procurement.report.wizard,to_deadline:0
+msgid "To deadline"
+msgstr "Alla scadenza"
