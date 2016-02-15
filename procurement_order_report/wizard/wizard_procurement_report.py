@@ -91,7 +91,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         'from_date': fields.date('From', help='Date >='),
         'to_date': fields.date('To', help='Date <'),
         'from_deadline': fields.date('From deadline', help='Date deadline >='),
-        'to_deadline': fields.date('To deadline', help='Date deadline <'),
+        'to_deadline': fields.date('To deadline', help='Date deadline <='),
 
         # Code filter:
         'code_start': fields.char('Code start', size=20), 

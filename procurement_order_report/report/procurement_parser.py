@@ -171,8 +171,8 @@ class Parser(report_sxw.rml_parse):
             domain.append(('date_deadline', '>=', from_deadline))
             self.filter_description += _(', deadline >= %s') % from_deadline
         if to_deadline:
-            domain.append(('date_deadline', '<', to_deadline))
-            self.filter_description += _(', deadline < %s') % to_deadline
+            domain.append(('date_deadline', '<=', to_deadline))
+            self.filter_description += _(', deadline <= %s') % to_deadline
             
         if code_start:  
             domain.append(('product_id.default_code', '=ilike', '%s%s' % (
