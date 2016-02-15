@@ -102,8 +102,7 @@ class Parser(report_sxw.rml_parse):
         line_pool = self.pool.get('sale.order.line')
         
         # Get wizard information:
-        code_start = data.get('code_start', False)
-        
+        code_start = data.get('code_start', False)        
         only_remain = data.get('only_remain', False)
 
         #from_code = data.get('from_code', 0) - 1
@@ -111,7 +110,8 @@ class Parser(report_sxw.rml_parse):
         #if from_code > 0 and to_code > 0:
         #    grouped = True
         #else:
-        grouped = False     
+        # TODO remove:
+        grouped = False
 
         from_date = data.get('from_date', False)
         to_date = data.get('to_date', False)
@@ -145,7 +145,7 @@ class Parser(report_sxw.rml_parse):
             domain.append(('date_order', '>=', from_date))
             self.filter_description += _(', date >= %s') % from_date
         if to_date:
-            domain.append(('date_order', '<', to_date))
+            domain.append(('date_order', '<=', to_date))
             self.filter_description += _(', date < %s') % to_date
         
         if only_remain:
@@ -154,6 +154,8 @@ class Parser(report_sxw.rml_parse):
             self.filter_description += _(', all order line')
         
         order_ids = sale_pool.search(self.cr, self.uid, domain)
+        _logger.info('Order filter domain used: [%s] order selected: %s' % (
+            domain, len(order_ids)))
 
         # ---------------------------------------------------------------------
         #                      Sale order line filter
@@ -178,6 +180,8 @@ class Parser(report_sxw.rml_parse):
             self.filter_description += _(', code start %s') % code_start
         
         line_ids = line_pool.search(self.cr, self.uid, domain)
+        _logger.info('Order line selected: %s' % (len(line_ids), ))
+        
         return line_pool.browse(self.cr, self.uid, line_ids)
     
     def get_object_line(self, data):
@@ -187,17 +191,26 @@ class Parser(report_sxw.rml_parse):
         products = {}
         browse_line = self.browse_order_line(data)
         
-        # Manage partial code
+        # --------------------
+        # Manage partial code:
+        # --------------------
         code_from = int(data.get('code_from', 1))
         code_partial = data.get('code_partial', '')
         if code_partial:
             from_partial = code_from - 1
             to_partial = from_partial + len(code_partial)
 
+        i = 0
         for line in browse_line:
-            # Filter for partial:.
+            i += 1 
+            # -------------------
+            # Filter for partial:
+            # -------------------
             if code_partial and line.product_id.default_code[
                     from_partial: to_partial] != code_partial:
+                _logger.info('Code partial jumped: %s !% %s' % (
+                code_partial, line.product_id.default_code[
+                    from_partial: to_partial]))    
                 continue # jump line
                 
             product_uom_qty = line.product_uom_qty
@@ -210,12 +223,15 @@ class Parser(report_sxw.rml_parse):
                 mrp_remain = product_uom_qty - product_uom_maked_sync_qty
 
             if data.get('only_remain', False) and mrp_remain <= 0:
+                _logger.info('Jump only remain: mrp_remain: %s' % (
+                    mrp_remain))
                 continue # jump if no item or all produced
 
             code = line.product_id.default_code
             if code not in products:
                 products[code] = []
             products[code].append(line)
+            _logger.info('Code added: %s' % code)
         
         # create a res order by product code
         res = []
