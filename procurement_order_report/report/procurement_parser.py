@@ -303,13 +303,14 @@ class Parser(report_sxw.rml_parse):
         code = ''
 
         for code in codes:
-            if not last_parent:
-                last_parent = code[:3] # first 3
-                
-            if code[:3] != last_parent:
+            if last_parent == False: 
+                # XXX only for first line
+                last_parent = code[:3] # first 3                
+            elif code[:3] != last_parent:
+                # Save previous code
+                res.append(('T', last_parent, parent_total))
                 last_parent = code[:3]
                 parent_total = [0, 0, 0, 0]
-                res.append(('T', code[:3], parent_total))
                 
             total = [0, 0, 0, 0]
             # Add product line:
@@ -341,7 +342,8 @@ class Parser(report_sxw.rml_parse):
             res.append(('L', code, total))                
         
         # last record_
-        res.append(('T', code[:3], parent_total))
+        if last_parent:
+            res.append(('T', last_parent, parent_total))
         return res
 
     def get_orders_selected(self):
