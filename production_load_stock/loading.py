@@ -63,6 +63,7 @@ class MrpProduction(orm.Model):
         i = 0
         for mrp in self.browse(cr, uid, mrp_id, context=context):
             i += 1
+            # TODO remove:
             if i == 10:
                 break
             date_planned = mrp.date_planned
