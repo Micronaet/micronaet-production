@@ -355,7 +355,7 @@ class Parser(report_sxw.rml_parse):
         res = []
         codes = sorted(products)
         last_parent = False
-        parent_total = [0, 0, 0, 0]
+        parent_total = [0, 0, 0]
         code = ''
 
         for code in codes:
@@ -366,9 +366,9 @@ class Parser(report_sxw.rml_parse):
                 # Save previous code
                 res.append(('T', last_parent, parent_total))
                 last_parent = code[:3]
-                parent_total = [0, 0, 0, 0]
+                parent_total = [0, 0, 0]
                 
-            total = [0, 0, 0, 0]
+            total = [0, 0, 0]
             # Add product line:
             for line in products[code]:
                 #res.append(('P', line))
@@ -389,13 +389,11 @@ class Parser(report_sxw.rml_parse):
                 total[0] += S
                 total[1] += B
                 total[2] += TOT
-                #total[3] += 0
 
                 # Block total
                 parent_total[0] += S
                 parent_total[1] += B
                 parent_total[2] += TOT
-                #parent_total[3] += 0
 
             # Add total line:    
             res.append(('L', code, total))                
