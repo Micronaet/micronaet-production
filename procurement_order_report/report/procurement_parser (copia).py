@@ -292,17 +292,12 @@ class Parser(report_sxw.rml_parse):
             product_uom_qty = line.product_uom_qty
             product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
             delivered_qty = line.delivered_qty
-            
-            TOT = product_uom_qty - delivered_qty
-            
             if delivered_qty > product_uom_maked_sync_qty:
-                B = 0
+                mrp_remain = product_uom_qty - delivered_qty
             else:
-                B = product_uom_maked_sync_qty - delivered_qty 
+                mrp_remain = product_uom_qty - product_uom_maked_sync_qty
 
-            S = TOT - B
-
-            if data.get('only_remain', False) and S > 0:
+            if data.get('only_remain', False) and mrp_remain <= 0:
                 continue # jump if no item or all produced
             
             if line.order_id.id not in self.order_ids:
