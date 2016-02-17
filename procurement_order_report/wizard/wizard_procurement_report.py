@@ -59,8 +59,10 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         
         if wiz_proxy.report_type == 'detailed':
             report_name = 'mx_procurement_report' 
-        else: # gropuped
-            report_name = 'mx_procurement_grouped_report' # TODO change
+        elif wiz_proxy.report_type == 'grouped': # grouped
+            report_name = 'mx_procurement_grouped_report' 
+        else: # family
+            report_name = 'mx_procurement_grouped_family_report' # TODO change
                
         datas['from_date'] = wiz_proxy.from_date or False
         datas['to_date'] = wiz_proxy.to_date or False
@@ -83,6 +85,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         'report_type': fields.selection([
             ('detailed', 'Order in detail'),
             ('grouped', 'Order grouped by frame'),
+            ('family', 'Order family grouped'),
             ], 'Report type', required=True),
         'partner_id': fields.many2one('res.partner', 'Partner'),
         'only_remain':fields.boolean('Only remain', 
