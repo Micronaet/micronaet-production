@@ -106,7 +106,6 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         
     _defaults = {
         'report_type': lambda *x: 'detailed',
-        'only_remain': lambda *x: True,
         #'to_date': datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
