@@ -271,7 +271,8 @@ class Parser(report_sxw.rml_parse):
     def get_object_grouped_line(self, data):
         ''' Selected object + print object
         '''
-        filename = os.path.expanduser(os.path.join('~', 'photo', 'xls', 'frame.csv')
+        filename = os.path.expanduser(os.path.join(
+            '~', 'photo', 'xls', 'frame.csv'))
         log_file.open(filename, 'w')
         log_file.write('READ|STATUS|ORDER|PRODUCT|OC|MAKE|DELIVERY|S|B|TOT')
         mask = '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n'
