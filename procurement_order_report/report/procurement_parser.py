@@ -275,10 +275,10 @@ class Parser(report_sxw.rml_parse):
             return ('%s' % value).replace('.', ',')
             
         filename = os.path.expanduser(os.path.join(
-            '~', 'photo', 'xls', 'frame.csv'))
+            '~', 'photo', 'log', 'frame.csv'))
         log_file = open(filename, 'w')
-        log_file.write('READ|STATUS|ORDER|PRODUCT|OC|MAKE|DELIVERY|S|B|TOT\n')
-        mask = '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n'
+        log_file.write('READ|STATUS|ORDER|DEADLINE|PRODUCT|CODE|OC|MAKE|DELIVERY|S|B|TOT\n')
+        mask = '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n'
         
         # Loop on order:
         products = {}
@@ -313,12 +313,18 @@ class Parser(report_sxw.rml_parse):
 
             #if data.get('only_remain', False) and S <= 0:
             #    continue # jump if no item or all produced
+            code = '%s...%s' % (
+                line.product_id.default_code[0:3],
+                line.product_id.default_code[6:8],
+                )
             if TOT == 0:
                 log_file.write(mask % (
                     'NO',
                     status,
                     line.order_id.name,
+                    line.date_deadline,
                     line.product_id.default_code,
+                    code,
                     clean_number(product_uom_qty),
                     clean_number(product_uom_maked_sync_qty),
                     clean_number(delivered_qty),
@@ -332,7 +338,9 @@ class Parser(report_sxw.rml_parse):
                 'YES',
                 status,
                 line.order_id.name,
+                line.date_deadline,
                 line.product_id.default_code,
+                code,
                 clean_number(product_uom_qty),
                 clean_number(product_uom_maked_sync_qty),
                 clean_number(delivered_qty),
@@ -343,10 +351,6 @@ class Parser(report_sxw.rml_parse):
             if line.order_id.id not in self.order_ids:
                 self.order_ids.append(line.order_id.id)
                 
-            code = '%s...%s' % (
-                line.product_id.default_code[0:3],
-                line.product_id.default_code[6:8],
-                )
             if code not in products:
                 products[code] = []
             products[code].append(line)
