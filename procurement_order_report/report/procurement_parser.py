@@ -455,17 +455,18 @@ class Parser(report_sxw.rml_parse):
 
             #if data.get('only_remain', False) and S <= 0:
             #    continue # jump if no item or all produced
+            family = line.product_id.family_id.name or _('???')
             father = line.product_id.default_code[:3]
+            key = (family, father)
             if TOT == 0:
                 continue
             
             if line.order_id.id not in self.order_ids:
                 self.order_ids.append(line.order_id.id)
                 
-            if father not in fathers:
-                fathers[father] = []
-                #families[father] = line.product_id.family_id.name or _('None')
-            fathers[father].append(line)
+            if key not in fathers:
+                fathers[key] = []
+            fathers[key].append(line)
         
         # create a res order by product parent
         res = []
@@ -473,20 +474,19 @@ class Parser(report_sxw.rml_parse):
         last_family = False
         family_total = [0, 0, 0]
 
-        import pdb; pdb.set_trace()
-        for father in fathers_list:
-            current_family = line.product_id.family_id.name or _('None')
+        for key in fathers_list:
+            family, father = key
             if last_family == False: 
-                last_family = current_family
-            elif last_family != current_family:
+                last_family = family
+            elif last_family != family:
                 # Save previous code
                 res.append(('T', last_family, family_total))
-                last_family = current_family
+                last_family = family
                 family_total = [0, 0, 0]
                 
             total = [0, 0, 0]
             # Add product line:
-            for line in fathers[father]:
+            for line in fathers[key]:
                 #res.append(('P', line))
 
                 # Quantity used:
@@ -512,7 +512,7 @@ class Parser(report_sxw.rml_parse):
                 family_total[2] += TOT
 
             # Add total line:    
-            res.append(('L', code, total))                
+            res.append(('L', father, total))                
         
         # last record_
         if last_family:
