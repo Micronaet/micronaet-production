@@ -64,7 +64,7 @@ class Parser(report_sxw.rml_parse):
     def get_general_total(self, ):
         '''
         '''
-        return '?' #self.general_total
+        return self.general_total
     
     def get_filter_description(self, ):
         '''
@@ -203,6 +203,7 @@ class Parser(report_sxw.rml_parse):
             to_partial = from_partial + len(code_partial)
 
         i = 0
+        self.general_total = [0, 0, 0, 0]
         for line in browse_line:
             i += 1 
             # -------------------
