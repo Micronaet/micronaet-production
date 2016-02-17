@@ -271,10 +271,13 @@ class Parser(report_sxw.rml_parse):
     def get_object_grouped_line(self, data):
         ''' Selected object + print object
         '''
+        def clean_number(value):
+            return ('%s' % value).replace('.', ',')
+            
         filename = os.path.expanduser(os.path.join(
             '~', 'photo', 'xls', 'frame.csv'))
         log_file = open(filename, 'w')
-        log_file.write('READ|STATUS|ORDER|PRODUCT|OC|MAKE|DELIVERY|S|B|TOT')
+        log_file.write('READ|STATUS|ORDER|PRODUCT|OC|MAKE|DELIVERY|S|B|TOT\n')
         mask = '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n'
         
         # Loop on order:
@@ -302,10 +305,10 @@ class Parser(report_sxw.rml_parse):
             TOT = product_uom_qty - delivered_qty            
             if delivered_qty > product_uom_maked_sync_qty:
                 B = 0
-                status = 'Type A'
+                status = 'STOCK'
             else:
                 B = product_uom_maked_sync_qty - delivered_qty 
-                status = 'Type B'                
+                status = 'PROD'                
             S = TOT - B
 
             #if data.get('only_remain', False) and S <= 0:
@@ -316,12 +319,12 @@ class Parser(report_sxw.rml_parse):
                     status,
                     line.order_id.name,
                     line.product_id.default_code,
-                    product_uom_qty,
-                    product_uom_maked_sync_qty,
-                    delivered_qty,
-                    S,
-                    B,
-                    TOT,
+                    clean_number(product_uom_qty),
+                    clean_number(product_uom_maked_sync_qty),
+                    clean_number(delivered_qty),
+                    clean_number(S),
+                    clean_number(B),
+                    clean_number(TOT),
                     ))
                 continue
             
@@ -330,12 +333,12 @@ class Parser(report_sxw.rml_parse):
                 status,
                 line.order_id.name,
                 line.product_id.default_code,
-                product_uom_qty,
-                product_uom_maked_sync_qty,
-                delivered_qty,
-                S,
-                B,
-                TOT,
+                clean_number(product_uom_qty),
+                clean_number(product_uom_maked_sync_qty),
+                clean_number(delivered_qty),
+                clean_number(S),
+                clean_number(B),
+                clean_number(TOT),
                 ))
             if line.order_id.id not in self.order_ids:
                 self.order_ids.append(line.order_id.id)
