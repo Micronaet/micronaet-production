@@ -189,118 +189,85 @@ class Parser(report_sxw.rml_parse):
     def get_object_line(self, data):
         ''' Selected object + print object
         '''
-        # Parameters for report management:
-        self.level_break_last = False
-        self.counters = {}
-        self.last = False
-
-        products = {}
-        res = []
-        sale_pool = self.pool.get('sale.order')
-        line_pool = self.pool.get('sale.order.line')
-
-        # Get wizard information:
-        code_start = data.get('code_start', False)
-
-        #from_code = data.get('from_code', 0) - 1
-        #to_code = from_code + data.get('code_length', 0)
-        #if from_code > 0 and to_code > 0:
-        #    grouped = True
-        #else:
-        grouped = False     
-
-        from_date = data.get('from_date', False)
-        to_date = data.get('to_date', False)
-        from_deadline = data.get('to_deadline', False)
-        to_deadline = data.get('to_deadline', False)
-
-        # ---------------------------------------------------------------------
-        #                      Sale order filter
-        # ---------------------------------------------------------------------
-        # Default:
-        domain = [
-            # Order confirmed or forecast:
-            '|',
-            ('state', 'not in', ('cancel', 'draft', 'sent')), # 'done'
-            ('forecasted_production_id', '!=', False), # include forecast order
-            
-            # Order for send pricelist:
-            ('pricelist_order', '=', False), 
-            ]
-
-        # -------------------------    
-        # Start filter description:    
-        # -------------------------    
-        self.filter_description = _('Order open, not pricelist order')
-
-        # TODO domain.append(('order_closed', '=', False)) << all delivered
-        
-        if from_date:
-            domain.append(('date_order', '>=', from_date))
-            self.filter_description += _(', date >= %s') % from_date
-        if to_date:
-            domain.append(('date_order', '<', from_date))
-            self.filter_description += _(', date < %s') % to_date
-        
-        order_ids = sale_pool.search(self.cr, self.uid, domain)
-        
-        # ---------------------------------------------------------------------
-        #                      Sale order line filter
-        # ---------------------------------------------------------------------
-        domain = [('order_id', 'in', order_ids)]        
-
-        if from_deadline:
-            domain.append(('date_deadline', '>=', from_deadline))
-            self.filter_description += _(', deadline >= %s') % from_deadline
-        if to_deadline:
-            domain.append(('date_deadline', '<', to_deadline))
-            self.filter_description += _(', deadline < %s') % to_deadline
-            
-        if code_start:  
-            domain.append(('default_code', '=ilike', '%s%s' % (
-                code_start, '%')))  
-            self.filter_description += _(', code start %s') % code_start
-        
-        line_ids = line_pool.search(self.cr, self.uid, domain)
-
         # Loop on order:
-        #self.general_total = 0.0
-        for line in line_pool.browse(
-                self.cr, self.uid, line_ids): 
-            # ------------------
-            # Quantity analysis:
-            # ------------------
-            mrp_remain = line.product_uom_qty - \
-                line.product_uom_maked_sync_qty
-            delivery_remain = line.product_uom_qty - \
-                line.delivered_qty    
-            
-            # if no production remaon or all delivered:    
-            if mrp_remain <= 0 or delivery_remain <= 0: # TODO use <=
-                continue # jump line
+        products = {}
+        browse_line = self.browse_order_line(data)
+        
+        # --------------------
+        # Manage partial code:
+        # --------------------
+        code_from = int(data.get('code_from', 1))
+        code_partial = data.get('code_partial', '')
+        if code_partial:
+            from_partial = code_from - 1
+            to_partial = from_partial + len(code_partial)
 
-            # --------------
-            # Code analysis:
-            # --------------
-            if grouped:
-                code = line.product_id.default_code[from_code: to_code]
-            else:   
-                code = line.product_id.default_code # all code
+        i = 0
+        for line in browse_line:
+            i += 1 
+            # -------------------
+            # Filter for partial:
+            # -------------------
+            if code_partial and line.product_id.default_code[
+                    from_partial: to_partial] != code_partial:
+                _logger.info('Code partial jumped: %s !% %s' % (
+                code_partial, line.product_id.default_code[
+                    from_partial: to_partial]))    
+                continue # jump line
                 
+            product_uom_qty = line.product_uom_qty
+            product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
+            delivered_qty = line.delivered_qty
+            
+            if delivered_qty > product_uom_maked_sync_qty:
+                mrp_remain = product_uom_qty - delivered_qty
+            else:
+                mrp_remain = product_uom_qty - product_uom_maked_sync_qty
+
+            if data.get('only_remain', False) and mrp_remain <= 0:
+                _logger.info('Jump only remain: mrp_remain: %s' % (
+                    mrp_remain))
+                continue # jump if no item or all produced
+
+            code = line.product_id.default_code
             if code not in products:
                 products[code] = []
-                
-            #res.append(line) # unsorted
             products[code].append(line)
+            _logger.info('Code added: %s' % code)
         
         # create a res order by product code
-        for code in sorted(products):
-            res.extend(products[code])        
-        
-        # Save last for print total at the end    
-        if len(res):    
-            self.last = res[-1]
-            
+        res = []
+        codes = sorted(products)
+        self.general_total = [0, 0, 0, 0]
+        for code in codes:
+            total = [0, 0, 0, 0]
+            # Add product line:
+            for line in products[code]:
+                res.append(('P', line))
+                
+                # Quantity used:
+                product_uom_qty = line.product_uom_qty
+                product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
+                delivered_qty = line.delivered_qty
+                if delivered_qty > product_uom_maked_sync_qty:
+                    remain = product_uom_qty - delivered_qty
+                else:
+                    remain = product_uom_qty - product_uom_maked_sync_qty
+                
+                # Block total:
+                total[0] += product_uom_qty
+                total[1] += product_uom_maked_sync_qty
+                total[2] += remain
+                total[3] += delivered_qty
+                                
+                # General Total:
+                self.general_total[0] += product_uom_qty
+                self.general_total[1] += product_uom_maked_sync_qty
+                self.general_total[2] += remain
+                self.general_total[3] += delivered_qty
+    
+            # Add total line:    
+            res.append(('T', total))                
         return res
 
     def get_object_grouped_line(self, data):
@@ -312,7 +279,8 @@ class Parser(report_sxw.rml_parse):
         filename = os.path.expanduser(os.path.join(
             '~', 'photo', 'log', 'frame.csv'))
         log_file = open(filename, 'w')
-        log_file.write('READ|STATUS|ORDER|PARTNER|DEADLINE|FAMILY|PRODUCT|CODE|OC|MAKE|DELIVERY|S|B|TOT\n')
+        log_file.write(
+            'READ|STATUS|ORDER|PARTNER|DEADLINE|FAMILY|PRODUCT|CODE|OC|MAKE|DELIVERY|S|B|TOT\n')
         mask = '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n'
         
         # Loop on order:
