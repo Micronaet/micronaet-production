@@ -282,8 +282,8 @@ class Parser(report_sxw.rml_parse):
         filename = os.path.expanduser(os.path.join(
             '~', 'photo', 'log', 'frame.csv'))
         log_file = open(filename, 'w')
-        log_file.write('READ|STATUS|ORDER|PARTNER|DEADLINE|PRODUCT|CODE|OC|MAKE|DELIVERY|S|B|TOT\n')
-        mask = '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n'
+        log_file.write('READ|STATUS|ORDER|PARTNER|DEADLINE|FAMILY|PRODUCT|CODE|OC|MAKE|DELIVERY|S|B|TOT\n')
+        mask = '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n'
         
         # Loop on order:
         products = {}
@@ -329,6 +329,7 @@ class Parser(report_sxw.rml_parse):
                     line.order_id.name,
                     line.order_id.partner_id.name,
                     line.date_deadline,
+                    line.product_id.family_id.name or '???',
                     line.product_id.default_code,
                     code,
                     clean_number(product_uom_qty),
@@ -346,6 +347,7 @@ class Parser(report_sxw.rml_parse):
                 line.order_id.name,
                 line.order_id.partner_id.name,
                 line.date_deadline,
+                line.product_id.family_id.name or '???',
                 line.product_id.default_code,
                 code,
                 clean_number(product_uom_qty),
