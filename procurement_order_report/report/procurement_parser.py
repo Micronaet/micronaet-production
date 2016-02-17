@@ -237,10 +237,10 @@ class Parser(report_sxw.rml_parse):
         
         if from_date:
             domain.append(('date_order', '>=', from_date))
-            self.filter_description += _(', date >= %') % from_date
+            self.filter_description += _(', date >= %s') % from_date
         if to_date:
             domain.append(('date_order', '<', from_date))
-            self.filter_description += _(', date < %') % to_date
+            self.filter_description += _(', date < %s') % to_date
         
         order_ids = sale_pool.search(self.cr, self.uid, domain)
         
@@ -251,10 +251,10 @@ class Parser(report_sxw.rml_parse):
 
         if from_deadline:
             domain.append(('date_deadline', '>=', from_deadline))
-            self.filter_description += _(', deadline >= %') % from_deadline
+            self.filter_description += _(', deadline >= %s') % from_deadline
         if to_deadline:
             domain.append(('date_deadline', '<', to_deadline))
-            self.filter_description += _(', deadline < %') % to_deadline
+            self.filter_description += _(', deadline < %s') % to_deadline
             
         if code_start:  
             domain.append(('default_code', '=ilike', '%s%s' % (
