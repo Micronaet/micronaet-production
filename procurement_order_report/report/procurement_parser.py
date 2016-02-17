@@ -302,7 +302,7 @@ class Parser(report_sxw.rml_parse):
 
             if data.get('only_remain', False) and S > 0:
                 continue # jump if no item or all produced
-            if S = 0 and B = 0:  
+            if S == 0 and B == 0:  
                 continue
             
             if line.order_id.id not in self.order_ids:
