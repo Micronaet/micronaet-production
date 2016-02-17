@@ -339,7 +339,7 @@ class Parser(report_sxw.rml_parse):
                 # Quantity used:
                 product_uom_qty = line.product_uom_qty
                 product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
-                delivered_qty = line.delivered_qt
+                delivered_qty = line.delivered_qty
 
                 TOT = product_uom_qty - delivered_qty                
                 if delivered_qty > product_uom_maked_sync_qty:
