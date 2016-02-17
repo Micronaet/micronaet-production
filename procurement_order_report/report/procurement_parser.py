@@ -64,7 +64,7 @@ class Parser(report_sxw.rml_parse):
     def get_general_total(self, ):
         '''
         '''
-        return self.general_total
+        return '?' #self.general_total
     
     def get_filter_description(self, ):
         '''
@@ -264,6 +264,7 @@ class Parser(report_sxw.rml_parse):
         line_ids = line_pool.search(self.cr, self.uid, domain)
 
         # Loop on order:
+        #self.general_total = 0.0
         for line in line_pool.browse(
                 self.cr, self.uid, line_ids): 
             # ------------------
