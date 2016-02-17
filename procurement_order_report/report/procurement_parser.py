@@ -300,9 +300,9 @@ class Parser(report_sxw.rml_parse):
                 B = product_uom_maked_sync_qty - delivered_qty 
             S = TOT - B
 
-            if data.get('only_remain', False) and S > 0:
+            if data.get('only_remain', False) and S <= 0:
                 continue # jump if no item or all produced
-            if S == 0 and B == 0:  
+            if S == 0 and B == 0:
                 continue
             
             if line.order_id.id not in self.order_ids:
