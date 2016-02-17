@@ -271,6 +271,11 @@ class Parser(report_sxw.rml_parse):
     def get_object_grouped_line(self, data):
         ''' Selected object + print object
         '''
+        filename = os.path.expanduser(os.path.join('~', 'photo', 'xls', 'frame.csv')
+        log_file.open(filename, 'w')
+        log_file.write('READ|STATUS|ORDER|PRODUCT|OC|MAKE|DELIVERY|S|B|TOT')
+        mask = '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n'
+        
         # Loop on order:
         products = {}
         browse_line = self.browse_order_line(data)
@@ -296,15 +301,41 @@ class Parser(report_sxw.rml_parse):
             TOT = product_uom_qty - delivered_qty            
             if delivered_qty > product_uom_maked_sync_qty:
                 B = 0
+                status = 'Type A'
             else:
                 B = product_uom_maked_sync_qty - delivered_qty 
+                status = 'Type B'                
             S = TOT - B
 
             #if data.get('only_remain', False) and S <= 0:
             #    continue # jump if no item or all produced
             if TOT == 0:
+                log_file.write(mask % (
+                    'NO',
+                    status,
+                    line.order_id.name,
+                    line.product_id.default_code,
+                    product_uom_qty,
+                    product_uom_maked_sync_qty,
+                    delivered_qty,
+                    S,
+                    B,
+                    TOT,
+                    ))
                 continue
             
+            log_file.write(mask % (
+                'YES',
+                status,
+                line.order_id.name,
+                line.product_id.default_code,
+                product_uom_qty,
+                product_uom_maked_sync_qty,
+                delivered_qty,
+                S,
+                B,
+                TOT,
+                ))
             if line.order_id.id not in self.order_ids:
                 self.order_ids.append(line.order_id.id)
                 
