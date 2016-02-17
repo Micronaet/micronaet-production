@@ -293,13 +293,11 @@ class Parser(report_sxw.rml_parse):
             product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
             delivered_qty = line.delivered_qty
             
-            TOT = product_uom_qty - delivered_qty
-            
+            TOT = product_uom_qty - delivered_qty            
             if delivered_qty > product_uom_maked_sync_qty:
                 B = 0
             else:
                 B = product_uom_maked_sync_qty - delivered_qty 
-
             S = TOT - B
 
             if data.get('only_remain', False) and S > 0:
@@ -341,23 +339,26 @@ class Parser(report_sxw.rml_parse):
                 # Quantity used:
                 product_uom_qty = line.product_uom_qty
                 product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
-                delivered_qty = line.delivered_qty
+                delivered_qty = line.delivered_qt
+
+                TOT = product_uom_qty - delivered_qty                
                 if delivered_qty > product_uom_maked_sync_qty:
-                    remain = product_uom_qty - delivered_qty
+                    B = 0
                 else:
-                    remain = product_uom_qty - product_uom_maked_sync_qty
-                
+                    B = product_uom_maked_sync_qty - delivered_qty 
+                S = TOT - B
+                                
                 # Line total:
-                total[0] += product_uom_qty
-                total[1] += product_uom_maked_sync_qty
-                total[2] += remain
-                total[3] += delivered_qty
+                total[0] += S
+                total[1] += B
+                total[2] += TOT
+                #total[3] += 0
 
                 # Block total
-                parent_total[0] += product_uom_qty # TODO better!!
-                parent_total[1] += product_uom_maked_sync_qty
-                parent_total[2] += remain
-                parent_total[3] += delivered_qty
+                parent_total[0] += S
+                parent_total[1] += B
+                parent_total[2] += TOT
+                #parent_total[3] += 0
 
             # Add total line:    
             res.append(('L', code, total))                
