@@ -211,9 +211,9 @@ class Parser(report_sxw.rml_parse):
             # -------------------
             if code_partial and line.product_id.default_code[
                     from_partial: to_partial] != code_partial:
-                _logger.info('Code partial jumped: %s !% %s' % (
-                code_partial, line.product_id.default_code[
-                    from_partial: to_partial]))    
+                _logger.info('Code partial jumped: %s ! %s' % (
+                code_partial, 
+                line.product_id.default_code[from_partial: to_partial]))    
                 continue # jump line
                 
             product_uom_qty = line.product_uom_qty
@@ -245,7 +245,7 @@ class Parser(report_sxw.rml_parse):
             # Add product line:
             for line in products[code]:
                 res.append(('P', line))
-                
+
                 # Quantity used:
                 product_uom_qty = line.product_uom_qty
                 product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
