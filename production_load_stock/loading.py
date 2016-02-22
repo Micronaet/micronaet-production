@@ -44,28 +44,73 @@ class MrpProduction(orm.Model):
     """    
     _inherit = 'mrp.production'
     
+    def button_create_cl_sl(self, cr, uid, ids, context=None):
+        ''' Create CL and SL temporary (after when B q is saved)
+        '''
+        self.update_all_mrp_production(cr, uid, ids, context=None)
+        return True
+    
+    def button_get_picking(self, cr, uid, ids, context=None):
+        ''' Open CL and SL picking
+        '''
+        pick_pool = self.pool.get('stock.picking')
+        company_pool = self.pool.get('res.company')
+        
+        company_ids = company_pool.search(cr, uid, [], context=context)
+        company_proxy = company_pool.browse(cr, uid, company_ids, 
+            context=context)[0]
+
+        if company_proxy.stock_report_mrp_in_ids: # XXX only first
+            mrp_type_in = company_proxy.stock_report_mrp_in_ids[0].id
+        else:
+            mrp_type_in = False    
+        if company_proxy.stock_report_mrp_out_ids:    
+            mrp_type_out = company_proxy.stock_report_mrp_out_ids[0].id
+        else:
+            mrp_type_out = False
+
+        mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
+        item_ids = []        
+        item_ids.append(pick_pool.get_mrp_picking(
+            cr, uid, mrp_proxy, 'cl', mrp_type_in, 
+            context=context))
+            
+        item_ids.append(pick_pool.get_mrp_picking(
+            cr, uid, mrp_proxy, 'sl', mrp_type_out, 
+            context=context))
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'MRP pick in e out',
+            'res_model': 'stock.picking',
+            #'res_id': ids[0],
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'domain': [('id', 'in', item_ids)],
+            #'view_id': view_id,
+            #'target': 'new',
+            #'nodestroy': True,
+            }
+        
     def update_all_mrp_production(self, cr, uid, ids, context=None):
         ''' Rewrite all production in all order
         '''
-        log_file = 'update_production.csv'
+        import pdb; pdb.set_trace()
+        log_file = 'update_production.%s.csv' % (ids[0])
         log_path = os.path.expanduser('~')
         log_filename = os.path.join(log_path, log_file)
-        log_f = open(log_filename, 'w')
+        log_f = open(log_filename, 'a')
         
         start_date = '2016-01-01'
         sol_pool = self.pool.get('sale.order.line')
-        mrp_id = self.search(cr, uid, [
-            #('date_planned', '>=', start_date),
-            ], context=context)
+        #mrp_id = self.search(cr, uid, [
+        #    #('date_planned', '>=', start_date),
+        #    ], context=context)
             
         log_f.write('Start update procedure')
         
         i = 0
-        for mrp in self.browse(cr, uid, mrp_id, context=context):
+        for mrp in self.browse(cr, uid, ids, context=context): # mrp_id
             i += 1
-            # TODO remove:
-            if i == 10:
-                break
             date_planned = mrp.date_planned
 
             if date_planned >= start_date:
@@ -82,7 +127,7 @@ class MrpProduction(orm.Model):
                 
             for line in mrp.order_line_ids:
                 if state == 'MAKED':
-                    sol.write(cr, uid, line.id, {
+                    sol_pool.write(cr, uid, [line.id], {
                         'product_uom_maked_sync_qty': 
                             line.product_uom_maked_sync_qty,
                         }, context=context)
@@ -216,7 +261,7 @@ class SaleOrder(orm.Model):
         mrp_location = company_proxy.stock_mrp_location_id.id
         
         if company_proxy.stock_report_mrp_in_ids: # XXX only first
-            mrp_type_in =  company_proxy.stock_report_mrp_in_ids[0].id
+            mrp_type_in = company_proxy.stock_report_mrp_in_ids[0].id
         else:
             mrp_type_in = False    
             

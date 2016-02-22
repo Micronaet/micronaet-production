@@ -8,7 +8,9 @@
             <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
             <field name="arch" type="xml">
                 <field name="name" position="after">
-                     <button name="update_all_mrp_production" string="Update all stock" type="object" />
+                     <!--<button name="update_all_mrp_production" string="Update all stock" type="object" />-->
+                     <button name="button_create_cl_sl" string="Update stock" type="object" />                     
+                     <button name="button_get_picking" string="Stock pick" type="object" />                     
                 </field>
             </field>
         </record>
