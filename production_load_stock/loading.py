@@ -94,7 +94,6 @@ class MrpProduction(orm.Model):
     def update_all_mrp_production(self, cr, uid, ids, context=None):
         ''' Rewrite all production in all order
         '''
-        import pdb; pdb.set_trace()
         log_file = 'update_production.%s.csv' % (ids[0])
         log_path = os.path.expanduser('~')
         log_filename = os.path.join(log_path, log_file)
