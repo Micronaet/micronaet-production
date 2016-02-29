@@ -11,6 +11,7 @@
                      <!--<button name="update_all_mrp_production" string="Update all stock" type="object" />-->
                      <button name="button_create_cl_sl" string="Update stock" type="object" />                     
                      <button name="button_get_picking" string="Stock pick" type="object" />                     
+                     <field name="pick_status" attrs="{'invisible': [('pick_status','=',False)]}" />
                 </field>
             </field>
         </record>

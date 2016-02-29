@@ -50,6 +50,25 @@ class MrpProduction(orm.Model):
         context = context or {}
         context['forced_record'] = True # for date problems
         self.update_all_mrp_production(cr, uid, ids, context=context)
+        
+        # Update status information:
+        pick_pool = self.pool.get('stock.picking')
+        pick_ids = pick_pool.search(cr, uid, [
+            ('production_id', '=', ids[0])], context=context)
+        if not pick_ids:
+            return False
+        
+        # Log pick info:
+        log = ''
+        for pick in pick_pool.browse(cr, uid, pick_ids, context=context):
+            log += '%s [# %s]' % (pick.name, len(pick.move_lines))
+ 
+        # log mrp info
+        mrp = pick.production_id
+        log += 'MRP: %s [# %s]' % (mrp.name, len(mrp.order_line_ids))
+        
+        self.write(cr, uid, ids, {
+            'pick_status': log}, context=context)
         return True
     
     def button_get_picking(self, cr, uid, ids, context=None):
@@ -141,6 +160,10 @@ class MrpProduction(orm.Model):
         log_f.write('End update procedure')
         
         return True
+           
+    _columns = {
+        'pick_status': fields.text('Update status')
+        }
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 class StockPicking(orm.Model):
