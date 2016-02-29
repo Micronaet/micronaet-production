@@ -47,7 +47,9 @@ class MrpProduction(orm.Model):
     def button_create_cl_sl(self, cr, uid, ids, context=None):
         ''' Create CL and SL temporary (after when B q is saved)
         '''
-        self.update_all_mrp_production(cr, uid, ids, context=None)
+        context = context or {}
+        context['forced_record'] = True # for date problems
+        self.update_all_mrp_production(cr, uid, ids, context=context)
         return True
     
     def button_get_picking(self, cr, uid, ids, context=None):
@@ -94,17 +96,16 @@ class MrpProduction(orm.Model):
     def update_all_mrp_production(self, cr, uid, ids, context=None):
         ''' Rewrite all production in all order
         '''
+        context = context or {}
+        forced = context.get('forced_record', False)
+
         log_file = 'update_production.%s.csv' % (ids[0])
         log_path = os.path.expanduser('~')
         log_filename = os.path.join(log_path, log_file)
         log_f = open(log_filename, 'a')
-        
+                
         start_date = '2016-01-01'
         sol_pool = self.pool.get('sale.order.line')
-        #mrp_id = self.search(cr, uid, [
-        #    #('date_planned', '>=', start_date),
-        #    ], context=context)
-            
         log_f.write('Start update procedure')
         
         i = 0
@@ -112,7 +113,7 @@ class MrpProduction(orm.Model):
             i += 1
             date_planned = mrp.date_planned
 
-            if date_planned >= start_date:
+            if forced or date_planned >= start_date:
                 state = 'MAKED'
             else:    
                 state = 'JUMPED'
@@ -187,7 +188,7 @@ class StockQuant(orm.Model):
         'production_sol_id': fields.many2one(
             'sale.order.line', 'Sale line linked', ondelete='cascade',
             help='Line linked for load / unload for production'),
-        }     
+        }
 
 class StockMove(orm.Model):
     """ Model name: Sale order for production
