@@ -199,6 +199,12 @@ class SaleOrderLine(orm.Model):
             'product_uom_maked_sync_qty': 0.0,
             'sync_state': 'draft',
             }, context=context)                
+
+    _columns = {
+        'mrp_status_info': fields.related(
+            'mrp_id', 'mrp_status_info', type='char', string='MRP info',
+            store=False), 
+        }        
            
 class SaleOrderLine(orm.Model):
     ''' Manage family in sale.order.line
@@ -468,7 +474,7 @@ class MrpProduction(orm.Model):
             context=None):
         ''' Fields function for calculate 
         '''
-        res = ''
+        res = {}
         for order in self.browse(cr, uid, ids, context=context):            
             min_date = False
             max_date = False
@@ -480,6 +486,8 @@ class MrpProduction(orm.Model):
                     max_date = date_planned
             if not (min_date and max_date):        
                 res[order.id] = _('No ref.')
+            elif min_date == max_date:
+                res[order.id] = '[%s]' % min_date
             else:    
                 res[order.id] = '[%s - %s]' % (min_date, max_date)
         return res
