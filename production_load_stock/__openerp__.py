@@ -32,6 +32,7 @@
     'license': 'AGPL-3',
     'depends': [
         'base',
+        #'base_accounting_program', # error multidiscount
         'sale',
         'stock',
         'production_accounting_external',

@@ -239,6 +239,8 @@ class SaleOrderLine(orm.Model):
         # TODO remove:    
         'order_confirmed': fields.boolean('Order confirmed',
             help='Used for filter in production (T when order in confirmed'),
+
+        # TODO check all cases!!!
         'go_in_production': fields.function(
             _go_in_production_from_state, method=True, type='boolean', 
             string='Go in production', store={
@@ -462,6 +464,26 @@ class MrpProduction(orm.Model):
                     res[mo.id]['has_mandatory_delivery'] += "*"                    
         return res
         
+    def _function_get_schedulation_range(self, cr, uid, ids, fields, args, 
+            context=None):
+        ''' Fields function for calculate 
+        '''
+        res = ''
+        for order in self.browse(cr, uid, ids, context=context):            
+            min_date = False
+            max_date = False
+            for line in order.scheduled_lavoration_ids:
+                date_planned = line.date_planned[:10]
+                if not min_date or min_date < date_planned:
+                    min_date = date_planned
+                if not max_date or max_date > date_planned:
+                    max_date = date_planned
+            if not (min_date and max_date):        
+                res[order.id] = _('No ref.')
+            else:    
+                res[order.id] = '[%s - %s]' % (min_date, max_date)
+        return res
+        
     _columns = {
         'forecast_qty': fields.function(
             _get_total_information, method=True, type='float', 
@@ -485,6 +507,10 @@ class MrpProduction(orm.Model):
         'mandatory_delivery': fields.function(_get_mandatory_delivery,
             method=True, type='integer', string='Fix delivery', 
             store=False, multi=True),
+        
+        'mrp_status_info': fields.function(
+            _function_get_schedulation_range, method=True, type='char', 
+            size=100, string='Sched. info', store=False),
         }
 
 class MrpProductionWorkcenterLine(orm.Model):

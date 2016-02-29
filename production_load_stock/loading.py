@@ -61,11 +61,14 @@ class MrpProduction(orm.Model):
         # Log pick info:
         log = ''
         for pick in pick_pool.browse(cr, uid, pick_ids, context=context):
-            log += '%s [# %s]' % (pick.name, len(pick.move_lines))
+            log += '%s: %s [# %s]\n' % (
+                pick.production_load_type.upper(), 
+                pick.name, 
+                len(pick.move_lines))
  
         # log mrp info
         mrp = pick.production_id
-        log += 'MRP: %s [# %s]' % (mrp.name, len(mrp.order_line_ids))
+        log += 'MRP: %s [# %s]\n' % (mrp.name, len(mrp.order_line_ids))
         
         self.write(cr, uid, ids, {
             'pick_status': log}, context=context)
@@ -144,7 +147,7 @@ class MrpProduction(orm.Model):
                 mrp.product_id.name,
                 ))
                 
-            for line in mrp.order_line_ids:
+            for line in mrp.order_line_ids:                
                 if state == 'MAKED':
                     sol_pool.write(cr, uid, [line.id], {
                         'product_uom_maked_sync_qty': 
@@ -345,7 +348,7 @@ class SaleOrder(orm.Model):
             for bom in bom_proxy.bom_line_ids:
                 unload_qty = bom.product_qty * maked_qty
                 if unload_qty <= 0.0:
-                    continue# jump line
+                    continue # jump line
                     
                 # Move create:    
                 move_pool.create(cr, uid, {
