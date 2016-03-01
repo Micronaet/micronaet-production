@@ -506,6 +506,21 @@
         </field>
     </record>
 
+    <record id="action_mrp_production_cancel" model="ir.actions.act_window">
+        <field name="name">Order cancel</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.production</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,calendar,graph</field>
+        <field name="domain">[('state','=','cancel')]</field>
+    </record>
+   
+    <menuitem name="Cancel"
+        parent="mrp.menu_mrp_production_action" 
+        id="menu_mrp_production_cancel" 
+        action="action_mrp_production_cancel" 
+        sequence="10" />        
+
     <menuitem name="Work hour"
         parent="mrp.menu_mrp_configuration" 
         id="menu_configuration_workhour" 
