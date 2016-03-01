@@ -241,6 +241,43 @@ class SaleOrder(orm.Model):
     """    
     _inherit = 'sale.order.line'
 
+    #à Button:
+    def open_product_bom(self, cr, uid, ids, context=None):
+        ''' 
+        '''
+        assert len(ids), 'Only one row a time!'
+        
+        bom_pool = self.pool.get('mrp.bom')
+        sol_proxy = self.browse(cr, uid, ids, context=context)
+        product = sol_proxy.product_id
+        bom_ids = bom_pool.search(cr, uid, [
+            ('product_id', '=', product.id),
+            ('sql_import', '=', True),
+            ], context=context)
+        if bom_ids:
+            bom_id = bom_ids[0]
+        else:    
+            bom_id = bom_pool.create(cr, uid, {
+                'sql_import': True,
+                'product_id': product.id,
+                'product_tmpl_id': product.product_tmpl_id.id,
+                'code': product.default_code, 
+                'product_qty': 1.0,
+                #'product_uom'
+                }, context=context)            
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'BOM',
+            'res_model': 'mrp.bom',
+            'res_id': bom_id,
+            'view_type': 'form',
+            'view_mode': 'form', # tree
+            #'view_id': view_id,
+            #'target': 'new',
+            #'nodestroy': True,
+            #'domain': [('product_id', 'in', ids)],
+            }
+        
     # Utility:
     def _search_bom_for_product(self, cr, uid, product_id, context=None):
         ''' Search reference BOM for product (now is the one that was imported
@@ -251,7 +288,7 @@ class SaleOrder(orm.Model):
             ('sql_import', '=', True),
             ], context=context)
         if not bom_ids:
-            _logger.error('No BOM found for product passed')
+            #_logger.error('No BOM for product ID %s passed' % product_id)
             return False
         
         return bom_pool.browse(cr, uid, bom_ids, context=context)[0]
@@ -398,6 +435,14 @@ class SaleOrder(orm.Model):
                     #'product_uom': bom.product_id.uom_id.id,
                     'production_sol_id': line_proxy.id,
                     }, context=context)   
+        else:
+            # No bom error!!
+            #_logger.error('BOM not found sql_import for product: %s' % (
+            #    line_proxy.product_id.default_code or ''))
+            raise osv.except_osv(
+                _('Error'), 
+                _('BOM not found sql_import for product: %s' % (
+                    line_proxy.product_id.default_code or '')))
         
         # Load end product:    
         # TODO        
@@ -447,8 +492,7 @@ class SaleOrder(orm.Model):
             'product_id': line_proxy.product_id.id,
             'qty': maked_qty, 
             'production_sol_id': line_proxy.id,
-            }, context=context)
-   
+            }, context=context)   
         return True
         
     def write(self, cr, uid, ids, vals, context=None):
