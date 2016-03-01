@@ -480,9 +480,9 @@ class MrpProduction(orm.Model):
             max_date = False
             for line in order.scheduled_lavoration_ids:
                 date_planned = line.date_planned[:10]
-                if not min_date or min_date < date_planned:
+                if not min_date or min_date > date_planned:
                     min_date = date_planned
-                if not max_date or max_date > date_planned:
+                if not max_date or max_date < date_planned:
                     max_date = date_planned
             if not (min_date and max_date):        
                 res[order.id] = _('No ref.')
