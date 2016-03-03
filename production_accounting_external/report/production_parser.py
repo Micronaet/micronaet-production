@@ -56,7 +56,20 @@ class Parser(report_sxw.rml_parse):
             # remain report:
             'get_object_remain': self.get_object_remain,
             'previous_record': self.previous_record,
+            'clean_order': self.clean_order,
         })
+    
+    def clean_order(self, name):
+        ''' Clean order:
+        '''
+        try:
+            if name.startswith('MX'):
+                return name.split('-')[-1].split('/')[0]
+            else:    
+                return name.split('/')[-1]
+        except:
+            return name        
+            
 
     def previous_record(self, value=False):
         ''' Save passed value as previouse record
