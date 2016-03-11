@@ -125,6 +125,7 @@ class SaleOrder(orm.Model):
 class SaleOrderLine(orm.Model):
     ''' Add extra field to manage connection with accounting
     '''    
+    # XXX double merge with obj after!!!
     _inherit = 'sale.order.line'
     
     # Force new order for production
