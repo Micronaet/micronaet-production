@@ -41,7 +41,8 @@ class MrpProductionStat(orm.Model):
         
     _columns = {
         'date': fields.date('Date', required=True),
-        'total': fields.integer('Total'), required=True), 
+        'total': fields.integer('Total', required=True), 
+        'startup': fields.float('Start up time', digits=(16, 3)),     
         'mrp_id': fields.many2one(
             'mrp.production', 'Production', ondelete='cascade'),
         }
@@ -62,8 +63,9 @@ class MrpProduction(orm.Model):
         blocked = sum([item.product_uom_maked_sync_qty for item in self.browse(
             cr, uid, ids, context=context)[0].order_line_ids])
         self.write(cr, uid, ids, {
-            'stat_start_total': blocked}, context=context)
-        return True    
+            'stat_start_total': blocked,
+            }, context=context)
+        return True
     
     def end_blocking_stats(self, cr, uid, ids, context=None):
         ''' Save current production in log events
@@ -75,10 +77,11 @@ class MrpProduction(orm.Model):
         date = mrp_proxy.stat_start_date or datetime.now().strftime(
             DEFAULT_SERVER_DATE_FORMAT)
             
-        # Create new stat record:    
+        # Create new stat record:
         self.pool.get('mrp.production.stats').create(cr, uid, ids, {
             'date': date,
             'total': total,
+            'startup': mrp_proxy.stat_startup,
             'mrp_id': ids[0],            
             }, context=context)
         return True    
@@ -86,8 +89,11 @@ class MrpProduction(orm.Model):
     _columns = {
         'stat_start_date': fields.date('Ref. Date', 
             help='Ref. date for blocking operation'),
-        'stat_start_total': fields.integer('Ref. Total', 
+        'stat_start_total': fields.integer('Ref. Total',
             help='Total current item when start blocking operation'),
-        }    
+        'stat_startup': fields.float('Start up time', digits=(16, 3)),     
+        'stats_ids': fields.one2many(
+            'mrp.production.stats', 'mrp_id', 'Stats'), 
+        }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
