@@ -63,22 +63,22 @@ class MrpProduction(orm.Model):
         blocked = sum([item.product_uom_maked_sync_qty for item in self.browse(
             cr, uid, ids, context=context)[0].order_line_ids])
         self.write(cr, uid, ids, {
-            'stat_start_total': blocked,
+            'stat_start_total': blocked,            
             }, context=context)
         return True
     
-    def end_blocking_stats(self, cr, uid, ids, context=None):
+    def stop_blocking_stats(self, cr, uid, ids, context=None):
         ''' Save current production in log events
         '''
         blocked = sum([item.product_uom_maked_sync_qty for item in self.browse(
             cr, uid, ids, context=context)[0].order_line_ids])
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]    
-        mrp = blocked - mrp_proxy.stat_start_total
+        total = blocked - mrp_proxy.stat_start_total
         date = mrp_proxy.stat_start_date or datetime.now().strftime(
             DEFAULT_SERVER_DATE_FORMAT)
             
         # Create new stat record:
-        self.pool.get('mrp.production.stats').create(cr, uid, ids, {
+        self.pool.get('mrp.production.stats').create(cr, uid, {
             'date': date,
             'total': total,
             'startup': mrp_proxy.stat_startup,

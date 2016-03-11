@@ -10,7 +10,7 @@
                     <sheet>
                         <group colspan="4" col="4">
                             <field name="date" />
-                            <field name="startup" />
+                            <field name="startup"  widget="float_time"/>
                             <field name="total" />
                         </group>
                     </sheet>  
@@ -23,7 +23,7 @@
             <field name="arch" type="xml">
                 <tree string="MRP stats" editable="bottom">
                         <field name="date" />
-                        <field name="startup" />
+                        <field name="startup"  widget="float_time"/>
                         <field name="total" />
                 </tree>            
             </field>
@@ -46,10 +46,10 @@
             <field name="model">mrp.production</field>
             <field name="inherit_id" ref="production_accounting_external.default_mrp_production_form_view"/>
             <field name="arch" type="xml">
-                <field name="scheduled_lavoration_ids" position="before">
-                    <group colspan="4" cols="6">                    
+                <field name="order_line_ids" position="before">
+                    <group colspan="4" col="6">                    
                         <field name="stat_start_date" />                        
-                        <field name="stat_startup" />
+                        <field name="stat_startup" widget="float_time"/>
                         <button name="start_blocking_stats" string="Start" type="object" />
                         <button name="stop_blocking_stats" string="Stop" type="object" />
                         <!--<field name="stat_start_total" />-->
