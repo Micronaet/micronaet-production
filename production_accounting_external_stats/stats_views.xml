@@ -20,7 +20,7 @@
         </record>
         
         <record model="ir.ui.view" id="view_mrp_production_stats_mixed_tree">
-            <field name="name">MRP Stats mix</field>
+            <field name="name">Production Stats</field>
             <field name="model">mrp.production.stats.mixed</field>
             <field name="arch" type="xml">
                 <tree string="MRP stats mixed" editable="bottom">
@@ -37,7 +37,7 @@
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_mrp_production_stats_mixed">
-            <field name="name">MRP stat mixed</field>
+            <field name="name">Production Stats</field>
             <field name="res_model">mrp.production.stats.mixed</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
