@@ -60,9 +60,16 @@ class MrpProductionStatMixed(osv.osv):
     _order = 'workcenter_id,date_planned'
     _auto = False
     
+    # Button event:
+    def nothing(self, cr, uid, ids, context=None):
+        ''' Dummy button
+        '''
+        return True
+
     _columns = {
         # mrp.production.workcenter.line:
         'name': fields.char('MRP name', readonly=True),
+        'is_today': fields.boolean('Is today', readonly=True),
         'date_planned': fields.date('Date planned', readonly=True),
         'production_id': fields.many2one(
             'mrp.production', 'Production', readonly=True), 
@@ -92,6 +99,7 @@ class MrpProductionStatMixed(osv.osv):
                     wl.workcenter_id as workcenter_id,
                     wl.lavoration_qty as lavoration_qty,
                     wl.date_planned as date_planned,
+                    DATE(wl.date_planned) = DATE(now()) as is_today,
                     
                     sol.todo_qty as todo_qty,
                     sol.maked_qty as maked_qty,
