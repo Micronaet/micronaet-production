@@ -9,7 +9,6 @@
                 <search string="MRP search stat" version="7.0">        
                     <field name="production_id" filter_domain="[('production_id.name','ilike',self)]"/>
                     <field name="workcenter_id" filter_domain="[('workcenter_id.name','ilike',self)]"/>
-                    <filter name="state" string="Active state" domain="[('state','!=','cancel')]"/>
                     <filter name="current_lavoration" string="Current lavoration" 
                         domain="[('date_planned','&lt;=', ((context_today()+datetime.timedelta(days=10)).strftime('%Y-%m-%d'))),('date_planned','&gt;=',context_today().strftime('%Y-%m-%d'))]" />
                     <group expand="0" string="Group By">

@@ -49,7 +49,7 @@ class MrpProductionStat(orm.Model):
         }
 
     _defaults = {
-        'date': lambda *x: datetime.now.strftime(DEFAULT_SERVER_DATE_FORMAT),    
+        'date': lambda *x: datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT),    
         }
 
 class MrpProductionStatMixed(osv.osv):
@@ -75,15 +75,8 @@ class MrpProductionStatMixed(osv.osv):
         'maked_qty': fields.float('Done q.*', readonly=True),
         'remain_qty': fields.float('Remain q.*', readonly=True),
     
-        #'name': fields.char('Year', required=False, readonly=True),
         #'month':fields.selection([('01','January'), ('02','February'), ('03','March'), ('04','April'), ('05','May'), ('06','June'),
         #                          ('07','July'), ('08','August'), ('09','September'), ('10','October'), ('11','November'), ('12','December')],'Month', readonly=True),
-        #'supply_units':fields.float('Supply Units', readonly=True),
-        #'ref':fields.char('Source document', readonly=True),
-        #'code': fields.char('Country code', size=2, readonly=True),
-        #'intrastat_id': fields.many2one('report.intrastat.code', 'Intrastat code', readonly=True),
-        #'weight': fields.float('Weight', readonly=True),
-        #'value': fields.float('Value', readonly=True, digits_compute=dp.get_precision('Account')),
         #'type': fields.selection([('import', 'Import'), ('export', 'Export')], 'Type'),
         #'currency_id': fields.many2one('res.currency', "Currency", readonly=True),
         }
