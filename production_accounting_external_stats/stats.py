@@ -78,6 +78,8 @@ class MrpProductionStatMixed(osv.osv):
         'workcenter_id': fields.many2one(
             'mrp.workcenter', 'Line', readonly=True), 
         'lavoration_qty': fields.float('Lavoration q.', readonly=True),
+        'hour': fields.float('Hour', readonly=True),
+        'workers': fields.integer('Workers *', readonly=True),
         
         # sale.order.line:
         'todo_qty': fields.float('Total q.*', readonly=True),
@@ -87,7 +89,7 @@ class MrpProductionStatMixed(osv.osv):
         #'month':fields.selection([('01','January'), ('02','February'), ('03','March'), ('04','April'), ('05','May'), ('06','June'),
         #                          ('07','July'), ('08','August'), ('09','September'), ('10','October'), ('11','November'), ('12','December')],'Month', readonly=True),
         #'type': fields.selection([('import', 'Import'), ('export', 'Export')], 'Type'),
-        #'currency_id': fields.many2one('res.currency', "Currency", readonly=True),
+        #'currency_id': fields.many2one('res.currency', "Currency", readonly=True),mrp.workers
         }
         
     def init(self, cr):
@@ -102,7 +104,9 @@ class MrpProductionStatMixed(osv.osv):
                     wl.lavoration_qty as lavoration_qty,
                     wl.date_planned as date_planned,
                     DATE(wl.date_planned) = DATE(now()) as is_today,
+                    wl.hour as hour,
                     
+                    0 as workers,                    
                     mrp.product_id as product_id,
                     
                     sol.todo_qty as todo_qty,

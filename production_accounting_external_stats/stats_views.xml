@@ -18,7 +18,7 @@
                  </search>
             </field>
         </record>
-        
+
         <record model="ir.ui.view" id="view_mrp_production_stats_mixed_tree">
             <field name="name">Production Stats</field>
             <field name="model">mrp.production.stats.mixed</field>
@@ -31,12 +31,14 @@
                     <field name="is_today" invisible="1" />
                     <field name="production_id" invisible="1"/>
                     <field name="name" />
+                    <field name="hour" />
+                    <!--<field name="workers" />-->
                     <field name="lavoration_qty" />
 
                     <field name="todo_qty" />
                     <field name="maked_qty" />
                     <field name="remain_qty" />
-                </tree>            
+                </tree>
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_mrp_production_stats_mixed">
