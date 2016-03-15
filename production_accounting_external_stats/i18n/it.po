@@ -1,0 +1,204 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* production_accounting_external_stats
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-03-15 11:02+0000\n"
+"PO-Revision-Date: 2016-03-15 12:05+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats,create_uid:0
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats,create_date:0
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: production_accounting_external_stats
+#: view:mrp.production.stats.mixed:production_accounting_external_stats.view_mrp_production_stats_mixed_search
+msgid "Current lavoration"
+msgstr "Lavorazione attuale"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats,date:0
+msgid "Date"
+msgstr "Data"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats.mixed,date_planned:0
+msgid "Date planned"
+msgstr "Date pianificata"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats.mixed,maked_qty:0
+msgid "Done q.*"
+msgstr "Q. fatta *"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats.mixed,product_id:0
+msgid "Family"
+msgstr "Famiglia"
+
+#. module: production_accounting_external_stats
+#: view:mrp.production.stats.mixed:production_accounting_external_stats.view_mrp_production_stats_mixed_search
+msgid "Group By"
+msgstr "Raggruppa per"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats.mixed,hour:0
+msgid "Hour"
+msgstr "Ora"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats,id:0 field:mrp.production.stats.mixed,id:0
+msgid "ID"
+msgstr "ID"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats.mixed,is_today:0
+msgid "Is today"
+msgstr "Oggi"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats,write_uid:0
+msgid "Last Updated by"
+msgstr "Last Updated by"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats,write_date:0
+msgid "Last Updated on"
+msgstr "Last Updated on"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats.mixed,lavoration_qty:0
+msgid "Lavoration q."
+msgstr "Q. lavorazione"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats.mixed,workcenter_id:0
+msgid "Line"
+msgstr "Linea"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats.mixed,name:0
+msgid "MRP name"
+msgstr "Produzione"
+
+#. module: production_accounting_external_stats
+#: view:mrp.production.stats.mixed:production_accounting_external_stats.view_mrp_production_stats_mixed_search
+msgid "MRP search stat"
+msgstr "MRP search stat"
+
+#. module: production_accounting_external_stats
+#: model:ir.model,name:production_accounting_external_stats.model_mrp_production_stats
+#: view:mrp.production.stats:production_accounting_external_stats.view_mrp_production_stats_form
+#: view:mrp.production.stats:production_accounting_external_stats.view_mrp_production_stats_tree
+msgid "MRP stats"
+msgstr "MRP stats"
+
+#. module: production_accounting_external_stats
+#: model:ir.model,name:production_accounting_external_stats.model_mrp_production_stats_mixed
+#: view:mrp.production.stats.mixed:production_accounting_external_stats.view_mrp_production_stats_mixed_tree
+msgid "MRP stats mixed"
+msgstr "Statistica produzione"
+
+#. module: production_accounting_external_stats
+#: model:ir.model,name:production_accounting_external_stats.model_mrp_production
+msgid "Manufacturing Order"
+msgstr "Ordine di Produzione"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats,mrp_id:0
+#: view:mrp.production.stats.mixed:production_accounting_external_stats.view_mrp_production_stats_mixed_search
+#: field:mrp.production.stats.mixed,production_id:0
+msgid "Production"
+msgstr "Produzione"
+
+#. module: production_accounting_external_stats
+#: model:ir.actions.act_window,name:production_accounting_external_stats.action_mrp_production_stats_mixed
+#: model:ir.ui.menu,name:production_accounting_external_stats.menu_mrp_production_stats_mixed
+msgid "Production Stats"
+msgstr "Statistiche produzione"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production,stat_start_date:0
+msgid "Ref. Date"
+msgstr "Data rif."
+
+#. module: production_accounting_external_stats
+#: field:mrp.production,stat_start_total:0
+msgid "Ref. Total"
+msgstr "Totale rif."
+
+#. module: production_accounting_external_stats
+#: help:mrp.production,stat_start_date:0
+msgid "Ref. date for blocking operation"
+msgstr "Data rif. operazione bloccaggio"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats.mixed,remain_qty:0
+msgid "Remain q.*"
+msgstr "Q. rimanente*"
+
+#. module: production_accounting_external_stats
+#: view:mrp.production:production_accounting_external_stats.mrp_production_lavoration_form_startup_view
+msgid "Start"
+msgstr "Avvia"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production,stat_startup:0 field:mrp.production.stats,startup:0
+msgid "Start up time"
+msgstr "Tempo approntamento"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production,stats_ids:0
+msgid "Stats"
+msgstr "Statistiche"
+
+#. module: production_accounting_external_stats
+#: view:mrp.production:production_accounting_external_stats.mrp_production_lavoration_form_view
+msgid "Stats:"
+msgstr "Statistiche:"
+
+#. module: production_accounting_external_stats
+#: view:mrp.production:production_accounting_external_stats.mrp_production_lavoration_form_startup_view
+msgid "Stop"
+msgstr "Stop"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats,total:0
+msgid "Total"
+msgstr "Totale"
+
+#. module: production_accounting_external_stats
+#: help:mrp.production,stat_start_total:0
+msgid "Total current item when start blocking operation"
+msgstr "Totale articoli quando parte l'operazione di bloccaggio"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats.mixed,todo_qty:0
+msgid "Total q.*"
+msgstr "Q. prod. totale *"
+
+#. module: production_accounting_external_stats
+#: view:mrp.production.stats.mixed:production_accounting_external_stats.view_mrp_production_stats_mixed_search
+msgid "Workcenter"
+msgstr "Centro di lavoro"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats.mixed,workers:0
+msgid "Workers *"
+msgstr "Addetti *"
