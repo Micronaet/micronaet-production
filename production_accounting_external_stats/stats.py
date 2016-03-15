@@ -71,6 +71,8 @@ class MrpProductionStatMixed(osv.osv):
         'name': fields.char('MRP name', readonly=True),
         'is_today': fields.boolean('Is today', readonly=True),
         'date_planned': fields.date('Date planned', readonly=True),
+        'product_id': fields.many2one(
+            'product.product', 'Family', readonly=True), 
         'production_id': fields.many2one(
             'mrp.production', 'Production', readonly=True), 
         'workcenter_id': fields.many2one(
@@ -101,9 +103,10 @@ class MrpProductionStatMixed(osv.osv):
                     wl.date_planned as date_planned,
                     DATE(wl.date_planned) = DATE(now()) as is_today,
                     
+                    mrp.product_id as product_id,
+                    
                     sol.todo_qty as todo_qty,
                     sol.maked_qty as maked_qty,
-                    
                     (sol.todo_qty - sol.maked_qty) as remain_qty
                 FROM
                     mrp_production_workcenter_line wl
@@ -118,6 +121,11 @@ class MrpProductionStatMixed(osv.osv):
                             mrp_id
                     ) sol
                     ON (wl.production_id = sol.mrp_id)
+
+                    LEFT JOIN 
+                    mrp_production mrp           
+                    ON (wl.production_id = mrp.id)
+                    
                     
                 WHERE 
                     wl.state != 'cancel'
