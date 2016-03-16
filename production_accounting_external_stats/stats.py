@@ -118,7 +118,15 @@ class MrpProductionStatMixed(osv.osv):
                     ON 
                         (st.mrp_id = mrp.id)
                     JOIN 
-                        mrp_production_workcenter_line wc
+                        (
+                           SELECT
+                               production_id,
+                               min(workcenter_id) as workcenter_id
+                           FROM 
+                               mrp_production_workcenter_line
+                           GROUP BY
+                               production_id                                
+                           ) wc
                     ON  
                         (wc.production_id = mrp.id)
                 GROUP BY
