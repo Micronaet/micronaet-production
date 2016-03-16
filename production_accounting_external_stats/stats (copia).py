@@ -57,8 +57,7 @@ class MrpProductionStatMixed(osv.osv):
     '''
     _name = 'mrp.production.stats.mixed'
     _description = 'MRP stats mixed'
-    _order = 'date_planned desc'
-    _rec_name = 'date_planned'
+    _order = 'workcenter_id,date_planned'
     _auto = False
     
     # Button event:
@@ -69,7 +68,7 @@ class MrpProductionStatMixed(osv.osv):
 
     _columns = {
         # mrp.production.workcenter.line:
-        #'name': fields.char('MRP name', readonly=True),
+        'name': fields.char('MRP name', readonly=True),
         'is_today': fields.boolean('Is today', readonly=True),
         'date_planned': fields.date('Date planned', readonly=True),
         'product_id': fields.many2one(
@@ -80,13 +79,17 @@ class MrpProductionStatMixed(osv.osv):
             'mrp.workcenter', 'Line', readonly=True), 
         'lavoration_qty': fields.float('Lavoration q.', readonly=True),
         'hour': fields.float('Hour', readonly=True),
-        'workers': fields.integer('Workers', readonly=True),
-        'startup': fields.float('Startup', readonly=True),
+        'workers': fields.integer('Workers *', readonly=True),
         
         # sale.order.line:
-        'todo_qty': fields.float('Total q.', readonly=True),
-        'maked_qty': fields.float('Done q.', readonly=True),
-        'remain_qty': fields.float('Remain q.', readonly=True),
+        'todo_qty': fields.float('Total q.*', readonly=True),
+        'maked_qty': fields.float('Done q.*', readonly=True),
+        'remain_qty': fields.float('Remain q.*', readonly=True),
+    
+        #'month':fields.selection([('01','January'), ('02','February'), ('03','March'), ('04','April'), ('05','May'), ('06','June'),
+        #                          ('07','July'), ('08','August'), ('09','September'), ('10','October'), ('11','November'), ('12','December')],'Month', readonly=True),
+        #'type': fields.selection([('import', 'Import'), ('export', 'Export')], 'Type'),
+        #'currency_id': fields.many2one('res.currency', "Currency", readonly=True),mrp.workers
         }
         
     def init(self, cr):
@@ -94,39 +97,43 @@ class MrpProductionStatMixed(osv.osv):
         cr.execute("""
             CREATE or REPLACE view mrp_production_stats_mixed as (
                 SELECT 
-                    min(st.id) as id,
-                    st.date as date_planned,
-                    sum(st.total) as maked_qty,
-                    sum(st.startup) as startup,
-                    wc.workcenter_id as workcenter_id,
-
+                    wl.id as id,
+                    wl.name as name,
+                    wl.production_id as production_id,
+                    wl.workcenter_id as workcenter_id,
+                    wl.lavoration_qty as lavoration_qty,
+                    wl.date_planned as date_planned,
+                    DATE(wl.date_planned) = DATE(now()) as is_today,
+                    wl.hour as hour,
+                    
+                    0 as workers,                    
                     mrp.product_id as product_id,
+                    
+                    sol.todo_qty as todo_qty,
+                    sol.maked_qty as maked_qty,
+                    (sol.todo_qty - sol.maked_qty) as remain_qty
+                FROM
+                    mrp_production_workcenter_line wl
+                    LEFT JOIN 
+                    (
+                        SELECT 
+                            mrp_id, 
+                            sum(product_uom_qty) todo_qty,
+                            sum(product_uom_maked_sync_qty) maked_qty
+                        FROM sale_order_line
+                        GROUP BY
+                            mrp_id
+                    ) sol
+                    ON (wl.production_id = sol.mrp_id)
 
-                    DATE(st.date) = DATE(now()) as is_today,
-
-                    '' as name,
-                    0 as workers,
-                    0 as todo_qty,
-                    0 as remain_qty,
-                    0 as hour,
-                    0 as lavoration_qty,
-                    0 as production_id                    
-                FROM 
-                        mrp_production mrp
-                    JOIN 
-                        mrp_production_stats st
-                    ON 
-                        (st.mrp_id = mrp.id)
-                    JOIN 
-                        mrp_production_workcenter_line wc
-                    ON  
-                        (wc.production_id = mrp.id)
-                GROUP BY
-                    st.date,
-                    mrp.product_id,
-                    wc.workcenter_id
-                )""") # HAVING mrp.state != 'cancel' mrp.workcenter_id
-
+                    LEFT JOIN 
+                    mrp_production mrp           
+                    ON (wl.production_id = mrp.id)
+                    
+                    
+                WHERE 
+                    wl.state != 'cancel'
+                )""")
 
 class MrpProduction(orm.Model):
     ''' Statistic data

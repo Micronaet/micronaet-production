@@ -10,7 +10,7 @@
                     <field name="production_id" filter_domain="[('production_id.name','ilike',self)]"/>
                     <field name="workcenter_id" filter_domain="[('workcenter_id.name','ilike',self)]"/>
                     <filter name="current_lavoration" string="Current lavoration" 
-                        domain="[('date_planned','&lt;=', ((context_today()+datetime.timedelta(days=10)).strftime('%Y-%m-%d'))),('date_planned','&gt;=',context_today().strftime('%Y-%m-%d'))]" />
+                        domain="[('date_planned','&gt;=', ((context_today()-datetime.timedelta(days=9)).strftime('%Y-%m-%d'))),('date_planned','&lt;=',context_today().strftime('%Y-%m-%d'))]" />
                     <group expand="0" string="Group By">
                         <filter name="group_production" string="Production" context="{'group_by': 'production_id'}"/>
                         <filter name="group_workcenter" string="Workcenter" context="{'group_by': 'workcenter_id'}"/>
@@ -30,14 +30,15 @@
                     <field name="date_planned" />
                     <field name="is_today" invisible="1" />
                     <field name="production_id" invisible="1"/>
-                    <field name="name" />
-                    <field name="hour" />
+                    <!--<field name="name" />-->
+                    <field name="startup"  widget="float_time"/>
+                    <!--<field name="hour" />-->
                     <!--<field name="workers" />-->
-                    <field name="lavoration_qty" />
+                    <!--<field name="lavoration_qty" />-->
 
-                    <field name="todo_qty" />
+                    <!--<field name="todo_qty" />-->
                     <field name="maked_qty" />
-                    <field name="remain_qty" />
+                    <!--<field name="remain_qty" />-->
                 </tree>
             </field>
         </record>
