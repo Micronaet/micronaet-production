@@ -24,6 +24,7 @@
 import os
 import sys
 import logging
+from openerp.osv import fields, osv, expression, orm
 from openerp.report import report_sxw
 from openerp.report.report_sxw import rml_parse
 from datetime import datetime, timedelta
@@ -33,8 +34,8 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DATETIME_FORMATS_MAP, 
     float_compare)
 
-_logger = logging.getLogger(__name__)
 
+_logger = logging.getLogger(__name__)
 
 class Parser(report_sxw.rml_parse):
     counters = {}
@@ -204,13 +205,21 @@ class Parser(report_sxw.rml_parse):
 
         i = 0
         self.general_total = [0, 0, 0, 0]
+
         for line in browse_line:
             i += 1 
             # -------------------
             # Filter for partial:
             # -------------------
-            if code_partial and line.product_id.default_code[
-                    from_partial: to_partial] != code_partial:
+            if not line.product_id.default_code:                
+                raise osv.except_osv(
+                    'Data error', 
+                    'Default code not found: %s\n' % (
+                        line.product_id.name))
+                
+            code_block = line.product_id.default_code[
+                from_partial: to_partial]
+            if code_partial and code_block != code_partial:
                 _logger.info('Code partial jumped: %s ! %s' % (
                 code_partial, 
                 line.product_id.default_code[from_partial: to_partial]))    
@@ -273,7 +282,7 @@ class Parser(report_sxw.rml_parse):
 
     def get_object_grouped_line(self, data):
         ''' Selected object + print object
-        '''
+        ''' 
         def clean_number(value):
             return ('%s' % value).replace('.', ',')
             
