@@ -218,8 +218,8 @@ class Parser(report_sxw.rml_parse):
                     'Default code not found: %s\n' % (
                         line.product_id.name))
                 
-            code_block = default_code[from_partial: to_partial]
-            if code_partial and code_block != code_partial:
+            if code_partial and \
+                    default_code[from_partial: to_partial] != code_partial:
                 _logger.info('Code partial jumped: %s ! %s' % (
                 code_partial, 
                 default_code[from_partial: to_partial]))    
