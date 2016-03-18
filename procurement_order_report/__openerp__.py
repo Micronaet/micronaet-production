@@ -31,6 +31,8 @@
     'depends': [
         'base',
         'sale',
+        'production_accounting_external',
+        'production_family',
         ],
     'init_xml': [],
     'demo': [],

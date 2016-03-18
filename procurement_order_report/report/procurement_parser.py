@@ -445,8 +445,15 @@ class Parser(report_sxw.rml_parse):
             to_partial = from_partial + len(code_partial)
 
         for line in browse_line:
+            default_code = line.product_id.default_code
+            if not default_code:
+                raise osv.except_osv(
+                    'Data error', 
+                    'Default code not found: %s\n' % (
+                        line.product_id.name))                        
+                
             # Filter for partial:.
-            if code_partial and line.product_id.default_code[
+            if code_partial and default_code[
                     from_partial: to_partial] != code_partial:
                 continue # jump line
 
@@ -466,7 +473,7 @@ class Parser(report_sxw.rml_parse):
             #if data.get('only_remain', False) and S <= 0:
             #    continue # jump if no item or all produced
             family = line.product_id.family_id.name or _('???')
-            father = line.product_id.default_code[:3]
+            father = default_code[:3]
             key = (family, father)
             if TOT == 0:
                 continue
