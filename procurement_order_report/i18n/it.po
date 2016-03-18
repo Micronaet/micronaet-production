@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-15 12:01+0000\n"
-"PO-Revision-Date: 2016-02-15 13:07+0100\n"
+"POT-Creation-Date: 2016-03-18 12:47+0000\n"
+"PO-Revision-Date: 2016-03-18 13:49+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,52 +18,64 @@ msgstr ""
 "X-Generator: Poedit 1.6.10\n"
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:164
+#: code:addons/procurement_order_report/report/procurement_parser.py:172
 #, python-format
 msgid ", Partial code filter: %s (from char: %s) "
 msgstr ", Fitro per codice parziale: %s (da carattere: %s) "
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:154
+#: code:addons/procurement_order_report/report/procurement_parser.py:160
 #, python-format
 msgid ", all order line"
 msgstr ", tutte le righe ordine"
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:178
+#: code:addons/procurement_order_report/report/procurement_parser.py:186
 #, python-format
 msgid ", code start %s"
 msgstr ", inizio codice %s"
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:149
+#: code:addons/procurement_order_report/report/procurement_parser.py:155
 #, python-format
 msgid ", date < %s"
 msgstr ", data < %s"
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:146
+#: code:addons/procurement_order_report/report/procurement_parser.py:152
 #, python-format
 msgid ", date >= %s"
 msgstr ", data >= %s"
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:173
+#: code:addons/procurement_order_report/report/procurement_parser.py:181
 #, python-format
-msgid ", deadline < %s"
-msgstr ", scadenza < %s"
+msgid ", deadline <= %s"
+msgstr ", deadline <= %s"
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:170
+#: code:addons/procurement_order_report/report/procurement_parser.py:178
 #, python-format
 msgid ", deadline >= %s"
 msgstr ", scadenza >= %s"
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:152
+#: code:addons/procurement_order_report/report/procurement_parser.py:190
+#, python-format
+msgid ", family %s"
+msgstr ", famiglia %s"
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/report/procurement_parser.py:158
 #, python-format
 msgid ", only remain to produce"
 msgstr ", solo la produzione da fare"
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/report/procurement_parser.py:482
+#, python-format
+msgid "???"
+msgstr "???"
 
 #. module: procurement_order_report
 #: view:sale.order.procurement.report.wizard:procurement_order_report.sale_order_procurement_report_wizard_view
@@ -117,8 +129,8 @@ msgstr "Data >="
 
 #. module: procurement_order_report
 #: help:sale.order.procurement.report.wizard,to_deadline:0
-msgid "Date deadline <"
-msgstr "Data scadenza <"
+msgid "Date deadline <="
+msgstr "Data scadenza <="
 
 #. module: procurement_order_report
 #: help:sale.order.procurement.report.wizard,from_deadline:0
@@ -128,7 +140,12 @@ msgstr "Data scadenza >="
 #. module: procurement_order_report
 #: view:sale.order.procurement.report.wizard:procurement_order_report.sale_order_procurement_report_wizard_view
 msgid "Date filter:"
-msgstr "fitro data:"
+msgstr "filtro data:"
+
+#. module: procurement_order_report
+#: field:sale.order.procurement.report.wizard,family_id:0
+msgid "Family"
+msgstr "Famiglia"
 
 #. module: procurement_order_report
 #: field:sale.order.procurement.report.wizard,from_date:0
@@ -161,6 +178,7 @@ msgid "Last Updated on"
 msgstr "Ultimo aggiornamento il"
 
 #. module: procurement_order_report
+#: model:ir.actions.report.xml,name:procurement_order_report.aeroo_mx_procurement_grouped_family_report_id
 #: model:ir.actions.report.xml,name:procurement_order_report.aeroo_mx_procurement_grouped_report_id
 msgid "Mx procurement groupedreport"
 msgstr "Report approvvigionamenti raggr."
@@ -177,6 +195,11 @@ msgstr "Solo i rimanenti"
 
 #. module: procurement_order_report
 #: selection:sale.order.procurement.report.wizard,report_type:0
+msgid "Order family grouped"
+msgstr "Ordini raggruppati per famiglia"
+
+#. module: procurement_order_report
+#: selection:sale.order.procurement.report.wizard,report_type:0
 msgid "Order grouped by frame"
 msgstr "Ordine raggruppato per telaio"
 
@@ -186,7 +209,7 @@ msgid "Order in detail"
 msgstr "Ordine in dettaglio"
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:140
+#: code:addons/procurement_order_report/report/procurement_parser.py:146
 #, python-format
 msgid "Order open, not pricelist order"
 msgstr "Ordine aperto, non ordine listino"
