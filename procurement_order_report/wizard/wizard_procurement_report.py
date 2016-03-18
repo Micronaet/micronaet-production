@@ -70,6 +70,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         datas['to_deadline'] = wiz_proxy.to_deadline or False
 
         datas['family_id'] = wiz_proxy.family_id.id or False
+        datas['family_name'] = wiz_proxy.family_id.name or ''
         
         datas['code_start'] = wiz_proxy.code_start
         datas['code_partial'] = wiz_proxy.code_partial

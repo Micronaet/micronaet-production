@@ -95,7 +95,7 @@ class Parser(report_sxw.rml_parse):
         self.counters[name] = value
         return "" # empty so no write in module
 
-    # Utility for 2 report:
+    # Utility for 3 report:
     def browse_order_line(self, data):
         ''' Return line (used from 2 report)
         '''
@@ -107,6 +107,9 @@ class Parser(report_sxw.rml_parse):
         # Get wizard information:
         code_start = data.get('code_start', False)        
         only_remain = data.get('only_remain', False)
+
+        family_id = data.get('family_id', False)
+        family_name = data.get('family_name', '?')
 
         #from_code = data.get('from_code', 0) - 1
         #to_code = from_code + data.get('code_length', 0)
@@ -177,10 +180,14 @@ class Parser(report_sxw.rml_parse):
             domain.append(('date_deadline', '<=', to_deadline))
             self.filter_description += _(', deadline <= %s') % to_deadline
             
-        if code_start:  
+        if code_start:
             domain.append(('product_id.default_code', '=ilike', '%s%s' % (
                 code_start, '%')))  
             self.filter_description += _(', code start %s') % code_start
+
+        if family_id:
+            domain.append(('product_id.family_id', '=', family_id))  
+            self.filter_description += _(', family %s') % family_name
         
         line_ids = line_pool.search(self.cr, self.uid, domain)
         _logger.info('Order line selected: %s' % (len(line_ids), ))
