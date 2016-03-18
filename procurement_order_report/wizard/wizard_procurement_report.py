@@ -68,6 +68,8 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         datas['to_date'] = wiz_proxy.to_date or False
         datas['from_deadline'] = wiz_proxy.from_deadline or False
         datas['to_deadline'] = wiz_proxy.to_deadline or False
+
+        datas['family_id'] = wiz_proxy.family_id.id or False
         
         datas['code_start'] = wiz_proxy.code_start
         datas['code_partial'] = wiz_proxy.code_partial
@@ -88,6 +90,8 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
             ('family', 'Order family grouped'),
             ], 'Report type', required=True),
         'partner_id': fields.many2one('res.partner', 'Partner'),
+        'family_id': fields.many2one('product.template', 'Family', 
+            domain=[('is_family', '=', True)]),
         'only_remain':fields.boolean('Only remain', 
             help='Show only element to procuce'),
         
