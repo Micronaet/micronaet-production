@@ -211,18 +211,18 @@ class Parser(report_sxw.rml_parse):
             # -------------------
             # Filter for partial:
             # -------------------
-            if not line.product_id.default_code:                
+            default_code = line.product_id.default_code
+            if not default_code:                
                 raise osv.except_osv(
                     'Data error', 
                     'Default code not found: %s\n' % (
                         line.product_id.name))
                 
-            code_block = line.product_id.default_code[
-                from_partial: to_partial]
+            code_block = default_code[from_partial: to_partial]
             if code_partial and code_block != code_partial:
                 _logger.info('Code partial jumped: %s ! %s' % (
                 code_partial, 
-                line.product_id.default_code[from_partial: to_partial]))    
+                default_code[from_partial: to_partial]))    
                 continue # jump line
                 
             product_uom_qty = line.product_uom_qty
@@ -239,20 +239,20 @@ class Parser(report_sxw.rml_parse):
                     mrp_remain))
                 continue # jump if no item or all produced
 
-            code = line.product_id.default_code
-            if code not in products:
-                products[code] = []
-            products[code].append(line)
-            _logger.info('Code added: %s' % code)
+            code = default_code
+            if default_code not in products:
+                products[default_code] = []
+            products[default_code].append(line)
+            _logger.info('Code added: %s' % default_code)
         
-        # create a res order by product code
+        # create a res order by product default_code
         res = []
         codes = sorted(products)
         self.general_total = [0, 0, 0, 0]
-        for code in codes:
+        for default_code in codes:
             total = [0, 0, 0, 0]
             # Add product line:
-            for line in products[code]:
+            for line in products[default_code]:
                 res.append(('P', line))
 
                 # Quantity used:
@@ -298,7 +298,7 @@ class Parser(report_sxw.rml_parse):
         browse_line = self.browse_order_line(data)
         self.order_ids = [] # list of order interessed from movement
 
-        # Manage partial code
+        # Manage partial default_code
         code_from = int(data.get('code_from', 1))
         code_partial = data.get('code_partial', '')
         if code_partial:
