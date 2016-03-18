@@ -477,6 +477,7 @@ class bom_production(orm.Model):
             # -----------------------------------------------------------------
             # Get parameters:
             # > total duration and item x hour:
+            duration = 0.0
             for lavoration in mrp_proxy.bom_id.lavoration_ids:
                 if lavoration.fixed:
                     duration = lavoration.duration
@@ -489,6 +490,10 @@ class bom_production(orm.Model):
                             _('Error'),
                             _('Cannot calculate item x hour or total duration'
                                 'check parameters'))
+            if not duration:
+                raise osv.except_osv(
+                    _('Error'),
+                    _('Add lavoration to BOM!'))
 
             # ----------------------------------------
             # Create / Update master lavoration block:        
