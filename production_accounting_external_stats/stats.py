@@ -158,12 +158,22 @@ class MrpProduction(orm.Model):
             workcenter_id = mrp_proxy.lavoration_ids[0].workcenter_id.id
         except:
             workcenter_id = False    
+        try:
+            workers = mrp_proxy.lavoration_ids[0].workers
+        except:
+            workers = 0
+        try:
+            hour = mrp_proxy.lavoration_ids[0].duration
+        except:
+            hour = 0
         
         ctx.update({
             #'default_workcenter_id': 
             'default_total': total,
             'default_mrp_id': mrp_proxy.id,
             'default_workcenter_id': workcenter_id,
+            'default_workers': workers,
+            'default_hour': hour,
             })
         return {
             'type': 'ir.actions.act_window',
