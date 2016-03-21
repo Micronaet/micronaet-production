@@ -32,6 +32,7 @@
     'license': 'AGPL-3',
     'depends': [
         'base',
+        'sale',
         'production_accounting_external',
         'accounting_statistic_order', # For get text file with order closed        
         ],
