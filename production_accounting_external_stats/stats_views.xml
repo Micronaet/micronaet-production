@@ -85,9 +85,9 @@
                 <tree string="MRP stats" editable="bottom">
                         <field name="workcenter_id"/>
                         <field name="date" />
-                        <field name="hour" widget="float_time"/>
                         <field name="workers" />
                         <field name="startup" widget="float_time"/>
+                        <field name="hour" widget="float_time"/>
                         <field name="total" />
                 </tree>            
             </field>
@@ -113,8 +113,8 @@
                 <field name="order_line_ids" position="before">
                     <group colspan="4" col="6">                    
                         <button name="start_blocking_stats" string="Start" type="object" />
-                        <button name="stop_blocking_stats" string="Stop" type="object" /><!--TODO-->
-                        <!--<field name="stat_start_total" />-->
+                        <button name="stop_blocking_stats" string="Stop" type="object" />
+                        <field name="stat_start_total" readonly="1"/>
                     </group>
                 </field>
             </field>

@@ -13,24 +13,24 @@
                    </header>              
                    <group colspan="4" col="4">
                        <field name="mrp_id" readonly="1"/>
-                       <field name="workcenter_id" readonly="1"/>
+                       <field name="workcenter_id" />
                        <field name="date" />
                        <field name="total" />
                        <field name="workers" />
-                       <field name="hour" />
-                       <field name="startup" />
+                       <field name="hour" widget="float_time"/>
+                       <field name="startup" widget="float_time"/>
                    </group>
                 </form>
             </field>
       </record>
 
-    <record model="ir.actions.act_window" id="action_mrp_production_create_stats_wizard">
+    <!--<record model="ir.actions.act_window" id="action_mrp_production_create_stats_wizard">
         <field name="name">Create production</field>
         <field name="res_model">mrp.production.create.stats.wizard</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
         <field name="view_id" ref="mrp_production_create_stats_wizard_view"/>        
-    </record>            
+    </record>-->
     </data>
 </openerp>

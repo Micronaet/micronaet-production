@@ -41,10 +41,10 @@ class MrpProductionStat(orm.Model):
     _rec_name = 'date'
 
     _columns = {
+        'workcenter_id': fields.many2one(
+            'mrp.workcenter', 'Line', required=True), 
         'date': fields.date('Date', required=True),
         'total': fields.integer('Total', required=True), 
-        'workcenter_id': fields.many2one(
-            'mrp.workcenter', 'Line', readonly=True), 
         'workers': fields.integer('Workers'),
         'hour': fields.float('Tot. H'),
         'startup': fields.float('Start up time', digits=(16, 3)),     
@@ -89,7 +89,7 @@ class MrpProductionStatMixed(osv.osv):
         
         # sale.order.line:
         'todo_qty': fields.float('Total q.', readonly=True),
-        'maked_qty': fields.float('Done q.', readonly=True),
+        'maked_qty': fields.integer('Done q.', readonly=True),
         'remain_qty': fields.float('Remain q.', readonly=True),
         }
         
@@ -104,7 +104,7 @@ class MrpProductionStatMixed(osv.osv):
                     sum(st.startup) as startup,
                     sum(st.workers) as workers,
                     sum(st.hour) as hour,
-                    wc.workcenter_id as workcenter_id,
+                    st.workcenter_id as workcenter_id,
                     mrp.id as production_id,
 
                     mrp.product_id as product_id,
@@ -121,23 +121,11 @@ class MrpProductionStatMixed(osv.osv):
                         mrp_production_stats st
                     ON 
                         (st.mrp_id = mrp.id)
-                    JOIN 
-                        (
-                           SELECT
-                               production_id,
-                               min(workcenter_id) as workcenter_id
-                           FROM 
-                               mrp_production_workcenter_line
-                           GROUP BY
-                               production_id                                
-                           ) wc
-                    ON  
-                        (wc.production_id = mrp.id)
                 GROUP BY
                     st.date,
+                    st.workcenter_id,
                     mrp.product_id,
-                    mrp.id,
-                    wc.workcenter_id
+                    mrp.id
                 )""") # HAVING mrp.state != 'cancel' mrp.workcenter_id
 
 
@@ -156,27 +144,39 @@ class MrpProduction(orm.Model):
             'stat_start_total': blocked,            
             }, context=context)
         return True
-    
+
     def stop_blocking_stats(self, cr, uid, ids, context=None):
-        ''' Save current production in log events
+        ''' Get default and open wizard
         '''
+        mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
         blocked = sum([item.product_uom_maked_sync_qty for item in self.browse(
             cr, uid, ids, context=context)[0].order_line_ids])
-        mrp_proxy = self.browse(cr, uid, ids, context=context)[0]    
         total = blocked - mrp_proxy.stat_start_total
+
+        ctx = context.copy()
+        try:
+            workcenter_id = mrp_proxy.lavoration_ids[0].workcenter_id.id
+        except:
+            workcenter_id = False    
         
-        # TODO 
-        date = mrp_proxy.stat_start_date or datetime.now().strftime(
-            DEFAULT_SERVER_DATE_FORMAT)
+        ctx.update({
+            #'default_workcenter_id': 
+            'default_total': total,
+            'default_mrp_id': mrp_proxy.id,
+            'default_workcenter_id': workcenter_id,
+            })
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Update Stats'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'mrp.production.create.stats.wizard',
+            'domain': [],
+            'context': ctx,
+            'target': 'new',
+            'nodestroy': False,
+        }
             
-        # Create new stat record:
-        self.pool.get('mrp.production.stats').create(cr, uid, {
-            'date': date,
-            'total': total,
-            'startup': mrp_proxy.stat_startup,
-            'mrp_id': ids[0],            
-            }, context=context)
-        return True    
     
     _columns = {
         'stat_start_total': fields.integer('Ref. Total',

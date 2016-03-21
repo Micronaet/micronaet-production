@@ -54,16 +54,18 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
         if context is None:
            context = {}
 
+        # Pool used:
+        stats_pool = self.pool.get('mrp.production.stats')
+        mrp_pool = self.pool.get('mrp.production')
+
         # Wizard proxy:
         wiz_proxy = self.browse(cr, uid, ids, context=context)[0]
+        
         mrp_id = wiz_proxy.mrp_id.id
         if not mrp_id: 
             raise osv.except_osv(
                 _('Error'),
                 _('No parent production!'))
-            
-        # Pool used:
-        stats_pool = self.pool.get('mrp.production.stats')
 
         stats_pool.create(               
             cr, uid, {
@@ -73,10 +75,18 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
                 'hour': wiz_proxy.hour,
                 'startup': wiz_proxy.startup,
                 'mrp_id': mrp_id,
+                'workcenter_id': wiz_proxy.workcenter_id.id,
                 }, context=context)
+                
+        # Reset old total        
+        mrp_pool.write(cr, uid, mrp_id, {
+            'stat_start_total': 0.0,
+            }, context=context)        
         return True
 
     _columns = {
+        'workcenter_id': fields.many2one(
+            'mrp.workcenter', 'Line', required=True), 
         'date': fields.date('Date', required=True),
         'total': fields.integer('Total', required=True), 
         'workers': fields.integer('Workers'),
@@ -84,8 +94,11 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
         'startup': fields.float('Start up time', digits=(16, 3)),     
         'mrp_id': fields.many2one(
             'mrp.production', 'Production', ondelete='cascade'),    
-        'workcenter_id': fields.many2one(
-            'mrp.workcenter', 'Line', readonly=True), 
         }
+        
+    _defaults = {
+        'date': datetime.now().strftime( DEFAULT_SERVER_DATE_FORMAT),
+        }
+        
         
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
