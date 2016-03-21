@@ -43,6 +43,10 @@ class MrpProductionStat(orm.Model):
     _columns = {
         'date': fields.date('Date', required=True),
         'total': fields.integer('Total', required=True), 
+        'workcenter_id': fields.many2one(
+            'mrp.workcenter', 'Line', readonly=True), 
+        'workers': fields.integer('Workers'),
+        'hour': fields.float('Tot. H'),
         'startup': fields.float('Start up time', digits=(16, 3)),     
         'mrp_id': fields.many2one(
             'mrp.production', 'Production', ondelete='cascade'),
@@ -79,7 +83,7 @@ class MrpProductionStatMixed(osv.osv):
         'workcenter_id': fields.many2one(
             'mrp.workcenter', 'Line', readonly=True), 
         'lavoration_qty': fields.float('Lavoration q.', readonly=True),
-        'hour': fields.float('Hour', readonly=True),
+        'hour': fields.float('Tot. H.', readonly=True),
         'workers': fields.integer('Workers', readonly=True),
         'startup': fields.float('Startup', readonly=True),
         
@@ -98,19 +102,19 @@ class MrpProductionStatMixed(osv.osv):
                     st.date as date_planned,
                     sum(st.total) as maked_qty,
                     sum(st.startup) as startup,
+                    sum(st.workers) as workers,
+                    sum(st.hour) as hour,
                     wc.workcenter_id as workcenter_id,
+                    mrp.id as production_id,
 
                     mrp.product_id as product_id,
 
                     DATE(st.date) = DATE(now()) as is_today,
 
                     '' as name,
-                    0 as workers,
                     0 as todo_qty,
                     0 as remain_qty,
-                    0 as hour,
-                    0 as lavoration_qty,
-                    0 as production_id                    
+                    0 as lavoration_qty
                 FROM 
                         mrp_production mrp
                     JOIN 
@@ -132,6 +136,7 @@ class MrpProductionStatMixed(osv.osv):
                 GROUP BY
                     st.date,
                     mrp.product_id,
+                    mrp.id,
                     wc.workcenter_id
                 )""") # HAVING mrp.state != 'cancel' mrp.workcenter_id
 
@@ -159,6 +164,8 @@ class MrpProduction(orm.Model):
             cr, uid, ids, context=context)[0].order_line_ids])
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]    
         total = blocked - mrp_proxy.stat_start_total
+        
+        # TODO 
         date = mrp_proxy.stat_start_date or datetime.now().strftime(
             DEFAULT_SERVER_DATE_FORMAT)
             
@@ -172,11 +179,8 @@ class MrpProduction(orm.Model):
         return True    
     
     _columns = {
-        'stat_start_date': fields.date('Ref. Date', 
-            help='Ref. date for blocking operation'),
         'stat_start_total': fields.integer('Ref. Total',
             help='Total current item when start blocking operation'),
-        'stat_startup': fields.float('Start up time', digits=(16, 3)),     
         'stats_ids': fields.one2many(
             'mrp.production.stats', 'mrp_id', 'Stats'), 
         }

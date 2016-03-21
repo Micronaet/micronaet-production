@@ -26,14 +26,14 @@
                 <tree string="MRP stats mixed" editable="bottom">
                     <button name="nothing" icon="gtk-yes" attrs="{'invisible':[('is_today','=',False)]}"/>
                     <field name="workcenter_id"/>
+                    <field name="production_id" />
                     <field name="product_id"/>
                     <field name="date_planned" />
                     <field name="is_today" invisible="1" />
-                    <field name="production_id" invisible="1"/>
                     <!--<field name="name" />-->
                     <field name="startup"  widget="float_time"/>
-                    <!--<field name="hour" />-->
-                    <!--<field name="workers" />-->
+                    <field name="hour" widget="float_time"/>
+                    <field name="workers" />
                     <!--<field name="lavoration_qty" />-->
 
                     <!--<field name="todo_qty" />-->
@@ -67,8 +67,11 @@
                 <form string="MRP stats" version="7.0">
                     <sheet>
                         <group colspan="4" col="4">
+                            <field name="workcenter_id"/>
                             <field name="date" />
-                            <field name="startup"  widget="float_time"/>
+                            <field name="hour" widget="float_time"/>
+                            <field name="workers" />
+                            <field name="startup" widget="float_time"/>
                             <field name="total" />
                         </group>
                     </sheet>  
@@ -80,8 +83,11 @@
             <field name="model">mrp.production.stats</field>
             <field name="arch" type="xml">
                 <tree string="MRP stats" editable="bottom">
+                        <field name="workcenter_id"/>
                         <field name="date" />
-                        <field name="startup"  widget="float_time"/>
+                        <field name="hour" widget="float_time"/>
+                        <field name="workers" />
+                        <field name="startup" widget="float_time"/>
                         <field name="total" />
                 </tree>            
             </field>
@@ -106,10 +112,8 @@
             <field name="arch" type="xml">
                 <field name="order_line_ids" position="before">
                     <group colspan="4" col="6">                    
-                        <field name="stat_start_date" />                        
-                        <field name="stat_startup" widget="float_time"/>
                         <button name="start_blocking_stats" string="Start" type="object" />
-                        <button name="stop_blocking_stats" string="Stop" type="object" />
+                        <button name="stop_blocking_stats" string="Stop" type="object" /><!--TODO-->
                         <!--<field name="stat_start_total" />-->
                     </group>
                 </field>

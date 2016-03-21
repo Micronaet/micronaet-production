@@ -36,6 +36,7 @@
     'demo': [],
     'data': [
         'security/ir.model.access.csv',    
+        'wizard/insert_stat_view.xml', # wizard before
         'stats_views.xml',
         ],
     'active': False,
