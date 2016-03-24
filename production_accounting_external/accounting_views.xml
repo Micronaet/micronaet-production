@@ -96,9 +96,9 @@
         <field name="inherit_id" ref="mrp.mrp_production_tree_view" />
         <field name="arch" type="xml">
             <!--Tree colors -->
-            <!--<xpath expr="/tree" position="attributes">
-                <attribute name="colors">colors="blue:accounting_state in ('draft',);green:accounting_state in ('production',);red:accounting_state in ('cancel',);black:accounting_state in ('close',);</attribute>
-            </xpath>blue:state in ('draft','confirmed');red:date_planned&lt;current_date and state not in ('done','cancel');black:date_planned&gt;=current_date;gray:state in ('done','cancel')-->
+            <xpath expr="/tree" position="attributes">
+                <attribute name="colors">green:state in ('done');grey:state in ('cancel')</attribute>
+            </xpath>
             
             <!--<field name="product_qty" position="after">
                 <field name="lavoration_planned" />
@@ -520,12 +520,12 @@
     </record>
 
     <record id="action_mrp_production_cancel" model="ir.actions.act_window">
-        <field name="name">Order cancel</field>
+        <field name="name">Order not active</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">mrp.production</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,calendar,graph</field>
-        <field name="domain">[('state','=','cancel')]</field>
+        <field name="domain">[('state','in',('done','cancel'))]</field>
     </record>
    
     <menuitem name="Cancel"
