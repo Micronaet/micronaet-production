@@ -370,6 +370,18 @@ class MrpProduction(orm.Model):
     # -------------
     # Button event:
     # -------------
+    def button_confirm_forced(self, cr, uid, ids, context=None):
+        ''' Close manually the lavoration
+        '''
+        return self.write(cr, uid, ids, {
+            'state': 'done'}, context=context)
+
+    def button_redraft_forced(self, cr, uid, ids, context=None):
+        ''' Redraft manually the lavoration
+        '''
+        return self.write(cr, uid, ids, {
+            'state': 'draft'}, context=context)
+
     def close_all_production(self, cr, uid, ids, context=None):
         ''' Close all production
         '''
@@ -381,7 +393,9 @@ class MrpProduction(orm.Model):
                self.pool.get(
                    'sale.order.line').close_production(
                        cr, uid, [line.id], context=context)
-        return True
+                       
+        # Close also MRP record:               
+        return self.button_confirm_forced(cr, uid, ids, context=context)
 
     def accounting_sync(self, cr, uid, ids, context=None):
         ''' Function to override depend on sync method used
