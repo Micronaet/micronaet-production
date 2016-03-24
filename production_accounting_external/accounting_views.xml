@@ -192,6 +192,15 @@
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_form_view" />
         <field name="arch" type="xml">
+            <!--Hide button-->
+        	<button name="button_confirm" position="attributes">
+        	    <attribute name="invisible">1</attribute>
+	        </button>
+	        <!--<button name="button_cancel" states="draft,ready,in_production" string="Cancella la produzione" modifiers="{'invisible': [['state', 'not in', ['draft', 'ready', 'in_production']]]}"/>-->
+	        <field name="state" position="attributes">
+	            <attribute name="statusbar_visible">draft,cancel,done</attribute>
+	        </field>
+		
             <!-- New header -->
             <xpath expr="/form/header/field[@name='state']" position="after">
                 <div style="background-color: red;text-align: center;font-weight:bold;color:white;">

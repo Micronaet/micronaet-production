@@ -56,7 +56,7 @@
             parent="mrp.menu_mrp_manufacturing" 
             id="menu_mrp_production_stats_mixed" 
             action="action_mrp_production_stats_mixed"
-            sequence="100"            
+            sequence="100"
             />
 
         <!--mrp.production.stats-->
