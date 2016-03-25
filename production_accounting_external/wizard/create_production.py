@@ -379,6 +379,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
                         }, context=context)
 
         # Reforce total from sale order line:
+        import pdb; pdb.set_trace()
         production_pool.recompute_total_from_sol(
             cr, uid, [p_id], context=context) 
 
