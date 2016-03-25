@@ -284,11 +284,13 @@ class CreateMrpProductionWizard(orm.TransientModel):
             Redirect mrp.production form after
         '''
         if context is None:
-           context = {}
+            context = {}
+           
+        sol_ids = context.get("active_ids", [])   
 
         # Wizard proxy:
         wiz_proxy = self.browse(cr, uid, ids, context=context)[0]
-        
+
         # Pool used:
         production_pool = self.pool.get('mrp.production')
         sol_pool = self.pool.get('sale.order.line')
@@ -344,29 +346,32 @@ class CreateMrpProductionWizard(orm.TransientModel):
         # Create a production order:
         if wiz_proxy.operation in ('create'):
             # Create lavoration:
-            p_id = production_pool.create(               
-                cr, uid, {
-                    # Production data:
-                    'name': self.pool.get(
-                        'ir.sequence').get(cr, uid, 'mrp.production'),
-                    'date_planned': context['mrp_data']['schedule_from_date'],#TODO right?
-                    'user_id': uid,
-                    'order_line_ids': [(6, 0, context.get("active_ids", []))],
-                    'product_qty': context['mrp_data']['total'], # sum(order line)
-                    # Keep for mandatory fields in production
-                    'bom_id': wiz_proxy.bom_id.id,
+            p_id = production_pool.create(cr, uid, {
+                # Production data:
+                'name': self.pool.get(
+                    'ir.sequence').get(cr, uid, 'mrp.production'),
+                'date_planned': context['mrp_data']['schedule_from_date'],#TODO right?
+                'user_id': uid,
+                #'order_line_ids': [(6, 0, context.get("active_ids", []))],
+                'product_qty': context['mrp_data']['total'], # sum(order line)
+                # Keep for mandatory fields in production
+                'bom_id': wiz_proxy.bom_id.id,
 
-                    # Not necessary for this installation:
-                    'product_id': product_id,
-                    'product_uom': wiz_proxy.product_id.uom_id.id,                    
-                    }, context=context)
+                # Not necessary for this installation:
+                'product_id': product_id,
+                'product_uom': wiz_proxy.product_id.uom_id.id,                    
+                }, context=context)
+
+            # Update line:
+            sol_pool.write(cr, uid, sol_ids, {
+                'mrp_id': p_id}, context=context)
 
         else: # 'append'
             p_id = context['mrp_data']['append_production_id']
 
             # Add sale order line to production:
-            self.pool.get('sale.order.line').write(
-                cr, uid, context.get("active_ids", []), {
+            sol_pool.write(
+                cr, uid, sol_ids, {
                     'mrp_id': p_id,
                     }, context=context)
                     
@@ -379,7 +384,6 @@ class CreateMrpProductionWizard(orm.TransientModel):
                         }, context=context)
 
         # Reforce total from sale order line:
-        import pdb; pdb.set_trace()
         production_pool.recompute_total_from_sol(
             cr, uid, [p_id], context=context) 
 
