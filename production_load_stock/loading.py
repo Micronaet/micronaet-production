@@ -365,28 +365,29 @@ class SaleOrder(orm.Model):
         # -------------------------------
         # Unlink all stock move (always):
         # -------------------------------
-        move_ids = move_pool.search(cr, uid, [
-            ('production_sol_id', '=', line_proxy.id),
-            ('persistent', '=', False),
-            ], context=context)
-        if move_ids:
-            # Set to draft:
-            move_pool.write(cr, uid, move_ids, {
-                'state': 'draft',
-                }, context=context)
-            # delete:    
-            move_pool.unlink(cr, uid, move_ids, context=context)
+        if not persistent: # XXX domain persistent status for delete?
+            move_ids = move_pool.search(cr, uid, [
+                ('production_sol_id', '=', line_proxy.id),
+                ('persistent', '=', False),
+                ], context=context)
+            if move_ids:
+                # Set to draft:
+                move_pool.write(cr, uid, move_ids, {
+                    'state': 'draft',
+                    }, context=context)
+                # delete:    
+                move_pool.unlink(cr, uid, move_ids, context=context)
 
-        # -----------------------
-        # Unlink all stock quant:
-        # -----------------------
-        quant_ids = quant_pool.search(cr, uid, [
-            ('production_sol_id', '=', line_proxy.id),
-            ('persistent', '=', False),
-            ], context=context)
-        if quant_ids:
-            # Set to draft:
-            quant_pool.unlink(cr, uid, quant_ids, context=context)
+            # -----------------------
+            # Unlink all stock quant:
+            # -----------------------
+            quant_ids = quant_pool.search(cr, uid, [
+                ('production_sol_id', '=', line_proxy.id),
+                ('persistent', '=', False),
+                ], context=context)
+            if quant_ids:
+                # Set to draft:
+                quant_pool.unlink(cr, uid, quant_ids, context=context)
 
         if not maked_qty:   
             return True
