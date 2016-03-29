@@ -421,6 +421,7 @@ class SaleOrder(orm.Model):
                     'origin': line_proxy.mrp_id.name,
                     'display_name': 'SL: %s' % line_proxy.product_id.name,
                     'name': 'SL: %s' % line_proxy.product_id.name,
+                    'persistent': persistent,
                     #'warehouse_id',
 
                     #'weight'
@@ -447,6 +448,7 @@ class SaleOrder(orm.Model):
                     'qty': - unload_qty, 
                     #'product_uom': bom.product_id.uom_id.id,
                     'production_sol_id': line_proxy.id,
+                    'persistent': persistent,
                     }, context=context)   
         else:
             # No bom error!!
@@ -458,54 +460,55 @@ class SaleOrder(orm.Model):
                     line_proxy.product_id.default_code or '')))
         
         # Load end product:    
-        # TODO        
-        move_pool.create(cr, uid, {
-            'picking_id': mrp_picking_in,
-            'production_load_type': 'cl',
-            'picking_type_id': mrp_type_in,
-            'location_dest_id': stock_location,
-            'location_id': mrp_location,
-            'product_id': line_proxy.product_id.id,
-            'product_uom_qty': maked_qty, 
-            'product_uom': line_proxy.product_id.uom_id.id,
-            'production_sol_id': line_proxy.id,
-            #'product_uom_qty',
-            #'product_uos',
-            #'product_uos_qty',
-            'state': 'done', # confirmed, available
-            'date_expected': datetime.now().strftime(
-                DEFAULT_SERVER_DATE_FORMAT),
-            'origin': line_proxy.mrp_id.name,
-            'display_name': 'CL: %s' % line_proxy.product_id.name,
-            'name': 'CL: %s' % line_proxy.product_id.name,
-            #'warehouse_id',
-            #'picking_type_id',
+        # TODO
+        if not persistent
+            move_pool.create(cr, uid, {
+                'picking_id': mrp_picking_in,
+                'production_load_type': 'cl',
+                'picking_type_id': mrp_type_in,
+                'location_dest_id': stock_location,
+                'location_id': mrp_location,
+                'product_id': line_proxy.product_id.id,
+                'product_uom_qty': maked_qty, 
+                'product_uom': line_proxy.product_id.uom_id.id,
+                'production_sol_id': line_proxy.id,
+                #'product_uom_qty',
+                #'product_uos',
+                #'product_uos_qty',
+                'state': 'done', # confirmed, available
+                'date_expected': datetime.now().strftime(
+                    DEFAULT_SERVER_DATE_FORMAT),
+                'origin': line_proxy.mrp_id.name,
+                'display_name': 'CL: %s' % line_proxy.product_id.name,
+                'name': 'CL: %s' % line_proxy.product_id.name,
+                #'warehouse_id',
+                #'picking_type_id',
 
-            #'weight'
-            #'weight_net',
-            #'picking_id'
-            #'group_id'
-            #'production_id'
-            #'product_packaging'                    
-            #'company_id'
-            #'date':
-            #date_expexted'
-            #'note':,
-            #'partner_id':
-            #'price_unit',
-            #'priority',.                    
-            }, context=context)
-            
-        # Quants create:    
-        quant_pool.create(cr, uid, {
-            'in_date': datetime.now().strftime(
-                DEFAULT_SERVER_DATETIME_FORMAT),
-            'cost': 0.0, # TODO
-            'location_id': stock_location,
-            'product_id': line_proxy.product_id.id,
-            'qty': maked_qty, 
-            'production_sol_id': line_proxy.id,
-            }, context=context)   
+                #'weight'
+                #'weight_net',
+                #'picking_id'
+                #'group_id'
+                #'production_id'
+                #'product_packaging'                    
+                #'company_id'
+                #'date':
+                #date_expexted'
+                #'note':,
+                #'partner_id':
+                #'price_unit',
+                #'priority',.                    
+                }, context=context)
+                
+            # Quants create:    
+            quant_pool.create(cr, uid, {
+                'in_date': datetime.now().strftime(
+                    DEFAULT_SERVER_DATETIME_FORMAT),
+                'cost': 0.0, # TODO
+                'location_id': stock_location,
+                'product_id': line_proxy.product_id.id,
+                'qty': maked_qty, 
+                'production_sol_id': line_proxy.id,
+                }, context=context)   
         return True
         
     def write(self, cr, uid, ids, vals, context=None):
