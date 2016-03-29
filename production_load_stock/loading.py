@@ -202,7 +202,6 @@ class StockPicking(orm.Model):
         'production_load_type': fields.selection([
             ('cl', 'Product load'),
             ('sl', 'Material unload'),
-            ('er', 'Material unload error'),            
             ], 'Production load type'),
         }
 
@@ -230,7 +229,6 @@ class StockMove(orm.Model):
         'production_load_type': fields.selection([
             ('cl', 'Product load'),
             ('sl', 'Material unload'),
-            ('er', 'Material unload error'),            
             ], 'Production load type'),
         'persistent': fields.boolean('Persistent'),
         }     
@@ -353,10 +351,6 @@ class SaleOrder(orm.Model):
             context=context)
         mrp_picking_out = pick_pool.get_mrp_picking(
             cr, uid, line_proxy.mrp_id, 'sl', mrp_type_out, 
-            context=context)
-        # TODO manage
-        mrp_picking_er = pick_pool.get_mrp_picking(
-            cr, uid, line_proxy.mrp_id, 'er', mrp_type_out, 
             context=context)
 
         # get product BOM for materials:
