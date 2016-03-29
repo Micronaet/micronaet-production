@@ -202,6 +202,7 @@ class StockPicking(orm.Model):
         'production_load_type': fields.selection([
             ('cl', 'Product load'),
             ('sl', 'Material unload'),
+            ('er', 'Material unload error'),            
             ], 'Production load type'),
         }
 
@@ -214,6 +215,7 @@ class StockQuant(orm.Model):
         'production_sol_id': fields.many2one(
             'sale.order.line', 'Sale line linked', ondelete='cascade',
             help='Line linked for load / unload for production'),
+        'persistent': fields.boolean('Persistent'),
         }
 
 class StockMove(orm.Model):
@@ -228,7 +230,9 @@ class StockMove(orm.Model):
         'production_load_type': fields.selection([
             ('cl', 'Product load'),
             ('sl', 'Material unload'),
+            ('er', 'Material unload error'),            
             ], 'Production load type'),
+        'persistent': fields.boolean('Persistent'),
         }     
 
     _defaults = {        
@@ -347,6 +351,10 @@ class SaleOrder(orm.Model):
         mrp_picking_out = pick_pool.get_mrp_picking(
             cr, uid, line_proxy.mrp_id, 'sl', mrp_type_out, 
             context=context)
+        # TODO manage    
+        mrp_picking_er = pick_pool.get_mrp_picking(
+            cr, uid, line_proxy.mrp_id, 'er', mrp_type_out, 
+            context=context)
 
         # get product BOM for materials:
         bom_proxy = self._search_bom_for_product(cr, uid, 
@@ -358,7 +366,9 @@ class SaleOrder(orm.Model):
         # Unlink all stock move (always):
         # -------------------------------
         move_ids = move_pool.search(cr, uid, [
-            ('production_sol_id', '=', line_proxy.id)], context=context)
+            ('production_sol_id', '=', line_proxy.id),
+            # TODO
+            ], context=context)
         if move_ids:
             # Set to draft:
             move_pool.write(cr, uid, move_ids, {
@@ -371,7 +381,9 @@ class SaleOrder(orm.Model):
         # Unlink all stock quant:
         # -----------------------
         quant_ids = quant_pool.search(cr, uid, [
-            ('production_sol_id', '=', line_proxy.id)], context=context)
+            ('production_sol_id', '=', line_proxy.id),
+            # TODO
+            ], context=context)
         if quant_ids:
             # Set to draft:
             quant_pool.unlink(cr, uid, quant_ids, context=context)
