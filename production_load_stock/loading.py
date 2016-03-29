@@ -351,7 +351,7 @@ class SaleOrder(orm.Model):
         mrp_picking_out = pick_pool.get_mrp_picking(
             cr, uid, line_proxy.mrp_id, 'sl', mrp_type_out, 
             context=context)
-        # TODO manage    
+        # TODO manage
         mrp_picking_er = pick_pool.get_mrp_picking(
             cr, uid, line_proxy.mrp_id, 'er', mrp_type_out, 
             context=context)
@@ -367,7 +367,7 @@ class SaleOrder(orm.Model):
         # -------------------------------
         move_ids = move_pool.search(cr, uid, [
             ('production_sol_id', '=', line_proxy.id),
-            # TODO
+            ('persistent', '=', False),
             ], context=context)
         if move_ids:
             # Set to draft:
@@ -382,7 +382,7 @@ class SaleOrder(orm.Model):
         # -----------------------
         quant_ids = quant_pool.search(cr, uid, [
             ('production_sol_id', '=', line_proxy.id),
-            # TODO
+            ('persistent', '=', False),
             ], context=context)
         if quant_ids:
             # Set to draft:
