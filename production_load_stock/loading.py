@@ -461,7 +461,7 @@ class SaleOrder(orm.Model):
         
         # Load end product:    
         # TODO
-        if not persistent
+        if not persistent:
             move_pool.create(cr, uid, {
                 'picking_id': mrp_picking_in,
                 'production_load_type': 'cl',
