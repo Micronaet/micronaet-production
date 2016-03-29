@@ -306,11 +306,14 @@ class SaleOrder(orm.Model):
         return {}
         
     def _recreate_production_sol_move(self, cr, uid, sol_ids, 
-            context=None):    
+            context=None):
         ''' Generic function used for create / update stock move,
             CL and SL, used from create and write method            
-        '''    
+        '''
         assert len(sol_ids), 'Only one row a time!'
+        context = context or {}
+        persistent = context.get('force_persistent', False)
+        
         
         # Pool used:
         pick_pool = self.pool.get('stock.picking')
