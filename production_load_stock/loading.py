@@ -363,7 +363,10 @@ class SaleOrder(orm.Model):
         bom_proxy = self._search_bom_for_product(cr, uid, 
             line_proxy.product_id.id, context=context)
 
-        maked_qty = line_proxy.product_uom_maked_sync_qty or 0.0
+        if persistent:
+            maked_qty = line_proxy.product_uom_force_qty or 0.0
+        else:
+            maked_qty = line_proxy.product_uom_maked_sync_qty or 0.0
 
         # -------------------------------
         # Unlink all stock move (always):
@@ -553,5 +556,9 @@ class SaleOrder(orm.Model):
         'move_production_ids': fields.one2many(
             'stock.move', 'production_sol_id', 
             'Production moves'), 
+            
+        # Force persistent over quantity:    
+        'product_uom_force_qty': fields.float(
+            'Forced', digits=(16, 2), help='Force extra qty to confirm'),        
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
