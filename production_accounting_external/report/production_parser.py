@@ -100,7 +100,7 @@ class Parser(report_sxw.rml_parse):
         ''' Get object with totals for normal report
         '''
         lines = []
-        for line in o.order_line_ids: # jet ordered:
+        for line in o.sort_order_line_ids: # jet ordered:
             lines.append(line)
 
         # Total for code break:
