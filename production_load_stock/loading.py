@@ -292,7 +292,6 @@ class SaleOrder(orm.Model):
         if not bom_ids:
             #_logger.error('No BOM for product ID %s passed' % product_id)
             return False
-        
         return bom_pool.browse(cr, uid, bom_ids, context=context)[0]
     
     def _create_stock_move_for_production(self, cr, uid, line, bom, 
