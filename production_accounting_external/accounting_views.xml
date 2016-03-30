@@ -99,23 +99,11 @@
             <xpath expr="/tree" position="attributes">
                 <attribute name="colors">green:state in ('done');grey:state in ('cancel')</attribute>
             </xpath>
-            
-            <!--<field name="product_qty" position="after">
-                <field name="lavoration_planned" />
-            </field>-->
 
-            <field name="product_qty" position="before">
+            <!--<field name="product_qty" position="before">
                <field name="forecast_qty" />
-               <!--<field name="oc_qty" /> NO MORE USED-->
-               <!--<field name="extra_qty" /> NO MORE USED-->
-               <!--<field name="error_qty" invisible="1"/> NO MORE USED-->
-               <!--<field name="has_extra_qty" invisible="1"/>--> <!--TODO alert in for also here?-->
-               <!--<field name="used_by_mrp_id" string="Extra used by"/> NO MORE USED-->
-            </field>
-
-            <!--<field name="hour_total" position="attributes">
-               <attribute name="invisible">1</attribute>
             </field>-->
+
             <field name="cycle_total" position="attributes">
                <attribute name="invisible">1</attribute>
             </field>
@@ -125,8 +113,11 @@
             <field name="state" position="attributes">
                <attribute name="invisible">1</attribute>
             </field>
-            <!--<field name="state" position="after">
-               <field name="accounting_state" />
+            <!--<field name="product_qty" position="after">
+                <field name="lavoration_planned" />
+            </field>-->
+            <!--<field name="hour_total" position="attributes">
+               <attribute name="invisible">1</attribute>
             </field>-->
         </field>
     </record>   
