@@ -507,20 +507,20 @@ class MrpProduction(orm.Model):
                 res[order.id] = '[%s - %s]' % (min_date, max_date)
         return res
         
-    def _get_order_line_ids(self, cr, uid, ids, fields, args, context=None):
-        ''' Fields function for calculate 
-        ''' 
-        res = {}   
-        sol_pool = self.pool.get('sale.order.line')
-        for item_id in ids:
-            item_ids = sol_pool.search(
-                cr, uid, [
-                    ('mrp_id', '=', item_id)], 
-                    order='mrp_sequence,order_id,sequence,id', 
-                    context=context)
-                   
-            res[item_id] = item_ids #sol_pool.browse(cr, uid, item_ids, context=context)        
-        return res
+    #def _get_order_line_ids(self, cr, uid, ids, fields, args, context=None):
+    #    ''' Fields function for calculate 
+    #    ''' 
+    #    res = {}   
+    #    sol_pool = self.pool.get('sale.order.line')
+    #    for item_id in ids:
+    #        item_ids = sol_pool.search(
+    #            cr, uid, [
+    #                ('mrp_id', '=', item_id)], 
+    #                order='mrp_sequence,order_id,sequence,id', 
+    #                context=context)
+    #               
+    #        res[item_id] = item_ids #sol_pool.browse(cr, uid, item_ids, context=context)        
+    #    return res
         
     _columns = {
         'forecast_qty': fields.function(
@@ -534,15 +534,19 @@ class MrpProduction(orm.Model):
         
         'use_mrp_ids': fields.one2many(
             'mrp.production', 'used_by_mrp_id', 'Use mrp'),
-        # TODO remove: vvvvvvvvv
+            
+        # TODO remove: vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
         'order_line_ids': fields.one2many(
             'sale.order.line', 'mrp_id', 'Order line'),
-        # TODO remove: ^^^^^^^^^
+        # TODO remove: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        
         # TODO restore vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
         #'order_line_ids': fields.function(
         #    _get_order_line_ids, method=True, relation='sale.order.line',
         #    type='one2many', string='Order line', 
         #    store=False),                        
+        # TODO restore: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        
         'previsional_line_ids': fields.one2many(
             'sale.order.line.previsional', 'mrp_id', 'Previsional order'),
         'updated':fields.boolean('Label', required=False),    
