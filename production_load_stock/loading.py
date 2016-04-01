@@ -61,6 +61,7 @@ class MrpProduction(orm.Model):
         # Log pick info:
         log = ''
         for pick in pick_pool.browse(cr, uid, pick_ids, context=context):
+            # TODO add also no bom information? 
             log += '%s: %s [# %s]\n' % (
                 pick.production_load_type.upper(), 
                 pick.name, 
@@ -310,7 +311,6 @@ class SaleOrder(orm.Model):
         assert len(sol_ids), 'Only one row a time!'
         context = context or {}
         persistent = context.get('force_persistent', False)
-        
         
         # Pool used:
         pick_pool = self.pool.get('stock.picking')
