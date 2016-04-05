@@ -213,7 +213,7 @@ class StockQuant(orm.Model):
 
     _columns = {
         'production_sol_id': fields.many2one(
-            'sale.order.line', 'Sale line linked', ondelete='cascade',
+            'sale.order.line', 'Sale line linked', ondelete='set null',
             help='Line linked for load / unload for production'),
         'persistent': fields.boolean('Persistent'),
         }
@@ -225,7 +225,7 @@ class StockMove(orm.Model):
 
     _columns = {
         'production_sol_id': fields.many2one(
-            'sale.order.line', 'Sale line linked', ondelete='cascade',
+            'sale.order.line', 'Sale line linked', ondelete='set null',
             help='Line linked for load / unload for production'),
         'production_load_type': fields.selection([
             ('cl', 'Product load'),
