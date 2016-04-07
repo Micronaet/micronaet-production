@@ -97,13 +97,12 @@ class Parser(report_sxw.rml_parse):
         '''
         return self.frames
 
-    def get_object_with_total(self, o):
+    def get_object_with_total_cut(self, o):
         ''' Get object with totals for normal report
             Sort for [4:6]-[9:12]
             Break on 2 block for total
         '''
         lines = []
-        import pdb; pdb.set_trace()
         
         for line in sorted(
                 o.order_line_ids, 
@@ -113,7 +112,6 @@ class Parser(report_sxw.rml_parse):
                     item.product_id.default_code[0:3],
                     )):
             lines.append(line)
-        import pdb; pdb.set_trace()
 
         # Total for code break:
         code1 = code2 = False
@@ -171,7 +169,7 @@ class Parser(report_sxw.rml_parse):
             
         return records
 
-    def get_object_with_total_cut(self, o):
+    def get_object_with_total(self, o):
         ''' Get object with totals for normal report
         '''
         lines = []
