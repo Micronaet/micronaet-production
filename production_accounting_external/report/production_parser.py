@@ -51,6 +51,7 @@ class Parser(report_sxw.rml_parse):
             'get_hour': self.get_hour,
             
             'get_object_with_total': self.get_object_with_total,
+            'get_object_with_total_cut': self.get_object_with_total_cut,
             'get_frames': self.get_frames,
             
             # remain report:
@@ -97,6 +98,80 @@ class Parser(report_sxw.rml_parse):
         return self.frames
 
     def get_object_with_total(self, o):
+        ''' Get object with totals for normal report
+            Sort for [4:6]-[9:12]
+            Break on 2 block for total
+        '''
+        lines = []
+        import pdb; pdb.set_trace()
+        
+        for line in sorted(
+                o.order_line_ids, 
+                key=lambda item: (
+                    item.product_id.default_code[3:6], 
+                    item.product_id.default_code[8:12], 
+                    item.product_id.default_code[0:3],
+                    )):
+            lines.append(line)
+        import pdb; pdb.set_trace()
+
+        # Total for code break:
+        code1 = code2 = False
+        total1 = total2 = 0.0
+        records = []
+
+        self.frames = {}
+        for line in lines:
+            # -------------
+            # Check Frames:
+            # -------------
+            # France total:
+            frame = line.default_code.replace(' ', '.')[6:8]
+            if frame not in self.frames:
+                self.frames[frame] = 0.0
+            self.frames[frame] += line.product_uom_qty
+            
+            # -----------------
+            # Check for totals:
+            # -----------------
+            # Color total:
+            color = line.default_code[8:12]
+            if code1 == False: # XXX first loop
+                total1 = 0.0
+                code1 = color
+                
+            if code1 == color:
+                total1 += line.product_uom_qty
+            else:
+                code1 = color
+                records.append(('T1', line, total1))
+                total1 = line.product_uom_qty
+
+            # Code general total:
+            if code2 == False: # XXX first loop
+                total2 = 0.0
+                code2 = line.default_code
+                
+            if code2 == line.default_code:
+                total2 += line.product_uom_qty
+            else: 
+                code2 = line.default_code
+                records.append(('T2', line, total2))
+                total2 = line.product_uom_qty
+
+            # -------------------
+            # Append record line:
+            # -------------------
+            records.append(('L', line, False))
+
+        # Append last totals if there's records:
+        if records:                
+            records.append(('T1', line, total1))
+            records.append(('T2', line, total2))
+            
+        return records
+
+    def get_object_with_total_cut(self, o):
         ''' Get object with totals for normal report
         '''
         lines = []
