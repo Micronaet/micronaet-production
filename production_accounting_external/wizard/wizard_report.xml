@@ -9,7 +9,7 @@
                 <form string="Print production" version="7.0">
                     <head>
                         <button string="Cancel" special="cancel" colspan="2" />                   
-                        <button name="print_report_production" type="object" string="Print production" icon="gtk-print" colspan="2" class="oe_highlight"/>
+                        <button name="print_report_production" type="object" string="Print production" icon="gtk-print" colspan="2" class="oe_highlight" attrs="{'invisible':[('show_lavoration','=',False),('show_sale','=',False),('show_frame','=',False)]}"/>
                         <button name="print_report_cut" type="object" string="Print cut" icon="gtk-print" colspan="2" class="oe_highlight"/>
                     </head>
                     <sheet>
@@ -32,12 +32,15 @@
         <field name="target">new</field>
       </record>
 
-   <!--<menuitem name="Order report"
-          parent="sale.menu_sale_order" 
-          id="menu_sale_order_general_report" 
-          action="action_sale_order_general_report_wizard" 
-          sequence="20" 
-          />-->
+
+    <act_window
+        id="act_window_mrp_production_report_wizard"
+        name="Print production"
+        view_mode="form"
+        target="new"
+        res_model="mrp.production.report.wizard"
+        key2="client_action_multi"
+        src_model="mrp.production"/>
   </data>
 </openerp>
 

@@ -57,15 +57,16 @@ class MrpProductionReportWizard(orm.TransientModel):
         datas = {}
         datas['wizard'] = True # started from wizard
                 
-        datas['show_lavoration'] = wiz_proxy.show_lavoration
-        datas['show_sale'] = wiz_proxy.show_sale
-        datas['show_frame'] = wiz_proxy.show_frame
+        datas['wizard_show_lavoration'] = wiz_proxy.show_lavoration
+        datas['wizard_show_sale'] = wiz_proxy.show_sale
+        datas['wizard_show_frame'] = wiz_proxy.show_frame
         #datas['show_cut'] = wiz_proxy.show_cut
-        
+
         return {
             'type': 'ir.actions.report.xml',
-            'report_name': '',
+            'report_name': 'production_report',
             'datas': datas,
+            'context': context
             }
 
     _columns = {

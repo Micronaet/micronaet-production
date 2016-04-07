@@ -191,7 +191,7 @@
         	    <button name="button_confirm_forced" class="oe_highlight" string="Completed" type="object" states="draft,confirmed,ready,in_production" /><!--no in cancel and done-->
         	    <button name="button_redraft_forced" class="oe_highlight" string="Reactivate" type="object" states="done"/>
 
-        	    <button name="%(action_mrp_production_report_wizard)d" class="oe_highlight" string="MRP report" type="object" states="gtk-print"/>
+        	    <!--button name="%(action_mrp_production_report_wizard)d" class="oe_highlight" string="MRP report" type="object" icon="gtk-print"/-->
         	</button>
 	        <!--<button name="button_cancel" states="draft,ready,in_production" string="Cancella la produzione" modifiers="{'invisible': [['state', 'not in', ['draft', 'ready', 'in_production']]]}"/>-->
 	        <field name="state" position="attributes">
@@ -382,7 +382,7 @@
             </xpath>
             <xpath expr="//page/field[@name='order_line']/tree/field[@name='product_uom_qty']" position="after">
                 <field name="product_uom_maked_sync_qty" />
-                <field name="product_uom_assigned_qty" />
+                <!--<field name="product_uom_assigned_qty" />-->
             </xpath>
             <xpath expr="//page/field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
                 <field name="is_manufactured" invisible="1"/>
