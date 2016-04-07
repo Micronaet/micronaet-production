@@ -70,9 +70,9 @@ class MrpProductionReportWizard(orm.TransientModel):
             }
 
     _columns = {
-        'show_lavoration': fields.boolean('Show lavoration'),
-        'show_sale': fields.boolean('Show sale part'),
-        'show_frame': fields.boolean('Show frame part'),
+        'show_lavoration': fields.boolean('A. Show lavoration'),
+        'show_sale': fields.boolean('B. Show sale part'),
+        'show_frame': fields.boolean('C. Show frame part'),
         #'show_cut': fields.boolean('Show cut part'),        
         }
         
