@@ -66,7 +66,22 @@ class MrpProductionReportWizard(orm.TransientModel):
             'type': 'ir.actions.report.xml',
             'report_name': 'production_report',
             'datas': datas,
-            'context': context
+            'context': context,
+            }
+
+    def print_report_cut(self, cr, uid, ids, context=None):
+        ''' Redirect to report passing parameters
+        ''' 
+        wiz_proxy = self.browse(cr, uid, ids)[0]
+            
+        datas = {}
+        datas['wizard'] = True # started from wizard
+                
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'production_cut_report',
+            'datas': datas,
+            'context': context,
             }
 
     _columns = {
