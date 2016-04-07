@@ -60,6 +60,7 @@
         'wizard/create_production_view.xml',
         'wizard/partial_production.xml',
         'wizard/move_lavoration.xml',
+        'wizard/wizard_report.xml',
         'accounting_views.xml', # after wizard      
         'report/production_report.xml',
         ],

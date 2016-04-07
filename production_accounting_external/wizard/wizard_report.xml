@@ -1,0 +1,43 @@
+<?xml version="1.0" ?>
+<openerp>
+  <data>
+       <!-- mrp.production.report.wizard -->
+       <record id="view_mrp_production_report_wizard_form" model="ir.ui.view">
+            <field name="name">Print production wizard</field>
+            <field name="model">mrp.production.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Print production" version="7.0">
+                    <head>
+                        <button string="Cancel" special="cancel" colspan="2" />                   
+                        <button name="print_report_production" type="object" string="Print production" icon="gtk-print" colspan="2" class="oe_highlight"/>
+                        <button name="print_report_cut" type="object" string="Print cut" icon="gtk-print" colspan="2" class="oe_highlight"/>
+                    </head>
+                    <sheet>
+                        <group colspan="4" col="4">
+                            <field name="show_lavoration" />
+                            <field name="show_sale" />
+                            <field name="show_frame" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+      </record>
+      
+      <record id="action_mrp_production_report_wizard" model="ir.actions.act_window">
+        <field name="name">Print production wizard</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.production.report.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+
+   <!--<menuitem name="Order report"
+          parent="sale.menu_sale_order" 
+          id="menu_sale_order_general_report" 
+          action="action_sale_order_general_report_wizard" 
+          sequence="20" 
+          />-->
+  </data>
+</openerp>
+
