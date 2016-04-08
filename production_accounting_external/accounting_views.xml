@@ -235,7 +235,7 @@
                         <field name="order_line_ids" nolabel="1" colspan="4" context="{
                             'tree_view_ref': 'production_accounting_external.production_sale_order_line_tree_view',
                             'form_view_ref': 'production_accounting_external.production_sale_order_line_form_view'
-                            }" options="{'reload_on_button': true}"/> <!--ALSO: options="{'always_reload': true}"-->
+                            }" options="{'reload_on_button': false}"/> <!--ALSO: options="{'always_reload': true}"-->
                     </group>
                 </page>
             </xpath>            
