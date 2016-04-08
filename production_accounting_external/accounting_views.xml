@@ -151,7 +151,7 @@
         <field name="model">sale.order.line</field>
         <field name="priority" eval="40"/>
         <field name="arch" type="xml">
-            <tree string="OC line" editable="bottom" delete="0" create="0" colors="grey:mrp_id==False;red:is_manufactured==False;maroon:sync_state=='closed';green:sync_state=='sync';blue:has_mandatory_delivery==True">
+            <tree string="OC line" editable="bottom" delete="0" create="0" colors="red:is_manufactured==False;maroon:sync_state=='closed';green:sync_state=='sync';blue:has_mandatory_delivery==True">
                 <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': ['|',('mrp_id','=',False),('sync_state','!=','draft')]}" context="{'production_order_id':mrp_id}"/>
                 <field name="mrp_sequence" readonly="1" string="ord."/>
                 <field name="partner_id" readonly="1"/>
