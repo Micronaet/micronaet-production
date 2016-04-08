@@ -14,6 +14,7 @@
                     <group expand="0" string="Group By">
                         <filter name="group_production" string="Production" context="{'group_by': 'production_id'}"/>
                         <filter name="group_workcenter" string="Workcenter" context="{'group_by': 'workcenter_id'}"/>
+                        <filter name="group_day" string="Day" context="{'group_by': 'date_planned:day'}"/>
                     </group>                
                  </search>
             </field>

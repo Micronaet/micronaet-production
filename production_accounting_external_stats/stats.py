@@ -127,7 +127,7 @@ class MrpProductionStatMixed(osv.osv):
                     mrp.product_id,
                     mrp.id
                 HAVING 
-                    DATE(st.date) + INTERVAL '7 days' >= DATE(now())
+                    DATE(st.date) + INTERVAL '8 days' >= DATE(now())
                 )""") # HAVING mrp.state != 'cancel' mrp.workcenter_id
 
 
