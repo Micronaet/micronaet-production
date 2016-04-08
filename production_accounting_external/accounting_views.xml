@@ -188,6 +188,7 @@
         	    <attribute name="invisible">1</attribute>
 	        </button>
         	<button name="button_confirm" position="after">
+        	    <button name="button_refresh" string="Refresh" type="object" icon="gtk-refresh"/>
         	    <button name="button_confirm_forced" class="oe_highlight" string="Completed" type="object" states="draft,confirmed,ready,in_production" /><!--no in cancel and done-->
         	    <button name="button_redraft_forced" class="oe_highlight" string="Reactivate" type="object" states="done"/>
 

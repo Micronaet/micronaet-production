@@ -367,9 +367,15 @@ class MrpProduction(orm.Model):
         res = super(MrpProduction, self).unlink(
             cr, uid, ids, context=context)
         return res
+        
     # -------------
     # Button event:
     # -------------
+    def button_refresh(self, cr, uid, ids, context=None):
+        ''' Fake button for refresh
+        '''
+        return True
+        
     def button_confirm_forced(self, cr, uid, ids, context=None):
         ''' Close manually the lavoration
         '''
