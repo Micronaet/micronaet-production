@@ -61,7 +61,7 @@ class MrpProductionStatMixed(osv.osv):
     '''
     _name = 'mrp.production.stats.mixed'
     _description = 'MRP stats mixed'
-    _order = 'date_planned desc'
+    _order = 'date_planned desc,workcenter_id,is_total'
     _rec_name = 'date_planned'
     _auto = False
     
@@ -75,6 +75,7 @@ class MrpProductionStatMixed(osv.osv):
         # mrp.production.workcenter.line:
         #'name': fields.char('MRP name', readonly=True),
         'is_today': fields.boolean('Is today', readonly=True),
+        'is_total': fields.boolean('Day total', readonly=True),
         'date_planned': fields.date('Date planned', readonly=True),
         'product_id': fields.many2one(
             'product.product', 'Family', readonly=True), 
@@ -99,6 +100,7 @@ class MrpProductionStatMixed(osv.osv):
             CREATE or REPLACE view mrp_production_stats_mixed as (
                 SELECT 
                     min(st.id) as id,
+                    False as is_total,
                     st.date as date_planned,
                     sum(st.total) as maked_qty,
                     sum(st.startup) as startup,
@@ -127,7 +129,36 @@ class MrpProductionStatMixed(osv.osv):
                     mrp.product_id,
                     mrp.id
                 HAVING 
-                    DATE(st.date) + INTERVAL '8 days' >= DATE(now())
+                    DATE(st.date) + INTERVAL '48 days' >= DATE(now())
+                    
+                UNION ALL
+
+                SELECT 
+                    10000 + max(st.id) as id,
+                    True as is_total,
+                    st.date as date_planned,
+                    sum(st.total) as maked_qty,
+                    sum(st.startup) as startup,
+                    sum(st.workers) as workers,
+                    sum(st.hour) as hour,
+                    st.workcenter_id as workcenter_id,
+                    0 as production_id,
+
+                    0 as product_id,
+
+                    DATE(st.date) = DATE(now()) as is_today,
+
+                    'TOTAL' as name,
+                    0 as todo_qty,
+                    0 as remain_qty,
+                    0 as lavoration_qty
+                FROM 
+                    mrp_production_stats st
+                GROUP BY
+                    st.date,
+                    st.workcenter_id
+                HAVING 
+                    DATE(st.date) + INTERVAL '48 days' >= DATE(now())
                 )""") # HAVING mrp.state != 'cancel' mrp.workcenter_id
 
 

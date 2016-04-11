@@ -24,7 +24,8 @@
             <field name="name">Production Stats</field>
             <field name="model">mrp.production.stats.mixed</field>
             <field name="arch" type="xml">
-                <tree string="MRP stats mixed" editable="bottom">
+                <tree string="MRP stats mixed" editable="bottom" colors="blue:is_total==True" fonts="bold:is_total==True">
+                    <field name="is_total" invisible="1"/>
                     <button name="nothing" icon="gtk-yes" attrs="{'invisible':[('is_today','=',False)]}"/>
                     <field name="workcenter_id"/>
                     <field name="production_id" />
