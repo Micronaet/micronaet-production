@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <field name="product_id" position="after">
                     <filter name="mx_closed_yes" string="Closed line" domain="[('mx_closed','=',True)]"/>
-                    <filter name="mx_closed_no" string="Unclosed line" domain="[('mx_closed','=',False)]"/>                    
+                    <filter name="mx_closed_no" string="Opened line" domain="[('mx_closed','=',False)]"/>                    
                 </field>    
                 <filter name="group_order" position="after">
                     <filter name="group_closed" string="closed" context="{'group_by':'mx_closed'}"/>
