@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="sale_order_line_closed_search_view">
+            <field name="name">sale.order.line.search.closed</field>
+            <field name="model">sale.order.line</field>
+            <field name="inherit_id" ref="sql_sale_order.view_sale_order_line_search"/>
+            <field name="arch" type="xml">
+                <field name="product_id" position="after">
+                    <filter name="mx_closed_yes" string="Closed line" domain="[('mx_closed','=',True)]"/>
+                    <filter name="mx_closed_no" string="Unclosed line" domain="[('mx_closed','=',False)]"/>                    
+                </field>    
+                <filter name="group_order" position="after">
+                    <filter name="group_closed" string="closed" context="{'group_by':'mx_closed'}"/>
+                </filter>    
+            </field>
+        </record>
+        
+    <record model="ir.ui.view" id="sale_order_line_closed_tree_view">
+        <field name="name">sale.order.line.tree.closed</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sql_sale_order.view_sale_order_line_tree"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="before">
+                <field name="mx_closed"/>
+            </field>
+        </field>
+    </record>
+        
+    </data>
+</openerp>
+
