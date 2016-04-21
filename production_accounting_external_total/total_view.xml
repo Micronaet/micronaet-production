@@ -1,18 +1,6 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-        <!--<record model="ir.ui.view" id="default_mrp_production_tree_total_view">
-            <field name="name">Production total tree</field>
-            <field name="model">mrp.production</field>
-            <field name="inherit_id" ref="mrp.mrp_production_tree_view" />
-            <field name="arch" type="xml">
-                <field name="product_qty" position="after">
-                    <field name="total_line_todo" />
-                    <field name="total_line_done" />
-                    <field name="total_line_ok" />
-                </field>
-            </field>
-        </record>-->
         <record model="ir.ui.view" id="view_mrp_production_for_close_tree">
             <field name="name">mrp.production.tree</field>
             <field name="model">mrp.production</field>
@@ -53,9 +41,6 @@
             parent="mrp.menu_mrp_production_action" 
             id="menu_action_openerp_model_tree" 
             action="action_mrp_production_close"/>
-        
-        
-        
     </data>
 </openerp>
 
