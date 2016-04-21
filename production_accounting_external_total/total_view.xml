@@ -13,10 +13,10 @@
                 </field>
             </field>
         </record>-->
-
         <record model="ir.ui.view" id="view_mrp_production_for_close_tree">
             <field name="name">mrp.production.tree</field>
             <field name="model">mrp.production</field>
+            <field name="type">tree</field>
             <field name="priority" eval="40" />
             <field name="arch" type="xml">
                 <tree colors="green:total_line_ok==True" string="Production order to close">
@@ -33,8 +33,8 @@
 	                <field name="cycle_total" invisible="1" />
 	                <field name="origin" invisible="1" />
 	                <field name="state" invisible="1" />	                
-            	    <button name="button_confirm_forced" class="oe_highlight" string="Completed" type="object" states="draft,confirmed,ready,in_production" /><!--no in cancel and done-->
-            	    <button name="button_redraft_forced" class="oe_highlight" string="Reactivate" type="object" states="done"/>
+            	    <button name="button_confirm_forced" class="oe_highlight" string="Completed" type="object" states="draft,confirmed,ready,in_production" icon="gtk-u"/><!--no in cancel and done-->
+            	    <button name="button_redraft_forced" string="Reactivate" type="object" states="done" icon="gtk-undo"/>
                 </tree>        
             </field>
         </record>
