@@ -47,11 +47,11 @@ class MrpProduction(orm.Model):
     def _get_total_line(self, cr, uid, ids, fields, args, context=None):
         ''' Fields function for calculate 
         '''
-        res = {}
+        res = {}        
     
-        self.cr.execute('''
+        query = '''
             SELECT 
-                 mrp_id, 
+                 mrp_id,
                  sum(product_uom_qty) as todo, 
                  sum(product_uom_maked_sync_qty) as done, 
                  sum(product_uom_qty) = sum(product_uom_maked_sync_qty) as ok
@@ -62,44 +62,30 @@ class MrpProduction(orm.Model):
              HAVING 
                  mrp_id in (%s);
              ''' % (','.join(map(lambda x: str(x), ids)))
-             )
-        for item in self.cr.fetchall()
+        
+        cr.execute(query)
+        _logger.warning('Start query:\n\t:%s' % query)
+        for item in cr.fetchall():
             res[item[0]] = {}
             res[item[0]]['total_line_todo'] = item[1]
             res[item[0]]['total_line_done'] = item[2]
             res[item[0]]['total_line_ok'] = item[3]
-            
-
-                
-        for mrp in self.browse(cr, uid, ids, context=context):
-            import pdb; pdb.set_trace()
-            res[mrp.id] = {}
-            res[mrp.id]['total_line_todo'] = 0.0
-            res[mrp.id]['total_line_done'] = 0.0
-            for line in mrp.order_line_ids:
-                res[mrp.id]['total_line_todo'] += line.product_uom_qty
-                res[mrp.id]['total_line_done'] += line.product_uom_maked_sync_qty
-            
-            if res[mrp.id]['total_line_todo'] == res[
-                    mrp.id]['total_line_done']:
-                res[mrp.id]['total_line_ok'] = True
-            else:    
-                res[mrp.id]['total_line_ok'] = False
+        _logger.warning('End query')    
         return res        
     
     _columns = {
         'total_line_todo': fields.function(
             _get_total_line, method=True, 
             type='float', string='Todo', 
-            store=False), 
+            store=False, multi=True), 
         'total_line_done': fields.function(
             _get_total_line, method=True, 
             type='float', string='Todo', 
-            store=False), 
+            store=False, multi=True), 
         'total_line_ok': fields.function(
             _get_total_line, method=True, 
             type='boolean', string='Completed', 
-            store=False),
+            store=False, multi=True),
                         
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
