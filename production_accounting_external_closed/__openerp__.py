@@ -37,6 +37,7 @@
     'demo': [],
     'data': [
         'closed_view.xml',
+        'report/production_report.xml',
         ],
     'active': False,
     'installable': True,
