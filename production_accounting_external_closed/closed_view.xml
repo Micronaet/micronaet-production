@@ -25,7 +25,24 @@
                 <field name="mx_closed"/>
             </field>
         </field>
-    </record>        
+    </record>
+    
+    <record model="ir.actions.act_window" id="action_residual_unlock_in_mrp_tree">
+        <field name="name">Residual not to produce</field>
+        <field name="res_model">sale.order.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>
+        <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>        
+        <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form'}</field>
+        <field name="domain">[('mrp_id.state','not in',('cancel', 'done')),('mrp_id','!=',False),('go_in_production','=',True),('mx_closed','=',True)]</field>
+    </record>
+
+    <menuitem name="Alert no produce"
+        parent="production_accounting_external.menu_sale_order_line_m1" 
+        id="menu_sale_order_line_m1_no_more_production" 
+        action="action_residual_unlock_in_mrp_tree" 
+        sequence="20" />
     </data>
 </openerp>
 
