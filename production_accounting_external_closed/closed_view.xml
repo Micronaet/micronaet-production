@@ -38,11 +38,11 @@
         <field name="domain">[('mrp_id.state','not in',('cancel', 'done')),('mrp_id','!=',False),('go_in_production','=',True),('mx_closed','=',True)]</field>
     </record>
 
-    <menuitem name="Alert no produce"
+    <!--<menuitem name="Alert no produce"
         parent="production_accounting_external.menu_sale_order_line_m1" 
         id="menu_sale_order_line_m1_no_more_production" 
         action="action_residual_unlock_in_mrp_tree" 
-        sequence="20" />
+        sequence="20" />-->
     </data>
 </openerp>
 
