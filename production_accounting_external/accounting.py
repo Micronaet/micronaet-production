@@ -201,10 +201,42 @@ class SaleOrderLine(orm.Model):
             'sync_state': 'draft',
             }, context=context)                
 
+    def _mrp_function_similar(self, cr, uid, ids, fields, args, context=None):
+        ''' Fields function for calculate 
+        '''  
+        res =  dict.fromkeys(ids, '')
+        context = context or {}
+        load_status_info = context.get('load_status_info', False)
+        #if not load_status_info:
+        #    return res
+        
+        # Load all open MRP key = family_id
+        mrp_family = {}
+        mrp_pool = self.pool.get('mrp.production')        
+        mrp_ids = mrp_pool.search(cr, uid, [
+            ('state', 'in', ('done', 'cancel')), # TODO only open lavoration!!!
+            ], context=context)
+        for mrp in mrp_pool.browse(cr, uid, mrp_ids, context=context):
+            mrp_info = '%s [q. %s]\n' % (
+                mrp.name,
+                mrp.product_qty,
+                )
+            if mrp.product_id.id not in mrp_family:
+                mrp_family[mrp.product_id.id] = mrp_info
+            else:    
+                mrp_family[mrp.product_id.id] += mrp_info
+        for line in self.browse(cr, uid, ids, context=context):
+            res[line.id] = mrp_family.get(line.product_id.family_id.id, '')
+        return res     
+
     _columns = {
         'mrp_status_info': fields.related(
             'mrp_id', 'mrp_status_info', type='char', string='MRP info',
-            store=False), 
+            store=False),
+        'mrp_similar_info': fields.function(
+            _mrp_function_similar, method=True, 
+            type='text', string='Open MRP', 
+            store=False),                        
         }        
            
 class SaleOrderLine(orm.Model):
