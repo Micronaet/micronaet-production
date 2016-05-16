@@ -80,6 +80,8 @@ class ProductTemplateFamily(orm.Model):
         
     _defaults = {
         'is_family': lambda *x: False,
+        'force_manufacture': lambda *x: True,
+        'internal_manufacture': lambda *x: True,
         }
 
 class MrpBomFamily(orm.Model):
