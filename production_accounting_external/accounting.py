@@ -218,7 +218,7 @@ class SaleOrderLine(orm.Model):
             ], context=context)
         for mrp in mrp_pool.browse(cr, uid, mrp_ids, context=context):
             mrp_info = '%s [q. %s]\n' % (
-                mrp.name.strip('MO').lstrip('0'),
+                mrp.name.lstrip('MO').lstrip('0'),
                 mrp.product_qty,
                 )
             if mrp.product_id.id not in mrp_family:
