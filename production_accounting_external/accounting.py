@@ -203,12 +203,15 @@ class SaleOrderLine(orm.Model):
 
     def _mrp_function_similar(self, cr, uid, ids, fields, args, context=None):
         ''' Fields function for calculate 
-        '''  
-        res =  dict.fromkeys(ids, '')
+        '''          
+        res = {}
+        for item_id in ids:
+            res[item_id] = ['', 0.0]
+
         context = context or {}
-        load_status_info = context.get('load_status_info', False)
-        #if not load_status_info: # TODO
-        #    return res
+        load_status_info = context.get('load_status_info', True) # TODO False!!
+        if not load_status_info: 
+            return res
         
         # Load all open MRP key = family_id
         mrp_family = {}
@@ -216,27 +219,43 @@ class SaleOrderLine(orm.Model):
         mrp_ids = mrp_pool.search(cr, uid, [
             ('state', 'not in', ('done', 'cancel')), # TODO only open lavoration!!!
             ], context=context)
+                    
         for mrp in mrp_pool.browse(cr, uid, mrp_ids, context=context):
             mrp_info = '%s [q. %s]\n' % (
                 mrp.name.lstrip('MO').lstrip('0'),
                 mrp.product_qty,
                 )
+                
             if mrp.product_id.id not in mrp_family:
-                mrp_family[mrp.product_id.id] = mrp_info
+                mrp_family[mrp.product_id.id] = {
+                    'mrp_similar_info': mrp_info, 
+                    'mrp_similar_total': mrp.product_qty,
+                    }
             else:    
-                mrp_family[mrp.product_id.id] += mrp_info
+                mrp_family[mrp.product_id.id][
+                    'mrp_similar_info'] += mrp_info
+                mrp_family[mrp.product_id.id][
+                    'mrp_similar_total'] += mrp.product_qty
+                
         for line in self.browse(cr, uid, ids, context=context):
-            res[line.id] = mrp_family.get(line.product_id.family_id.id, '')
+            res[line.id] = mrp_family.get(
+                line.product_id.family_id.id, 
+                {'mrp_similar_info': '', 'mrp_similar_total': 0.0})
         return res     
 
     _columns = {
         'mrp_status_info': fields.related(
             'mrp_id', 'mrp_status_info', type='char', string='MRP info',
             store=False),
+            
+        'mrp_similar_total': fields.function(
+            _mrp_function_similar, method=True, 
+            type='text', string='Open MRP total', 
+            store=False, multi=True),
         'mrp_similar_info': fields.function(
             _mrp_function_similar, method=True, 
-            type='text', string='Open MRP', 
-            store=False),                        
+            type='text', string='Open MRP info', 
+            store=False, multi=True),
         }        
            
 class SaleOrderLine(orm.Model):

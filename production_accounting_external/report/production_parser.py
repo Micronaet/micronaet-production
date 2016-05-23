@@ -52,6 +52,7 @@ class Parser(report_sxw.rml_parse):
             
             'get_object_with_total': self.get_object_with_total,
             'get_object_with_total_cut': self.get_object_with_total_cut,
+            'get_pre_production': self.get_pre_production,
             'get_frames': self.get_frames,
             
             # remain report:
@@ -59,7 +60,30 @@ class Parser(report_sxw.rml_parse):
             'previous_record': self.previous_record,
             'clean_order': self.clean_order,
         })
-    
+
+    def get_pre_production(self):
+        ''' List of family with order to do and order planned (open)
+        '''
+        res = {}
+        sol_pool = self.pool.get('sale.order.line')
+
+        # Open line not linked:
+        sol_ids = sol_pool.search(self.cr, self.uid, [
+            ('mrp_id', '=', False),
+            ('pricelist_order', '=', False),
+            ('go_in_production', '=', True),
+            ('is_manufactured', '=', True),
+            ('mx_closed', '=', False),
+            ])
+        for line in sol_pool.browse(self.cr, self.uid, sol_ids):
+            family = line.product_id.family_id 
+            if family in res:
+                res[family].append(line)
+            else:
+                res[family] = [line]
+        
+        return res.iteritems()
+
     def clean_order(self, name):
         ''' Clean order:
         '''
