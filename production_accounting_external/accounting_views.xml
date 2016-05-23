@@ -174,7 +174,7 @@
                 <button name="close_production" type="object" string="Produced" icon="STOCK_SAVE" attrs="{'invisible': ['|',('mrp_id','=',False),('sync_state','!=','draft')]}"/>
                 <button name="undo_close_production" type="object" string="Undo produced" icon="STOCK_REVERT_TO_SAVED" attrs="{'invisible': ['|',('mrp_id','=',False),('sync_state','in',('draft'))]}"/>
                 <field name="is_manufactured" invisible="1"/>
-                <field name="mrp_similar_info" />
+                <!--<field name="mrp_similar_info" />-->
             </tree>        
         </field>
     </record>
@@ -322,6 +322,7 @@
             </field>
             <field name="state" position="before">
                 <field name="mrp_id"/>
+                <field name="mrp_similar_info" />
             </field>
         </field>
     </record>

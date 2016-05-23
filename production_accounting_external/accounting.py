@@ -207,14 +207,14 @@ class SaleOrderLine(orm.Model):
         res =  dict.fromkeys(ids, '')
         context = context or {}
         load_status_info = context.get('load_status_info', False)
-        #if not load_status_info:
+        #if not load_status_info: # TODO
         #    return res
         
         # Load all open MRP key = family_id
         mrp_family = {}
         mrp_pool = self.pool.get('mrp.production')        
         mrp_ids = mrp_pool.search(cr, uid, [
-            ('state', 'in', ('done', 'cancel')), # TODO only open lavoration!!!
+            ('state', 'not in', ('done', 'cancel')), # TODO only open lavoration!!!
             ], context=context)
         for mrp in mrp_pool.browse(cr, uid, mrp_ids, context=context):
             mrp_info = '%s [q. %s]\n' % (
