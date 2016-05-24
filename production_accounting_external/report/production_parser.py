@@ -89,8 +89,8 @@ class Parser(report_sxw.rml_parse):
                     line.mrp_similar_info,
                     line.mrp_similar_total,
                     ]
-        res.sort()    
-        return res.iteritems()
+        r = [res[k] for k in res]      
+        return sorted(r)            
 
     def clean_order(self, name):
         ''' Clean order:
