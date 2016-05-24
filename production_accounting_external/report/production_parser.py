@@ -75,17 +75,21 @@ class Parser(report_sxw.rml_parse):
             ('is_manufactured', '=', True),
             ('mx_closed', '=', False),
             ])
-
         
         for line in sol_pool.browse(self.cr, self.uid, sol_ids):
             family = line.product_id.family_id 
             if family in res:
-                res[family].append(line)
+                res[family][1] += line.product_uom_qty
+                res[family][2] += line.product_uom_maked_sync_qty                
             else:
-                res[family] = [line]
-        import pdb; pdb.set_trace()
-        
-        return res
+                res[family] = [
+                    family.name,
+                    line.product_uom_qty,
+                    line.product_uom_maked_sync_qty,
+                    line.mrp_similar_info,
+                    line.mrp_similar_total,
+                    ]
+        return res.iteritems()
 
     def clean_order(self, name):
         ''' Clean order:
