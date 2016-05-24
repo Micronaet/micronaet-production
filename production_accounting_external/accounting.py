@@ -241,16 +241,16 @@ class SaleOrderLine(orm.Model):
             res[line.id] = mrp_family.get(
                 line.product_id.family_id.id, 
                 {'mrp_similar_info': '', 'mrp_similar_total': 0.0})
-        return res     
+        return res
 
     _columns = {
         'mrp_status_info': fields.related(
             'mrp_id', 'mrp_status_info', type='char', string='MRP info',
             store=False),
-            
+
         'mrp_similar_total': fields.function(
             _mrp_function_similar, method=True, 
-            type='text', string='Open MRP total', 
+            type='float', string='Open MRP total', 
             store=False, multi=True),
         'mrp_similar_info': fields.function(
             _mrp_function_similar, method=True, 
