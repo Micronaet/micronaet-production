@@ -89,6 +89,7 @@ class Parser(report_sxw.rml_parse):
                     line.mrp_similar_info,
                     line.mrp_similar_total,
                     ]
+        res.sort()    
         return res.iteritems()
 
     def clean_order(self, name):
