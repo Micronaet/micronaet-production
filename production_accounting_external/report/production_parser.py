@@ -135,15 +135,17 @@ class Parser(report_sxw.rml_parse):
             Break on 2 block for total
         '''
         lines = []
-        
+        import pdb; pdb.set_trace()
         for line in sorted(
                 o.order_line_ids, 
                 key=lambda item: (
                     item.product_id.default_code[3:6], 
-                    item.product_id.default_code[8:12].rstrip(), 
+                    item.product_id.default_code[8:12], 
                     item.product_id.default_code[0:3],
                     )):
             lines.append(line)
+        print lines
+        import pdb; pdb.set_trace()    
 
         # Total for code break:
         code1 = code2 = False
@@ -165,7 +167,7 @@ class Parser(report_sxw.rml_parse):
             # Check for totals:
             # -----------------
             # Color total:
-            color = line.default_code[8:12]
+            color = line.default_code[8:12].rstrip()
             if code1 == False: # XXX first loop
                 total1 = 0.0
                 code1 = color
@@ -228,7 +230,7 @@ class Parser(report_sxw.rml_parse):
             # Check for totals:
             # -----------------
             # Color total:
-            color = line.default_code[8:12]
+            color = line.default_code[8:12].rstrip()
             if code1 == False: # XXX first loop
                 total1 = 0.0
                 code1 = color
