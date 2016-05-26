@@ -140,7 +140,7 @@ class Parser(report_sxw.rml_parse):
                 o.order_line_ids, 
                 key=lambda item: (
                     item.product_id.default_code[3:6], 
-                    item.product_id.default_code[8:12], 
+                    item.product_id.default_code[8:12].rstrip(), 
                     item.product_id.default_code[0:3],
                     )):
             lines.append(line)
