@@ -135,7 +135,6 @@ class Parser(report_sxw.rml_parse):
             Break on 2 block for total
         '''
         lines = []
-        import pdb; pdb.set_trace()
         for line in sorted(
                 o.order_line_ids, 
                 key=lambda item: (
@@ -145,7 +144,6 @@ class Parser(report_sxw.rml_parse):
                     )):
             lines.append(line)
         print lines
-        import pdb; pdb.set_trace()    
 
         # Total for code break:
         code1 = code2 = False
