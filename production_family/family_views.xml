@@ -27,6 +27,7 @@
                 <field name="is_family" />
                 <field name="family_id" attrs="{'invisible': [('is_family', '=', True)]}" context="{'default_is_family': True}"/>
                 <field name="family_list" attrs="{'invisible': [('is_family', '=', False)]}" />
+                <field name="no_stock_operation" />
                 <field name="force_manufacture" attrs="{'invisible': [('is_family', '=', False)]}"/>
                 <button name="update_family" string="Update product" type="object" attrs="{'invisible': [('is_family', '=', False)]}" />
             </field>
@@ -42,6 +43,7 @@
                 <field name="is_family" invisible="1"/>
                 <field name="family_id" />
                 <field name="force_manufacture" />
+                <field name="no_stock_operation" />
             </field>
         </field>
     </record>

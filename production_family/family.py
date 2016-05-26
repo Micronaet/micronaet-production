@@ -74,6 +74,8 @@ class ProductTemplateFamily(orm.Model):
             help='Code list (divided by |), ex.: 001|002 for 001* and 002*'),
         'force_manufacture': fields.boolean('Force manufacture', 
             help='If yes update all product also for manufacture else not'),
+        'no_stock_operation': fields.boolean('No stock operation', 
+            help='Some production are a sort of order so no CL or SL'),
         'internal_manufacture': fields.boolean('Internal manufacture', 
             help='If true this product order line will go in production'),
         }
