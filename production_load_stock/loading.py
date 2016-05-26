@@ -344,6 +344,15 @@ class SaleOrder(orm.Model):
         
         line_proxy = self.browse(cr, uid, sol_ids, context=context)[0]
         
+        # Test if is a stock load family:
+        try:
+            if line_proxy.mrp_id.bom_id.product_tmpl_id.no_stock_operation:
+                _logger.warning('No load stock family, do nothing!')
+                return True
+        except:        
+            _logger.warning('Error test no load stock family!')
+            # continune unload stock as default
+        
         # Get pick document linked to MRP production:
         mrp_picking_in = pick_pool.get_mrp_picking(
             cr, uid, line_proxy.mrp_id, 'cl', mrp_type_in, 
