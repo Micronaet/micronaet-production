@@ -65,9 +65,29 @@ class Parser(report_sxw.rml_parse):
         ''' List of family with order to do and order planned (open)
         '''
         res = {}
+        mrp_pool = self.pool.get('mrp.production')
         sol_pool = self.pool.get('sale.order.line')
 
+        # ---------------------------------------------------------------------
+        # Read open productions:
+        # ---------------------------------------------------------------------
+        mrp_family = {}
+        mrp_ids = mrp_pool.search(self.cr, self.uid, [
+            ('state','not in', ('cancel', 'done'))])
+            
+        for mrp in mrp_pool.browse(self.cr, self.uid, mrp_ids):
+            family_id = mrp.product_id.id
+            # bom_id.product_tmpll_id
+            if family_id not in mrp_family:
+                mrp_family[family_id] = [0.0, 0.0] # OC, Done
+                            
+            for line in mrp.order_line_ids:
+                mrp_family[family_id][0] += line.product_uom_qty
+                mrp_family[family_id][1] += line.product_uom_maked_sync_qty
+            
+        # ---------------------------------------------------------------------
         # Open line not linked:
+        # ---------------------------------------------------------------------
         sol_ids = sol_pool.search(self.cr, self.uid, [
             ('mrp_id', '=', False),
             ('pricelist_order', '=', False),
@@ -88,6 +108,7 @@ class Parser(report_sxw.rml_parse):
                     line.product_uom_maked_sync_qty,
                     line.mrp_similar_info,
                     line.mrp_similar_total,
+                    mrp_family.get(family.id, [0.0, 0.0]), 
                     ]
         r = [res[k] for k in res]      
         return sorted(r)            
