@@ -293,12 +293,12 @@ class Parser(report_sxw.rml_parse):
         def clean_number(value):
             return ('%s' % value).replace('.', ',')
             
-        filename = os.path.expanduser(os.path.join(
-            '~', 'photo', 'log', 'frame.csv'))
-        log_file = open(filename, 'w')
-        log_file.write(
-            'READ|STATUS|ORDER|PARTNER|DEADLINE|FAMILY|PRODUCT|CODE|OC|MAKE|DELIVERY|S|B|TOT\n')
-        mask = '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n'
+        #filename = os.path.expanduser(os.path.join(
+        #    '~', 'photo', 'log', 'frame.csv'))
+        #log_file = open(filename, 'w')
+        #log_file.write(
+        #    'READ|STATUS|ORDER|PARTNER|DEADLINE|FAMILY|PRODUCT|CODE|OC|MAKE|DELIVERY|S|B|TOT\n')
+        #mask = '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n'
         
         # Loop on order:
         products = {}
@@ -337,41 +337,43 @@ class Parser(report_sxw.rml_parse):
                 line.product_id.default_code[0:3],
                 line.product_id.default_code[6:8],
                 )
+            partner_name = line.order_id.partner_id.name if \
+                line.order_id.partner_id else '?'
             if TOT == 0:
-                log_file.write(mask % (
-                    'NO',
-                    status,
-                    line.order_id.name,
-                    line.order_id.partner_id.name,
-                    line.date_deadline,
-                    line.product_id.family_id.id, #name or '???',
-                    line.product_id.default_code,
-                    code,
-                    clean_number(product_uom_qty),
-                    clean_number(product_uom_maked_sync_qty),
-                    clean_number(delivered_qty),
-                    clean_number(S),
-                    clean_number(B),
-                    clean_number(TOT),
-                    ))
+                #log_file.write(mask % (
+                #    'NO',
+                #    status,
+                #    line.order_id.name,
+                #    line.order_id.partner_id.name,
+                #    line.date_deadline,
+                #    line.product_id.family_id.id, #name or '???',
+                #    line.product_id.default_code,
+                #    code,
+                #    clean_number(product_uom_qty),
+                #    clean_number(product_uom_maked_sync_qty),
+                #    clean_number(delivered_qty),
+                #    clean_number(S),
+                #    clean_number(B),
+                #    clean_number(TOT),
+                #    ))
                 continue
             
-            log_file.write(mask % (
-                'YES',
-                status,
-                line.order_id.name,
-                line.order_id.partner_id.name,
-                line.date_deadline,
-                line.product_id.family_id.id, #name or '???',
-                line.product_id.default_code,
-                code,
-                clean_number(product_uom_qty),
-                clean_number(product_uom_maked_sync_qty),
-                clean_number(delivered_qty),
-                clean_number(S),
-                clean_number(B),
-                clean_number(TOT),
-                ))
+            #log_file.write(mask % (
+            #    'YES',
+            #    status,
+            #    line.order_id.name,
+            #    line.order_id.partner_id.name,
+            #    line.date_deadline,
+            #    line.product_id.family_id.id, #name or '???',
+            #    line.product_id.default_code,
+            #    code,
+            #    clean_number(product_uom_qty),
+            #    clean_number(product_uom_maked_sync_qty),
+            #    clean_number(delivered_qty),
+            #    clean_number(S),
+            #    clean_number(B),
+            #    clean_number(TOT),
+            #    ))
             if line.order_id.id not in self.order_ids:
                 self.order_ids.append(line.order_id.id)
                 
