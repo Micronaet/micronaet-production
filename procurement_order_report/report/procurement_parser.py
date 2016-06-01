@@ -337,8 +337,6 @@ class Parser(report_sxw.rml_parse):
                 line.product_id.default_code[0:3],
                 line.product_id.default_code[6:8],
                 )
-            partner_name = line.order_id.partner_id.name if \
-                line.order_id.partner_id else '?'
             if TOT == 0:
                 #log_file.write(mask % (
                 #    'NO',
