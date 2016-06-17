@@ -334,7 +334,10 @@ class Parser(report_sxw.rml_parse):
                 status = 'PROD'                
             S = TOT - B
 
-            #if data.get('only_remain', False) and S <= 0:
+            #if data.get('only_remain', False) and ( # added 17 giu 2016
+            #        line.mx_closed or mrp_remain <= 0):
+            #    _logger.info('Jump only remain: mrp_remain: %s' % (
+            #        mrp_remain))
             #    continue # jump if no item or all produced
             code = '%s...%s' % (
                 line.product_id.default_code[0:3],
@@ -480,7 +483,10 @@ class Parser(report_sxw.rml_parse):
                 status = 'PROD'                
             S = TOT - B
 
-            #if data.get('only_remain', False) and S <= 0:
+            #if data.get('only_remain', False) and ( # added 17 giu 2016
+            #        line.mx_closed or mrp_remain <= 0):
+            #    _logger.info('Jump only remain: mrp_remain: %s' % (
+            #        mrp_remain))
             #    continue # jump if no item or all produced
             family = line.product_id.family_id.name or _('???')
             father = default_code[:3]
