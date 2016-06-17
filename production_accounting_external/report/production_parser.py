@@ -219,7 +219,6 @@ class Parser(report_sxw.rml_parse):
         if records:                
             records.append(('T1', line, total1))
             records.append(('T2', line, total2))
-            
         return records
 
     def get_object_with_total(self, o):
@@ -235,6 +234,7 @@ class Parser(report_sxw.rml_parse):
         records = []
 
         self.frames = {}
+        old_line = False
         for line in lines:
             # -------------
             # Check Frames:
@@ -258,7 +258,7 @@ class Parser(report_sxw.rml_parse):
                 total1 += line.product_uom_qty
             else:
                 code1 = color
-                records.append(('T1', line, total1))
+                records.append(('T1', old_line, total1))
                 total1 = line.product_uom_qty
 
             # Code general total:
@@ -270,18 +270,19 @@ class Parser(report_sxw.rml_parse):
                 total2 += line.product_uom_qty
             else: 
                 code2 = line.default_code
-                records.append(('T2', line, total2))
+                records.append(('T2', old_line, total2))
                 total2 = line.product_uom_qty
 
             # -------------------
             # Append record line:
             # -------------------
             records.append(('L', line, False))
+            old_line = line
 
         # Append last totals if there's records:
         if records:                
-            records.append(('T1', line, total1))
-            records.append(('T2', line, total2))
+            records.append(('T1', old_line, total1))
+            records.append(('T2', old_line, total2))
             
         return records
         
