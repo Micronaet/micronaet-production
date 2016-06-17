@@ -216,7 +216,12 @@ class Parser(report_sxw.rml_parse):
         self.general_total = [0, 0, 0, 0]
 
         for line in browse_line:
-            i += 1 
+            i += 1
+            # First test for speed up: added 17 giu 2016 (for speed up)
+            if data.get('only_remain', False) and line.mx_closed:
+                _logger.info('Jump only remain: line is closed')
+                continue # jump if no item or all produced
+
             # -------------------
             # Filter for partial:
             # -------------------
@@ -243,8 +248,7 @@ class Parser(report_sxw.rml_parse):
             else:
                 mrp_remain = product_uom_qty - product_uom_maked_sync_qty
 
-            if data.get('only_remain', False) and (
-                    line.mx_closed or mrp_remain <= 0):
+            if data.get('only_remain', False) and mrp_remain <= 0:
                 _logger.info('Jump only remain: mrp_remain: %s' % (
                     mrp_remain))
                 continue # jump if no item or all produced
@@ -316,6 +320,11 @@ class Parser(report_sxw.rml_parse):
             to_partial = from_partial + len(code_partial)
 
         for line in browse_line:
+            # First test for speed up: added 17 giu 2016
+            if data.get('only_remain', False) and line.mx_closed:
+                _logger.info('Jump only remain: line is closed')
+                continue # jump if no item or all produced
+
             # Filter for partial:.
             if code_partial and line.product_id.default_code[
                     from_partial: to_partial] != code_partial:
@@ -334,6 +343,7 @@ class Parser(report_sxw.rml_parse):
                 status = 'PROD'                
             S = TOT - B
 
+            # XXX Put in first test:
             #if data.get('only_remain', False) and ( # added 17 giu 2016
             #        line.mx_closed or mrp_remain <= 0):
             #    _logger.info('Jump only remain: mrp_remain: %s' % (
@@ -458,6 +468,11 @@ class Parser(report_sxw.rml_parse):
             to_partial = from_partial + len(code_partial)
 
         for line in browse_line:
+            # First test for speed up: added 17 giu 2016
+            if data.get('only_remain', False) and line.mx_closed:
+                _logger.info('Jump only remain: line is closed')
+                continue # jump if no item or all produced
+
             default_code = line.product_id.default_code
             if not default_code:
                 raise osv.except_osv(
@@ -483,6 +498,7 @@ class Parser(report_sxw.rml_parse):
                 status = 'PROD'                
             S = TOT - B
 
+            # XXX Put in first test:
             #if data.get('only_remain', False) and ( # added 17 giu 2016
             #        line.mx_closed or mrp_remain <= 0):
             #    _logger.info('Jump only remain: mrp_remain: %s' % (
