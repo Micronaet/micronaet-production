@@ -137,7 +137,7 @@ class Parser(report_sxw.rml_parse):
             ('forecasted_production_id', '!=', False), # include forecast order
             
             # Order for send pricelist:
-            ('pricelist_order', '=', False), 
+            ('pricelist_order', '=', False),
             ]
         #if only_remain:
         # TODO add filter on order when only_remain mx_closed = t         
