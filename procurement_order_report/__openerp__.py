@@ -33,6 +33,7 @@
         'sale',
         'production_accounting_external',
         'production_family',
+        'mx_close_order', # for close test
         ],
     'init_xml': [],
     'demo': [],

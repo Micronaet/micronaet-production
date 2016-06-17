@@ -139,6 +139,8 @@ class Parser(report_sxw.rml_parse):
             # Order for send pricelist:
             ('pricelist_order', '=', False), 
             ]
+        #if only_remain:
+        # TODO add filter on order when only_remain mx_closed = t         
 
         # -------------------------
         # Start filter description:
@@ -241,7 +243,8 @@ class Parser(report_sxw.rml_parse):
             else:
                 mrp_remain = product_uom_qty - product_uom_maked_sync_qty
 
-            if data.get('only_remain', False) and mrp_remain <= 0:
+            if data.get('only_remain', False) and (
+                    line.mx_closed or mrp_remain <= 0):
                 _logger.info('Jump only remain: mrp_remain: %s' % (
                     mrp_remain))
                 continue # jump if no item or all produced
