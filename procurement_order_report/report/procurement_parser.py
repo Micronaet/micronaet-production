@@ -139,8 +139,9 @@ class Parser(report_sxw.rml_parse):
             # Order for send pricelist:
             ('pricelist_order', '=', False),
             ]
-        #if only_remain:
-        # TODO add filter on order when only_remain mx_closed = t         
+        if only_remain:
+            domain.append(('mx_closed', '=', False))
+        _logger.warning('Domain for order filter: %s' % domain)
 
         # -------------------------
         # Start filter description:
