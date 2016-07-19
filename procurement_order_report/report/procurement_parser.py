@@ -232,7 +232,7 @@ class Parser(report_sxw.rml_parse):
                     'Data error', 
                     'Default code not found: %s\n' % (
                         line.product_id.name))
-                
+
             if code_partial and \
                     default_code[from_partial: to_partial] != code_partial:
                 _logger.info('Code partial jumped: %s ! %s' % (
@@ -334,7 +334,7 @@ class Parser(report_sxw.rml_parse):
             product_uom_qty = line.product_uom_qty
             product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
             delivered_qty = line.delivered_qty
-            
+
             TOT = product_uom_qty - delivered_qty            
             if delivered_qty > product_uom_maked_sync_qty:
                 B = 0
