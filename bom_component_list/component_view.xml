@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_bom_component_line_tree">
+            <field name="name">mrp.bom.line.tree</field>
+            <field name="model">mrp.bom.line</field>
+            <field name="arch" type="xml">
+                <tree string="Componenti">
+	                <field name="sequence" />
+	                <field name="bom_id" />
+	                <button name="open_bom_view" string="Open BOM" type="object" icon="gtk-dnd"/>
+	                <field name="product_id" />
+	                <field name="type" />
+	                <field name="product_qty" />
+	                <field name="product_rounding" />
+	                <field name="product_efficiency" />
+	                <field name="product_uom" />
+	                <field name="product_uos_qty" />
+	                <field name="product_uos" />
+	                <field name="date_start" />
+	                <field name="date_stop" />
+	                <field name="routing_id" />
+	                <field name="attribute_value_ids" widget="many2many_tags" />
+	                <field name="property_ids" widget="many2many_tags" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_bom_component_line_search">
+            <field name="name">mrp.bom.line.search</field>
+            <field name="model">mrp.bom.line</field>
+            <field name="arch" type="xml">
+                <search string="BOM line search" version="7.0">        
+                    <field name="bom_id" />
+                    <field name="product_id" />
+	                <field name="type" />
+                    <group expand="0" string="Group By...">
+                        <filter string="BOM" context="{'group_by': 'bom_id'}" />
+                        <filter string="Product" context="{'group_by': 'product_id'}" />
+                    </group>                
+                </search>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_bom_component_line_form">
+            <field name="name">BOM component</field>
+            <field name="res_model">mrp.bom.line</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_bom_component_line_tree"/>
+            <field name="search_view_id" ref="view_bom_component_line_search"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>        
+        <menuitem 
+            parent="mrp.menu_mrp_bom_form_action" 
+            id="menu_action_bom_component_line_form" 
+            action="action_bom_component_line_form"/>
+        
+    </data>
+</openerp>
+
