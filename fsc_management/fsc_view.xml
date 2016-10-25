@@ -14,7 +14,7 @@
                             <field name="fsc_code" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}"/>
                             <field name="fsc_from_date" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}"/>
                             <field name="fsc_report_text" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}" colspan="4"/>
-                            <field name="fsc_logo" widget="image"/>
+                            <field name="fsc_logo" widget="image" attrs="{'invisible': [('fsc_certified','=',False)]}"/>
                         </group>
                     </page>
                 </xpath>
