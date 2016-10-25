@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_fsc_company_certified_form">
+            <field name="name">res.company.form</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page[2]" position="after">
+                    <page string="FSC">
+                        <group col="4" colspan="4">
+                            <field name="fsc_certified" />
+                            <newline/>
+                            <field name="fsc_code" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}"/>
+                            <field name="fsc_from_date" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}"/>
+                            <field name="fsc_report_text" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}" colspan="4"/>
+                            <field name="fsc_logo" widget="image"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_product_product_fsc_form">
+            <field name="name">product.product.form</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <field name="active" position="before">
+                     <field name="fsc_certified" />
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_product_product_fsc_search">
+            <field name="name">product.product.search</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_search_form_view"/>
+            <field name="arch" type="xml">            
+                <xpath expr="//filter[1]" position="after">
+                    <filter name="fsc_certified_on" string="FSC Certified" domain="[('fsc_certified','=',True)]"/>
+                </xpath>
+            </field>
+        </record>
+        
+    </data>
+</openerp>
+
