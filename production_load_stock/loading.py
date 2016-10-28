@@ -309,7 +309,9 @@ class SaleOrder(orm.Model):
             CL and SL, used from create and write method            
         '''
         assert len(sol_ids), 'Only one row a time!'
-        context = context or {}
+        if context is None:
+            context = {}
+            
         persistent = context.get('force_persistent', False)
         
         # Pool used:
