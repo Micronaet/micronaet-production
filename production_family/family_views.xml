@@ -45,6 +45,7 @@
             <field name="name" position="after">
                 <field name="is_family" invisible="1"/>
                 <field name="family_id" />
+                <field name="family_list" />
                 <field name="force_manufacture" />
                 <field name="no_stock_operation" />
             </field>
