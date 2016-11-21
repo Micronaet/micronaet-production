@@ -40,7 +40,7 @@
         <field name="inherit_id" ref="product.product_template_tree_view" />
         <field name="arch" type="xml">
             <field name="name" position="before">
-                <button name="update_family" string="Update product" type="object" attrs="{'invisible': [('is_family', '=', False)]}" icon="gtk-update"/>
+                <button name="update_family" string="Update product" type="object" attrs="{'invisible': [('is_family', '=', False)]}" icon="gtk-refresh"/>
             </field>
             <field name="name" position="after">
                 <field name="is_family" invisible="1"/>
