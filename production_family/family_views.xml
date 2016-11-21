@@ -40,6 +40,7 @@
         <field name="inherit_id" ref="product.product_template_tree_view" />
         <field name="arch" type="xml">
             <field name="name" position="after">
+                <button name="update_family" string="Update product" type="object" attrs="{'invisible': [('is_family', '=', False)]}" />
                 <field name="is_family" invisible="1"/>
                 <field name="family_id" />
                 <field name="force_manufacture" />
