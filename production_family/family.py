@@ -55,9 +55,9 @@ class ProductTemplateFamily(orm.Model):
         product_pool = self.pool.get('product.product')
         
         # Search all elements of code:
-        for code in product_proxy.family_list.split("|"):
+        for code in product_proxy.family_list.split('|'):
             product_ids = product_pool.search(cr, uid, [
-                ('default_code', '=ilike', code + "%")], context=context)
+                ('default_code', '=ilike', code + '%')], context=context)
             product_pool.write(cr, uid, product_ids, {
                 'family_id': product_proxy.id,
                 'internal_manufacture': product_proxy.force_manufacture,
