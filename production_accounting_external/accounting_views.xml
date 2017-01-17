@@ -184,7 +184,7 @@
         <field name="inherit_id" ref="sql_sale_order.view_sale_order_line_tree"/>
         <field name="arch" type="xml">
             <field name="product_uom" position="after">
-                <field name="product_uom_maked_sync_qty" sum="B" />
+                <field name="product_uom_maked_sync_qty" string="(B)" sum="B" />
             </field>   
         </field>
     </record>
