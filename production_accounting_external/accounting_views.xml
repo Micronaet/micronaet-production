@@ -178,6 +178,16 @@
             </tree>        
         </field>
     </record>
+    <record model="ir.ui.view" id="view_sale_order_line_b_qty_tree">
+        <field name="name">OC line</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sql_sale_order.view_sale_order_line_tree"/>
+        <field name="arch" type="xml">
+            <field name="product_uom" position="after">
+                <field name="product_uom_maked_sync_qty" sum="B" />
+            </field>   
+        </field>
+    </record>
 
     <record model="ir.ui.view" id="default_mrp_production_form_view">
         <field name="name">Production form custom</field>
