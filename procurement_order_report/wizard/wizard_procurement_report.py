@@ -76,8 +76,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         datas['code_partial'] = wiz_proxy.code_partial
         
         datas['code_from'] = wiz_proxy.code_from
-        # TODO togliere:
-        datas['only_remain'] = 'mrp' == wiz_proxy.record_select #wiz_proxy.only_remain
+
         datas['record_select'] = wiz_proxy.record_select
 
         return {

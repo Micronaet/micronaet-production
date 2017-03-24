@@ -19,9 +19,6 @@
                             <separator string="Code filter:" colspan="4" />
                             <field name="code_start" />
                             <field name="record_select" />
-                            <!--TODO remove-->
-                            <field name="only_remain" invisible="1"/>
-                            <newline/>
                             
                             <separator string="Group clause:" colspan="4" />
                             <field name="code_partial" />

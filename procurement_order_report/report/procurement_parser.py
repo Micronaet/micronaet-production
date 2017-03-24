@@ -106,7 +106,9 @@ class Parser(report_sxw.rml_parse):
         
         # Get wizard information:
         code_start = data.get('code_start', False)        
-        only_remain = data.get('only_remain', False)
+
+        record_select = data.get('record_select', 'all')
+        only_remain = record_select != 'all'
 
         family_id = data.get('family_id', False)
         family_name = data.get('family_name', '?')
@@ -156,11 +158,12 @@ class Parser(report_sxw.rml_parse):
         if to_date:
             domain.append(('date_order', '<=', to_date))
             self.filter_description += _(', date < %s') % to_date
-        
-        if only_remain:
-            self.filter_description += _(', only remain to produce')
-        else:    
-            self.filter_description += _(', all order line')
+                
+        self.filter_description += _(', Selezione record: %s' % record_select)
+        #if only_remain:
+        #    self.filter_description += _(', only remain to produce')
+        #else:    
+        #    self.filter_description += _(', all order line')
         
         order_ids = sale_pool.search(self.cr, self.uid, domain)
         _logger.info('Order filter domain used: [%s] order selected: %s' % (
@@ -213,13 +216,18 @@ class Parser(report_sxw.rml_parse):
             from_partial = code_from - 1
             to_partial = from_partial + len(code_partial)
 
+        record_select = data.get('record_select', 'all') #
+        only_remain = record_select != 'all'
+        
         i = 0
         self.general_total = [0, 0, 0, 0]
 
         for line in browse_line:
             i += 1
             # First test for speed up: added 17 giu 2016 (for speed up)
-            if data.get('only_remain', False) and line.mx_closed:
+            #if record_select != 'all' and line.mx_closed:
+            if only_remain and line.mx_closed:
+                # State: mrp and delivery are empty in mx_closed line
                 _logger.info('Jump only remain: line is closed')
                 continue # jump if no item or all produced
 
@@ -243,16 +251,27 @@ class Parser(report_sxw.rml_parse):
             product_uom_qty = line.product_uom_qty
             product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
             delivered_qty = line.delivered_qty
+            to_delivery_qty = product_uom_qty - delivered_qty
             
             if delivered_qty > product_uom_maked_sync_qty:
                 mrp_remain = product_uom_qty - delivered_qty
             else:
                 mrp_remain = product_uom_qty - product_uom_maked_sync_qty
 
-            if data.get('only_remain', False) and mrp_remain <= 0:
-                _logger.info('Jump only remain: mrp_remain: %s' % (
-                    mrp_remain))
-                continue # jump if no item or all produced
+            # Record selection:
+            if record_select == 'mrp':
+                if mrp_remain <= 0:
+                    _logger.info('Jump no remain production remain: %s' % (
+                        mrp_remain))
+                    continue # jump if no item or all produced
+                    
+            elif record_select == 'delivery':     
+                if to_delivery_qty <= 0:
+                    _logger.info('Jump no delivery: remain: %s' % (
+                        to_delivery_qty))
+                    continue # jump if no item or all produced
+            else: # 'all'
+                pass # nothing for all
 
             code = default_code
             if default_code not in products:
@@ -313,6 +332,9 @@ class Parser(report_sxw.rml_parse):
         browse_line = self.browse_order_line(data)
         self.order_ids = [] # list of order interessed from movement
 
+        record_select = data.get('record_select', 'all')
+        only_remain = record_select != 'all'
+
         # Manage partial default_code
         code_from = int(data.get('code_from', 1))
         code_partial = data.get('code_partial', '')
@@ -322,7 +344,7 @@ class Parser(report_sxw.rml_parse):
 
         for line in browse_line:
             # First test for speed up: added 17 giu 2016
-            if data.get('only_remain', False) and line.mx_closed:
+            if only_remain and line.mx_closed:
                 _logger.info('Jump only remain: line is closed')
                 continue # jump if no item or all produced
 
@@ -345,7 +367,7 @@ class Parser(report_sxw.rml_parse):
             S = TOT - B
 
             # XXX Put in first test:
-            #if data.get('only_remain', False) and ( # added 17 giu 2016
+            #if only_remain and ( # added 17 giu 2016
             #        line.mx_closed or mrp_remain <= 0):
             #    _logger.info('Jump only remain: mrp_remain: %s' % (
             #        mrp_remain))
@@ -463,14 +485,17 @@ class Parser(report_sxw.rml_parse):
         code_from = int(data.get('code_from', 1))
         code_partial = data.get('code_partial', '')
         #families = {} # Database for family
-        
+ 
+        record_select = data.get('record_select', 'all')
+        only_remain = record_select != 'all'
+       
         if code_partial:
             from_partial = code_from - 1
             to_partial = from_partial + len(code_partial)
 
         for line in browse_line:
             # First test for speed up: added 17 giu 2016
-            if data.get('only_remain', False) and line.mx_closed:
+            if only_remain and line.mx_closed:
                 _logger.info('Jump only remain: line is closed')
                 continue # jump if no item or all produced
 
@@ -500,7 +525,7 @@ class Parser(report_sxw.rml_parse):
             S = TOT - B
 
             # XXX Put in first test:
-            #if data.get('only_remain', False) and ( # added 17 giu 2016
+            #if only_remain and ( # added 17 giu 2016
             #        line.mx_closed or mrp_remain <= 0):
             #    _logger.info('Jump only remain: mrp_remain: %s' % (
             #        mrp_remain))
