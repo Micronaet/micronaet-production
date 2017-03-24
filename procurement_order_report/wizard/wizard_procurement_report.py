@@ -96,8 +96,8 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
             domain=[('is_family', '=', True)]),
             
         # TODO Togliere:
-        'only_remain':fields.boolean('Only remain', 
-            help='Show only element to procuce'),
+        #'only_remain':fields.boolean('Only remain', 
+        #    help='Show only element to procuce'),
         'record_select': fields.selection([
             ('all', 'Tutti'),
             ('mrp', 'Rimanenti da produrre'),
@@ -119,7 +119,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         
     _defaults = {
         'report_type': lambda *x: 'detailed',
-        'only_remain': lambda *x: True,
+        #'only_remain': lambda *x: True,
         'record_select': lambda *x: 'all',
         
         #'to_date': datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT),
