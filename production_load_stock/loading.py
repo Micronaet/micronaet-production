@@ -306,9 +306,13 @@ class SaleOrder(orm.Model):
     def _recreate_production_sol_move(self, cr, uid, sol_ids, 
             context=None):
         ''' Generic function used for create / update stock move,
-            CL and SL, used from create and write method            
-        '''
+            CL and SL, used from create and write method    
+            
+            XXX Note:
+            03/04/2017: Now Unload SL movement are dynamically calculated        
+        '''        
         assert len(sol_ids), 'Only one row a time!'
+        
         if context is None:
             context = {}
             
@@ -328,24 +332,23 @@ class SaleOrder(orm.Model):
         # TODO remove stock elements (use type)?:
         stock_location = company_proxy.stock_location_id.id
         mrp_location = company_proxy.stock_mrp_location_id.id
+        if not(mrp_location and stock_location):
+            raise osv.except_osv(
+                _('Error'), 
+                _('Set up in company location for stock and mrp1!'))
         
         if company_proxy.stock_report_mrp_in_ids: # XXX only first
             mrp_type_in = company_proxy.stock_report_mrp_in_ids[0].id
         else:
             mrp_type_in = False    
             
-        if company_proxy.stock_report_mrp_out_ids:    
-            mrp_type_out = company_proxy.stock_report_mrp_out_ids[0].id
-        else:
-            mrp_type_out = False
+        # XXX 03/04/2017: Now Unload SL movement are dynamicalli calculated
+        #if company_proxy.stock_report_mrp_out_ids:    
+        #    mrp_type_out = company_proxy.stock_report_mrp_out_ids[0].id
+        #else:
+        #    mrp_type_out = False
         
-        if not(mrp_location and stock_location):
-            raise osv.except_osv(
-                _('Error'), 
-                _('Set up in company location for stock and mrp1!'))
-        
-        line_proxy = self.browse(cr, uid, sol_ids, context=context)[0]
-        
+        line_proxy = self.browse(cr, uid, sol_ids, context=context)[0]        
         # Test if is a stock load family:
         try:
             if line_proxy.mrp_id.bom_id.product_tmpl_id.no_stock_operation:
@@ -359,13 +362,14 @@ class SaleOrder(orm.Model):
         mrp_picking_in = pick_pool.get_mrp_picking(
             cr, uid, line_proxy.mrp_id, 'cl', mrp_type_in, 
             context=context)
-        mrp_picking_out = pick_pool.get_mrp_picking(
-            cr, uid, line_proxy.mrp_id, 'sl', mrp_type_out, 
-            context=context)
-
+            
+        # XXX 03/04/2017: Now Unload SL movement are dynamically calculated
+        #mrp_picking_out = pick_pool.get_mrp_picking(
+        #    cr, uid, line_proxy.mrp_id, 'sl', mrp_type_out, 
+        #    context=context)
         # get product BOM for materials:
-        bom_proxy = self._search_bom_for_product(cr, uid, 
-            line_proxy.product_id.id, context=context)
+        #bom_proxy = self._search_bom_for_product(cr, uid, 
+        #    line_proxy.product_id.id, context=context)
 
         if persistent:
             maked_qty = line_proxy.product_uom_force_qty or 0.0
@@ -402,123 +406,127 @@ class SaleOrder(orm.Model):
         if not maked_qty:   
             return True
         
-        # Create SL move:
-        if bom_proxy:
-            # Unload materials:
-            for bom in bom_proxy.bom_line_ids:
-                unload_qty = bom.product_qty * maked_qty
-                if unload_qty <= 0.0:
-                    continue # jump line
-                    
-                # Move create:    
-                move_pool.create(cr, uid, {
-                    'picking_id': mrp_picking_out,
-                    'production_load_type': 'sl',
-                    'location_dest_id': mrp_location,
-                    'location_id': stock_location,
-                    'picking_type_id': mrp_type_out,
-                    'product_id': bom.product_id.id,
-                    'product_uom_qty': unload_qty, 
-                    'product_uom': bom.product_id.uom_id.id,
-
-                    #'product_uom_qty',
-                    #'product_uos',
-                    #'product_uos_qty',
-                    'production_sol_id': line_proxy.id,
-                    'state': 'done', # confirmed, available
-                    'date_expected': datetime.now().strftime(
-                        DEFAULT_SERVER_DATE_FORMAT),
-                    'origin': line_proxy.mrp_id.name,
-                    'display_name': 'SL: %s' % line_proxy.product_id.name,
-                    'name': 'SL: %s' % line_proxy.product_id.name,
-                    'persistent': persistent,
-                    #'warehouse_id',
-
-                    #'weight'
-                    #'weight_net',
-                    #'group_id'
-                    #'production_id'
-                    #'product_packaging'                    
-                    #'company_id'
-                    #'date':
-                    #date_expexted'
-                    #'note':,
-                    #'partner_id':
-                    #'price_unit',
-                    #'priority',.                    
-                    }, context=context)
-                 
-                # Quants create:    
-                quant_pool.create(cr, uid, {
-                    'in_date': datetime.now().strftime(
-                        DEFAULT_SERVER_DATETIME_FORMAT),
-                    'cost': 0.0, # TODO
-                    'location_id': stock_location,
-                    'product_id': bom.product_id.id,
-                    'qty': - unload_qty, 
-                    #'product_uom': bom.product_id.uom_id.id,
-                    'production_sol_id': line_proxy.id,
-                    'persistent': persistent,
-                    }, context=context)   
-        else:
-            # No bom error!!
-            #_logger.error('BOM not found sql_import for product: %s' % (
-            #    line_proxy.product_id.default_code or ''))
-            raise osv.except_osv(
-                _('Error'), 
-                _('BOM not found sql_import for product: %s' % (
-                    line_proxy.product_id.default_code or '')))
+        # ---------------------------------------------------------------------
+        # Create SL move for materials:
+        # ---------------------------------------------------------------------
+        # XXX 03/04/2017: Now Unload SL movement are dynamicalli calculated
+        # so stopped procedure for unload with movements:
+        #if bom_proxy:
+        #    # Unload materials:
+        #    for bom in bom_proxy.bom_line_ids:
+        #        unload_qty = bom.product_qty * maked_qty
+        #        if unload_qty <= 0.0:
+        #            continue # jump line                    
+        #        # Move create:    
+        #        move_pool.create(cr, uid, {
+        #            'picking_id': mrp_picking_out,
+        #            'production_load_type': 'sl',
+        #            'location_dest_id': mrp_location,
+        #            'location_id': stock_location,
+        #            'picking_type_id': mrp_type_out,
+        #            'product_id': bom.product_id.id,
+        #            'product_uom_qty': unload_qty, 
+        #            'product_uom': bom.product_id.uom_id.id,
+        #            #'product_uom_qty',
+        #            #'product_uos',
+        #            #'product_uos_qty',
+        #            'production_sol_id': line_proxy.id,
+        #            'state': 'done', # confirmed, available
+        #            'date_expected': datetime.now().strftime(
+        #                DEFAULT_SERVER_DATE_FORMAT),
+        #            'origin': line_proxy.mrp_id.name,
+        #            'display_name': 'SL: %s' % line_proxy.product_id.name,
+        #            'name': 'SL: %s' % line_proxy.product_id.name,
+        #            'persistent': persistent,
+        #            #'warehouse_id',
+        #            #'weight'
+        #            #'weight_net',
+        #            #'group_id'
+        #            #'production_id'
+        #            #'product_packaging'                    
+        #            #'company_id'
+        #            #'date':
+        #            #date_expexted'
+        #            #'note':,
+        #            #'partner_id':
+        #            #'price_unit',
+        #            #'priority',.                    
+        #            }, context=context)                 
+        #        # Quants create:    
+        #        quant_pool.create(cr, uid, {
+        #            'in_date': datetime.now().strftime(
+        #                DEFAULT_SERVER_DATETIME_FORMAT),
+        #            'cost': 0.0, # TODO
+        #            'location_id': stock_location,
+        #            'product_id': bom.product_id.id,
+        #            'qty': - unload_qty, 
+        #            #'product_uom': bom.product_id.uom_id.id,
+        #            'production_sol_id': line_proxy.id,
+        #            'persistent': persistent,
+        #            }, context=context)   
+        #else:
+        #    # No bom error!!
+        #    #_logger.error('BOM not found sql_import for product: %s' % (
+        #    #    line_proxy.product_id.default_code or ''))
+        #    raise osv.except_osv(
+        #        _('Error'), 
+        #        _('BOM not found sql_import for product: %s' % (
+        #            line_proxy.product_id.default_code or '')))
         
-        # Load end product:    
+        # ---------------------------------------------------------------------
+        # CL for load Product:    
+        # ---------------------------------------------------------------------
         # TODO
-        if not persistent:
-            move_pool.create(cr, uid, {
-                'picking_id': mrp_picking_in,
-                'production_load_type': 'cl',
-                'picking_type_id': mrp_type_in,
-                'location_dest_id': stock_location,
-                'location_id': mrp_location,
-                'product_id': line_proxy.product_id.id,
-                'product_uom_qty': maked_qty, 
-                'product_uom': line_proxy.product_id.uom_id.id,
-                'production_sol_id': line_proxy.id,
-                #'product_uom_qty',
-                #'product_uos',
-                #'product_uos_qty',
-                'state': 'done', # confirmed, available
-                'date_expected': datetime.now().strftime(
-                    DEFAULT_SERVER_DATE_FORMAT),
-                'origin': line_proxy.mrp_id.name,
-                'display_name': 'CL: %s' % line_proxy.product_id.name,
-                'name': 'CL: %s' % line_proxy.product_id.name,
-                #'warehouse_id',
-                #'picking_type_id',
+        #if not persistent:
+        # XXX 03/04/2017: Now Unload SL movement are dynamicalli calculated
+        # XXX Always load B of F quantity
+        move_pool.create(cr, uid, {
+            'picking_id': mrp_picking_in,
+            'production_load_type': 'cl',
+            'picking_type_id': mrp_type_in,
+            'location_dest_id': stock_location,
+            'location_id': mrp_location,
+            'product_id': line_proxy.product_id.id,
+            'product_uom_qty': maked_qty, 
+            'product_uom': line_proxy.product_id.uom_id.id,
+            'production_sol_id': line_proxy.id,
+            #'product_uom_qty',
+            #'product_uos',
+            #'product_uos_qty',
+            'state': 'done', # confirmed, available
+            'date_expected': datetime.now().strftime(
+                DEFAULT_SERVER_DATE_FORMAT),
+            'origin': line_proxy.mrp_id.name,
+            'display_name': 'CL: %s' % line_proxy.product_id.name,
+            'name': 'CL: %s' % line_proxy.product_id.name,
+            #'warehouse_id',
+            #'picking_type_id',
 
-                #'weight'
-                #'weight_net',
-                #'picking_id'
-                #'group_id'
-                #'production_id'
-                #'product_packaging'                    
-                #'company_id'
-                #'date':
-                #date_expexted'
-                #'note':,
-                #'partner_id':
-                #'price_unit',
-                #'priority',.                    
-                }, context=context)
-                
-            # Quants create:    
-            quant_pool.create(cr, uid, {
-                'in_date': datetime.now().strftime(
-                    DEFAULT_SERVER_DATETIME_FORMAT),
-                'cost': 0.0, # TODO
-                'location_id': stock_location,
-                'product_id': line_proxy.product_id.id,
-                'qty': maked_qty, 
-                'production_sol_id': line_proxy.id,
-                }, context=context)   
+            #'weight'
+            #'weight_net',
+            #'picking_id'
+            #'group_id'
+            #'production_id'
+            #'product_packaging'                    
+            #'company_id'
+            #'date':
+            #date_expexted'
+            #'note':,
+            #'partner_id':
+            #'price_unit',
+            #'priority',.                    
+            }, context=context)
+            
+        # Quants create:    
+        quant_pool.create(cr, uid, {
+            'in_date': datetime.now().strftime(
+                DEFAULT_SERVER_DATETIME_FORMAT),
+            'cost': 0.0, # TODO
+            'location_id': stock_location,
+            'product_id': line_proxy.product_id.id,
+            'qty': maked_qty, 
+            'production_sol_id': line_proxy.id,
+            }, context=context)   
         return True
         
     def write(self, cr, uid, ids, vals, context=None):
@@ -568,5 +576,7 @@ class SaleOrder(orm.Model):
         # Force persistent over quantity:    
         'product_uom_force_qty': fields.float(
             'Forced', digits=(16, 2), help='Force extra qty to confirm'),        
+        'product_uom_force_remove': fields.float(
+            'Forced removed', digits=(16, 2), help='Force removed'),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
