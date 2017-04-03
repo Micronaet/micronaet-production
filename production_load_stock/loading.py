@@ -316,7 +316,7 @@ class SaleOrder(orm.Model):
         if context is None:
             context = {}
             
-        persistent = context.get('force_persistent', False)
+        #persistent = context.get('force_persistent', False)
         
         # Pool used:
         pick_pool = self.pool.get('stock.picking')
@@ -335,7 +335,7 @@ class SaleOrder(orm.Model):
         if not(mrp_location and stock_location):
             raise osv.except_osv(
                 _('Error'), 
-                _('Set up in company location for stock and mrp1!'))
+                _('Set up in company location for stock and mrp!'))
         
         if company_proxy.stock_report_mrp_in_ids: # XXX only first
             mrp_type_in = company_proxy.stock_report_mrp_in_ids[0].id
@@ -371,37 +371,38 @@ class SaleOrder(orm.Model):
         #bom_proxy = self._search_bom_for_product(cr, uid, 
         #    line_proxy.product_id.id, context=context)
 
-        if persistent:
-            maked_qty = line_proxy.product_uom_force_qty or 0.0
-        else:
-            maked_qty = line_proxy.product_uom_maked_sync_qty or 0.0
+        #if persistent:
+        #    maked_qty = line_proxy.product_uom_force_qty or 0.0
+        #else:
+        maked_qty = line_proxy.product_uom_maked_sync_qty or 0.0
 
         # -------------------------------
         # Unlink all stock move (always):
         # -------------------------------
-        if not persistent: # XXX domain persistent status for delete?
-            move_ids = move_pool.search(cr, uid, [
-                ('production_sol_id', '=', line_proxy.id),
-                ('persistent', '=', False),
-                ], context=context)
-            if move_ids:
-                # Set to draft:
-                move_pool.write(cr, uid, move_ids, {
-                    'state': 'draft',
-                    }, context=context)
-                # delete:    
-                move_pool.unlink(cr, uid, move_ids, context=context)
+        # XXX 03/04/2017: Now Unload SL movement are dynamically calculated
+        #if not persistent: # XXX domain persistent status for delete?
+        move_ids = move_pool.search(cr, uid, [
+            ('production_sol_id', '=', line_proxy.id),
+            #('persistent', '=', False),
+            ], context=context)
+        if move_ids:
+            # Set to draft:
+            move_pool.write(cr, uid, move_ids, {
+                'state': 'draft',
+                }, context=context)
+            # delete:    
+            move_pool.unlink(cr, uid, move_ids, context=context)
 
-            # -----------------------
-            # Unlink all stock quant:
-            # -----------------------
-            quant_ids = quant_pool.search(cr, uid, [
-                ('production_sol_id', '=', line_proxy.id),
-                ('persistent', '=', False),
-                ], context=context)
-            if quant_ids:
-                # Set to draft:
-                quant_pool.unlink(cr, uid, quant_ids, context=context)
+        # -----------------------
+        # Unlink all stock quant:
+        # -----------------------
+        quant_ids = quant_pool.search(cr, uid, [
+            ('production_sol_id', '=', line_proxy.id),
+            #('persistent', '=', False),
+            ], context=context)
+        if quant_ids:
+            # Set to draft:
+            quant_pool.unlink(cr, uid, quant_ids, context=context)
 
         if not maked_qty:   
             return True
@@ -576,7 +577,7 @@ class SaleOrder(orm.Model):
         # Force persistent over quantity:    
         'product_uom_force_qty': fields.float(
             'Forced', digits=(16, 2), help='Force extra qty to confirm'),        
-        'product_uom_force_remove': fields.float(
-            'Forced removed', digits=(16, 2), help='Force removed'),
+        #'product_uom_force_remove': fields.float(
+        #    'Forced removed', digits=(16, 2), help='Force removed'),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
