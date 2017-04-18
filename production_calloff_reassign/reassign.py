@@ -125,12 +125,32 @@ class SaleOrder(orm.Model):
     def calloff_info(self, cr, uid, ids, context=None):
         ''' Reassign call off quantity produced
         '''
+        assign_product, calloff_product = self.calloff_get_usable(
+            cr, uid, ids, context=context)
         
-        return True
+        res = ''
+        for line, assign_qty in assign_product.iteritems():
+            res += '<tr><td>%s</td><td>%s</td></tr>' % (
+                line.product_id.default_code or '',
+                assign_qty,
+                )  
+        res = _('''
+            <table><tr><td>Product</td><td>Use</td></tr>%s</table>
+            ''') % res
+            
+        return self.write(cr, uid, ids, {
+            'calloff_pre_assign': res,
+            }, context=context)        
     
     def calloff_reassign_here(self, cr, uid, ids, context=None):
         ''' Reassign call off quantity produced
         '''
+        assign_product, calloff_product = self.calloff_get_usable(
+            cr, uid, ids, context=context)
+        # TODO
+        # Remove from calloff:        
+
+        # Assign product to the order:        
         
         return True
         
