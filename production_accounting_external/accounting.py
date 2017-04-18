@@ -477,10 +477,31 @@ class MrpProduction(orm.Model):
                 'mrp_sequence': i,
                 }, context=context)
         return True
-        
+    
+    def generate_mrp_unlinked_container(self, cr, uid, context=None):
+        ''' Generate container MRP order for unlinked elements
+        '''
+        name = 'UNLINK-%s' % datetime.now().strftime('%y%m')
+        mrp_ids = self.search(cr, uid, [
+            ('unlinked_mrp', '=', True), # XXX not necessary
+            ('name', '=', name),
+            ], context)
+        import pdb; pdb.set_trace()
+        if mrp_ids:
+            return mrp_ids
+        return self.create(cr, uid, {
+            'product_id': 1,
+            'bom_id': 1,
+            'product_qty': 1,
+            'date_planned': 1,
+            }, context=context)    
+
     def free_line(self, cr, uid, ids, context=None):
         ''' Free the line from production order 
         '''
+        mrp_id = self.generate_mrp_unlinked_container(
+            cr, uid, context=context)
+        # TODO generate a container MRP order
         return self.write(cr, uid, ids, {
             'used_by_mrp_id': False,
             'mrp_unlinked': True, # marked as unlinked
@@ -583,6 +604,8 @@ class MrpProduction(orm.Model):
         return res
         
     _columns = {
+        'unlinked_mrp': fields.boolean('Unlinked order', 
+            help='Orded for keep all unlinked sale line'),
         'forecast_qty': fields.function(
             _get_total_information, method=True, type='float', 
             string='Forecast qty', store=False, readonly=True, multi=True),
