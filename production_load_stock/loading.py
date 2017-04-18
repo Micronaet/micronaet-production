@@ -182,13 +182,16 @@ class StockPicking(orm.Model):
         '''
         if mrp_proxy: # Linked to MRP
             origin = mrp_proxy.name
+            company_id = mrp_proxy.company_id.partner_id.id
             pick_ids = self.search(cr, uid, [
                 ('production_id', '=', mrp_proxy.id),
                 ('production_load_type', '=', mode),
                 ], context=context)
         else: # no MRP proxy linked to sale line:
             # NOTE: Unlink document generated every month:
-            origin = 'UNLINKED-MRP-CL-%s' % datatime.now().strftime('%y%m')
+            origin = 'UNLINKED-MRP-CL-%s' % datetime.now().strftime('%y%m')
+            company_id = self.pool.get('res.company').search(
+                cr, uid, [], context=context)[0] # XXX
             pick_ids = self.search(cr, uid, [
                 ('unlinked_mrp', '=', True), # Unlinked picking general doc.
                 ('origin', '=', origin),
@@ -201,7 +204,7 @@ class StockPicking(orm.Model):
         data = {
             'production_load_type': mode,
             'origin': origin,
-            'partner_id': mrp_proxy.company_id.partner_id.id,
+            'partner_id': company_id,
             'picking_type_id': picking_type_id,
             'state': 'done', 
             }

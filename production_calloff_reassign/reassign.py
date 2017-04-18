@@ -44,6 +44,27 @@ class SaleOrder(orm.Model):
     """
     
     _inherit = 'sale.order'
+    _css_style = '''
+        <style>
+            .table_bf {
+                 border: 1px solid black;
+                 padding: 3px;
+                 width: 400px;
+                 }
+            .table_bf td {
+                 border: 1px solid black;
+                 padding: 3px;
+                 text-align: center;
+                 }
+            .table_bf th {
+                 border: 1px solid black;
+                 padding: 3px;
+                 text-align: center;
+                 background-color: grey;
+                 color: white;
+                 }
+        </style>
+        '''
 
     # -------------------------------------------------------------------------
     # Button events:
@@ -130,38 +151,29 @@ class SaleOrder(orm.Model):
             cr, uid, ids, context=context)
         
         res = ''
+        order_name = ''
         for line, assign_qty in assign_product:
+            if not order_name:
+                order_name = line.order_id.name
             res += '<tr><td>%s</td><td>%s</td></tr>' % (
                 line.product_id.default_code or '',
                 assign_qty,
                 )  
         res = _('''
-            <style>
-                .table_bf {
-                     border: 1px solid black;
-                     padding: 3px;
-                     width: 400px;
-                     }
-                .table_bf td {
-                     border: 1px solid black;
-                     padding: 3px;
-                     text-align: center;
-                     }
-                .table_bf th {
-                     border: 1px solid black;
-                     padding: 3px;
-                     text-align: center;
-                     background-color: grey;
-                     color: white;
-                     }
-            </style>
+            %s
+            <p><b>Order: %s</b>  [log date: %s]</p>
             <table class='table_bf'>
                 <tr class='table_bf'>
                     <th>Product</th>
                     <th>Q. Used</th>
                 </tr>%s
             </table>
-            ''') % res
+            ''') % (
+                self._css_style,                 
+                order_name or '/',
+                datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                res,
+                )
             
         return self.write(cr, uid, ids, {
             'calloff_pre_assign': res,
@@ -170,6 +182,9 @@ class SaleOrder(orm.Model):
     def calloff_reassign_here(self, cr, uid, ids, context=None):
         ''' Reassign call off quantity produced
         '''
+        # Save current log operation info:
+        self.calloff_info(cr, uid, ids, context=context)
+        
         sol_pool = self.pool.get('sale.order.line')
         
         assign_product, calloff_product = self.calloff_get_usable(
@@ -180,9 +195,7 @@ class SaleOrder(orm.Model):
         # ---------------------------------------------------------------------
         remove_ids = []
         
-        log = ''
         # Remove assigned quantity in calloff order:
-        import pdb; pdb.set_trace()
         for product_id, records in calloff_product.iteritems():
             for available_qty, used_qty, line in records:
                 if not used_qty:
@@ -205,27 +218,30 @@ class SaleOrder(orm.Model):
         # ---------------------------------------------------------------------
         # Assign product to the order:        
         # ---------------------------------------------------------------------
-        previous_log = 'nothing'
+        calloff_log = None
+        calloff_pre_assign = ''
         
         # Add assigned qty in order:
-        for line, assign_qty in assign_product:
+        for line, assigned_qty in assign_product:
             # Read previous log:
-            if previous_log == 'nothing': # only first time:
-                previous_log = line.order_id.calloff_log or ''
-                
+            if calloff_log is None: # Only first time:
+                calloff_log = line.order_id.calloff_log or ''
+                calloff_pre_assign = line.order_id.calloff_pre_assign or ''
+
+            # Note: B don't pass OC quantity!
             sol_pool.write(cr, uid, line.id, {
                 'product_uom_maked_sync_qty': 
                     line.product_uom_maked_sync_qty + assigned_qty,
                 }, context=context)
 
-        # Update log information:        
-        if log:
+        # Update log information:
+        if calloff_pre_assign: # not passed in assign loop!
             self.write(cr, uid, ids, {
-                'calloff_log': '<p>%s</p>%s' (
-                    log,
-                    previous_log,
+                'calloff_log': '%s<hr />%s' % (
+                    calloff_pre_assign, # last before
+                    calloff_log,
                     )
-                }, context=context)        
+                }, context=context)
         return True
         
     _columns = {

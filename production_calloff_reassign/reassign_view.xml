@@ -12,14 +12,15 @@
                 <xpath expr="//notebook/page[2]" position="after" >
                    <page string="Calloff">
                        <group colspan="4" col="4" attrs="{'invisible': [('calloff','=',True)]}">
-                           <field name="calloff_id"  domain="[('calloff','=',True)]"/>
+                           <separator string="Child linked order:" colspan="4"/>
+                           <field name="calloff_id"  domain="[('calloff','=',True)]" colspan="4"/>
                            <newline/>
                            <button name="calloff_info" string="Call off info" type="object" attrs="{'invisible': [('calloff_id','=',False)]}" colspan="2"/>
                            <button name="calloff_reassign_here" string="Call off reassign" type="object" attrs="{'invisible': [('calloff_id','=',False)]}" colspan="2"  class="oe_highlight"/>
                            <separator string="Pre assign" colspan="2"/>
                            <separator string="Log" colspan="2"/>
-                           <field name="calloff_pre_assign" nolabel="1" widget="html"/>
-                           <field name="calloff_log" nolabel="1" widget="html"/>
+                           <field name="calloff_pre_assign" nolabel="1" widget="html" colspan="2"/>
+                           <field name="calloff_log" nolabel="1" widget="html" colspan="2"/>
                        </group> 
                        <group colspan="4" col="4" attrs="{'invisible': [('calloff','=',False)]}">                       
                            <field name="calloff_child_ids" readonly="1" nolabel="1">
