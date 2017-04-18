@@ -80,34 +80,42 @@ class SaleOrder(orm.Model):
         assign_product = [] # product needed in this order
         for line in current_proxy.order_line:
             product = line.product_id
-            
             if product.id not in calloff_product:
                 continue
-                
-            # TODO manage quantity yet delivered
+            
+            # Readability:    
             oc_qty = product.product_uom_qty
             b_qty = product.product_uom_maked_sync_qty
             delivery_qty = product.product_uom_delivered_qty
-            if b_qty > delivery_qty:
+            
+            if b_qty >= delivery_qty:
                 need_qty = oc_qty - b_qty
             else:
                 need_qty = oc_qty - delivery_qty
-            
-            assign_qty = 0.0
-            for record in calloff_product:
-                this_qty = record[0] - record[1] # avail - used
+
+            if need_qty <= 0.0: # no need to assign
+                continue
                 
+            assign_qty = 0.0
+            for record in calloff_product[product.id]:
+                this_qty = record[0] - record[1] # avail - used                
                 if this_qty <= 0.0:
                     continue
-                if need_qty <= this_qty:
-                    assign_qty = 
-                
-                
+                    
+                if need_qty <= this_qty: # use remain needed
+                    assign_qty += need_qty
+                    record[1] += need_qty
+                    break
+                    
+                else: # use all this block
+                    assign_qty += this_qty
+                    record[1] += this_qty
+                    need_qty -= this_qty
                     
             # TODO loop for get qty:
             assign_product.append((
                 line,
-                assign_qty,                
+                assign_qty, # only usable qty
                 ))
         return assign_product, calloff_product
 
