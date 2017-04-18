@@ -329,6 +329,8 @@ class SaleOrder(orm.Model):
             XXX Note:
             03/04/2017: Now Unload SL movement are dynamically calculated        
         '''        
+        if type(sol_ids) not in (list, tuple):
+            sol_ids = [sol_ids]
         assert len(sol_ids), 'Only one row a time!'
         
         if context is None:
