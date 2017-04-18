@@ -174,20 +174,22 @@ class SaleOrder(orm.Model):
         
         assign_product, calloff_product = self.calloff_get_usable(
             cr, uid, ids, context=context)
+        import pdb; pdb.set_trace()    
 
         # ---------------------------------------------------------------------
         # Remove from calloff:        
         # ---------------------------------------------------------------------
         remove_ids = []
         
+        log = ''
         # Remove assigned quantity in calloff order:
         for product_id, record in calloff_product.iteritems():
             if not record[1]: # used
                 continue
-                
+
             # Update order line production
             used_qty = record[0] - record[1]
-            oc_remain = line.product_uom_qty - used_qty            
+            oc_remain = line.product_uom_qty - used_qty
             
             # Always write for MRP update operations:
             sol_pool.write(cr, uid, record[2], {
@@ -205,12 +207,27 @@ class SaleOrder(orm.Model):
         # ---------------------------------------------------------------------
         # Assign product to the order:        
         # ---------------------------------------------------------------------
+        previous_log = 'nothing'
+        
         # Add assigned qty in order:
         for line, assign_qty in assign_product.iteritems():
+            # Read previous log:
+            if previous_log == 'nothing': # only first time:
+                previous_log = line.order_id.calloff_log or ''
+                
             sol_pool.write(cr, uid, line.id, {
                 'product_uom_maked_sync': 
                     line.product_uom_maked_sync + assigned_qty,
                 }, context=context)
+
+        # Update log information:        
+        if log:
+            self.write(cr, uid, ids, {
+                'calloff_log': '<p>%s</p>%s' (
+                    log,
+                    previous_log,
+                    )
+                }, context=context)        
         return True
         
     _columns = {
