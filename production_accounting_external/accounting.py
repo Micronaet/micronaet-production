@@ -290,9 +290,10 @@ class SaleOrderLine(orm.Model):
         '''
         return ids
         
-    _columns = {
+    _columns = {        
         'mrp_id': fields.many2one(
             'mrp.production', 'Production', ondelete='set null', ),
+        'mrp_unlinked': fields.boolean('MRP unlinked'),
 
         # TODO remove:    
         'order_confirmed': fields.boolean('Order confirmed',
