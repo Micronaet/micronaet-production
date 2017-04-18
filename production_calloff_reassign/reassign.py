@@ -39,13 +39,16 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 _logger = logging.getLogger(__name__)
 
 
-class MrpProduction(orm.Model):
-    """ Model name: MrpProduction
+class SaleOrder(orm.Model):
+    """ Model name: Sale order
     """
     
-    _inherit = 'mrp.production'
+    _inherit = 'sale.order'
     
     _columns = {
         'calloff': fields.boolean('Call off'),
+        'calloff_id': fields.many2one(
+            'sale.order', 'Call off order', 
+            help='Linked call off order'),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
