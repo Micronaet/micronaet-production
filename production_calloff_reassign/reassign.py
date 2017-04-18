@@ -174,7 +174,7 @@ class SaleOrder(orm.Model):
         
         assign_product, calloff_product = self.calloff_get_usable(
             cr, uid, ids, context=context)
-        import pdb; pdb.set_trace()    
+        import pdb; pdb.set_trace()
 
         # ---------------------------------------------------------------------
         # Remove from calloff:        
@@ -183,22 +183,20 @@ class SaleOrder(orm.Model):
         
         log = ''
         # Remove assigned quantity in calloff order:
-        for product_id, record in calloff_product.iteritems():
-            if not record[1]: # used
-                continue
+        for product_id, records in calloff_product.iteritems():
+            for avaiable_qty, used_qty, line in records:
+                if not used_qty:
+                    continue
 
-            # Update order line production
-            used_qty = record[0] - record[1]
-            oc_remain = line.product_uom_qty - used_qty
-            
-            # Always write for MRP update operations:
-            sol_pool.write(cr, uid, record[2], {
-                'product_uom_maked_sync': 
-                    line.product_uom_maked_sync - used_qty,
-                'product_uom_qty': oc_remain,
-                }, context=context)   
-            if oc_remain <= 0.0:
-                remove_ids[record[2].id]
+                # Always write for MRP update operations picking/move:
+                oc_remain = line.product_uom_qty - used_qty
+                sol_pool.write(cr, uid, line.id, {
+                    'product_uom_qty': oc_remain,
+                    'product_uom_maked_sync': 
+                        line.product_uom_maked_sync - used_qty,
+                    }, context=context)
+                if oc_remain <= 0.0:
+                    remove_ids[line.id]
                 
         # Remove line all assigned:        
         if remove_ids:
