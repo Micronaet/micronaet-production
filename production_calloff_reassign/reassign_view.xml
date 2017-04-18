@@ -22,7 +22,7 @@
                            <field name="calloff_log" nolabel="1" widget="html"/>
                        </group> 
                        <group colspan="4" col="4" attrs="{'invisible': [('calloff','=',False)]}">                       
-                           <field name="calloff_child_ids" readonly="1">                               
+                           <field name="calloff_child_ids" readonly="1" nolabel="1">
                            </field>
                        </group> 
                    </page>

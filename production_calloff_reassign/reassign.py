@@ -51,7 +51,6 @@ class SaleOrder(orm.Model):
     def calloff_get_usable(self, cr, uid, ids, context=None):
         ''' Get reusable product from call off order
         '''
-        import pdb; pdb.set_trace()
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
         
         # ---------------------------------------------------------------------
@@ -67,13 +66,13 @@ class SaleOrder(orm.Model):
             record = [
                 b_qty - delivery_qty, # available
                 0.0, # used
-                line.id, # line ref.
+                line, # line ref.
                 ]
                 
             if product.id in calloff_product:
-                calloff_product[product.id] = [record]
-            else:
                 calloff_product[product.id].append(record)
+            else:
+                calloff_product[product.id] = [record]
 
         # ---------------------------------------------------------------------
         # Calculate assign qty:
@@ -171,13 +170,47 @@ class SaleOrder(orm.Model):
     def calloff_reassign_here(self, cr, uid, ids, context=None):
         ''' Reassign call off quantity produced
         '''
+        sol_pool = self.pool.get('sale.order.line')
+        
         assign_product, calloff_product = self.calloff_get_usable(
             cr, uid, ids, context=context)
-        # TODO
-        # Remove from calloff:        
 
-        # Assign product to the order:        
+        # ---------------------------------------------------------------------
+        # Remove from calloff:        
+        # ---------------------------------------------------------------------
+        remove_ids = []
         
+        # Remove assigned quantity in calloff order:
+        for product_id, record in calloff_product.iteritems():
+            if not record[1]: # used
+                continue
+                
+            # Update order line production
+            used_qty = record[0] - record[1]
+            oc_remain = line.product_uom_qty - used_qty            
+            
+            # Always write for MRP update operations:
+            sol_pool.write(cr, uid, record[2], {
+                'product_uom_maked_sync': 
+                    line.product_uom_maked_sync - used_qty,
+                'product_uom_qty': oc_remain,
+                }, context=context)   
+            if oc_remain <= 0.0:
+                remove_ids[record[2].id]
+                
+        # Remove line all assigned:        
+        if remove_ids:
+            sol_pool.unlink(cr, uid, remove_ids, context=context)
+
+        # ---------------------------------------------------------------------
+        # Assign product to the order:        
+        # ---------------------------------------------------------------------
+        # Add assigned qty in order:
+        for line, assign_qty in assign_product.iteritems():
+            sol_pool.write(cr, uid, line.id, {
+                'product_uom_maked_sync': 
+                    line.product_uom_maked_sync + assigned_qty,
+                }, context=context)
         return True
         
     _columns = {
