@@ -364,7 +364,9 @@ class CreateMrpProductionWizard(orm.TransientModel):
 
             # Update line:
             sol_pool.write(cr, uid, sol_ids, {
-                'mrp_id': p_id}, context=context)
+                'mrp_id': p_id,
+                'mrp_unlinked': False,
+                }, context=context)
 
         else: # 'append'
             p_id = context['mrp_data']['append_production_id']
@@ -373,6 +375,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             sol_pool.write(
                 cr, uid, sol_ids, {
                     'mrp_id': p_id,
+                    'mrp_unlinked': False,
                     }, context=context)
                     
             # Udate start date:        
