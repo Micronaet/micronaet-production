@@ -44,7 +44,88 @@ class SaleOrder(orm.Model):
     """
     
     _inherit = 'sale.order'
+
+    # -------------------------------------------------------------------------
+    # Button events:
+    # -------------------------------------------------------------------------
+    def calloff_get_usable(self, cr, uid, ids, context=None):
+        ''' Get reusable product from call off order
+        '''
+        current_proxy = self.browse(cr, uid, ids, context=context)[0]
+        
+        # ---------------------------------------------------------------------
+        # Calloff availability:
+        # ---------------------------------------------------------------------
+        calloff_product = {} 
+        for line in currenty_proxy.calloff_id.order_line:
+            product = line.product_id
+            b_qty = product.product_uom_maked_sync_qty
+            delivery_qty = product.product_uom_delivered_qty
+            if b_qty <= delivery_qty:
+                continue
+            record = [
+                b_qty - delivery_qty, # available
+                0.0, # used
+                line.id, # line ref.
+                ]
+                
+            if product.id in calloff_product:
+                calloff_product[product.id] = [record]
+            else:
+                calloff_product[product.id].append(record)
+
+        # ---------------------------------------------------------------------
+        # Calculate assign qty:
+        # ---------------------------------------------------------------------
+        assign_product = [] # product needed in this order
+        for line in current_proxy.order_line:
+            product = line.product_id
+            
+            if product.id not in calloff_product:
+                continue
+                
+            # TODO manage quantity yet delivered
+            oc_qty = product.product_uom_qty
+            b_qty = product.product_uom_maked_sync_qty
+            delivery_qty = product.product_uom_delivered_qty
+            if b_qty > delivery_qty:
+                need_qty = oc_qty - b_qty
+            else:
+                need_qty = oc_qty - delivery_qty
+            
+            assign_qty = 0.0
+            for record in calloff_product:
+                this_qty = record[0] - record[1] # avail - used
+                
+                if this_qty <= 0.0:
+                    continue
+                if need_qty <= this_qty:
+                    assign_qty = 
+                
+                
+                    
+            # TODO loop for get qty:
+            assign_product.append((
+                line,
+                assign_qty,                
+                ))
+        return assign_product, calloff_product
+
+    # -------------------------------------------------------------------------
+    # Button events:
+    # -------------------------------------------------------------------------
+    def calloff_info(self, cr, uid, ids, context=None):
+        ''' Reassign call off quantity produced
+        '''
+        
+        return True
     
+    def calloff_reassign_here(self, cr, uid, ids, context=None):
+        ''' Reassign call off quantity produced
+        '''
+        
+        return True
+        
     _columns = {
         'calloff': fields.boolean('Call off'),
         'calloff_id': fields.many2one(
