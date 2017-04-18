@@ -180,26 +180,44 @@ class StockPicking(orm.Model):
             context=None):
         ''' Search or create pick lined to mrp (bf or cl)
         '''
-        pick_ids = self.search(cr, uid, [
-            ('production_id', '=', mrp_proxy.id),
-            ('production_load_type', '=', mode),
-            ], context=context)
+        if mrp_proxy: # Linked to MRP
+            origin = mrp_proxy.name
+            pick_ids = self.search(cr, uid, [
+                ('production_id', '=', mrp_proxy.id),
+                ('production_load_type', '=', mode),
+                ], context=context)
+        else: # no MRP proxy linked to sale line:
+            # NOTE: Unlink document generated every month:
+            origin = 'UNLINKED-MRP-CL-%s' % datatime.now().strftime('%y%m')
+            pick_ids = self.search(cr, uid, [
+                ('unlinked_mrp', '=', True), # Unlinked picking general doc.
+                ('origin', '=', origin),
+                ('production_load_type', '=', mode),
+                ], context=context)
         if pick_ids:
             return pick_ids[0]
-            
-        return self.create(cr, uid, {
-            'production_id': mrp_proxy.id,
+                    
+        _logger.info('Generate pick for %s' % origin)
+        data = {
             'production_load_type': mode,
-            'origin': mrp_proxy.name,
+            'origin': origin,
             'partner_id': mrp_proxy.company_id.partner_id.id,
             'picking_type_id': picking_type_id,
             'state': 'done', 
-            }, context=context)    
-
+            }
+        if mrp_proxy: # Linked to MRP
+            data.update({'production_id': mrp_proxy.id, })
+            return self.create(cr, uid, data, context=context)    
+        else: # no MRP proxy linked to sale line:
+            data.update({'unlinked_mrp': True, })
+            return self.create(cr, uid, data, context=context)    
+                
     _columns = {
         'production_id': fields.many2one(
             'mrp.production', 'MRP', ondelete='cascade',
             help='Link pick to production'),
+        'unlinked_mrp': fields.boolean('Unlinked MRP', 
+            help='Load/unload for all unlinked SOL (call off movement)'),
         'production_load_type': fields.selection([
             ('cl', 'Product load'),
             ('sl', 'Material unload'),
@@ -244,7 +262,7 @@ class SaleOrder(orm.Model):
     """    
     _inherit = 'sale.order.line'
 
-    #à Button:
+    # Button:
     def open_product_bom(self, cr, uid, ids, context=None):
         ''' 
         '''
@@ -342,26 +360,39 @@ class SaleOrder(orm.Model):
         else:
             mrp_type_in = False    
             
-        # XXX 03/04/2017: Now Unload SL movement are dynamicalli calculated
+        # XXX 03/04/2017: Now Unload SL movement are dynamically calculated
         #if company_proxy.stock_report_mrp_out_ids:    
         #    mrp_type_out = company_proxy.stock_report_mrp_out_ids[0].id
         #else:
         #    mrp_type_out = False
         
-        line_proxy = self.browse(cr, uid, sol_ids, context=context)[0]        
+        line_proxy = self.browse(cr, uid, sol_ids, context=context)[0]   
+             
         # Test if is a stock load family:
         try:
-            if line_proxy.mrp_id.bom_id.product_tmpl_id.no_stock_operation:
+            #if line_proxy.mrp_id.bom_id.product_tmpl_id.no_stock_operation:
+            if line_proxy.product_id.family_id.no_stock_operation:
                 _logger.warning('No load stock family, do nothing!')
                 return True
         except:        
-            _logger.warning('Error test no load stock family!')
-            # continune unload stock as default
+            _logger.warning(
+                'Error test no load stock family (continue unload operation)!')
         
-        # Get pick document linked to MRP production:
-        mrp_picking_in = pick_pool.get_mrp_picking(
-            cr, uid, line_proxy.mrp_id, 'cl', mrp_type_in, 
-            context=context)
+        if line_proxy.mrp_id: # Normal load from production            
+            # Get pick document linked to MRP production:
+            mrp_picking_in = pick_pool.get_mrp_picking(
+                cr, uid, line_proxy.mrp_id, 'cl', mrp_type_in, 
+                context=context)
+            origin = line_proxy.mrp_id.name
+        else: # unusual load (automatic from call off or similar)
+            # If sol are unlinked to MRP order must be changeable the B quan.t 
+            # So manage a general MRP order for all CL load (if product family 
+            # move stock data:
+            mrp_picking_in = pick_pool.get_mrp_picking(
+                cr, uid, False, 'cl', mrp_type_in, 
+                context=context)
+            origin =  'UNLINKED CL'   
+            
             
         # XXX 03/04/2017: Now Unload SL movement are dynamically calculated
         #mrp_picking_out = pick_pool.get_mrp_picking(
@@ -497,7 +528,7 @@ class SaleOrder(orm.Model):
             'state': 'done', # confirmed, available
             'date_expected': datetime.now().strftime(
                 DEFAULT_SERVER_DATE_FORMAT),
-            'origin': line_proxy.mrp_id.name,
+            'origin': origin, #line_proxy.mrp_id.name,
             'display_name': 'CL: %s' % line_proxy.product_id.name,
             'name': 'CL: %s' % line_proxy.product_id.name,
             #'warehouse_id',
