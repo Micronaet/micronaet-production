@@ -188,4 +188,16 @@ class SaleOrder(orm.Model):
         'calloff_pre_assign': fields.text('Calloff pre assign', readonly=True),
         'calloff_log': fields.text('Calloff log', readonly=True),
         }
+
+class SaleOrder(orm.Model):
+    """ Model name: Sale order
+    """
+    
+    _inherit = 'sale.order'
+    
+    _columns = {
+        'calloff_child_ids': fields.one2many(
+            'sale.order', 'calloff_id', 'Calloff child'),
+        }
+        
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
