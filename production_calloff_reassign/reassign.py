@@ -51,16 +51,17 @@ class SaleOrder(orm.Model):
     def calloff_get_usable(self, cr, uid, ids, context=None):
         ''' Get reusable product from call off order
         '''
+        import pdb; pdb.set_trace()
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
         
         # ---------------------------------------------------------------------
         # Calloff availability:
         # ---------------------------------------------------------------------
         calloff_product = {} 
-        for line in currenty_proxy.calloff_id.order_line:
+        for line in current_proxy.calloff_id.order_line:
             product = line.product_id
-            b_qty = product.product_uom_maked_sync_qty
-            delivery_qty = product.product_uom_delivered_qty
+            b_qty = line.product_uom_maked_sync_qty
+            delivery_qty = line.product_uom_delivered_qty
             if b_qty <= delivery_qty:
                 continue
             record = [
@@ -78,45 +79,46 @@ class SaleOrder(orm.Model):
         # Calculate assign qty:
         # ---------------------------------------------------------------------
         assign_product = [] # product needed in this order
-        for line in current_proxy.order_line:
-            product = line.product_id
-            if product.id not in calloff_product:
-                continue
-            
-            # Readability:    
-            oc_qty = product.product_uom_qty
-            b_qty = product.product_uom_maked_sync_qty
-            delivery_qty = product.product_uom_delivered_qty
-            
-            if b_qty >= delivery_qty:
-                need_qty = oc_qty - b_qty
-            else:
-                need_qty = oc_qty - delivery_qty
-
-            if need_qty <= 0.0: # no need to assign
-                continue
+        if calloff_product:
+            for line in current_proxy.order_line:
+                product = line.product_id
+                if product.id not in calloff_product:
+                    continue
                 
-            assign_qty = 0.0
-            for record in calloff_product[product.id]:
-                this_qty = record[0] - record[1] # avail - used                
-                if this_qty <= 0.0:
+                # Readability:    
+                oc_qty = line.product_uom_qty
+                b_qty = line.product_uom_maked_sync_qty
+                delivery_qty = line.product_uom_delivered_qty
+                
+                if b_qty >= delivery_qty:
+                    need_qty = oc_qty - b_qty
+                else:
+                    need_qty = oc_qty - delivery_qty
+
+                if need_qty <= 0.0: # no need to assign
                     continue
                     
-                if need_qty <= this_qty: # use remain needed
-                    assign_qty += need_qty
-                    record[1] += need_qty
-                    break
-                    
-                else: # use all this block
-                    assign_qty += this_qty
-                    record[1] += this_qty
-                    need_qty -= this_qty
-                    
-            # TODO loop for get qty:
-            assign_product.append((
-                line,
-                assign_qty, # only usable qty
-                ))
+                assign_qty = 0.0
+                for record in calloff_product[product.id]:
+                    this_qty = record[0] - record[1] # avail - used                
+                    if this_qty <= 0.0:
+                        continue
+                        
+                    if need_qty <= this_qty: # use remain needed
+                        assign_qty += need_qty
+                        record[1] += need_qty
+                        break
+                        
+                    else: # use all this block
+                        assign_qty += this_qty
+                        record[1] += this_qty
+                        need_qty -= this_qty
+                        
+                # TODO loop for get qty:
+                assign_product.append((
+                    line,
+                    assign_qty, # only usable qty
+                    ))
         return assign_product, calloff_product
 
     # -------------------------------------------------------------------------
@@ -129,13 +131,37 @@ class SaleOrder(orm.Model):
             cr, uid, ids, context=context)
         
         res = ''
-        for line, assign_qty in assign_product.iteritems():
+        for line, assign_qty in assign_product:
             res += '<tr><td>%s</td><td>%s</td></tr>' % (
                 line.product_id.default_code or '',
                 assign_qty,
                 )  
         res = _('''
-            <table><tr><td>Product</td><td>Use</td></tr>%s</table>
+            <style>
+                .table_bf {
+                     border: 1px solid black;
+                     padding: 3px;
+                     width: 400px;
+                     }
+                .table_bf td {
+                     border: 1px solid black;
+                     padding: 3px;
+                     text-align: center;
+                     }
+                .table_bf th {
+                     border: 1px solid black;
+                     padding: 3px;
+                     text-align: center;
+                     background-color: grey;
+                     color: white;
+                     }
+            </style>
+            <table class='table_bf'>
+                <tr class='table_bf'>
+                    <th>Product</th>
+                    <th>Q. Used</th>
+                </tr>%s
+            </table>
             ''') % res
             
         return self.write(cr, uid, ids, {

@@ -15,7 +15,7 @@
                            <field name="calloff_id"  domain="[('calloff','=',True)]"/>
                            <newline/>
                            <button name="calloff_info" string="Call off info" type="object" attrs="{'invisible': [('calloff_id','=',False)]}" colspan="2"/>
-                           <button name="calloff_reassign_here" string="Call off reassign" type="object" attrs="{'invisible': [('calloff_id','=',False)]}" colspan="2" />
+                           <button name="calloff_reassign_here" string="Call off reassign" type="object" attrs="{'invisible': [('calloff_id','=',False)]}" colspan="2"  class="oe_highlight"/>
                            <separator string="Pre assign" colspan="2"/>
                            <separator string="Log" colspan="2"/>
                            <field name="calloff_pre_assign" nolabel="1" widget="html"/>
