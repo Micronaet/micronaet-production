@@ -156,6 +156,7 @@ class SaleOrderLine(orm.Model):
         ''' Free the line from production order 
         '''
         # Only in draft mode!
+        mrp_pool = self.pool.get('mrp.production')
         sol_proxy = self.browse(cr, uid, ids, context=context)[0]
         if sol_proxy.order_id.forecasted_production_id:
             # Forecast order delete line:   
@@ -164,9 +165,15 @@ class SaleOrderLine(orm.Model):
             # TODO test if maked qty!!!
             # Normal order unlink from production:
             # TODO remove line without hide gives error (for focus problem)
+            
+            # Generate a container MRP order
+            unlinked_mrp_id = mrp_pool.generate_mrp_unlinked_container(
+                cr, uid, context=context)
+            
             self.write(cr, uid, ids, {
-                'mrp_id': False, 
+                'mrp_id': unlinked_mrp_id, 
                 'mrp_sequence': False, # reset order
+                'mrp_unlinked': True, # marked as unlinked
                 }, context=context)
 
         # Recalculate totals:
@@ -481,30 +488,28 @@ class MrpProduction(orm.Model):
     def generate_mrp_unlinked_container(self, cr, uid, context=None):
         ''' Generate container MRP order for unlinked elements
         '''
-        name = 'UNLINK-%s' % datetime.now().strftime('%y%m')
+        date_planned = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        name = 'UNLINK-%s.%s' % (date_planned[2:4], date_planned[5:7])
         mrp_ids = self.search(cr, uid, [
-            ('unlinked_mrp', '=', True), # XXX not necessary
             ('name', '=', name),
-            ], context)
-        import pdb; pdb.set_trace()
+            ('unlinked_mrp', '=', True), # XXX not necessary
+            ], context=context)
         if mrp_ids:
-            return mrp_ids
+            return mrp_ids[0]
+
         return self.create(cr, uid, {
             'product_id': 1,
-            'bom_id': 1,
-            'product_qty': 1,
-            'date_planned': 1,
+            'bom_id': False,
+            'product_qty': 1, # XXX
+            'product_uom': 1, # XXX
+            'date_planned': date_planned,
             }, context=context)    
 
     def free_line(self, cr, uid, ids, context=None):
         ''' Free the line from production order 
         '''
-        mrp_id = self.generate_mrp_unlinked_container(
-            cr, uid, context=context)
-        # TODO generate a container MRP order
         return self.write(cr, uid, ids, {
             'used_by_mrp_id': False,
-            'mrp_unlinked': True, # marked as unlinked
             }, context=context)
 
     def _get_total_information(self, cr, uid, ids, fields=None, args=None, 
@@ -605,7 +610,7 @@ class MrpProduction(orm.Model):
         
     _columns = {
         'unlinked_mrp': fields.boolean('Unlinked order', 
-            help='Orded for keep all unlinked sale line'),
+            help='Order for keep all unlinked sale line'),
         'forecast_qty': fields.function(
             _get_total_information, method=True, type='float', 
             string='Forecast qty', store=False, readonly=True, multi=True),
