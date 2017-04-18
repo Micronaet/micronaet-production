@@ -50,5 +50,7 @@ class SaleOrder(orm.Model):
         'calloff_id': fields.many2one(
             'sale.order', 'Call off order', 
             help='Linked call off order'),
+        'calloff_pre_assign': fields.text('Calloff pre assign', readonly=True),
+        'calloff_log': fields.text('Calloff log', readonly=True),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

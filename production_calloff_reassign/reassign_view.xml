@@ -6,10 +6,21 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
-                   <field name="date_order" position="after">
-                       <field name="calloff" />
-                       <field name="calloff_id" attrs="{'invisible': [('calloff','=',True)]}"/>
+                <field name="date_order" position="after">
+                   <field name="calloff" />
                 </field>
+                <xpath expr="//notebook/page[2]" position="after" >
+                   <page string="Calloff" attrs="{'invisible': [('calloff','=',True)]}">
+                       <group colspan="4" col="4">
+                           <field name="calloff_id"  domain="[('calloff','=',True)]"/>
+                           <button name="calloff_reassign_here" string="Call off reassign" type="object" colspan="2"/>
+                           <separator string="Pre assign" colspan="2"/>
+                           <separator string="Log" colspan="2"/>
+                           <field name="calloff_pre_assign" nolabel="1"/>
+                           <field name="calloff_log" nolabel="1" />
+                       </group>    
+                   </page>
+                </xpath>
             </field>
         </record>
     </data>
