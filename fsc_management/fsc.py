@@ -52,6 +52,14 @@ class ResCompany(orm.Model):
             translate=True),
         'fsc_logo': fields.binary(
             'FSC Logo', help='FSC document logo bottom part'),
+
+        'pefc_certified': fields.boolean('PEFC Certified'),
+        'pefc_code': fields.char('PEFC Code', size=50),
+        'pefc_from_date': fields.date('PEFC from date'),
+        'pefc_report_text': fields.char('PEFC report text', size=120, 
+            translate=True),
+        'pefc_logo': fields.binary(
+            'PEFC Logo', help='PEFC document logo bottom part'),
         }
 
 class ProductProduct(orm.Model):
@@ -62,5 +70,6 @@ class ProductProduct(orm.Model):
     
     _columns = {
         'fsc_certified': fields.boolean('FSC Certified'),
+        'pefc_certified': fields.boolean('PEFC Certified'),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

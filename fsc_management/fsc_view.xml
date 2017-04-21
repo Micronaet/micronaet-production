@@ -9,12 +9,23 @@
                 <xpath expr="//notebook/page[2]" position="after">
                     <page string="FSC">
                         <group col="4" colspan="4">
-                            <field name="fsc_certified" />
-                            <newline/>
-                            <field name="fsc_code" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}"/>
-                            <field name="fsc_from_date" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}"/>
-                            <field name="fsc_report_text" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}" colspan="4"/>
-                            <field name="fsc_logo" widget="image" attrs="{'invisible': [('fsc_certified','=',False)]}"/>
+                            <group colspan="2" col="4">
+                                <field name="fsc_certified" />
+                                <newline/>
+                                <field name="fsc_code" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}"/>
+                                <field name="fsc_from_date" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}"/>
+                                <field name="fsc_report_text" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}" colspan="4"/>
+                                <field name="fsc_logo" widget="image" attrs="{'invisible': [('fsc_certified','=',False)]}"/>
+                            </group>    
+
+                            <group colspan="2" col="4">
+                                <field name="pefc_certified" />
+                                <newline/>
+                                <field name="pefc_code" attrs="{'required': [('pefc_certified','=',True)], 'invisible': [('pefc_certified','=',False)]}"/>
+                                <field name="pefc_from_date" attrs="{'required': [('pefc_certified','=',True)], 'invisible': [('pefc_certified','=',False)]}"/>
+                                <field name="pefc_report_text" attrs="{'required': [('pefc_certified','=',True)], 'invisible': [('pefc_certified','=',False)]}" colspan="4"/>
+                                <field name="pefc_logo" widget="image" attrs="{'invisible': [('pefc_certified','=',False)]}"/>
+                            </group>    
                         </group>
                     </page>
                 </xpath>
@@ -27,6 +38,7 @@
             <field name="arch" type="xml">
                 <field name="active" position="before">
                      <field name="fsc_certified" />
+                     <field name="pefc_certified" />
                 </field>
             </field>
         </record>
@@ -37,6 +49,7 @@
             <field name="arch" type="xml">            
                 <xpath expr="//filter[1]" position="after">
                     <filter name="fsc_certified_on" string="FSC Certified" domain="[('fsc_certified','=',True)]"/>
+                    <filter name="pefc_certified_on" string="PEFC Certified" domain="[('pefc_certified','=',True)]"/>
                 </xpath>
             </field>
         </record>

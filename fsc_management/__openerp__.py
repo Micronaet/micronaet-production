@@ -18,11 +18,11 @@
 ###############################################################################
 
 {
-    'name': 'FSC Management',
+    'name': 'FSC and PEFC Management',
     'version': '0.1',
     'category': 'MRP',
     'description': '''        
-        FSC wood management
+        FSC and PEFC wood management
         ''',
     'author': 'Micronaet S.r.l. - Nicola Riolini',
     'website': 'http://www.micronaet.it',

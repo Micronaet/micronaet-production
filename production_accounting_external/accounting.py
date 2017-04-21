@@ -498,6 +498,7 @@ class MrpProduction(orm.Model):
             return mrp_ids[0]
 
         return self.create(cr, uid, {
+            'name': name,
             'product_id': 1,
             'bom_id': False,
             'product_qty': 1, # XXX

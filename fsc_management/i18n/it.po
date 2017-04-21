@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-25 10:08+0000\n"
-"PO-Revision-Date: 2016-10-25 12:08+0100\n"
+"POT-Creation-Date: 2017-04-21 07:04+0000\n"
+"PO-Revision-Date: 2017-04-21 09:06+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -46,7 +46,7 @@ msgstr "Logo FSC"
 #. module: fsc_management
 #: help:res.company,fsc_logo:0
 msgid "FSC document logo bottom part"
-msgstr "Logo per il pié pagina dei documenti"
+msgstr "Logo per il pié pagina dei documenti FSC"
 
 #. module: fsc_management
 #: field:res.company,fsc_from_date:0
@@ -57,6 +57,37 @@ msgstr "FSC dalla data"
 #: field:res.company,fsc_report_text:0
 msgid "FSC report text"
 msgstr "FSC testo per le stampe"
+
+#. module: fsc_management
+#: view:product.product:fsc_management.view_product_product_fsc_search
+#: field:product.product,pefc_certified:0 field:res.company,pefc_certified:0
+msgid "PEFC Certified"
+msgstr "Certificato PEFC"
+
+#. module: fsc_management
+#: field:res.company,pefc_code:0
+msgid "PEFC Code"
+msgstr "Codice PEFC"
+
+#. module: fsc_management
+#: field:res.company,pefc_logo:0
+msgid "PEFC Logo"
+msgstr "Logo PEFC"
+
+#. module: fsc_management
+#: help:res.company,pefc_logo:0
+msgid "PEFC document logo bottom part"
+msgstr "Logo per il pié pagina dei documenti PEFC"
+
+#. module: fsc_management
+#: field:res.company,pefc_from_date:0
+msgid "PEFC from date"
+msgstr "PEFC dalla data"
+
+#. module: fsc_management
+#: field:res.company,pefc_report_text:0
+msgid "PEFC report text"
+msgstr "PEFC testo per le stampe"
 
 #. module: fsc_management
 #: model:ir.model,name:fsc_management.model_product_product
