@@ -53,7 +53,7 @@ class ResCompany(orm.Model):
         '''        
         mode = mode.lower()
         if mode not in ('fsc', 'pefc'):
-            _logger.error(
+            _logger.error('Mode must be: fsc or pefc!')
             return False # No show!
         
         field = '%s_certified' % mode    
