@@ -44,6 +44,22 @@ class ResCompany(orm.Model):
     
     _inherit = 'res.company'
     
+    def check_certification_from_product_line(
+            self, cr, mode, line, date, company, context=None):
+        ''' Check certification present for product in line passed
+            Evaluation for print:
+            1. there's one product with *_certified in the item list
+            2. the document date must be > from certified date in company            
+        '''        
+        mode = mode.lower()
+        if mode not in ('fsc', 'pefc'):
+            _logger.error(
+            return False # No show!
+        
+        field = '%s_certified' % mode    
+        #if date
+        return True
+    
     _columns = {
         'fsc_certified': fields.boolean('FSC Certified'),
         'fsc_code': fields.char('FSC Code', size=50),
