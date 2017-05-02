@@ -492,7 +492,7 @@ class MrpProduction(orm.Model):
         name = 'UNLINK-%s.%s' % (date_planned[2:4], date_planned[5:7])
         mrp_ids = self.search(cr, uid, [
             ('name', '=', name),
-            ('unlinked_mrp', '=', True), # XXX not necessary
+            #('unlinked_mrp', '=', True), # XXX not necessary
             ], context=context)
         if mrp_ids:
             return mrp_ids[0]
