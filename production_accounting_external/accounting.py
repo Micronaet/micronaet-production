@@ -497,7 +497,7 @@ class MrpProduction(orm.Model):
             date_planned = datetime.now().strftime(
                 DEFAULT_SERVER_DATETIME_FORMAT)
         name = 'UNLINK-%s.%s' % (date_planned[2:4], date_planned[5:7])
-        
+
         mrp_ids = self.search(cr, uid, [
             ('name', '=', name),
             #('unlinked_mrp', '=', True), # XXX not necessary
