@@ -488,7 +488,6 @@ class MrpProduction(orm.Model):
     def generate_mrp_unlinked_container(self, cr, uid, context=None):
         ''' Generate container MRP order for unlinked elements
         '''
-        import pdb; pdb.set_trace()
         date_planned = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         name = 'UNLINK-%s.%s' % (date_planned[2:4], date_planned[5:7])
         
