@@ -158,6 +158,11 @@ class SaleOrderLine(orm.Model):
         # Only in draft mode!
         mrp_pool = self.pool.get('mrp.production')
         sol_proxy = self.browse(cr, uid, ids, context=context)[0]
+
+        mrp_id = context.get('production_order_id', False)
+        if not mrp_id: # odd case
+            return False
+
         if sol_proxy.order_id.forecasted_production_id:
             # Forecast order delete line:   
             self.unlink(cr, uid, ids, context=context)            
@@ -165,21 +170,20 @@ class SaleOrderLine(orm.Model):
             # TODO test if maked qty!!!
             # Normal order unlink from production:
             # TODO remove line without hide gives error (for focus problem)
-            
+            if mrp_id:
+                mrp_proxy = mrp_pool.browse(cr, uid, mrp_id, context=context)
+                date_planned = mrp_proxy.date_planned
+            else:
+                date_planned = False
             # Generate a container MRP order
             unlinked_mrp_id = mrp_pool.generate_mrp_unlinked_container(
-                cr, uid, context=context)
+                cr, uid, date_planned, context=context)
             
             self.write(cr, uid, ids, {
                 'mrp_id': unlinked_mrp_id, 
                 'mrp_sequence': False, # reset order
                 'mrp_unlinked': True, # marked as unlinked
                 }, context=context)
-
-        # Recalculate totals:
-        mrp_id = context.get('production_order_id', False)
-        if not mrp_id: # odd case
-            return False
 
         # Reload total from sale order line:        
         return self.pool.get('mrp.production').recompute_total_from_sol(
@@ -485,10 +489,13 @@ class MrpProduction(orm.Model):
                 }, context=context)
         return True
     
-    def generate_mrp_unlinked_container(self, cr, uid, context=None):
+    def generate_mrp_unlinked_container(
+            self, cr, uid, date_planned=False, context=None):
         ''' Generate container MRP order for unlinked elements
         '''
-        date_planned = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        if not date_planned:
+            date_planned = datetime.now().strftime(
+                DEFAULT_SERVER_DATETIME_FORMAT)
         name = 'UNLINK-%s.%s' % (date_planned[2:4], date_planned[5:7])
         
         mrp_ids = self.search(cr, uid, [
