@@ -513,6 +513,7 @@ class MrpProduction(orm.Model):
                 'product_qty': 1, # XXX
                 'product_uom': 1, # XXX
                 'date_planned': date_planned,
+                'state': 'done', # no open for report
                 }, context=context)    
 
     def free_line(self, cr, uid, ids, context=None):
