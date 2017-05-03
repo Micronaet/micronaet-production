@@ -493,7 +493,6 @@ class MrpProduction(orm.Model):
             self, cr, uid, date_planned=False, context=None):
         ''' Generate container MRP order for unlinked elements
         '''
-        import pdb; pdb.set_trace()
         if not date_planned:
             date_planned = datetime.now().strftime(
                 DEFAULT_SERVER_DATETIME_FORMAT)
