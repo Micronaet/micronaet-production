@@ -419,7 +419,7 @@ class SaleOrder(orm.Model):
         #if not persistent: # XXX domain persistent status for delete?
         move_ids = move_pool.search(cr, uid, [
             ('production_sol_id', '=', line_proxy.id),
-            #('persistent', '=', False),
+            ('persistent', '=', False),
             ], context=context)
         if move_ids:
             # Set to draft:

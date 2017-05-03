@@ -488,23 +488,26 @@ class MrpProduction(orm.Model):
     def generate_mrp_unlinked_container(self, cr, uid, context=None):
         ''' Generate container MRP order for unlinked elements
         '''
+        import pdb; pdb.set_trace()
         date_planned = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         name = 'UNLINK-%s.%s' % (date_planned[2:4], date_planned[5:7])
+        
         mrp_ids = self.search(cr, uid, [
             ('name', '=', name),
             #('unlinked_mrp', '=', True), # XXX not necessary
             ], context=context)
+        
         if mrp_ids:
             return mrp_ids[0]
-
-        return self.create(cr, uid, {
-            'name': name,
-            'product_id': 1,
-            'bom_id': False,
-            'product_qty': 1, # XXX
-            'product_uom': 1, # XXX
-            'date_planned': date_planned,
-            }, context=context)    
+        else:
+            return self.create(cr, uid, {
+                'name': name,
+                'product_id': 1,
+                'bom_id': False,
+                'product_qty': 1, # XXX
+                'product_uom': 1, # XXX
+                'date_planned': date_planned,
+                }, context=context)    
 
     def free_line(self, cr, uid, ids, context=None):
         ''' Free the line from production order 
