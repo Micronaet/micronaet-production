@@ -30,6 +30,7 @@
     'license': 'AGPL-3',
     'depends': [
         'base',
+        'sale',
         'production_accounting_external',
         'production_product_sequence',
         ],

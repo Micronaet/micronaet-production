@@ -50,6 +50,8 @@ class MrpProductionSequence(orm.Model):
 class MrpProduction(orm.Model):
     ''' Add extra field to mrp order
     '''
+    _inherit = 'mrp.production'
+
     # Button events:
     def generate_child_production_from_sequence(
             self, cr, uid, ids, context=None):
@@ -57,6 +59,8 @@ class MrpProduction(orm.Model):
         '''
         # Pool used:
         sequence_pool = self.pool.get('mrp.production.sequence')
+        sol_pool = self.pool.get('sale.order.line')
+        counter_pool = self.pool.get('ir.sequence')
         
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
         
@@ -70,8 +74,14 @@ class MrpProduction(orm.Model):
         if not move_parent_mrp_id:
             # Create new production from here
             move_parent_mrp_id = self.create(cr, uid, {
-                'parent_mrp_id': ids[0],
-                # TODO copy all correct fields                
+                'parent_mrp_id': ids[0], # Parent reference
+                'name': counter_pool.get(cr, uid, 'mrp.production'),
+                'date_planned': curent_proxy.schedule_from_date,
+                'user_id': uid,
+                'product_qty': 1.0, # TODO update total (after move line)!
+                'bom_id': counter_pool.bom_id.id,
+                'product_id': counter_pool.product_id.id,
+                'product_uom': counter_pool.product_id.uom_id.id,
                 }, context=context)
                 
         # Reset move field:
@@ -95,17 +105,43 @@ class MrpProduction(orm.Model):
         # ---------------------------------------------------------------------
         # Move lines depend on sequence selected
         # ---------------------------------------------------------------------
+        # Get line list to move:
+        sequence_mode = current_proxy.sequence_mode
+        line_ids = []        
+        for line in current_proxy.order_line_ids:
+            default_code = line.product_id.default_code
+            parent_code = self.get_sort_code(sequence_mode, default_code)
+            if parent_code in sequence_parent:
+                line_ids.append(line.id)
+                
+        # Move line:
+        sol_pool.write(cr, uid, line_ids, {
+            'mrp_id': move_parent_mrp_id}, context=context)        
         
-         
-        return True # TODO new production view!
+        model_pool = self.pool.get('ir.model.data')
+        #view_id = model_pool.get_object_reference(
+        #    'module_name', 'view_name')[1]
+        view_id = False
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Child MRP'),
+            'view_type': 'form',
+            'view_mode': 'form,tree',
+            'res_id': move_parent_mrp_id,
+            'res_model': 'mrp.production',
+            'view_id': view_id, # False
+            'views': [(False, 'tree'), (view_id, 'form')],
+            'domain': [],
+            'context': context,
+            'target': 'current', # 'new'
+            'nodestroy': False,
+            } 
             
-    _inherit = 'mrp.production'
-    
     _columns = {
         'parent_mrp_id': fields.many2one(
             'mrp.production', 'Parent production'),
         'move_parent_mrp_id': fields.many2one(
-            'mrp.production', 'Move prodution'), # TODO domain
+            'mrp.production', 'Move prodution'), # TODO domain in view
         }
 
 class MrpProduction(orm.Model):
