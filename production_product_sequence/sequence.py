@@ -87,6 +87,26 @@ class MrpProduction(orm.Model):
     '''
     _inherit = 'mrp.production'
     
+    # ---------------------------------------------------------------------
+    # Utility:
+    # ---------------------------------------------------------------------
+    def get_sort_code(self, sequence_mode, default_code):
+        ''' Return sort code for line order
+        '''
+        # TODO 
+        if sequence_mode == 'parent':
+            return default_code[:3]    
+        elif sequence_mode == 'frame':
+            return '%s...%s' % (
+                default_code[:3],
+                default_code[6:8],
+                )                
+        else:
+            raise osv.except_osv(
+                _('Sequence error'), 
+                _('Unmanage sequence: %s' % sequence_mode),
+                )        
+
     # ------------------
     # Override function:
     # ------------------
@@ -96,7 +116,8 @@ class MrpProduction(orm.Model):
         '''
         # Pool used:
         line_pool = self.pool.get('sale.order.line')        
-        mrp_proxy = self.browse(cr, uid, ids, context=context)
+        
+        mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
 
         # Reload parent element for include new (TODO necessary?):
         self.load_parent_list(cr, uid, ids, context=context)
@@ -104,12 +125,15 @@ class MrpProduction(orm.Model):
         # Read parent order:
         master_order = {}
         order = []
+        sequence_mode = mrp_proxy.sequence_mode
+        
         for parent in mrp_proxy.sequence_ids:
             order.append(parent.name) # keep in order (unlike dict)
             master_order[parent.name] = []
         
         for line in mrp_proxy.order_line_ids:
-            parent_code = line.product_id.default_code[:3]
+            default_code = line.product_id.default_code            
+            parent_code = self.get_sort_code(sequence_mode, default_code)
             master_order[parent_code].append(
                 (line.product_id.default_code, line.id))
                         
@@ -132,26 +156,6 @@ class MrpProduction(orm.Model):
     def load_parent_list(self, cr, uid, ids, context=None):
         ''' Load list of parent for se the order
         '''
-        # ---------------------------------------------------------------------
-        # Utility:
-        # ---------------------------------------------------------------------
-        def get_sort_code(sequence_mode, default_code):
-            ''' Return sort code for line order
-            '''
-            # TODO 
-            if sequence_mode == 'parent':
-                return default_code[:3]    
-            elif sequence_mode == 'frame':
-                return '%s...%s' % (
-                    default_code[:3],
-                    default_code[6:8],
-                    )                
-            else:
-                raise osv.except_osv(
-                    _('Sequence error'), 
-                    _('Unmanage sequence: %s' % sequence_mode),
-                    )        
-        
         seq_pool = self.pool.get('mrp.production.sequence')
 
         # Load current parent:
@@ -175,7 +179,7 @@ class MrpProduction(orm.Model):
         # ---------------------------------------------------------------------
         for line in mrp_proxy.order_line_ids:
             default_code = line.product_id.default_code            
-            parent = get_sort_code(sequence_mode, default_code)
+            parent = self.get_sort_code(sequence_mode, default_code)
             if parent not in parents:
                 parents[parent] = line.product_uom_qty or 1
             else:
