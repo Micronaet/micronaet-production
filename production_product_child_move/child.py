@@ -72,6 +72,7 @@ class MrpProduction(orm.Model):
             self, cr, uid, ids, context=None):
         ''' Choose what production move in new block created here
         '''
+        import pdb; pdb.set_trace()
         # Pool used:
         sequence_pool = self.pool.get('mrp.production.sequence')
         sol_pool = self.pool.get('sale.order.line')
