@@ -15,7 +15,7 @@
                                  <field name="sequence" invisible="1"/>
                                  <field name="name" readonly="1"/>
                                  <field name="total" readonly="1"/>
-                                 <button name="remove_parent_block" string="Free all block" type="object" icon="gtk-disconnect"/>
+                                 <button name="remove_parent_block" string="Free all block" type="object" icon="gtk-disconnect" confirm="All line of this block will be unlinked, confirm?"/>
                              </tree>                         
                              <form string="Sequence from parent" version="7.0">
                                  <group string="Sequence" colspan="4" col="4">

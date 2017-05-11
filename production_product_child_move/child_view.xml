@@ -17,22 +17,26 @@
 
                  <field name="sequence_mode" position="after">
                      <separator string="Move operation:" colspan="4"/>
-                     <field name="move_parent_mrp_id" domain="[('id', 'child_of', 'child_mrp_ids')]" widget="selection"/>
+                     <field name="move_parent_mrp_id" domain="[('parent_mrp_id', '=', active_id)]" widget="selection"/>
                      <button name="generate_child_production_from_sequence" string="Move block" type="object" icon="STOCK_LEAVE_FULLSCREEN" confirm="Do you want move all selected block in new/selected production?"/>
                  </field>
                  
                  <xpath expr="//notebook/page[1]" position="after">
                      <page string="Child">
-                         <field name="child_mrp_ids" readonly="1">
-                            <tree string="MRP child">
-                                <field name="name" />
-                                <field name="product_id" />
-                                <field name="bom_id" />
-                                <field name="date_planned" />
-                                <field name="user_id" />
-                                <field name="state" />
-                            </tree>
-                         </field>
+                         <group colspan="4" col="4">
+                             <field name="parent_mrp_id" readonly="1"/>
+                             <separator string="Child MRP" colspan="4"/>
+                             <field name="child_mrp_ids" readonly="1" colspan="4" nolabel="1">
+                                <tree string="MRP child">
+                                    <field name="name" />
+                                    <field name="product_id" />
+                                    <field name="bom_id" />
+                                    <field name="date_planned" />
+                                    <field name="user_id" />
+                                    <field name="state" />
+                                </tree>
+                             </field>
+                         </group>    
                      </page>
                  </xpath>
             </field>

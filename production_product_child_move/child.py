@@ -72,7 +72,6 @@ class MrpProduction(orm.Model):
             self, cr, uid, ids, context=None):
         ''' Choose what production move in new block created here
         '''
-        import pdb; pdb.set_trace()
         # Pool used:
         sequence_pool = self.pool.get('mrp.production.sequence')
         sol_pool = self.pool.get('sale.order.line')
@@ -81,32 +80,7 @@ class MrpProduction(orm.Model):
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
         
         # ---------------------------------------------------------------------
-        # Create or append production
-        # ---------------------------------------------------------------------
-        # Append mode:
-        move_parent_mrp_id = current_proxy.move_parent_mrp_id.id or False
-        
-        # Create mode:
-        if not move_parent_mrp_id:
-            # Create new production from here
-            move_parent_mrp_id = self.create(cr, uid, {
-                'parent_mrp_id': ids[0], # Parent reference
-                'name': counter_pool.get(cr, uid, 'mrp.production'),
-                'date_planned': curent_proxy.schedule_from_date,
-                'user_id': uid,
-                'product_qty': 1.0, # TODO update total (after move line)!
-                'bom_id': counter_pool.bom_id.id,
-                'product_id': counter_pool.product_id.id,
-                'product_uom': counter_pool.product_id.uom_id.id,
-                }, context=context)
-                
-        # Reset move field:
-        self.write(cr, uid, ids, {
-            'move_parent_mrp_id': False,
-            }, context=context)        
-
-        # ---------------------------------------------------------------------
-        # Select sequence to move:
+        # Select sequence to move (check if present):
         # ---------------------------------------------------------------------
         sequence_parent = []
         sequence_ids = []
@@ -115,15 +89,48 @@ class MrpProduction(orm.Model):
                 sequence_parent.append(sequence.name)
                 sequence_ids.append(sequence.id)
             
+        if not sequence_ids:
+            raise osv.except_osv(
+                _('No selection'), 
+                _('Select one sequence block to move before press move block button'),
+                )
+                
         # Delete sequence because moved:
         sequence_pool.unlink(cr, uid, sequence_ids, context=context)
+
+        # ---------------------------------------------------------------------
+        # Create or append production
+        # ---------------------------------------------------------------------
+        # Append mode:
+        move_parent_mrp_id = current_proxy.move_parent_mrp_id.id or False
+        
+        # Create mode:
+        if move_parent_mrp_id:
+            # Reset move field:
+            self.write(cr, uid, ids, {
+                'move_parent_mrp_id': False,
+                }, context=context)        
+        else:
+            # Create new production from here
+            move_parent_mrp_id = self.create(cr, uid, {
+                'parent_mrp_id': ids[0], # Parent reference
+                'name': counter_pool.get(cr, uid, 'mrp.production'),
+                'date_planned': current_proxy.date_planned,
+                'user_id': uid,
+                'product_qty': 1.0, # TODO update total (after move line)!
+                'bom_id': current_proxy.bom_id.id,
+                'product_id': current_proxy.product_id.id,
+                'product_uom': current_proxy.product_id.uom_id.id,
+                'sequence_mode': current_proxy.sequence_mode,
+                }, context=context)
+                
 
         # ---------------------------------------------------------------------
         # Move lines depend on sequence selected
         # ---------------------------------------------------------------------
         # Get line list to move:
         sequence_mode = current_proxy.sequence_mode
-        line_ids = []        
+        line_ids = []
         for line in current_proxy.order_line_ids:
             default_code = line.product_id.default_code
             parent_code = self.get_sort_code(sequence_mode, default_code)
@@ -134,6 +141,11 @@ class MrpProduction(orm.Model):
         sol_pool.write(cr, uid, line_ids, {
             'mrp_id': move_parent_mrp_id}, context=context)        
         
+        # Load parent in child
+        self.force_order_sequence(
+            cr, uid, [move_parent_mrp_id], context=context)
+        
+        # Return view:    
         model_pool = self.pool.get('ir.model.data')
         #view_id = model_pool.get_object_reference(
         #    'module_name', 'view_name')[1]
@@ -146,8 +158,8 @@ class MrpProduction(orm.Model):
             'res_id': move_parent_mrp_id,
             'res_model': 'mrp.production',
             'view_id': view_id, # False
-            'views': [(False, 'tree'), (view_id, 'form')],
-            'domain': [],
+            'views': [(view_id, 'form'),(False, 'tree')],
+            'domain': [('id', '=', move_parent_mrp_id)],
             'context': context,
             'target': 'current', # 'new'
             'nodestroy': False,
