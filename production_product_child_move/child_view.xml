@@ -1,24 +1,28 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-    <record model="ir.ui.view" id="default_mrp_production_form_sequence_child_moveview">
-        <field name="name">Production order child move</field>
-        <field name="model">mrp.production</field>
-        <field name="inherit_id" ref="production_product_sequence.default_mrp_production_form_sequence_view" />
-        <field name="arch" type="xml">
-             <button name="name" position="before">
-                 <field name="select_for_move" invisible="1" />
-                 <button name="set_for_move_true" string="Set for move" type="object" icon="star-on" attrs="{'invisible': [('select_for_move','=',True)]}"/>
-                 <button name="set_for_move_false" string="No move" type="object" icon="star-off" attrs="{'invisible': [('select_for_move','=',False)]}" />
-             </button>             
-             <field name="sequence_mode" position="after">
-                 <separator string="Move operation:" colspan="4"/>
-                 <field name="move_parent_mrp_id" />
-                 <button name="generate_child_production_from_sequence" string="Move block" type="object" icon="STOCK_LEAVE_FULLSCREEN" confirm="Do you want move all selected block in new/selected production?"/>
-             </field>
-        </field>
-    </record> 
-    <!--TODO add child management child_mrp_ids-->
+        <record model="ir.ui.view" id="default_mrp_production_form_sequence_child_moveview">
+            <field name="name">Production order child move</field>
+            <field name="model">mrp.production</field>
+            <field name="inherit_id" ref="production_product_sequence.default_mrp_production_form_sequence_view" />
+            <field name="arch" type="xml">
+                 <button name="remove_parent_block" position="before">
+                     <field name="select_for_move" invisible="1" />
+                     <button name="set_for_move_true" string="Set for move" type="object" icon="star-on" attrs="{'invisible': [('select_for_move','=',True)]}"/>
+                     <button name="set_for_move_false" string="No move" type="object" icon="star-off"  attrs="{'invisible': [('select_for_move','=',False)]}"/>
+                 </button>             
+                 <xpath expr="//tree[@string='Sequence from parent']" position="attributes">
+                     <attribute name="colors">blue:select_for_move==True</attribute>
+                 </xpath>
+
+                 <field name="sequence_mode" position="after">
+                     <separator string="Move operation:" colspan="4"/>
+                     <field name="move_parent_mrp_id" />
+                     <button name="generate_child_production_from_sequence" string="Move block" type="object" icon="STOCK_LEAVE_FULLSCREEN" confirm="Do you want move all selected block in new/selected production?"/>
+                 </field>
+            </field>
+        </record> 
+        <!--TODO add child management child_mrp_ids-->
     </data>
 </openerp>
 
