@@ -49,13 +49,21 @@ class MrpProductionSequence(orm.Model):
     def remove_parent_block(self, cr, uid, ids, context=None):
         ''' Remove block and all element of this block
         '''
+        # Pool used:
+        mrp_pool = self.pool.get('mrp.production')
+        
         block_proxy = self.browse(cr, uid, ids, context=context)[0]
-        parent_code = block_proxy.name
+        parent_name = block_proxy.name
+        sequence_mode = block_proxy.mrp_id.sequence_mode
         
         #TODO Duplicate block, better as a function?
-        free_ids = []
+        free_ids = []        
         for line in block_proxy.mrp_id.order_line_ids:
-            if parent_code == line.product_id.default_code[:3]:
+            default_code = line.product_id.default_code            
+            parent_code = mrp_pool.get_sort_code(
+                sequence_mode, default_code)
+
+            if parent_name == parent_code:
                 free_ids.append(line.id)
         
         # Free all sol in block        
