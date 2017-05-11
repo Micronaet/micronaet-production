@@ -7,8 +7,9 @@
         <field name="inherit_id" ref="production_accounting_external.default_mrp_production_form_view" />
         <field name="arch" type="xml">
              <group string="Order lines" position="before">
-                 <group string="Sequence" colspan="4" col="4">
+                 <group colspan="4" col="4">
                      <group colspan="2" col="2">
+                         <separator string="Sequence:" colspan="2"/>
                          <field name="sequence_ids" nolabel="1" >
                              <tree string="Sequence from parent" delete="false" create="false" options="{'reload_on_button': true}" editable="bottom">
                                  <field name="sequence" invisible="1"/>
@@ -26,6 +27,7 @@
                          </field>
                      </group>
                      <group colspan="2" col="4">
+                         <separator string="Sort operation:" colspan="4"/>
                          <button name="load_parent_list" string="Load list" type="object" icon="STOCK_REFRESH" colspan="1"/>
                          <button name="force_order_sequence" string="Force order" type="object" icon="gtk-sort-descending" colspan="1"/>
                          <field name="sequence_mode" nolabel="1" />

@@ -43,6 +43,21 @@ class MrpProductionSequence(orm.Model):
     '''
     _inherit = 'mrp.production.sequence'
 
+    # Button events:
+    def set_for_move_false(self, cr, uid, ids, context=None):
+        ''' No for move:
+        '''
+        return self.write(cr, uid, ids, {
+            'select_for_move': False,
+            }, context=context)
+        
+    def set_for_move_true(self, cr, uid, ids, context=None):
+        ''' No for move:
+        '''
+        return self.write(cr, uid, ids, {
+            'select_for_move': True,
+            }, context=context)
+        
     _columns = {
         'select_for_move': fields.boolean('Select for move'),
         }
