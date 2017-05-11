@@ -10,7 +10,7 @@
                  <group string="Sequence" colspan="4" col="4">
                      <group colspan="2" col="2">
                          <field name="sequence_ids" nolabel="1" >
-                             <tree string="Sequence from parent" delete="false" options="{'reload_on_button': true}" editable="bottom">
+                             <tree string="Sequence from parent" delete="false" create="false" options="{'reload_on_button': true}" editable="bottom">
                                  <field name="sequence" invisible="1"/>
                                  <field name="name" readonly="1"/>
                                  <field name="total" readonly="1"/>
@@ -25,11 +25,12 @@
                              </form>                         
                          </field>
                      </group>
-                     <group colspan="2" col="2">
-                         <button name="load_parent_list" string="Load list" type="object" icon="STOCK_REFRESH"/>
-                         <button name="force_order_sequence" string="Force order" type="object" icon="gtk-sort-descending"/>
+                     <group colspan="2" col="4">
+                         <button name="load_parent_list" string="Load list" type="object" icon="STOCK_REFRESH" colspan="1"/>
+                         <button name="force_order_sequence" string="Force order" type="object" icon="gtk-sort-descending" colspan="1"/>
+                         <field name="sequence_mode" nolabel="1" />
                      </group>
-             </group>
+                 </group>
              </group>
         </field>
     </record> 

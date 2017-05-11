@@ -132,22 +132,50 @@ class MrpProduction(orm.Model):
     def load_parent_list(self, cr, uid, ids, context=None):
         ''' Load list of parent for se the order
         '''
+        # ---------------------------------------------------------------------
+        # Utility:
+        # ---------------------------------------------------------------------
+        def get_sort_code(sequence_mode, default_code):
+            ''' Return sort code for line order
+            '''
+            # TODO 
+            if sequence_mode == 'parent':
+                return default_code[:3]    
+            elif sequence_mode == 'frame':
+                return '%s...%s' % (
+                    default_code[:3],
+                    default_code[6:8],
+                    )                
+            else:
+                raise osv.except_osv(
+                    _('Sequence error'), 
+                    _('Unmanage sequence: %s' % sequence_mode),
+                    )        
+        
         seq_pool = self.pool.get('mrp.production.sequence')
 
         # Load current parent:
         parents = {}
         old_parents = {}
-        mrp_proxy = self.browse(cr, uid, ids, context=context)
+        mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
         max_sequence = 0
+        sequence_mode = mrp_proxy.sequence_mode
+        
+        # ---------------------------------------------------------------------
+        # Read current sequence parent (so old parents):
+        # ---------------------------------------------------------------------
         for seq in mrp_proxy.sequence_ids:
             parents[seq.name] = 0
             old_parents[seq.name] = seq.id
             if seq.sequence < max_sequence:
                 max_sequence = seq.sequence
         
-        # Append parent with line:
+        # ---------------------------------------------------------------------
+        # Append parent with line (and totals in new parents):
+        # ---------------------------------------------------------------------
         for line in mrp_proxy.order_line_ids:
-            parent = line.product_id.default_code[:3]
+            default_code = line.product_id.default_code            
+            parent = get_sort_code(sequence_mode, default_code)
             if parent not in parents:
                 parents[parent] = line.product_uom_qty or 1
             else:
@@ -157,11 +185,12 @@ class MrpProduction(orm.Model):
         for parent in sorted(parents):
             i += 1
             if parent in old_parents:
-                # Delete in no elements:
                 if parents[parent] == 0:
+                    # Delete in no elements:
                     seq_pool.unlink(cr, uid, old_parents[parent], 
                         context=context)
                 else:        
+                    # Update with totals:
                     seq_pool.write(cr, uid, old_parents[parent], {
                         #'sequence': i,
                         #'name': parent,      
@@ -169,6 +198,7 @@ class MrpProduction(orm.Model):
                         'total': parents[parent]
                         }, context=context)            
             else:
+                # Create new parent:
                 seq_pool.create(cr, uid, {
                     'sequence': max_sequence + i, # in order but append to org.
                     'name': parent,      
@@ -185,9 +215,17 @@ class MrpProduction(orm.Model):
         return True
         
     _columns = {
+        'sequence_mode': fields.selection([
+            ('parent', 'Parent mode (XXX..........)'),
+            ('frame', 'Parent-Frame mode (XXX...XX.....)'),
+            ], 'Order mode', required=True),
         'sequence_ids': fields.one2many(
             'mrp.production.sequence', 'mrp_id', 'Parent order', 
             help='Set order for parent code and after confirm with button for '
                 'all sale order line'), 
         }
+        
+    _defaults = {
+        'sequence_mode': lambda *x: 'parent',                   
+        }    
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
