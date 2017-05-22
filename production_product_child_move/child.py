@@ -68,6 +68,24 @@ class MrpProduction(orm.Model):
     _inherit = 'mrp.production'
 
     # Button events:
+    def child_mrp_open(self, cr, uid, ids, context=None):
+        ''' Open child MRP
+        ''' 
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Child MRP'),
+            'view_type': 'form',
+            'view_mode': 'form,tree',
+            'res_id': ids[0],
+            'res_model': 'mrp.production',
+            #'view_id': view_id, # False
+            'views': [(False, 'form'),(False, 'tree')],
+            'domain': [],
+            'context': context,
+            'target': 'current', # 'new'
+            'nodestroy': False,
+            }
+        
     def generate_child_production_from_sequence(
             self, cr, uid, ids, context=None):
         ''' Choose what production move in new block created here

@@ -34,6 +34,7 @@
                                     <field name="date_planned" />
                                     <field name="user_id" />
                                     <field name="state" />
+                                    <button name="child_mrp_open" string="Open MRP" type="object" icon="gtk-goto-last"/>
                                 </tree>
                              </field>
                          </group>    
