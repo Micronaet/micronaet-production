@@ -75,6 +75,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         datas['code_start'] = wiz_proxy.code_start
         datas['code_partial'] = wiz_proxy.code_partial
         
+        datas['no_forecast'] = wiz_proxy.no_forecast
         datas['code_from'] = wiz_proxy.code_from
 
         datas['record_select'] = wiz_proxy.record_select
@@ -95,9 +96,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         'family_id': fields.many2one('product.template', 'Family', 
             domain=[('is_family', '=', True)]),
             
-        # TODO Togliere:
-        #'only_remain':fields.boolean('Only remain', 
-        #    help='Show only element to procuce'),
+        'no_forecast':fields.boolean('No forecast'),
         'record_select': fields.selection([
             ('all', 'Tutti'),
             ('mrp', 'Rimanenti da produrre'),
@@ -119,7 +118,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         
     _defaults = {
         'report_type': lambda *x: 'detailed',
-        #'only_remain': lambda *x: True,
+        'no_forecast': lambda *x: True,
         'record_select': lambda *x: 'all',
         
         #'to_date': datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT),

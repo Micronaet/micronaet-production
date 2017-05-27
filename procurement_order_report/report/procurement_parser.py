@@ -106,6 +106,7 @@ class Parser(report_sxw.rml_parse):
         
         # Get wizard information:
         code_start = data.get('code_start', False)        
+        no_forecast = data.get('no_forecast', False)        
 
         record_select = data.get('record_select', 'all')
         only_remain = record_select != 'all'
@@ -145,13 +146,20 @@ class Parser(report_sxw.rml_parse):
             domain.append(('mx_closed', '=', False))
         _logger.warning('Domain for order filter: %s' % domain)
 
+        if no_forecast:
+            domain.append(('forecasted_production_id', '=', False))
+            
         # -------------------------
         # Start filter description:
         # -------------------------
         self.filter_description = _('Order open, not pricelist order')
 
         # TODO domain.append(('order_closed', '=', False)) << all delivered
-        
+        if no_forecast:
+            self.filter_description += _(', no forecast')
+        else:
+            self.filter_description += _(', forecast')
+                    
         if from_date:
             domain.append(('date_order', '>=', from_date))
             self.filter_description += _(', date >= %s') % from_date
@@ -218,6 +226,7 @@ class Parser(report_sxw.rml_parse):
 
         record_select = data.get('record_select', 'all') #
         only_remain = record_select != 'all'
+        no_forecast = data.get('no_forecast', False)
         
         i = 0
         self.general_total = [0, 0, 0, 0]

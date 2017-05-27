@@ -62,7 +62,7 @@
         <field name="context">{'default_is_family': True}</field>
         <field name="domain">[('is_family', '=', True)]</field>
     </record>
-          
+
     <!--mrp.bom-->    
     <record id="view_mrp_bom_filter_family" model="ir.ui.view">
         <field name="name">mrp.bom.select.family</field>
