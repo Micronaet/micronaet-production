@@ -14,6 +14,8 @@
                     </head>
                     <sheet>
                         <group colspan="4" col="4">
+                            <field name="mode" />
+                            <newline/>
                             <field name="show_lavoration" />
                             <field name="show_sale" />
                             <field name="show_frame" />

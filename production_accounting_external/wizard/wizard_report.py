@@ -85,6 +85,11 @@ class MrpProductionReportWizard(orm.TransientModel):
             }
 
     _columns = {
+        'mode': fields.selection([
+            ('clean', 'Clean from delivery'),
+            ('all', 'Normal mode'),
+            ], 'Report mode', required=True),
+            
         'show_lavoration': fields.boolean('A. Show lavoration'),
         'show_sale': fields.boolean('B. Show sale part'),
         'show_frame': fields.boolean('C. Show frame part'),
@@ -92,6 +97,7 @@ class MrpProductionReportWizard(orm.TransientModel):
         }
         
     _defaults = {
+        'mode': lambda *x: 'clean',
         'show_lavoration': lambda *x: True,
         'show_sale': lambda *x: True,
         'show_frame': lambda *x: True,
