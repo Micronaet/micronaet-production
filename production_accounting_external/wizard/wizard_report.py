@@ -57,6 +57,7 @@ class MrpProductionReportWizard(orm.TransientModel):
         datas = {}
         datas['wizard'] = True # started from wizard
                 
+        datas['mode'] = wiz_proxy.mode        
         datas['wizard_show_lavoration'] = wiz_proxy.show_lavoration
         datas['wizard_show_sale'] = wiz_proxy.show_sale
         datas['wizard_show_frame'] = wiz_proxy.show_frame

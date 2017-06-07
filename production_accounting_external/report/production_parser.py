@@ -221,9 +221,13 @@ class Parser(report_sxw.rml_parse):
             records.append(('T2', line, total2))
         return records
 
-    def get_object_with_total(self, o):
+    def get_object_with_total(self, o, data=None):
         ''' Get object with totals for normal report
         '''
+        if data is None:
+            data = {}
+        mode = data.get('mode', 'clean')    
+        
         lines = []
         for line in o.sort_order_line_ids: # jet ordered:
             lines.append(line)
@@ -236,47 +240,64 @@ class Parser(report_sxw.rml_parse):
         self.frames = {}
         old_line = False
         for line in lines:
+            # Variable:
+            product_uom_qty = line.product_uom_qty
+            product_uom_maked_sync_qty = line.product_uom_maked_sync_qty            
+            default_code = line.default_code
+            
+            if mode == 'clean': # remove delivered qty (OC and Maked)
+                delivered_qty = line.delivered_qty
+                product_uom_qty -= delivered_qty
+                product_uom_maked_sync_qty -= delivered_qty
+                if not product_uom_qty:
+                    continue # jump empty line
+                if product_uom_maked_sync_qty < 0:
+                    product_uom_maked_sync_qty = 0.0
+            
             # -------------
             # Check Frames:
             # -------------
-            # France total:
-            frame = line.default_code.replace(' ', '.')[6:8]
+            # Frames total:
+            frame = default_code.replace(' ', '.')[6:8]
             if frame not in self.frames:
                 self.frames[frame] = 0.0
-            self.frames[frame] += line.product_uom_qty
+            self.frames[frame] += product_uom_qty
             
             # -----------------
             # Check for totals:
             # -----------------
             # Color total:
-            color = line.default_code[8:12].rstrip()
+            color = default_code[8:12].rstrip()
             if code1 == False: # XXX first loop
                 total1 = 0.0
                 code1 = color
                 
             if code1 == color:
-                total1 += line.product_uom_qty
+                total1 += product_uom_qty
             else:
                 code1 = color
                 records.append(('T1', old_line, total1))
-                total1 = line.product_uom_qty
+                total1 = product_uom_qty
 
             # Code general total:
             if code2 == False: # XXX first loop
                 total2 = 0.0
-                code2 = line.default_code
+                code2 = default_code
                 
-            if code2 == line.default_code:
-                total2 += line.product_uom_qty
+            if code2 == default_code:
+                total2 += product_uom_qty
             else: 
-                code2 = line.default_code
+                code2 = default_code
                 records.append(('T2', old_line, total2))
-                total2 = line.product_uom_qty
+                total2 = product_uom_qty
 
             # -------------------
             # Append record line:
             # -------------------
-            records.append(('L', line, False))
+            records.append(
+                ('L', line, (
+                    product_uom_qty, product_uom_maked_sync_qty,
+                    )))
             old_line = line
 
         # Append last totals if there's records:
