@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-06-07 10:47+0000\n"
-"PO-Revision-Date: 2017-06-07 13:01+0100\n"
+"PO-Revision-Date: 2017-06-07 13:48+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -935,22 +935,22 @@ msgstr "Produzione assegnata a precedente"
 #. module: production_accounting_external
 #: help:mrp.production.create.wizard,other_production:0
 msgid "Production open on line of this production"
-msgstr "Production open on line of this production"
+msgstr "Produzione aperta sulla linea di questa produzione"
 
 #. module: production_accounting_external
 #: model:ir.actions.report.xml,name:production_accounting_external.aeroo_production_remain_report_id
 msgid "Production remain Report"
-msgstr "Production remain Report"
+msgstr "Report produzione rimanente"
 
 #. module: production_accounting_external
 #: model:ir.model,name:production_accounting_external.model_mrp_production_report_wizard
 msgid "Production report wizard"
-msgstr "Production report wizard"
+msgstr "Wizard report produzione"
 
 #. module: production_accounting_external
 #: field:mrp.production.create.wizard,production_total:0
 msgid "Production: Total"
-msgstr "Production: Total"
+msgstr "Produzione: Totale"
 
 #. module: production_accounting_external
 #: view:mrp.production.create.wizard:production_accounting_external.mrp_production_create_wizard_view
@@ -960,43 +960,43 @@ msgstr "Produzione:"
 #. module: production_accounting_external
 #: field:sale.order.line.previsional,product_uom_qty:0
 msgid "Quantity"
-msgstr "Quantity"
+msgstr "Quantità"
 
 #. module: production_accounting_external
 #: help:sale.order.line,product_uom_delivered_qty:0
 msgid "Quantity delivered (info from account)"
-msgstr "Quantity delivered (info from account)"
+msgstr "Quantità consegnata (info da contabilità)"
 
 #. module: production_accounting_external
 #: code:addons/production_accounting_external/wizard/partial_production.py:73
 #, python-format
 msgid "Quantity must be max %s"
-msgstr "Quantity must be max %s"
+msgstr "Quantità deve essere max %s"
 
 #. module: production_accounting_external
 #: view:mrp.production:production_accounting_external.default_mrp_production_form_view
 msgid "Reactivate"
-msgstr "Reactivate"
+msgstr "Riattiva"
 
 #. module: production_accounting_external
 #: view:mrp.production:production_accounting_external.default_mrp_production_form_view
 msgid "Refresh"
-msgstr "Refresh"
+msgstr "Aggiorna"
 
 #. module: production_accounting_external
 #: field:mrp.production.partial.wizard,remain:0
 msgid "Remain"
-msgstr "Remain"
+msgstr "Rimanente"
 
 #. module: production_accounting_external
 #: field:mrp.production.report.wizard,mode:0
 msgid "Report mode"
-msgstr "Report mode"
+msgstr "Modalità report"
 
 #. module: production_accounting_external
 #: field:sale.order,residual_notified:0
 msgid "Residual notified by mail"
-msgstr "Residual notified by mail"
+msgstr "Residuo notificato per email"
 
 #. module: production_accounting_external
 #: model:ir.ui.menu,name:production_accounting_external.menu_base_sale_order_root
@@ -1007,7 +1007,7 @@ msgstr "Ordine di vendita"
 #. module: production_accounting_external
 #: view:sale.order.line:production_accounting_external.view_sale_order_line_graph
 msgid "Sale order for production"
-msgstr "Sale order for production"
+msgstr "Ordini per produzione"
 
 #. module: production_accounting_external
 #: model:ir.actions.act_window,name:production_accounting_external.action_view_sale_order_line
@@ -1019,7 +1019,7 @@ msgstr "Riga ordine"
 #. module: production_accounting_external
 #: model:ir.actions.act_window,name:production_accounting_external.action_view_sale_order_production_line_no_family
 msgid "Sale order line without family"
-msgstr "Sale order line without family"
+msgstr "Riga ordine senza famiglia"
 
 #. module: production_accounting_external
 #: model:ir.model,name:production_accounting_external.model_sale_order
@@ -1039,7 +1039,7 @@ msgstr "Sched. info"
 #. module: production_accounting_external
 #: help:mrp.production.create.wizard,schedule_from_date:0
 msgid "Scheduled from date to start lavorations"
-msgstr "Scheduled from date to start lavorations"
+msgstr "Schedulata dalla data per iniziare le lavorazioni"
 
 #. module: production_accounting_external
 #: view:sale.order.line.previsional:production_accounting_external.sale_order_line_previsional_search_view
@@ -1050,33 +1050,34 @@ msgstr "Ricerca previsionale"
 #: code:addons/production_accounting_external/wizard/move_lavoration.py:116
 #, python-format
 msgid "Split not available"
-msgstr "Split not available"
+msgstr "Divisione non disponibile"
 
 #. module: production_accounting_external
 #: selection:sale.order.line,sync_state:0
 msgid "Sync"
-msgstr "Sync"
+msgstr "Sincro"
 
 #. module: production_accounting_external
 #: field:sale.order.line,sync_state:0
 msgid "Sync state"
-msgstr "Sync state"
+msgstr "Stato sincronia"
 
 #. module: production_accounting_external
 #: help:sale.order.line,product_uom_maked_sync_qty:0
 msgid "This quantity is the quantity currently maked"
-msgstr "This quantity is the quantity currently maked"
+msgstr "Questa quantità è quella attualmente prodotta"
 
 #. module: production_accounting_external
 #: help:sale.order.line,product_uom_assigned_qty:0
 msgid "This quantity is the stock qty present and assigned tothis current line"
 msgstr ""
-"This quantity is the stock qty present and assigned tothis current line"
+"Questa quantità è quella presente nel magazzino e assegnata alla riga "
+"corrente"
 
 #. module: production_accounting_external
 #: field:mrp.production.create.wizard,to_deadline:0
 msgid "To deadline"
-msgstr "To deadline"
+msgstr "Alla scadenza"
 
 #. module: production_accounting_external
 #: view:sale.order.line:production_accounting_external.production_sale_order_line_tree_view
@@ -1088,7 +1089,7 @@ msgstr "Totale"
 #. module: production_accounting_external
 #: field:mrp.production.create.wizard,total:0
 msgid "Total (current block)"
-msgstr "Total (current block)"
+msgstr "Totale (blocco corrente)"
 
 #. module: production_accounting_external
 #: code:addons/production_accounting_external/accounting.py:563
@@ -1097,8 +1098,8 @@ msgid ""
 "Total of order different of sum(scheduled lines)Need reschedule operation "
 "(button)!"
 msgstr ""
-"Total of order different of sum(scheduled lines)Need reschedule operation "
-"(button)!"
+"Totale ordini differente dalla somma (linee schedulate), richiede un'altra "
+"rischedulazione (bottone)!"
 
 #. module: production_accounting_external
 #: code:addons/production_accounting_external/accounting.py:551
@@ -1107,13 +1108,13 @@ msgid ""
 "Total of order line different of sum(lines)Need reschedule operation "
 "(button)!"
 msgstr ""
-"Total of order line different of sum(lines)Need reschedule operation "
-"(button)!"
+"Totale ordini differente dalla somma (linee schedulate), richiede un'altra "
+"rischedulazione (bottone)!"
 
 #. module: production_accounting_external
 #: help:mrp.production.create.wizard,total:0
 msgid "Total only for this block, if append will be integrated"
-msgstr "Total only for this block, if append will be integrated"
+msgstr "Totale solo per questo blocco, se aggiunto verrà integrato"
 
 #. module: production_accounting_external
 #: view:sale.order.line.previsional:production_accounting_external.sale_order_line_previsional_tree_view
@@ -1129,12 +1130,12 @@ msgstr "UM"
 #. module: production_accounting_external
 #: view:sale.order.line:production_accounting_external.production_sale_order_line_tree_view
 msgid "Undo produced"
-msgstr "Undo produced"
+msgstr "Ripristina come non prodotti"
 
 #. module: production_accounting_external
 #: field:mrp.production,unlinked_mrp:0
 msgid "Unlinked order"
-msgstr "Unlinked order"
+msgstr "Ordine scollegato"
 
 #. module: production_accounting_external
 #: view:sale.order.line.previsional:production_accounting_external.sale_order_line_previsional_search_view
@@ -1146,27 +1147,27 @@ msgstr "Aggiornato"
 #. module: production_accounting_external
 #: field:mrp.production,use_mrp_ids:0
 msgid "Use mrp"
-msgstr "Use mrp"
+msgstr "Usa produzione"
 
 #. module: production_accounting_external
 #: field:mrp.production,used_by_mrp_id:0
 msgid "Used by"
-msgstr "Used by"
+msgstr "Usato da"
 
 #. module: production_accounting_external
 #: help:sale.order.line,order_confirmed:0
 msgid "Used for filter in production (T when order in confirmed"
-msgstr "Used for filter in production (T when order in confirmed"
+msgstr "Usato per filtrare nella produzione (T quando un ordine è confermato)"
 
 #. module: production_accounting_external
 #: field:mrp.production.create.wizard,warning:0
 msgid "Warning"
-msgstr "Warning"
+msgstr "Attenzione"
 
 #. module: production_accounting_external
 #: model:ir.ui.menu,name:production_accounting_external.menu_sale_order_line_m1_no_family
 msgid "Without family"
-msgstr "Without family"
+msgstr "Senza famiglia"
 
 #. module: production_accounting_external
 #: view:sale.order.line:production_accounting_external.view_sale_order_line_tree_force_mrp
@@ -1199,18 +1200,18 @@ msgstr "Orario"
 #. module: production_accounting_external
 #: field:mrp.production.move.lavoration.wizard,workcenter_id:0
 msgid "Workcenter"
-msgstr "Workcenter"
+msgstr "Linea"
 
 #. module: production_accounting_external
 #: field:mrp.production.create.wizard,workcenter_id:0
 msgid "Workcenter line"
-msgstr "Workcenter line"
+msgstr "Linea"
 
 #. module: production_accounting_external
 #: field:mrp.production.create.wizard,workers:0
 #: field:mrp.production.move.lavoration.wizard,workers:0
 msgid "Workers"
-msgstr "Workers"
+msgstr "Operatori"
 
 #. module: production_accounting_external
 #: view:sale.order.line:production_accounting_external.sale_order_line_family_tree_view
@@ -1249,4 +1250,4 @@ msgstr "red:is_manufactured==False;"
 #. module: production_accounting_external
 #: view:sale.order.line:production_accounting_external.production_sale_order_line_tree_view
 msgid "total"
-msgstr "total"
+msgstr "totale"
