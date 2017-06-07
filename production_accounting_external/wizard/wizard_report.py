@@ -87,7 +87,7 @@ class MrpProductionReportWizard(orm.TransientModel):
 
     _columns = {
         'mode': fields.selection([
-            ('clean', 'Clean from delivery'),
+            ('clean', 'Clean from delivery and maked'),
             ('all', 'Normal mode'),
             ], 'Report mode', required=True),
             

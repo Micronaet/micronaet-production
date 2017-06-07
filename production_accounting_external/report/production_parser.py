@@ -251,8 +251,14 @@ class Parser(report_sxw.rml_parse):
                 product_uom_maked_sync_qty -= delivered_qty
                 if not product_uom_qty:
                     continue # jump empty line
-                if product_uom_maked_sync_qty < 0:
+                    
+                if product_uom_maked_sync_qty < 0: # remain 0 if negative
                     product_uom_maked_sync_qty = 0.0
+                elif product_uom_maked_sync_qty > 0: # clean ordered with done
+                    product_uom_qty -= product_uom_maked_sync_qty
+                    if not product_uom_qty:
+                        continue # jump empty line
+                    product_uom_maked_sync_qty = 0.0                    
             
             # -------------
             # Check Frames:
