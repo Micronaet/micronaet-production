@@ -77,6 +77,7 @@ class MrpProductionReportWizard(orm.TransientModel):
             
         datas = {}
         datas['wizard'] = True # started from wizard
+        datas['mode'] = wiz_proxy.mode        
                 
         return {
             'type': 'ir.actions.report.xml',

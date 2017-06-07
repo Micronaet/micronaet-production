@@ -150,11 +150,15 @@ class Parser(report_sxw.rml_parse):
         '''
         return self.frames
 
-    def get_object_with_total_cut(self, o):
+    def get_object_with_total_cut(self, o, data=None):
         ''' Get object with totals for normal report
             Sort for [4:6]-[9:12]
             Break on 2 block for total
         '''
+        if data is None:
+            data = {}
+        mode = data.get('mode', 'clean')    
+
         lines = []
         for line in sorted(
                 o.order_line_ids, 
@@ -173,42 +177,62 @@ class Parser(report_sxw.rml_parse):
 
         self.frames = {}
         for line in lines:
+            # Variable:
+            product_uom_qty = line.product_uom_qty
+            product_uom_maked_sync_qty = line.product_uom_maked_sync_qty            
+            default_code = line.default_code
+
+            if mode == 'clean': # remove delivered qty (OC and Maked)
+                delivered_qty = line.delivered_qty
+                product_uom_qty -= delivered_qty
+                product_uom_maked_sync_qty -= delivered_qty
+                if not product_uom_qty:
+                    continue # jump empty line
+                    
+                if product_uom_maked_sync_qty < 0: # remain 0 if negative
+                    product_uom_maked_sync_qty = 0.0
+                elif product_uom_maked_sync_qty > 0: # clean ordered with done
+                    product_uom_qty -= product_uom_maked_sync_qty
+                    if not product_uom_qty:
+                        continue # jump empty line
+                    product_uom_maked_sync_qty = 0.0                    
+            
             # -------------
             # Check Frames:
             # -------------
             # France total:
-            frame = line.default_code.replace(' ', '.')[6:8]
+            frame = default_code.replace(' ', '.')[6:8]
             if frame not in self.frames:
                 self.frames[frame] = 0.0
-            self.frames[frame] += line.product_uom_qty
+            self.frames[frame] += product_uom_qty
             
             # -----------------
             # Check for totals:
             # -----------------
             # Color total:
-            color = line.default_code[8:12].rstrip()
+            color = default_code[8:12].rstrip()
             if code1 == False: # XXX first loop
                 total1 = 0.0
                 code1 = color
                 
             if code1 == color:
-                total1 += line.product_uom_qty
+                total1 += product_uom_qty
             else:
                 code1 = color
                 records.append(('T1', line, total1))
-                total1 = line.product_uom_qty
+                total1 = product_uom_qty
 
             # Code general total:
             if code2 == False: # XXX first loop
                 total2 = 0.0
-                code2 = line.default_code
+                code2 = default_code
                 
-            if code2 == line.default_code:
-                total2 += line.product_uom_qty
+            if code2 == default_code:
+                total2 += product_uom_qty
             else: 
-                code2 = line.default_code
+                code2 = default_code
                 records.append(('T2', line, total2))
-                total2 = line.product_uom_qty
+                total2 = product_uom_qty
 
             # -------------------
             # Append record line:
