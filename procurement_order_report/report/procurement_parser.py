@@ -329,13 +329,6 @@ class Parser(report_sxw.rml_parse):
         def clean_number(value):
             return ('%s' % value).replace('.', ',')
             
-        #filename = os.path.expanduser(os.path.join(
-        #    '~', 'photo', 'log', 'frame.csv'))
-        #log_file = open(filename, 'w')
-        #log_file.write(
-        #    'READ|STATUS|ORDER|PARTNER|DEADLINE|FAMILY|PRODUCT|CODE|OC|MAKE|DELIVERY|S|B|TOT\n')
-        #mask = '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n'
-        
         # Loop on order:
         products = {}
         browse_line = self.browse_order_line(data)
@@ -352,9 +345,8 @@ class Parser(report_sxw.rml_parse):
             to_partial = from_partial + len(code_partial)
 
         for line in browse_line:
-            # First test for speed up: added 17 giu 2016
+            # First test for speed up:
             if only_remain and line.mx_closed:
-                _logger.info('Jump only remain: line is closed')
                 continue # jump if no item or all produced
 
             # Filter for partial:.
@@ -368,58 +360,18 @@ class Parser(report_sxw.rml_parse):
 
             TOT = product_uom_qty - delivered_qty            
             if delivered_qty > product_uom_maked_sync_qty:
-                B = 0
-                status = 'STOCK'
+                B = 0 # use stock
             else:
-                B = product_uom_maked_sync_qty - delivered_qty 
-                status = 'PROD'                
+                B = product_uom_maked_sync_qty - delivered_qty # use prod.
             S = TOT - B
 
-            # XXX Put in first test:
-            #if only_remain and ( # added 17 giu 2016
-            #        line.mx_closed or mrp_remain <= 0):
-            #    _logger.info('Jump only remain: mrp_remain: %s' % (
-            #        mrp_remain))
-            #    continue # jump if no item or all produced
             code = '%s...%s' % (
                 line.product_id.default_code[0:3],
                 line.product_id.default_code[6:8],
                 )
             if TOT == 0:
-                #log_file.write(mask % (
-                #    'NO',
-                #    status,
-                #    line.order_id.name,
-                #    line.order_id.partner_id.name,
-                #    line.date_deadline,
-                #    line.product_id.family_id.id, #name or '???',
-                #    line.product_id.default_code,
-                #    code,
-                #    clean_number(product_uom_qty),
-                #    clean_number(product_uom_maked_sync_qty),
-                #    clean_number(delivered_qty),
-                #    clean_number(S),
-                #    clean_number(B),
-                #    clean_number(TOT),
-                #    ))
                 continue
             
-            #log_file.write(mask % (
-            #    'YES',
-            #    status,
-            #    line.order_id.name,
-            #    line.order_id.partner_id.name,
-            #    line.date_deadline,
-            #    line.product_id.family_id.id, #name or '???',
-            #    line.product_id.default_code,
-            #    code,
-            #    clean_number(product_uom_qty),
-            #    clean_number(product_uom_maked_sync_qty),
-            #    clean_number(delivered_qty),
-            #    clean_number(S),
-            #    clean_number(B),
-            #    clean_number(TOT),
-            #    ))
             if line.order_id.id not in self.order_ids:
                 self.order_ids.append(line.order_id.id)
                 
