@@ -73,59 +73,154 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         WS = WB.add_worksheet(_('Frame'))
 
         # Format for cell:            
-        num_format = '#,##0.00'
+        num_format = '#,##0'
         format_title = WB.add_format({
             'bold': True, 
+            'font_name': 'Courier 10 pitch', # 'Arial'
+            'font_size': 11,
+            'align': 'left',
+            })
+        format_header = WB.add_format({
+            'bold': True, 
             'font_color': 'black',
-            'font_name': 'Arial',
+            'font_name': 'Courier 10 pitch', # 'Arial'
             'font_size': 10,
             'align': 'center',
             'valign': 'vcenter',
             'bg_color': 'gray',
             'border': 1,
-            'text_wrap': True,
+            #'text_wrap': True,
+            })
+        format_text = WB.add_format({
+            'font_color': 'black',
+            'font_name': 'Courier 10 pitch',
+            'font_size': 9,
+            'align': 'left',
+            #'bg_color': 'gray',
+            #'border': 1,
+            #'text_wrap': True,
             })
         format_number = WB.add_format({
-            'font_name': 'Arial',
+            'font_name': 'Courier 10 pitch',
             'font_size': 9,
             'align': 'right',
-            'bg_color': 'white',
+            #'bg_color': 'white',
+            #'border': 1,
+            'num_format': num_format,
+            })
+        format_text_total = WB.add_format({
+            'bold': True, 
+            'font_color': 'black',
+            'font_name': 'Courier 10 pitch',
+            'font_size': 9,
+            'align': 'left',
+            'bg_color': '#DDDDDD',
+            'border': 1,
+            #'text_wrap': True,
+            })
+        format_number_total = WB.add_format({
+            'bold': True, 
+            'font_name': 'Courier 10 pitch',
+            'font_size': 9,
+            'align': 'right',
+            'bg_color': '#DDDDDD',
             'border': 1,
             'num_format': num_format,
             })
         
-        # -----------------------------------------------------------------
-        # Export excel report:        
-        # -----------------------------------------------------------------
-        # Write header:
-        WS.set_row(0, 20) # Row height
-        WS.set_column ('A:A', 35) # Col width
-        
+        # ---------------------------------------------------------------------
+        #                     EXPORT EXCEL REPORT
+        # ---------------------------------------------------------------------
+        order_pool = self.pool.get('sale.order')
+        attachment_pool = self.pool.get('ir.attachment')
+
+        # Call parser function for get data:
+        res, mrp_date_db = order_pool._report_procurement_grouped_get_objects(
+            cr, uid, data=data, context=context)
+
+        # ---------------------------------------------------------------------
+        # Write header block:
+        # ---------------------------------------------------------------------
+        #WS.set_row(0, 20) # Row height
+        WS.set_column ('A:A', 35) # Col width        
+
+        # 0. Title of report:
+        write_xls_mrp_line(WS, 0, [
+            (_('REPORT APPROVVIGIONAMENTI SU ORDINATO'), format_title),
+            ])
+
+        # 3. Header line:    
         header = [
-            (_('Item'), format_title),
-            (_('TODO'), format_title),
-            (_('Done'), format_title),
-            (_('Total'), format_title), 
+            (_('Item'), format_header),
+            (_('TODO'), format_header),
+            (_('Done'), format_header),
+            (_('Total'), format_header),
             ]
-        write_xls_mrp_line(WS, 0, header)
             
+        # Add header date:    
+        get_col_date = {}
+        pos = len(header)
+        for date in mrp_date_db:
+            get_col_date[date] = pos
+            if not date:
+                date = _('No date')
+            header.append((date, format_header))
+            pos += 1
+                
+        write_xls_mrp_line(WS, 3, header)
+
+        # 1. Filter applied:
+        write_xls_mrp_line(WS, 1, [
+            (_('Filtro: %s') % \
+                order_pool._report_procurement_get_filter_description(
+                    cr, uid, context=context), format_title),
+            ])
+            
+        # ---------------------------------------------------------------------
         # Write body:
-        i = 1 # row position (before 0)
-        
-        
+        # ---------------------------------------------------------------------
+        i = 3 # Last line writed
+
+        for mode, key, line in res:
+            i += 1
+            if mode == 'L':
+                body = [
+                    (key, format_text),
+                    (line[0], format_number),
+                    (line[1], format_number),
+                    (line[2], format_number),
+                    ]
+                write_xls_mrp_line(WS, i, body)
+                # Add directly extra total for date of MRP production
+                for date in mrp_date_db:
+                    if key in mrp_date_db[date]:
+                        WS.write(
+                            i, get_col_date[date], mrp_date_db[date][key], 
+                            format_number,
+                            )
+                    
+    
+            elif mode == 'T':
+                body = [
+                    (_('Total fam. %s') % key, format_text_total),
+                    (line[0], format_number_total),
+                    (line[1], format_number_total),
+                    (line[2], format_number_total),
+                    ]
+                write_xls_mrp_line(WS, i, body)
+                i += 1
         
         WB.close()
         _logger.info('End generation framte status report %s' % filename)
 
         # Creaet attachment for return XLSX file as download:
-        attachment_pool = self.pool.get('ir.attachment')
         b64 = open(filename, 'rb').read().encode('base64')
         attachment_id = attachment_pool.create(cr, uid, {
             'name': 'Frame MRP status',
             'datas_fname': 'frame_mrp_status.xlsx',
             'type': 'binary',
             'datas': b64,
-            'partner_id': 1,
+            #'partner_id': 1,
             'res_model':'res.partner',
             'res_id': 1,
             }, context=context)

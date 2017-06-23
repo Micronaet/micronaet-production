@@ -45,6 +45,17 @@ class SaleOrder(orm.Model):
     # -------------------------------------------------------------------------
     # Report Utility:
     # -------------------------------------------------------------------------
+    def _report_procurement_get_filter_description(
+            self, cr, uid, context=None):
+        ''' Return filter for object
+        '''
+        return self.filter_description or ''
+
+    def _report_procurement_get_orders_selected(self, cr, uid, context=None):
+        ''' Moved function here
+        '''        
+        return self.browse(cr, uid, self.order_ids, context=context)
+        
     def _report_procurement_browse_order_line(
             self, cr, uid, data=None, context=None):
         ''' Return line (used from 2 report)
@@ -183,7 +194,7 @@ class SaleOrder(orm.Model):
             from_partial = code_from - 1
             to_partial = from_partial + len(code_partial)
 
-        mrp_date_db = []
+        mrp_date_db = {}
         for line in browse_line:
             # First test for speed up:
             if only_remain and line.mx_closed:
@@ -220,10 +231,17 @@ class SaleOrder(orm.Model):
             products[code].append(line)
             
             if xlsx:
-                date_planned = line.mrp_id and line.mrp_id.date_planned and \
-                    line.mrp_id.date_planned
+                try:
+                    date_planned = line.mrp_id.date_planned[:10]
+                except:
+                    date_planned = False
                 if date_planned not in mrp_date_db:
-                    mrp_date_db.append(date_planned)
+                    mrp_date_db[date_planned] = {}
+                if code not in mrp_date_db[date_planned]:
+                    mrp_date_db[date_planned][code] = 0
+                    
+                #TODO (Suspended):     
+                mrp_date_db[date_planned][code] += S
         
         # create a res order by product code
         res = []
@@ -276,7 +294,11 @@ class SaleOrder(orm.Model):
         # last record_
         if last_parent:
             res.append(('T', last_parent, parent_total))
-        return res        
+            
+        if xlsx: # for xlsx call
+            return res, mrp_date_db
+        else: # for normal report call
+            return res        
 
 class Parser(report_sxw.rml_parse):
     counters = {}
@@ -304,14 +326,16 @@ class Parser(report_sxw.rml_parse):
         })
 
     def get_general_total(self, ):
-        '''
+        ''' Return instance general total
         '''
         return self.general_total
     
     def get_filter_description(self, ):
+        ''' Moved in sale order
         '''
-        '''
-        return self.filter_description or ''
+        return self.pool.get(
+            'sale.order')._report_procurement_get_filter_description(
+                self.cr, self.uid)
         
     def get_datetime(self):
         ''' Return datetime obj
@@ -349,6 +373,7 @@ class Parser(report_sxw.rml_parse):
     def get_object_line(self, data):
         ''' Selected object + print object
         '''
+        # TODO Move in sale.order?
         # Loop on order:
         products = {}
         browse_line = self.browse_order_line(data)
@@ -462,7 +487,7 @@ class Parser(report_sxw.rml_parse):
         return res
 
     def get_object_grouped_line(self, data):
-        ''' Selected object + print object
+        ''' Moved in sale.order: Selected object + print object 
         ''' 
         return self.pool.get(
             'sale.order')._report_procurement_grouped_get_objects(
@@ -471,6 +496,7 @@ class Parser(report_sxw.rml_parse):
     def get_object_grouped_family_line(self, data):
         ''' Selected object + print object
         '''
+        # TODO Move in sale.order?
         def clean_number(value):
             return ('%s' % value).replace('.', ',')
         
@@ -593,7 +619,11 @@ class Parser(report_sxw.rml_parse):
         return res
 
     def get_orders_selected(self):
-        order_pool = self.pool.get('sale.order')
-        return order_pool.browse(self.cr, self.uid, self.order_ids)
+        ''' Moved in sale.order function            
+        '''
+        # TODO used also in other reports?
+        return self.pool.get(
+            'sale.order')._report_procurement_get_orders_selected(
+                self.cr, self.uid)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
