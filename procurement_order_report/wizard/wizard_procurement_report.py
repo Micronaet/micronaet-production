@@ -23,6 +23,7 @@ import os
 import sys
 import logging
 import openerp
+import xlsxwriter
 import openerp.netsvc as netsvc
 import openerp.addons.decimal_precision as dp
 from openerp.osv import fields, osv, expression, orm
@@ -46,23 +47,117 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
     _name = 'sale.order.procurement.report.wizard'
     _description = 'Sale produrement wizard'
     
+    # -------------------------------------------------------------------------
+    # Utilty:
+    # -------------------------------------------------------------------------
+    def extract_report_grouped_in_excel(
+            self, cr, uid, data=None, context=None):
+        ''' Extract XLSX mode for groupe report (used for frames)
+        '''    
+        # ---------------------------------------------------------------------
+        # Utility:
+        # ---------------------------------------------------------------------
+        def write_xls_mrp_line(WS, row, line):
+            ''' Write line in excel file
+            '''
+            col = 0
+            for item, format_cell in line:
+                WS.write(row, col, item, format_cell)
+                col += 1
+            return True
+
+        # Create file:
+        filename = '/tmp/production_status.xlsx'
+        _logger.info('Start export status on %s' % filename)
+        WB = xlsxwriter.Workbook(filename)
+        WS = WB.add_worksheet(_('Frame'))
+
+        # Format for cell:            
+        num_format = '#,##0.00'
+        format_title = WB.add_format({
+            'bold': True, 
+            'font_color': 'black',
+            'font_name': 'Arial',
+            'font_size': 10,
+            'align': 'center',
+            'valign': 'vcenter',
+            'bg_color': 'gray',
+            'border': 1,
+            'text_wrap': True,
+            })
+        format_number = WB.add_format({
+            'font_name': 'Arial',
+            'font_size': 9,
+            'align': 'right',
+            'bg_color': 'white',
+            'border': 1,
+            'num_format': num_format,
+            })
+        
+        # -----------------------------------------------------------------
+        # Export excel report:        
+        # -----------------------------------------------------------------
+        # Write header:
+        WS.set_row(0, 20) # Row height
+        WS.set_column ('A:A', 35) # Col width
+        
+        header = [
+            (_('Item'), format_title),
+            (_('TODO'), format_title),
+            (_('Done'), format_title),
+            (_('Total'), format_title), 
+            ]
+        write_xls_mrp_line(WS, 0, header)
+            
+        # Write body:
+        i = 1 # row position (before 0)
+        
+        
+        
+        WB.close()
+        _logger.info('End generation framte status report %s' % filename)
+
+        # Creaet attachment for return XLSX file as download:
+        attachment_pool = self.pool.get('ir.attachment')
+        b64 = open(filename, 'rb').read().encode('base64')
+        attachment_id = attachment_pool.create(cr, uid, {
+            'name': 'Frame MRP status',
+            'datas_fname': 'frame_mrp_status.xlsx',
+            'type': 'binary',
+            'datas': b64,
+            'partner_id': 1,
+            'res_model':'res.partner',
+            'res_id': 1,
+            }, context=context)
+        
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/binary/saveas?model=ir.attachment&field=datas&'
+                'filename_field=datas_fname&id=%s' % attachment_id,
+            'target': 'self',
+            }   
+        
     # --------------
     # Button events:
     # --------------
     def print_report(self, cr, uid, ids, context=None):
         ''' Redirect to report passing parameters
         ''' 
+
         wiz_proxy = self.browse(cr, uid, ids)[0]
             
         datas = {}
         datas['wizard'] = True # started from wizard
+        datas['xlsx'] = False
         
         if wiz_proxy.report_type == 'detailed':
             report_name = 'mx_procurement_report' 
         elif wiz_proxy.report_type == 'grouped': # grouped
             report_name = 'mx_procurement_grouped_report' 
-        else: # family
+        elif wiz_proxy.report_type == 'family':
             report_name = 'mx_procurement_grouped_family_report' # TODO change
+        else: 
+            datas['xlsx'] = True # frame XLS mode
                
         datas['from_date'] = wiz_proxy.from_date or False
         datas['to_date'] = wiz_proxy.to_date or False
@@ -79,17 +174,22 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         datas['code_from'] = wiz_proxy.code_from
 
         datas['record_select'] = wiz_proxy.record_select
-
-        return {
-            'type': 'ir.actions.report.xml',
-            'report_name': report_name,
-            'datas': datas,
-            }
+        
+        if datas['xlsx']: # Export in XLSX file 
+            return self.extract_report_grouped_in_excel(
+                cr, uid, data=datas, context=context)
+        else: # Normal report:
+            return {
+                'type': 'ir.actions.report.xml',
+                'report_name': report_name,
+                'datas': datas,
+                }                
 
     _columns = {
         'report_type': fields.selection([
             ('detailed', 'Order in detail'),
             ('grouped', 'Order grouped by frame'),
+            ('frame', 'Frame for color (XLSX)'),
             ('family', 'Order family grouped'),
             ], 'Report type', required=True),
         'partner_id': fields.many2one('res.partner', 'Partner'),

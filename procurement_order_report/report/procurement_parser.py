@@ -37,71 +37,21 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
-class Parser(report_sxw.rml_parse):
-    counters = {}
-    last_record = 0
+class SaleOrder(orm.Model):
+    ''' Utility function moved in sale order
+    '''
+    _inherit = 'sale.order'
     
-    def __init__(self, cr, uid, name, context):
-        
-        super(Parser, self).__init__(cr, uid, name, context)
-        self.localcontext.update({
-            'get_counter': self.get_counter,
-            'set_counter': self.set_counter,
-
-            'get_object_line': self.get_object_line,
-            'get_object_grouped_line': self.get_object_grouped_line,
-            'get_object_grouped_family_line': 
-                self.get_object_grouped_family_line,
-            'get_orders_selected': self.get_orders_selected,
-
-            'get_datetime': self.get_datetime,
-            'get_date': self.get_date,
-            
-            'get_filter_description': self.get_filter_description,
-            
-            'get_general_total': self.get_general_total,
-        })
-
-    def get_general_total(self, ):
-        '''
-        '''
-        return self.general_total
-    
-    def get_filter_description(self, ):
-        '''
-        '''
-        return self.filter_description or ''
-        
-    def get_datetime(self):
-        ''' Return datetime obj
-        '''
-        return datetime
-
-    def get_date(self):
-        ''' Return datetime obj
-        '''
-        return datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
-
-    def get_counter(self, name):
-        ''' Get counter with name passed (else create an empty)
-        '''
-        if name not in self.counters:
-            self.counters[name] = False
-        return self.counters[name]
-
-    def set_counter(self, name, value):
-        ''' Set counter with name with value passed
-        '''
-        self.counters[name] = value
-        return "" # empty so no write in module
-
-    # Utility for 3 report:
-    def browse_order_line(self, data):
+    # -------------------------------------------------------------------------
+    # Report Utility:
+    # -------------------------------------------------------------------------
+    def _report_procurement_browse_order_line(
+            self, cr, uid, data=None, context=None):
         ''' Return line (used from 2 report)
         '''
         _logger.info('Start report data: %s' % data)
+        
         # Parameters for report management:
-        sale_pool = self.pool.get('sale.order')
         line_pool = self.pool.get('sale.order.line')
         
         # Get wizard information:
@@ -173,7 +123,7 @@ class Parser(report_sxw.rml_parse):
         #else:    
         #    self.filter_description += _(', all order line')
         
-        order_ids = sale_pool.search(self.cr, self.uid, domain)
+        order_ids = self.search(cr, uid, domain)
         _logger.info('Order filter domain used: [%s] order selected: %s' % (
             domain, len(order_ids)))
 
@@ -203,10 +153,198 @@ class Parser(report_sxw.rml_parse):
             domain.append(('product_id.family_id', '=', family_id))  
             self.filter_description += _(', family %s') % family_name
         
-        line_ids = line_pool.search(self.cr, self.uid, domain)
-        _logger.info('Order line selected: %s' % (len(line_ids), ))
+        line_ids = line_pool.search(cr, uid, domain, context=context)
+        _logger.info('Order line selected: %s' % len(line_ids))
         
-        return line_pool.browse(self.cr, self.uid, line_ids)
+        return line_pool.browse(cr, uid, line_ids, context=context)
+        
+    def _report_procurement_grouped_get_objects(
+            self, cr, uid, data=None, context=None):
+        ''' Used here parser report function, lauched also for XLSX files 
+            data extract
+        '''         
+        def clean_number(value):
+            return ('%s' % value).replace('.', ',')
+            
+        # Loop on order:
+        products = {}
+        browse_line = self._report_procurement_browse_order_line(
+            cr, uid, data, context=context)
+        self.order_ids = [] # list of order interessed from movement
+
+        record_select = data.get('record_select', 'all')
+        only_remain = record_select != 'all'
+        xlsx = data.get('xlsx', False) # Mode XLSX
+
+        # Manage partial default_code
+        code_from = int(data.get('code_from', 1))
+        code_partial = data.get('code_partial', '')
+        if code_partial:
+            from_partial = code_from - 1
+            to_partial = from_partial + len(code_partial)
+
+        mrp_date_db = []
+        for line in browse_line:
+            # First test for speed up:
+            if only_remain and line.mx_closed:
+                continue # jump if no item or all produced
+
+            # Filter for partial:.
+            if code_partial and line.product_id.default_code[
+                    from_partial: to_partial] != code_partial:
+                continue # jump line
+
+            product_uom_qty = line.product_uom_qty
+            product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
+            delivered_qty = line.delivered_qty
+
+            TOT = product_uom_qty - delivered_qty            
+            if delivered_qty > product_uom_maked_sync_qty:
+                B = 0 # use stock
+            else:
+                B = product_uom_maked_sync_qty - delivered_qty # use prod.
+            S = TOT - B
+
+            code = '%s...%s' % (
+                line.product_id.default_code[0:3],
+                line.product_id.default_code[6:8],
+                )
+            if TOT == 0:
+                continue
+            
+            if line.order_id.id not in self.order_ids:
+                self.order_ids.append(line.order_id.id)
+                
+            if code not in products:
+                products[code] = []
+            products[code].append(line)
+            
+            if xlsx:
+                date_planned = line.mrp_id and line.mrp_id.date_planned and \
+                    line.mrp_id.date_planned
+                if date_planned not in mrp_date_db:
+                    mrp_date_db.append(date_planned)
+        
+        # create a res order by product code
+        res = []
+        codes = sorted(products)
+        last_parent = False
+        parent_total = [0, 0, 0]
+        code = ''
+
+        for code in codes:
+            # Check if is the same parent code:
+            if last_parent == False: 
+                # XXX only for first line
+                last_parent = code[:3] # first 3                
+            elif code[:3] != last_parent:
+                # Save previous code
+                res.append(('T', last_parent, parent_total))
+                last_parent = code[:3]
+                parent_total = [0, 0, 0] # Parent total
+                
+            total = [0, 0, 0] # Current code total
+            # Add product line:
+            for line in products[code]:
+                #res.append(('P', line))
+
+                # Quantity used:
+                product_uom_qty = line.product_uom_qty
+                product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
+                delivered_qty = line.delivered_qty
+
+                TOT = product_uom_qty - delivered_qty                
+                if delivered_qty > product_uom_maked_sync_qty:
+                    B = 0
+                else:
+                    B = product_uom_maked_sync_qty - delivered_qty 
+                S = TOT - B
+                                
+                # Line total:
+                total[0] += S
+                total[1] += B
+                total[2] += TOT
+
+                # Block total (for parent code)
+                parent_total[0] += S
+                parent_total[1] += B
+                parent_total[2] += TOT
+
+            # Add total line:    
+            res.append(('L', code, total))                
+        
+        # last record_
+        if last_parent:
+            res.append(('T', last_parent, parent_total))
+        return res        
+
+class Parser(report_sxw.rml_parse):
+    counters = {}
+    last_record = 0
+    
+    def __init__(self, cr, uid, name, context):
+        
+        super(Parser, self).__init__(cr, uid, name, context)
+        self.localcontext.update({
+            'get_counter': self.get_counter,
+            'set_counter': self.set_counter,
+
+            'get_object_line': self.get_object_line,
+            'get_object_grouped_line': self.get_object_grouped_line,
+            'get_object_grouped_family_line': 
+                self.get_object_grouped_family_line,
+            'get_orders_selected': self.get_orders_selected,
+
+            'get_datetime': self.get_datetime,
+            'get_date': self.get_date,
+            
+            'get_filter_description': self.get_filter_description,
+            
+            'get_general_total': self.get_general_total,
+        })
+
+    def get_general_total(self, ):
+        '''
+        '''
+        return self.general_total
+    
+    def get_filter_description(self, ):
+        '''
+        '''
+        return self.filter_description or ''
+        
+    def get_datetime(self):
+        ''' Return datetime obj
+        '''
+        return datetime
+
+    def get_date(self):
+        ''' Return datetime obj
+        '''
+        return datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
+
+    def get_counter(self, name):
+        ''' Get counter with name passed (else create an empty)
+        '''
+        if name not in self.counters:
+            self.counters[name] = False
+        return self.counters[name]
+
+    def set_counter(self, name, value):
+        ''' Set counter with name with value passed
+        '''
+        self.counters[name] = value
+        return "" # empty so no write in module
+
+    # -------------------------------------------------------------------------
+    # Utility for 3 report:
+    # -------------------------------------------------------------------------
+    def browse_order_line(self, data):
+        ''' Move here function in sale order
+        '''
+        return self.pool.get(
+            'sale.order')._report_procurement_browse_order_line(
+            self.cr, self.uid, data=data)
     
     def get_object_line(self, data):
         ''' Selected object + print object
@@ -326,110 +464,9 @@ class Parser(report_sxw.rml_parse):
     def get_object_grouped_line(self, data):
         ''' Selected object + print object
         ''' 
-        def clean_number(value):
-            return ('%s' % value).replace('.', ',')
-            
-        # Loop on order:
-        products = {}
-        browse_line = self.browse_order_line(data)
-        self.order_ids = [] # list of order interessed from movement
-
-        record_select = data.get('record_select', 'all')
-        only_remain = record_select != 'all'
-
-        # Manage partial default_code
-        code_from = int(data.get('code_from', 1))
-        code_partial = data.get('code_partial', '')
-        if code_partial:
-            from_partial = code_from - 1
-            to_partial = from_partial + len(code_partial)
-
-        for line in browse_line:
-            # First test for speed up:
-            if only_remain and line.mx_closed:
-                continue # jump if no item or all produced
-
-            # Filter for partial:.
-            if code_partial and line.product_id.default_code[
-                    from_partial: to_partial] != code_partial:
-                continue # jump line
-
-            product_uom_qty = line.product_uom_qty
-            product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
-            delivered_qty = line.delivered_qty
-
-            TOT = product_uom_qty - delivered_qty            
-            if delivered_qty > product_uom_maked_sync_qty:
-                B = 0 # use stock
-            else:
-                B = product_uom_maked_sync_qty - delivered_qty # use prod.
-            S = TOT - B
-
-            code = '%s...%s' % (
-                line.product_id.default_code[0:3],
-                line.product_id.default_code[6:8],
-                )
-            if TOT == 0:
-                continue
-            
-            if line.order_id.id not in self.order_ids:
-                self.order_ids.append(line.order_id.id)
-                
-            if code not in products:
-                products[code] = []
-            products[code].append(line)
-        
-        # create a res order by product code
-        res = []
-        codes = sorted(products)
-        last_parent = False
-        parent_total = [0, 0, 0]
-        code = ''
-
-        for code in codes:
-            if last_parent == False: 
-                # XXX only for first line
-                last_parent = code[:3] # first 3                
-            elif code[:3] != last_parent:
-                # Save previous code
-                res.append(('T', last_parent, parent_total))
-                last_parent = code[:3]
-                parent_total = [0, 0, 0]
-                
-            total = [0, 0, 0]
-            # Add product line:
-            for line in products[code]:
-                #res.append(('P', line))
-
-                # Quantity used:
-                product_uom_qty = line.product_uom_qty
-                product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
-                delivered_qty = line.delivered_qty
-
-                TOT = product_uom_qty - delivered_qty                
-                if delivered_qty > product_uom_maked_sync_qty:
-                    B = 0
-                else:
-                    B = product_uom_maked_sync_qty - delivered_qty 
-                S = TOT - B
-                                
-                # Line total:
-                total[0] += S
-                total[1] += B
-                total[2] += TOT
-
-                # Block total
-                parent_total[0] += S
-                parent_total[1] += B
-                parent_total[2] += TOT
-
-            # Add total line:    
-            res.append(('L', code, total))                
-        
-        # last record_
-        if last_parent:
-            res.append(('T', last_parent, parent_total))
-        return res
+        return self.pool.get(
+            'sale.order')._report_procurement_grouped_get_objects(
+                self.cr, self.uid, data=data)
 
     def get_object_grouped_family_line(self, data):
         ''' Selected object + print object
