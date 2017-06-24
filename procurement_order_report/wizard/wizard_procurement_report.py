@@ -84,7 +84,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
             'bold': True, 
             'font_color': 'black',
             'font_name': 'Courier 10 pitch', # 'Arial'
-            'font_size': 10,
+            'font_size': 9,
             'align': 'center',
             'valign': 'vcenter',
             'bg_color': 'gray',
@@ -220,7 +220,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
                     ]
                 # Add extra column for format border    
                 body.extend([
-                    ('', format_number) for c in range(
+                    ('', format_number_total) for c in range(
                         0, total_columns - len(body))])
                 write_xls_mrp_line(WS, i, body)
                 
