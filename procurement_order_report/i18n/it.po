@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-18 12:47+0000\n"
-"PO-Revision-Date: 2016-03-18 13:49+0100\n"
+"POT-Creation-Date: 2017-06-24 14:14+0000\n"
+"PO-Revision-Date: 2017-06-24 16:16+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,61 +18,67 @@ msgstr ""
 "X-Generator: Poedit 1.6.10\n"
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:172
+#: code:addons/procurement_order_report/report/procurement_parser.py:147
 #, python-format
 msgid ", Partial code filter: %s (from char: %s) "
 msgstr ", Fitro per codice parziale: %s (da carattere: %s) "
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:160
+#: code:addons/procurement_order_report/report/procurement_parser.py:131
 #, python-format
-msgid ", all order line"
-msgstr ", tutte le righe ordine"
+msgid ", Selezione record: %s"
+msgstr ", Selezione record: %s"
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:186
+#: code:addons/procurement_order_report/report/procurement_parser.py:161
 #, python-format
 msgid ", code start %s"
 msgstr ", inizio codice %s"
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:155
+#: code:addons/procurement_order_report/report/procurement_parser.py:129
 #, python-format
 msgid ", date < %s"
 msgstr ", data < %s"
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:152
+#: code:addons/procurement_order_report/report/procurement_parser.py:126
 #, python-format
 msgid ", date >= %s"
 msgstr ", data >= %s"
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:181
+#: code:addons/procurement_order_report/report/procurement_parser.py:156
 #, python-format
 msgid ", deadline <= %s"
-msgstr ", deadline <= %s"
+msgstr ", scadenza <= %s"
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:178
+#: code:addons/procurement_order_report/report/procurement_parser.py:153
 #, python-format
 msgid ", deadline >= %s"
 msgstr ", scadenza >= %s"
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:190
+#: code:addons/procurement_order_report/report/procurement_parser.py:165
 #, python-format
 msgid ", family %s"
 msgstr ", famiglia %s"
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:158
+#: code:addons/procurement_order_report/report/procurement_parser.py:122
 #, python-format
-msgid ", only remain to produce"
-msgstr ", solo la produzione da fare"
+msgid ", forecast"
+msgstr ", forecast"
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:482
+#: code:addons/procurement_order_report/report/procurement_parser.py:120
+#, python-format
+msgid ", no forecast"
+msgstr ", no previsionali"
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/report/procurement_parser.py:557
 #, python-format
 msgid "???"
 msgstr "???"
@@ -140,12 +146,35 @@ msgstr "Data scadenza >="
 #. module: procurement_order_report
 #: view:sale.order.procurement.report.wizard:procurement_order_report.sale_order_procurement_report_wizard_view
 msgid "Date filter:"
-msgstr "filtro data:"
+msgstr "fitro data:"
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/wizard/wizard_procurement_report.py:157
+#, python-format
+msgid "Done"
+msgstr "Fatti"
 
 #. module: procurement_order_report
 #: field:sale.order.procurement.report.wizard,family_id:0
 msgid "Family"
 msgstr "Famiglia"
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/wizard/wizard_procurement_report.py:177
+#, python-format
+msgid "Filtro: %s"
+msgstr "Filtro: %s"
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/wizard/wizard_procurement_report.py:73
+#, python-format
+msgid "Frame"
+msgstr "Telaio"
+
+#. module: procurement_order_report
+#: selection:sale.order.procurement.report.wizard,report_type:0
+msgid "Frame for color (XLSX)"
+msgstr "Telaio per colore (XLSX)"
 
 #. module: procurement_order_report
 #: field:sale.order.procurement.report.wizard,from_date:0
@@ -166,6 +195,12 @@ msgstr "Clausole di raggruppamento:"
 #: field:sale.order.procurement.report.wizard,id:0
 msgid "ID"
 msgstr "ID"
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/wizard/wizard_procurement_report.py:155
+#, python-format
+msgid "Item"
+msgstr "Articolo"
 
 #. module: procurement_order_report
 #: field:sale.order.procurement.report.wizard,write_uid:0
@@ -189,9 +224,15 @@ msgid "Mx procurement report"
 msgstr "Report approvvigionamenti"
 
 #. module: procurement_order_report
-#: field:sale.order.procurement.report.wizard,only_remain:0
-msgid "Only remain"
-msgstr "Solo i rimanenti"
+#: code:addons/procurement_order_report/wizard/wizard_procurement_report.py:168
+#, python-format
+msgid "No date"
+msgstr "Nessuna data"
+
+#. module: procurement_order_report
+#: field:sale.order.procurement.report.wizard,no_forecast:0
+msgid "No forecast"
+msgstr "No previsionali"
 
 #. module: procurement_order_report
 #: selection:sale.order.procurement.report.wizard,report_type:0
@@ -209,7 +250,7 @@ msgid "Order in detail"
 msgstr "Ordine in dettaglio"
 
 #. module: procurement_order_report
-#: code:addons/procurement_order_report/report/procurement_parser.py:146
+#: code:addons/procurement_order_report/report/procurement_parser.py:116
 #, python-format
 msgid "Order open, not pricelist order"
 msgstr "Ordine aperto, non ordine listino"
@@ -240,9 +281,25 @@ msgid "Procurements order report"
 msgstr "Report approvvigionamenti"
 
 #. module: procurement_order_report
+#: code:addons/procurement_order_report/wizard/wizard_procurement_report.py:150
+#, python-format
+msgid "REPORT APPROVVIGIONAMENTI SU ORDINATO"
+msgstr "REPORT APPROVVIGIONAMENTI SU ORDINATO"
+
+#. module: procurement_order_report
 #: field:sale.order.procurement.report.wizard,report_type:0
 msgid "Report type"
 msgstr "Tipo di report"
+
+#. module: procurement_order_report
+#: selection:sale.order.procurement.report.wizard,record_select:0
+msgid "Rimanenti da consegnare"
+msgstr "Rimanenti da consegnare"
+
+#. module: procurement_order_report
+#: selection:sale.order.procurement.report.wizard,record_select:0
+msgid "Rimanenti da produrre"
+msgstr "Rimanenti da produrre"
 
 #. module: procurement_order_report
 #: model:ir.model,name:procurement_order_report.model_sale_order_procurement_report_wizard
@@ -250,9 +307,20 @@ msgid "Sale produrement wizard"
 msgstr "Wizard approvv. su vendite"
 
 #. module: procurement_order_report
-#: help:sale.order.procurement.report.wizard,only_remain:0
-msgid "Show only element to procuce"
-msgstr "Mostra solo elementi da produrre"
+#: model:ir.model,name:procurement_order_report.model_sale_order
+msgid "Sales Order"
+msgstr "Ordine di vendita"
+
+#. module: procurement_order_report
+#: field:sale.order.procurement.report.wizard,record_select:0
+msgid "Selezione record"
+msgstr "Selezione record"
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/wizard/wizard_procurement_report.py:156
+#, python-format
+msgid "TODO"
+msgstr "Da fare"
 
 #. module: procurement_order_report
 #: field:sale.order.procurement.report.wizard,to_date:0
@@ -263,3 +331,20 @@ msgstr "A"
 #: field:sale.order.procurement.report.wizard,to_deadline:0
 msgid "To deadline"
 msgstr "Alla scadenza"
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/wizard/wizard_procurement_report.py:158
+#, python-format
+msgid "Total"
+msgstr "Totale"
+
+#. module: procurement_order_report
+#: code:addons/procurement_order_report/wizard/wizard_procurement_report.py:216
+#, python-format
+msgid "Total fam. %s"
+msgstr "Totale fam. %s"
+
+#. module: procurement_order_report
+#: selection:sale.order.procurement.report.wizard,record_select:0
+msgid "Tutti"
+msgstr "Tutti"
