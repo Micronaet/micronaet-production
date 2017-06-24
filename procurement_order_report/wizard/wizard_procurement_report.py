@@ -97,7 +97,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
             'font_size': 9,
             'align': 'left',
             #'bg_color': 'gray',
-            #'border': 1,
+            'border': 1,
             #'text_wrap': True,
             })
         format_number = WB.add_format({
@@ -105,7 +105,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
             'font_size': 9,
             'align': 'right',
             #'bg_color': 'white',
-            #'border': 1,
+            'border': 1,
             'num_format': num_format,
             })
         format_text_total = WB.add_format({
@@ -142,7 +142,8 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         # Write header block:
         # ---------------------------------------------------------------------
         #WS.set_row(0, 20) # Row height
-        WS.set_column ('A:A', 35) # Col width        
+        WS.set_column ('A:A', 15) # Col width        
+        WS.set_column ('E:E', 1) # Col width 
 
         # 0. Title of report:
         write_xls_mrp_line(WS, 0, [
@@ -155,6 +156,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
             (_('TODO'), format_header),
             (_('Done'), format_header),
             (_('Total'), format_header),
+            ('', format_header), # Empty col before MRP
             ]
             
         # Add header date:    
@@ -166,6 +168,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
                 date = _('No date')
             header.append((date, format_header))
             pos += 1
+        total_columns = pos # used for get max col
                 
         write_xls_mrp_line(WS, 3, header)
 
@@ -181,6 +184,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         i = 3 # Last line writed
 
+        mrp_total = {}
         for mode, key, line in res:
             i += 1
             if mode == 'L':
@@ -190,14 +194,21 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
                     (line[1], format_number),
                     (line[2], format_number),
                     ]
+                # Add extra column for format border    
+                body.extend([
+                    ('', format_number) for c in range(
+                        0, total_columns - len(body))])
+                        
                 write_xls_mrp_line(WS, i, body)
                 # Add directly extra total for date of MRP production
                 for date in mrp_date_db:
                     if key in mrp_date_db[date]:
-                        WS.write(
-                            i, get_col_date[date], mrp_date_db[date][key], 
-                            format_number,
-                            )
+                        col = get_col_date[date]
+                        S = mrp_date_db[date][key]
+                        WS.write(i, col, S, format_number)
+                        if col not in mrp_total:
+                             mrp_total[col] = 0.0
+                        mrp_total[col] += S
                     
     
             elif mode == 'T':
@@ -205,10 +216,20 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
                     (_('Total fam. %s') % key, format_text_total),
                     (line[0], format_number_total),
                     (line[1], format_number_total),
-                    (line[2], format_number_total),
+                    (line[2], format_number_total),                    
                     ]
+                # Add extra column for format border    
+                body.extend([
+                    ('', format_number) for c in range(
+                        0, total_columns - len(body))])
                 write_xls_mrp_line(WS, i, body)
+                
+                # Write MRP totals:
+                for col, S in mrp_total.iteritems():
+                    WS.write(i, col, S, format_number_total)
+
                 i += 1
+                mrp_total = {}
         
         WB.close()
         _logger.info('End generation framte status report %s' % filename)
