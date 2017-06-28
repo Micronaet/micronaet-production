@@ -60,6 +60,11 @@ class MrpProductionSequence(orm.Model):
         free_ids = []        
         for line in block_proxy.mrp_id.order_line_ids:
             default_code = line.product_id.default_code            
+            if not default_code:
+                raise osv.except_osv(
+                    _('Product code'), 
+                    _('Codice prodotto non presente: %s' % line.product_id.name),
+                    )
             parent_code = mrp_pool.get_sort_code(
                 sequence_mode, default_code)
 
@@ -100,8 +105,7 @@ class MrpProduction(orm.Model):
     # ---------------------------------------------------------------------
     def get_sort_code(self, sequence_mode, default_code):
         ''' Return sort code for line order
-        '''
-        # TODO 
+        '''        
         if sequence_mode == 'parent':
             return default_code[:3]    
         elif sequence_mode == 'frame':
