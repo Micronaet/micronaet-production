@@ -38,6 +38,16 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+class SaleOrderLine(orm.Model):
+    """ Model name: SaleOrderLine
+    """
+        
+    _inherit = 'sale.order.line'
+    
+    _columns = {
+        'previous_mrp': fields.text('Previous MRP', readoly=True),
+        }
+
 class MrpProductionSequence(orm.Model):
     ''' Object for keep product line in order depend on parent 3 char code
     '''
@@ -85,6 +95,55 @@ class MrpProduction(orm.Model):
             'target': 'current', # 'new'
             'nodestroy': False,
             }
+        
+    def join_uncomplete_mrp_production_button(
+            self, cr, uid, ids, context=None):    
+        ''' Join uncomplete production
+        '''    
+        # Pool used:
+        sol_pool = self.pool.get('sale.order.line')
+        
+        current_proxy = self.browse(cr, uid, ids, context=context)[0]
+        join_uncomplete_mrp_id = current_proxy.join_uncomplete_mrp_id
+        if not join_uncomplete_mrp_id:
+            raise osv.except_osv(
+                _('Nothing to move'), 
+                _('Choose production for move here before!'),
+                )
+            
+        # ---------------------------------------------------------------------
+        # Select uncomplete production to move here:
+        # ---------------------------------------------------------------------
+        to_move_ids = []
+        for sol in current_proxy.join_uncomplete_mrp_id.order_line_ids:
+            product_uom_qty = sol.product_uom_qty
+            delivered_qty = sol.delivered_qty
+            product_uom_maked_sync_qty = sol.product_uom_maked_sync_qty
+            if product_uom_qty <= delivered_qty or \
+                    product_uom_qty <= product_uom_maked_sync_qty:
+                to_move_ids.append(sol.id)
+
+        if not to_move_ids:
+            raise osv.except_osv(
+                _('Nothing to move'), 
+                _('All line are delivered or produced!'),
+                )
+
+        # Move line:
+        sol_pool.write(cr, uid, line_ids, {
+            'mrp_id': current_proxy.id,
+            }, context=context)
+
+        # Reset move field:
+        self.write(cr, uid, ids, {
+            'join_uncomplete_mrp_id': False,
+            }, context=context)        
+        
+        # Reorder force (for new line)
+        self.force_order_sequence(
+            cr, uid, [current_proxy.id], context=context)
+        
+        return True
         
     def generate_child_production_from_sequence(
             self, cr, uid, ids, context=None):
@@ -187,6 +246,9 @@ class MrpProduction(orm.Model):
         'parent_mrp_id': fields.many2one(
             'mrp.production', 'Parent production'),
         'move_parent_mrp_id': fields.many2one(
+            'mrp.production', 'Move prodution'), # TODO domain in view
+
+        'join_uncomplete_mrp_id': fields.many2one(
             'mrp.production', 'Move prodution'), # TODO domain in view
         }
 
