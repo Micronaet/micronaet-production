@@ -103,9 +103,9 @@ class MrpProduction(orm.Model):
         # Pool used:
         sol_pool = self.pool.get('sale.order.line')
         
-        current_proxy = self.browse(cr, uid, ids, context=context)[0]
-        join_uncomplete_mrp_id = current_proxy.join_uncomplete_mrp_id
-        if not join_uncomplete_mrp_id:
+        dest_proxy = self.browse(cr, uid, ids, context=context)[0]
+        origin_proxy = dest_proxy.join_uncomplete_mrp_id
+        if not origin_proxy:
             raise osv.except_osv(
                 _('Nothing to move'), 
                 _('Choose production for move here before!'),
@@ -115,13 +115,15 @@ class MrpProduction(orm.Model):
         # Select uncomplete production to move here:
         # ---------------------------------------------------------------------
         to_move_ids = []
-        for sol in current_proxy.join_uncomplete_mrp_id.order_line_ids:
+        log_body = ''
+        for sol in origin_proxy.order_line_ids:
             product_uom_qty = sol.product_uom_qty
             delivered_qty = sol.delivered_qty
             product_uom_maked_sync_qty = sol.product_uom_maked_sync_qty
-            if product_uom_qty <= delivered_qty or \
-                    product_uom_qty <= product_uom_maked_sync_qty:
-                to_move_ids.append(sol.id)
+            if product_uom_qty > delivered_qty and \
+                    product_uom_qty > product_uom_maked_sync_qty:
+                log_body += '%s<br/>\n' % sol.name
+                to_move_ids.append(sol)
 
         if not to_move_ids:
             raise osv.except_osv(
@@ -129,21 +131,58 @@ class MrpProduction(orm.Model):
                 _('All line are delivered or produced!'),
                 )
 
-        # Move line:
-        sol_pool.write(cr, uid, line_ids, {
-            'mrp_id': current_proxy.id,
-            }, context=context)
+        # Move line (and save log:
+        log_text = False
+        for sol in to_move_ids:
+            if not log_text:
+                # Update once
+                log_text = 'Ex.: %s\n%%s' % (sol.mrp_id.name)
+            sol_pool.write(cr, uid, sol.id, {
+                'mrp_id': dest_proxy.id,
+                #'previous_mrp': log_text % (log.previous_mrp or '')
+                'production_note': log_text % (sol.previous_mrp or '')
+                }, context=context)
+
+        # ---------------------------------------------------------------------
+        # Reorder force (for new line)
+        # ---------------------------------------------------------------------
+        # Destination sort:
+        self.force_order_sequence(
+            cr, uid, [dest_proxy.id], context=context)
+        # Origin sort:    
+        self.force_order_sequence(
+            cr, uid, [origin_proxy.id], 
+            context=context,
+            )
+
+        # ---------------------------------------------------------------------
+        # Log operation
+        # ---------------------------------------------------------------------
+        # In destination MRP
+        self.message_post(cr, uid, dest_proxy.id, 
+            type='email',
+            subject=_('Get production from: %s') % origin_proxy.name,
+            body=_('Get product from MPR %s:<br/>\n%s') % (
+                origin_proxy.name,
+                log_body, 
+                ), 
+            context=context,
+            )        
+        # In origin MPR    
+        self.message_post(cr, uid, origin_proxy.id, 
+            type='email',
+            subject=_('Moved production to: %s') % dest_proxy.name,
+            body=_('Moved product to MPR %s:<br/>\n%s') % (
+                dest_proxy.name,
+                log_body, 
+                ), 
+            context=context,
+            )        
 
         # Reset move field:
-        self.write(cr, uid, ids, {
+        return self.write(cr, uid, ids, {
             'join_uncomplete_mrp_id': False,
             }, context=context)        
-        
-        # Reorder force (for new line)
-        self.force_order_sequence(
-            cr, uid, [current_proxy.id], context=context)
-        
-        return True
         
     def generate_child_production_from_sequence(
             self, cr, uid, ids, context=None):
@@ -246,10 +285,10 @@ class MrpProduction(orm.Model):
         'parent_mrp_id': fields.many2one(
             'mrp.production', 'Parent production'),
         'move_parent_mrp_id': fields.many2one(
-            'mrp.production', 'Move prodution'), # TODO domain in view
+            'mrp.production', 'Move prodution'),
 
         'join_uncomplete_mrp_id': fields.many2one(
-            'mrp.production', 'Move prodution'), # TODO domain in view
+            'mrp.production', 'Join prodution'),
         }
 
 class MrpProduction(orm.Model):

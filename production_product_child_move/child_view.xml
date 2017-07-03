@@ -19,8 +19,8 @@
                      <separator string="Move operation:" colspan="4"/>
                      <field name="move_parent_mrp_id" domain="[('parent_mrp_id', '=', active_id)]" widget="selection"/>
                      <button name="generate_child_production_from_sequence" string="Move block" type="object" icon="STOCK_LEAVE_FULLSCREEN" confirm="Do you want move all selected block in new/selected production?"/>
-
-                     <field name="join_uncomplete_mrp_id" domain="[('bom_id', '=', bom_id),('state', 'not in', ('cancel', 'done'))]" widget="selection"/>
+                     <newline/>
+                     <field name="join_uncomplete_mrp_id" domain="[('id', '!=', active_id),('bom_id', '=', bom_id),('state', 'not in', ('cancel', 'done'))]" widget="selection"/>
                      <button name="join_uncomplete_mrp_production_button" string="Join incomplete MRP" type="object" icon="STOCK_LEAVE_FULLSCREEN" confirm="Do you want join this production with current selected (check before, only remain B are linked here)?"/>
                  </field>
                  
