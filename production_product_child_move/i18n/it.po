@@ -1,0 +1,192 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* production_product_child_move
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-07-03 10:43+0000\n"
+"PO-Revision-Date: 2017-07-03 12:50+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: Poedit 1.6.10\n"
+"Language: it\n"
+
+#. module: production_product_child_move
+#: code:addons/production_product_child_move/child.py:131
+#, python-format
+msgid "All line are delivered or produced!"
+msgstr "Tutte le righe odine sono consegnate o prodotte!"
+
+#. module: production_product_child_move
+#: view:mrp.production:production_product_child_move.default_mrp_production_form_sequence_child_moveview
+msgid "Child"
+msgstr "Figlio"
+
+#. module: production_product_child_move
+#: code:addons/production_product_child_move/child.py:86
+#: code:addons/production_product_child_move/child.py:271
+#: view:mrp.production:production_product_child_move.default_mrp_production_form_sequence_child_moveview
+#: field:mrp.production,child_mrp_ids:0
+#, python-format
+msgid "Child MRP"
+msgstr "Produzione figlia"
+
+#. module: production_product_child_move
+#: code:addons/production_product_child_move/child.py:111
+#, python-format
+msgid "Choose production for move here before!"
+msgstr "Scegli la produzione da cui spostare le righe ordine!"
+
+#. module: production_product_child_move
+#: view:mrp.production:production_product_child_move.default_mrp_production_form_sequence_child_moveview
+msgid ""
+"Do you want join this production with current selected (check before, only "
+"remain B are linked here)?"
+msgstr ""
+"Vuoi unire questa produzione con quella attualmente aperta (controlla prima "
+"che le produzioni B rimaenti siano correttamente chiuse)?"
+
+#. module: production_product_child_move
+#: view:mrp.production:production_product_child_move.default_mrp_production_form_sequence_child_moveview
+msgid "Do you want move all selected block in new/selected production?"
+msgstr ""
+"Vuoi muovere i blocchi selezionati in una nuova o già presente produzione?"
+
+#. module: production_product_child_move
+#: code:addons/production_product_child_move/child.py:165
+#, python-format
+msgid ""
+"Get product from MPR %s:<br/>\n"
+"%s"
+msgstr ""
+"Prodotti ricevuti da produzione: %s:<br/>\n"
+"%s"
+
+#. module: production_product_child_move
+#: code:addons/production_product_child_move/child.py:164
+#, python-format
+msgid "Get production from: %s"
+msgstr "Produzione ricevuta da: %s"
+
+#. module: production_product_child_move
+#: view:mrp.production:production_product_child_move.default_mrp_production_form_sequence_child_moveview
+msgid "Join incomplete MRP"
+msgstr "Unisci produzioni incomplete"
+
+#. module: production_product_child_move
+#: field:mrp.production,join_uncomplete_mrp_id:0
+msgid "Join prodution"
+msgstr "Unisci produzione"
+
+#. module: production_product_child_move
+#: view:mrp.production:production_product_child_move.default_mrp_production_form_sequence_child_moveview
+msgid "MRP child"
+msgstr "Produzioni figlie"
+
+#. module: production_product_child_move
+#: model:ir.model,name:production_product_child_move.model_mrp_production_sequence
+msgid "MRP production sequence"
+msgstr "Sequenze produzioni"
+
+#. module: production_product_child_move
+#: model:ir.model,name:production_product_child_move.model_mrp_production
+msgid "Manufacturing Order"
+msgstr "Ordine di Produzione"
+
+#. module: production_product_child_move
+#: view:mrp.production:production_product_child_move.default_mrp_production_form_sequence_child_moveview
+msgid "Move block"
+msgstr "Muovi il blocco"
+
+#. module: production_product_child_move
+#: view:mrp.production:production_product_child_move.default_mrp_production_form_sequence_child_moveview
+msgid "Move operation:"
+msgstr "Operazioni di movimentazione:"
+
+#. module: production_product_child_move
+#: field:mrp.production,move_parent_mrp_id:0
+msgid "Move prodution"
+msgstr "Muovi produzione"
+
+#. module: production_product_child_move
+#: code:addons/production_product_child_move/child.py:175
+#, python-format
+msgid ""
+"Moved product to MPR %s:<br/>\n"
+"%s"
+msgstr ""
+"Prodotti spostati a produzione %s:<br/>\n"
+"%s"
+
+#. module: production_product_child_move
+#: code:addons/production_product_child_move/child.py:174
+#, python-format
+msgid "Moved production to: %s"
+msgstr "Produzione spostati aa: %s"
+
+#. module: production_product_child_move
+#: view:mrp.production:production_product_child_move.default_mrp_production_form_sequence_child_moveview
+msgid "No move"
+msgstr "Nessun movimento"
+
+#. module: production_product_child_move
+#: code:addons/production_product_child_move/child.py:210
+#, python-format
+msgid "No selection"
+msgstr "Nessuna selezione"
+
+#. module: production_product_child_move
+#: code:addons/production_product_child_move/child.py:110
+#: code:addons/production_product_child_move/child.py:130
+#, python-format
+msgid "Nothing to move"
+msgstr "Nulla da spostare"
+
+#. module: production_product_child_move
+#: view:mrp.production:production_product_child_move.default_mrp_production_form_sequence_child_moveview
+msgid "Open MRP"
+msgstr "Apri produzione"
+
+#. module: production_product_child_move
+#: field:mrp.production,parent_mrp_id:0
+msgid "Parent production"
+msgstr "Produzione padre"
+
+#. module: production_product_child_move
+#: field:sale.order.line,previous_mrp:0
+msgid "Previous MRP"
+msgstr "Produzione precedente"
+
+#. module: production_product_child_move
+#: model:ir.model,name:production_product_child_move.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Linea d'ordine di vendita"
+
+#. module: production_product_child_move
+#: field:mrp.production.sequence,select_for_move:0
+msgid "Select for move"
+msgstr "Selezionato per movimentazione"
+
+#. module: production_product_child_move
+#: code:addons/production_product_child_move/child.py:211
+#, python-format
+msgid "Select one sequence block to move before press move block button"
+msgstr ""
+"Seleziona un blocco sequenza da muovere prima, premi successivamente il "
+"bottone per lo spostamento blocchi"
+
+#. module: production_product_child_move
+#: view:mrp.production:production_product_child_move.default_mrp_production_form_sequence_child_moveview
+msgid "Set for move"
+msgstr "Va movimentato"
+
+#. module: production_product_child_move
+#: view:mrp.production:production_product_child_move.default_mrp_production_form_sequence_child_moveview
+msgid "blue:select_for_move==True"
+msgstr "blue:select_for_move==True"
