@@ -44,6 +44,26 @@ class ResCompany(orm.Model):
     
     _inherit = 'res.company'
     
+    # -------------------------------------------------------------------------
+    # Button:
+    # -------------------------------------------------------------------------
+    # Utility:
+    def force_fsc_pefc_setup_code(self, cr, uid, ids, mode, context=None):
+        ''' Utility for setup all 2 check box
+        '''
+    
+    def force_fsc_setup_code(self, cr, uid, ids, context=None):
+        ''' Force FSC setup on code passed
+        '''
+        return self.force_fsc_pefc_setup_code(
+            cr, uid, ids, 'fsc', context=context)
+
+    def force_pefc_setup_code(self, cr, uid, ids, context=None):
+        ''' Force PEFC setup on code passed
+        '''
+        return self.force_fsc_pefc_setup_code(
+            cr, uid, ids, 'pefc', context=context)
+        
     def check_certification_from_product_line(
             self, cr, mode, line, date, company, context=None):
         ''' Check certification present for product in line passed
@@ -51,6 +71,7 @@ class ResCompany(orm.Model):
             1. there's one product with *_certified in the item list
             2. the document date must be > from certified date in company            
         '''        
+        # TODO (used)??????
         mode = mode.lower()
         if mode not in ('fsc', 'pefc'):
             _logger.error('Mode must be: fsc or pefc!')
