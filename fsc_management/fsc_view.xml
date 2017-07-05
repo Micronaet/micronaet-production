@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <!--res.company-->
         <record model="ir.ui.view" id="view_fsc_company_certified_form">
             <field name="name">res.company.form</field>
             <field name="model">res.company</field>
@@ -34,6 +35,52 @@
                 </xpath>
             </field>
         </record>
+        
+        
+        <record model="ir.ui.view" id="view_fsc_company_certified_lite_form">
+            <field name="name">res.company.fsc.form</field>
+            <field name="model">res.company</field>
+            <field name="priority" eval="50" />
+            <field name="arch" type="xml">
+                <form string="String" version="7.0">        
+                    <sheet>
+                        <group col="4" colspan="4">
+                            <field name="name" readonly="1" />
+                            <group colspan="2" col="4">
+                                <field name="fsc_certified" />
+                                <newline/>
+                                <field name="fsc_code" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}"/>
+                                <field name="fsc_from_date" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}"/>
+                                <field name="fsc_report_text" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}" colspan="4"/>
+                                <field name="fsc_logo" widget="image" attrs="{'invisible': [('fsc_certified','=',False)]}"/>
+                            </group>    
+
+                            <group colspan="2" col="4">
+                                <field name="pefc_certified" />
+                                <newline/>
+                                <field name="pefc_code" attrs="{'required': [('pefc_certified','=',True)], 'invisible': [('pefc_certified','=',False)]}"/>
+                                <field name="pefc_from_date" attrs="{'required': [('pefc_certified','=',True)], 'invisible': [('pefc_certified','=',False)]}"/>
+                                <field name="pefc_report_text" attrs="{'required': [('pefc_certified','=',True)], 'invisible': [('pefc_certified','=',False)]}" colspan="4"/>
+                                <field name="pefc_logo" widget="image" attrs="{'invisible': [('pefc_certified','=',False)]}"/>
+                            </group>
+                            
+                            <separator string="Document Note" colspan="4"/>
+                            <field name="xfc_document_note" nolabel="1" colspan="4"/>
+                        </group>
+                    </sheet>        
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_fsc_company_certified_form">
+            <field name="name">Company configuration</field>
+            <field name="res_model">res.company</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_fsc_company_certified_lite_form"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
         <record model="ir.ui.view" id="view_product_product_fsc_form">
             <field name="name">product.product.form</field>
             <field name="model">product.product</field>
@@ -98,8 +145,12 @@
                 action="action_pfc_product"
                 sequence="10"
                 />
-            
-        
+            <menuitem 
+                parent="menu_pefc_fsc_root" 
+                id="menu_pefc_fsc_configuration" 
+                action="action_fsc_company_certified_form"
+                sequence="99"
+                />
     </data>
 </openerp>
 
