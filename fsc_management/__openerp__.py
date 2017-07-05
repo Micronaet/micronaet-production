@@ -38,6 +38,7 @@
     'demo': [],
     'data': [
         'fsc_view.xml',
+        'wizard/export_invoice_view.xml',
         ],
     'active': False,
     'installable': True,

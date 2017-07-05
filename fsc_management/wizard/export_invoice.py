@@ -103,27 +103,11 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
             'text_wrap': True,
             })
 
-        format_text_green = WB.add_format({
+        format_text = WB.add_format({
             'font_name': 'Arial',
             'font_size': 9,
             #'align': 'right',
-            'bg_color': 'c1e7b3',
-            'border': 1,
-            #'num_format': '0.00',
-            })        
-        format_text_red = WB.add_format({
-            'font_name': 'Arial',
-            'font_size': 9,
-            #'align': 'right',
-            'bg_color': '#fba099',
-            'border': 1,
-            #'num_format': '0.00',
-            })        
-        format_text_grey = WB.add_format({
-            'font_name': 'Arial',
-            'font_size': 9,
-            #'align': 'right',
-            'bg_color': '#e7e7e7',
+            #'bg_color': 'c1e7b3',
             'border': 1,
             #'num_format': '0.00',
             })        
@@ -141,17 +125,16 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
            ]
 
         # Column dimension:
-        WS_fsc.set_column(0, 0, 4)
-        WS_fsc.set_column(1, 1, 8)
-        WS_fsc.set_column(2, 2, 8)
-        WS_fsc.set_column(3, 3, 35)
-        WS_fsc.set_column(4, 4, 30)
-        WS_fsc.set_column(5, 5, 11)
-        WS_fsc.set_column(6, 6, 8)
-        WS_fsc.set_column(7, 7, 8)
-        WS_fsc.set_column(8, 8, 8)
-        WS_fsc.set_column(9, 9, 8)
-        # TODO pefc setup
+        for WS in (WS_fsc, WS_pefc):
+            WS.set_column(0, 0, 40)
+            WS.set_column(1, 1, 12)
+            WS.set_column(2, 2, 8)
+            WS.set_column(3, 3, 11)
+            WS.set_column(4, 4, 35)
+            WS.set_column(6, 6, 10)
+            WS.set_column(7, 7, 10)
+            WS.set_column(8, 8, 10)
+            WS.set_column(9, 9, 10)
         
         # Export Header:
         xls_write_row(WS_fsc, 0, header, format_title)        
@@ -159,14 +142,14 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
         
         # Export data:
         order = 'number'
-        domain = []
+        domain = [('state', 'in', ('open', 'paid'))]
         if partner_id:
             domain.append(('partner_id', '=', partner_id))
         if from_date:
             domain.append(('date_invoice', '>=', from_date))
         if to_date:     
             domain.append(('date_invoice', '<=', to_date))
-        
+
         account_ids = invoice_pool.search(
             cr, uid, domain, order=order, context=context)        
         i = 0
@@ -189,13 +172,13 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     product.name,
                     line.quantity,
                     line.price_unit,
-                    line.multi_discount_price,
+                    line.multi_discount_rates or '',
                     line.price_subtotal,
                     ]
                 if fsc:
-                    xls_write_row(WS_fsc, i, data, format_current)
+                    xls_write_row(WS_fsc, i, data, format_text)
                 else:    
-                    xls_write_row(WS_pefc, i, data, format_current)
+                    xls_write_row(WS_pefc, i, data, format_text)
 
         _logger.info('End FIDO invoice export on %s' % xls_filename)
         WB.close()

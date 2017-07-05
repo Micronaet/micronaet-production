@@ -68,6 +68,8 @@ class ResCompany(orm.Model):
             translate=True),
         'fsc_logo': fields.binary(
             'FSC Logo', help='FSC document logo bottom part'),
+        'fsc_start_code': fields.text('FSC Start code',
+            help='Start code of product for FSC, ex.:127|128|129'),    
 
         'pefc_certified': fields.boolean('PEFC Certified'),
         'pefc_code': fields.char('PEFC Code', size=50),
@@ -76,6 +78,8 @@ class ResCompany(orm.Model):
             translate=True),
         'pefc_logo': fields.binary(
             'PEFC Logo', help='PEFC document logo bottom part'),
+        'pefc_start_code': fields.text('PEFC Start code',
+            help='Start code of product for PEFC, ex.:127|128|129'),    
         
         'xfc_document_note': fields.text('FSC, PEFC Document note'),    
         }
