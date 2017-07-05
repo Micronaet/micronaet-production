@@ -152,7 +152,8 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
 
         account_ids = invoice_pool.search(
             cr, uid, domain, order=order, context=context)        
-        i = 0
+        i_fsc = 0
+        i_pefc = 0
         for invoice in invoice_pool.browse(
                 cr, uid, account_ids, context=context):
             for line in invoice.invoice_line:    
@@ -163,7 +164,6 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                 if not fsc and not pefc:
                     continue
                     
-                i += 1
                 data = [
                     invoice.partner_id.name,
                     invoice.number,
@@ -176,9 +176,11 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     line.price_subtotal,
                     ]
                 if fsc:
-                    xls_write_row(WS_fsc, i, data, format_text)
-                else:    
-                    xls_write_row(WS_pefc, i, data, format_text)
+                    i_fsc += 1
+                    xls_write_row(WS_fsc, i_fsc, data, format_text)
+                else: # pefc
+                    i_pefc += 1
+                    xls_write_row(WS_pefc, i_pefc, data, format_text)
 
         _logger.info('End FIDO invoice export on %s' % xls_filename)
         WB.close()
