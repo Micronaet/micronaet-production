@@ -62,7 +62,7 @@
             <field name="model">product.product</field>
             <field name="priority" eval="50" />
             <field name="arch" type="xml">
-                <tree string="PEFC PFC Product" colors="blue:fsc_certified_on==True or pefc_certified_on==True" editable="bottom">
+                <tree string="PEFC PFC Product" colors="blue:fsc_certified==True or pefc_certified==True" editable="bottom">
                     <field name="fsc_certified" />
                     <field name="pefc_certified" />
                     
@@ -89,6 +89,7 @@
         <menuitem 
             parent="base.menu_product" 
             id="menu_pefc_fsc_root" 
+            name="FSC e PEFC"
             sequence="20"
             />
             <menuitem 
