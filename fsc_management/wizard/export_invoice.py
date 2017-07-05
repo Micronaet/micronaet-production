@@ -157,13 +157,13 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                 cr, uid, account_ids, context=context):
             for line in invoice.invoice_line:    
                 # Check FSC or PEFC
-                i += 1
                 product = line.product_id
                 fsc = product.fsc_certified
                 pefc = product.pefc_certified
                 if not fsc and not pefc:
                     continue
                     
+                i += 1
                 data = [
                     invoice.partner_id.name,
                     invoice.number,
