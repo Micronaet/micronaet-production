@@ -18,7 +18,7 @@
                                 <field name="fsc_report_text" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}" colspan="4"/>
                                 <field name="fsc_logo" widget="image" attrs="{'invisible': [('fsc_certified','=',False)]}"/>
                                 <separator string="Force FSC setup:" colspan="3"/>
-                                <button name="force_fsc_setup_code" string="Force" type="object" icon="gtk-refresh" />
+                                <button name="force_fsc_setup_code" string="Force FSC" type="object" icon="gtk-refresh" />
                                 <field name="fsc_start_code" colspan="4" nolabel="1"/>
                             </group>    
 
@@ -30,7 +30,7 @@
                                 <field name="pefc_report_text" attrs="{'required': [('pefc_certified','=',True)], 'invisible': [('pefc_certified','=',False)]}" colspan="4"/>
                                 <field name="pefc_logo" widget="image" attrs="{'invisible': [('pefc_certified','=',False)]}"/>
                                 <separator string="Force PEFC setup:" colspan="3"/>
-                                <button name="force_pefc_setup_code" string="Force" type="object" icon="gtk-refresh" />
+                                <button name="force_pefc_setup_code" string="Force PEFC" type="object" icon="gtk-refresh" />
                                 <field name="pefc_start_code" colspan="4" nolabel="1"/>
                             </group>
                             
@@ -61,7 +61,7 @@
                                 <field name="fsc_report_text" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}" colspan="4"/>
                                 <field name="fsc_logo" widget="image" attrs="{'invisible': [('fsc_certified','=',False)]}"/>
                                 <separator string="Force FSC setup:" colspan="3"/>
-                                <button name="force_fsc_setup_code" string="Force" type="object" icon="gtk-refresh" />
+                                <button name="force_fsc_setup_code" string="Force FSC" type="object" icon="gtk-refresh" />
                                 <field name="fsc_start_code" colspan="4" nolabel="1"/>
                             </group>    
 
@@ -73,7 +73,7 @@
                                 <field name="pefc_report_text" attrs="{'required': [('pefc_certified','=',True)], 'invisible': [('pefc_certified','=',False)]}" colspan="4"/>
                                 <field name="pefc_logo" widget="image" attrs="{'invisible': [('pefc_certified','=',False)]}"/>
                                 <separator string="Force PEFC setup:" colspan="3"/>
-                                <button name="force_pefc_setup_code" string="Force" type="object" icon="gtk-refresh"/>
+                                <button name="force_pefc_setup_code" string="Force PEFC" type="object" icon="gtk-refresh"/>
                                 <field name="pefc_start_code" colspan="4" nolabel="1"/>
                             </group>
                             

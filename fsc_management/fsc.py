@@ -51,6 +51,36 @@ class ResCompany(orm.Model):
     def force_fsc_pefc_setup_code(self, cr, uid, ids, mode, context=None):
         ''' Utility for setup all 2 check box
         '''
+        _logger.info('Start update procedure')
+        # Pool used:
+        product_pool = self.pool.get('product.product')
+        
+        current_proxy = self.browse(cr, uid, ids, context=context)[0]
+        
+        # Remove all check:
+        query = '''
+            UPDATE product_product 
+            SET %s_certified=\'f\' 
+            WHERE %s_certified=\'t\';
+            ''' % (mode, mode)
+        cr.execute(query)    
+        
+        start_code = current_proxy.__getattribute__('%s_start_code' % mode)
+        for start in start_code.split('|'):
+            # Search product start with this:
+            product_ids = product_pool.search(cr, uid, [
+                ('default_code', '=ilike', '%s%%' % start),
+                ], context=context)
+            product_pool.write(cr, uid, product_ids, {
+                '%s_certified' % mode: True,
+                }, context=context)    
+            _logger.info('Update %s product start with: %s' % (
+                len(product_ids), 
+                start,
+                ))
+        
+        _logger.info('End update procedure')
+        return True
     
     def force_fsc_setup_code(self, cr, uid, ids, context=None):
         ''' Force FSC setup on code passed
