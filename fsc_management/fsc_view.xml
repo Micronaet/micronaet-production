@@ -25,7 +25,10 @@
                                 <field name="pefc_from_date" attrs="{'required': [('pefc_certified','=',True)], 'invisible': [('pefc_certified','=',False)]}"/>
                                 <field name="pefc_report_text" attrs="{'required': [('pefc_certified','=',True)], 'invisible': [('pefc_certified','=',False)]}" colspan="4"/>
                                 <field name="pefc_logo" widget="image" attrs="{'invisible': [('pefc_certified','=',False)]}"/>
-                            </group>    
+                            </group>
+                            
+                            <separator string="Document Note" colspan="4"/>
+                            <field name="xfc_document_note" nolabel="1" colspan="4"/>
                         </group>
                     </page>
                 </xpath>

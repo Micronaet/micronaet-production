@@ -76,6 +76,8 @@ class ResCompany(orm.Model):
             translate=True),
         'pefc_logo': fields.binary(
             'PEFC Logo', help='PEFC document logo bottom part'),
+        
+        'xfc_document_note': fields.text('FSC, PEFC Document note'),    
         }
 
 class ProductProduct(orm.Model):
