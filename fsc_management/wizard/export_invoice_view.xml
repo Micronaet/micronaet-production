@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+       <!-- export.xlsx.fsc.report.wizard -->
+       <record id="print_report_fsc_pefc_wizard_view" model="ir.ui.view">
+            <field name="name">FSC PEFC report wizard</field>
+            <field name="model">export.xlsx.fsc.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Wizard" version="7.0">
+                   <header>
+                       <button string="Cancel" special="cancel" />
+                       <button name="action_print" string="Done" type="object" icon="gtk-print" class="oe_highlight" />
+                   </header>                   
+                   <group colspan="4" col="4">
+                        <field name="partner_id" domain="[('customer', '=', True), ('is_company', '=', True), ('is_address', '=', False)]"/>
+                        <field name="from_date" />
+                        <field name="to_date" />                        
+                   </group>
+                </form>
+            </field>
+      </record>
+      <record model="ir.actions.act_window" id="action_print_report_fsc_pefc_wizard">
+          <field name="name">Report FSC PEFC wizard</field>
+          <field name="res_model">export.xlsx.fsc.report.wizard</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">form</field>
+          <field name="target">new</field>
+          <field name="view_id" ref="print_report_fsc_pefc_wizard_view" />
+      </record>      
+      <menuitem 
+          parent="menu_pefc_fsc_root" 
+          id="menu_print_report_fsc_pefc" 
+          action="action_print_report_fsc_pefc_wizard"
+          sequence="20"
+          />      
+    </data>
+</openerp>
