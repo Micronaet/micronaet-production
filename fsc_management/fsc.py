@@ -184,8 +184,6 @@ class ProductProduct(orm.Model):
     _inherit = 'product.product'
     
     _columns = {
-        #'fsc_certified': fields.boolean('FSC Certified'),
-        #'pefc_certified': fields.boolean('PEFC Certified'),
         'fsc_certified_id': fields.many2one(
             'product.product.wood', 'FSC text'),
         'pefc_certified_id': fields.many2one(
