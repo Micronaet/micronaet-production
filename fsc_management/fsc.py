@@ -76,33 +76,43 @@ class ResCompany(orm.Model):
         ''' Utility for setup all 2 check box
         '''
         _logger.info('Start update procedure')
+        
         # Pool used:
         product_pool = self.pool.get('product.product')
+        wood_pool = self.pool.get('product.product.wood')
         
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
         
-        # Remove all check:
+        # ---------------------------------------------------------------------
+        # Remove all check for this mode type:
+        # ---------------------------------------------------------------------
         query = '''
             UPDATE product_product 
-            SET %s_certified=\'f\' 
-            WHERE %s_certified=\'t\';
+            SET %s_certified_id=null 
+            WHERE %s_certified_id>0;
             ''' % (mode, mode)
-        cr.execute(query)    
-        
-        start_code = current_proxy.__getattribute__('%s_start_code' % mode)
-        for start in start_code.split('|'):
-            # Search product start with this:
-            product_ids = product_pool.search(cr, uid, [
-                ('default_code', '=ilike', '%s%%' % start),
-                ], context=context)
-            product_pool.write(cr, uid, product_ids, {
-                '%s_certified' % mode: True,
-                }, context=context)    
-            _logger.info('Update %s product start with: %s' % (
-                len(product_ids), 
-                start,
-                ))
-        
+        cr.execute(query)
+        _logger.info('Clean previous selection: \n%s' % query)
+
+        wood_ids = wood_pool.search(cr, uid, [
+            ('mode', '=', mode),
+            ], context=context)
+        for wood in wood_pool.browse(cr, uid, wood_ids, context=context):
+            _logger.info('Updating %s product...' % wood.name)
+            
+            start_code = wood.start_code    
+            for start in start_code.split('|'):
+                # Search product start with this:
+                product_ids = product_pool.search(cr, uid, [
+                    ('default_code', '=ilike', '%s%%' % start),
+                    ], context=context)
+                product_pool.write(cr, uid, product_ids, {
+                    '%s_certified_id' % mode: wood.id,
+                    }, context=context)    
+                _logger.info('Update %s product start with: %s' % (
+                    len(product_ids),
+                    start,
+                    ))        
         _logger.info('End update procedure')
         return True
     
@@ -141,30 +151,17 @@ class ResCompany(orm.Model):
         'fsc_from_date': fields.date('FSC from date'),
         'fsc_logo': fields.binary(
             'FSC Logo', help='FSC document logo bottom part'),
-        'fsc_text_ids': fields.one2many(
-            'product.product.wood', 'company_id', 'FSC product text'),
 
         'pefc_certified': fields.boolean('PEFC Certified'),
         'pefc_code': fields.char('PEFC Code', size=50),
         'pefc_from_date': fields.date('PEFC from date'),
         'pefc_logo': fields.binary(
             'PEFC Logo', help='PEFC document logo bottom part'),
-        'pefc_text_ids': fields.one2many(
+            
+        'xfc_text_ids': fields.one2many(
             'product.product.wood', 'company_id', 'PEFC product text'),
-        
         'xfc_document_note': fields.text('FSC, PEFC Document note',
             translate=True),
-            
-            
-        # TODO remove:
-        #'fsc_report_text': fields.char('FSC report text', size=120, 
-        #    translate=True),
-        #'pefc_report_text': fields.char('PEFC report text', size=120, 
-        #    translate=True),
-        #'fsc_start_code': fields.text('FSC Start code',
-        #    help='Start code of product for FSC, ex.:127|128|129'),    
-        #'pefc_start_code': fields.text('PEFC Start code',
-        #    help='Start code of product for PEFC, ex.:127|128|129'),    
         }
 
 class ProductProduct(orm.Model):
