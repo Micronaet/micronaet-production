@@ -159,8 +159,8 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
             for line in invoice.invoice_line:    
                 # Check FSC or PEFC
                 product = line.product_id
-                fsc = product.fsc_certified
-                pefc = product.pefc_certified
+                fsc = product.fsc_certified_id
+                pefc = product.pefc_certified_id
                 if not fsc and not pefc:
                     continue
                     
