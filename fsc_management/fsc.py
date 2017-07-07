@@ -119,12 +119,14 @@ class ResCompany(orm.Model):
     def force_fsc_setup_code(self, cr, uid, ids, context=None):
         ''' Force FSC setup on code passed
         '''
+        _logger.info('Force FSC')
         return self.force_fsc_pefc_setup_code(
             cr, uid, ids, 'fsc', context=context)
 
     def force_pefc_setup_code(self, cr, uid, ids, context=None):
         ''' Force PEFC setup on code passed
         '''
+        _logger.info('Force PEFC')
         return self.force_fsc_pefc_setup_code(
             cr, uid, ids, 'pefc', context=context)
 
