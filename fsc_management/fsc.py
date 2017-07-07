@@ -82,8 +82,6 @@ class ResCompany(orm.Model):
         product_pool = self.pool.get('product.product')
         wood_pool = self.pool.get('product.product.wood')
         
-        current_proxy = self.browse(cr, uid, ids, context=context)[0]
-        
         # ---------------------------------------------------------------------
         # Remove all check for this mode type:
         # ---------------------------------------------------------------------
@@ -129,6 +127,18 @@ class ResCompany(orm.Model):
         '''
         return self.force_fsc_pefc_setup_code(
             cr, uid, ids, 'pefc', context=context)
+
+    # -------------------------------------------------------------------------        
+    # Scheduled operations:        
+    # -------------------------------------------------------------------------        
+    def scheduled_force_fsc_pefc_text(self, cr, uid, context=None):
+        ''' Call 2 botton event
+        '''
+        # Call button FSC:
+        self.force_fsc_setup_code(cr, uid, False, context=context)
+        # Call button PEFC:
+        self.force_pefc_setup_code(cr, uid, False, context=context)
+        return True
         
     def check_certification_from_product_line(
             self, cr, mode, line, date, company, context=None):
