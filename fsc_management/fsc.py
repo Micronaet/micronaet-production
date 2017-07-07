@@ -87,8 +87,7 @@ class ResCompany(orm.Model):
         # ---------------------------------------------------------------------
         query = '''
             UPDATE product_product 
-            SET %s_certified_id=null 
-            WHERE %s_certified_id>0;
+            SET %s_certified_id=null;
             ''' % (mode, mode)
         cr.execute(query)
         _logger.info('Clean previous selection: \n%s' % query)
