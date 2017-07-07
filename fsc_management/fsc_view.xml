@@ -9,7 +9,9 @@
                 <form string="Wood Certificate" version="7.0" >        
                     <sheet>
                         <group col="4" colspan="4">
-                            <field name="mode" />
+                            <field name="sequence" />
+                            <newline/>
+                            <field name="mode" />                            
                             <field name="name" />
                             <field name="text" colspan="4"/>
                             <separator string="For product (start code)" colspan="4"/>
@@ -25,6 +27,7 @@
             <field name="model">product.product.wood</field>
             <field name="arch" type="xml">
                 <tree string="Wood Certificate">        
+                    <field name="sequence" />                    
                     <field name="mode" />
                     <field name="name" />
                     <field name="text" />

@@ -44,9 +44,10 @@ class ProductProductWood(orm.Model):
     
     _name = 'product.product.wood'
     _description = 'Wood certification description for product'
-    _order = 'name'
+    _order = 'mode,sequence,name'
     
     _columns = {        
+        'sequence': fields.integer('Sequence', required=True),
         'name': fields.char('Name', size=64, required=True),
         'text': fields.char('Text', size=100, required=True, translate=True),
         'company_id': fields.many2one('res.company', 'Company'),
@@ -98,7 +99,8 @@ class ResCompany(orm.Model):
             ('mode', '=', mode),
             ], context=context)
         for wood in wood_pool.browse(cr, uid, wood_ids, context=context):
-            _logger.info('Updating %s product...' % wood.name)
+            _logger.info('[%s] Updating %s product...' % (
+                wood.sequence, wood.name))
             
             start_code = wood.start_code    
             for start in start_code.split('|'):
