@@ -116,8 +116,9 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
             _('Cliente'),
             _('Fattura'),
             _('Data'),
-            _('Product'),
-            _('Name'),
+            _('Prodotto'),
+            _('Nome'),
+            _('Certif.'),
             _('Q.'),
             _('Price'),
             _('Discount'),            
@@ -135,6 +136,7 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
             WS.set_column(7, 7, 10)
             WS.set_column(8, 8, 10)
             WS.set_column(9, 9, 10)
+            WS.set_column(10, 10, 10)
         
         # Export Header:
         xls_write_row(WS_fsc, 0, header, format_title)        
@@ -170,6 +172,7 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     invoice.date_invoice, 
                     product.default_code,
                     product.name,
+                    False,
                     line.quantity,
                     line.price_unit,
                     line.multi_discount_rates or '',
@@ -177,9 +180,11 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     ]
                 if fsc:
                     i_fsc += 1
+                    data[5] = product.fsc_certified_id.name
                     xls_write_row(WS_fsc, i_fsc, data, format_text)
                 else: # pefc
                     i_pefc += 1
+                    data[5] = product.pefc_certified_id.name
                     xls_write_row(WS_pefc, i_pefc, data, format_text)
 
         _logger.info('End FIDO invoice export on %s' % xls_filename)
