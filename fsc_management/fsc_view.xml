@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+    
         <!--res.company-->
         <record model="ir.ui.view" id="view_fsc_company_certified_form">
             <field name="name">res.company.form</field>
@@ -15,11 +16,11 @@
                                 <newline/>
                                 <field name="fsc_code" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}"/>
                                 <field name="fsc_from_date" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}"/>
-                                <field name="fsc_report_text" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}" colspan="4"/>
+                                <!--<field name="fsc_report_text" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}" colspan="4"/>-->
                                 <field name="fsc_logo" widget="image" attrs="{'invisible': [('fsc_certified','=',False)]}"/>
-                                <separator string="Force FSC setup:" colspan="3"/>
-                                <button name="force_fsc_setup_code" string="Force FSC" type="object" icon="gtk-refresh" />
-                                <field name="fsc_start_code" colspan="4" nolabel="1"/>
+                                <separator string="Report text FSC" colspan="3" attrs="{'invisible': [('fsc_certified','=',False)]}"/>
+                                <button name="force_fsc_setup_code" string="Force FSC" type="object" icon="gtk-refresh" attrs="{'invisible': [('fsc_certified','=',False)]}"/>
+                                <field name="fsc_text_ids" colspan="4" nolabel="1" attrs="{'invisible': [('fsc_certified','=',False)]}"/>
                             </group>    
 
                             <group colspan="2" col="4">
@@ -27,15 +28,15 @@
                                 <newline/>
                                 <field name="pefc_code" attrs="{'required': [('pefc_certified','=',True)], 'invisible': [('pefc_certified','=',False)]}"/>
                                 <field name="pefc_from_date" attrs="{'required': [('pefc_certified','=',True)], 'invisible': [('pefc_certified','=',False)]}"/>
-                                <field name="pefc_report_text" attrs="{'required': [('pefc_certified','=',True)], 'invisible': [('pefc_certified','=',False)]}" colspan="4"/>
+                                <!--<field name="pefc_report_text" attrs="{'required': [('pefc_certified','=',True)], 'invisible': [('pefc_certified','=',False)]}" colspan="4"/>-->
                                 <field name="pefc_logo" widget="image" attrs="{'invisible': [('pefc_certified','=',False)]}"/>
-                                <separator string="Force PEFC setup:" colspan="3"/>
-                                <button name="force_pefc_setup_code" string="Force PEFC" type="object" icon="gtk-refresh" />
-                                <field name="pefc_start_code" colspan="4" nolabel="1"/>
+                                <separator string="Report text PEFC" colspan="3" attrs="{'invisible': [('pefc_certified','=',False)]}"/>
+                                <button name="force_pefc_setup_code" string="Force PEFC" type="object" icon="gtk-refresh" attrs="{'invisible': [('pefc_certified','=',False)]}"/>
+                                <field name="pefc_text_ids" colspan="4" nolabel="1" attrs="{'invisible': [('pefc_certified','=',False)]}"/>
                             </group>
                             
-                            <separator string="Document Note" colspan="4"/>
-                            <field name="xfc_document_note" nolabel="1" colspan="4"/>
+                            <separator string="Document Note" colspan="4" attrs="{'invisible': [('fsc_certified','=',False),('pefc_certified','=',False)]}"/>
+                            <field name="xfc_document_note" nolabel="1" colspan="4" attrs="{'invisible': [('fsc_certified','=',False),('pefc_certified','=',False)]}"/>
                         </group>
                     </page>
                 </xpath>
@@ -58,11 +59,11 @@
                                 <newline/>
                                 <field name="fsc_code" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}"/>
                                 <field name="fsc_from_date" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}"/>
-                                <field name="fsc_report_text" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}" colspan="4"/>
+                                <!--<field name="fsc_report_text" attrs="{'required': [('fsc_certified','=',True)], 'invisible': [('fsc_certified','=',False)]}" colspan="4"/>-->
                                 <field name="fsc_logo" widget="image" attrs="{'invisible': [('fsc_certified','=',False)]}"/>
-                                <separator string="Force FSC setup:" colspan="3"/>
-                                <button name="force_fsc_setup_code" string="Force FSC" type="object" icon="gtk-refresh" />
-                                <field name="fsc_start_code" colspan="4" nolabel="1"/>
+                                <separator string="Report text FSC" colspan="3" attrs="{'invisible': [('fsc_certified','=',False)]}"/>
+                                <button name="force_fsc_setup_code" string="Force FSC" type="object" icon="gtk-refresh" attrs="{'invisible': [('fsc_certified','=',False)]}"/>
+                                <field name="fsc_text_ids" colspan="4" nolabel="1" attrs="{'invisible': [('fsc_certified','=',False)]}"/>
                             </group>    
 
                             <group colspan="2" col="4">
@@ -70,15 +71,15 @@
                                 <newline/>
                                 <field name="pefc_code" attrs="{'required': [('pefc_certified','=',True)], 'invisible': [('pefc_certified','=',False)]}"/>
                                 <field name="pefc_from_date" attrs="{'required': [('pefc_certified','=',True)], 'invisible': [('pefc_certified','=',False)]}"/>
-                                <field name="pefc_report_text" attrs="{'required': [('pefc_certified','=',True)], 'invisible': [('pefc_certified','=',False)]}" colspan="4"/>
+                                <!--<field name="pefc_report_text" attrs="{'required': [('pefc_certified','=',True)], 'invisible': [('pefc_certified','=',False)]}" colspan="4"/>-->
                                 <field name="pefc_logo" widget="image" attrs="{'invisible': [('pefc_certified','=',False)]}"/>
-                                <separator string="Force PEFC setup:" colspan="3"/>
-                                <button name="force_pefc_setup_code" string="Force PEFC" type="object" icon="gtk-refresh"/>
-                                <field name="pefc_start_code" colspan="4" nolabel="1"/>
+                                <separator string="Report text PEFC" colspan="3" attrs="{'invisible': [('pefc_certified','=',False)]}"/>
+                                <button name="force_pefc_setup_code" string="Force PEFC" type="object" icon="gtk-refresh" attrs="{'invisible': [('pefc_certified','=',False)]}"/>
+                                <field name="pefc_text_ids" colspan="4" nolabel="1" attrs="{'invisible': [('pefc_certified','=',False)]}"/>
                             </group>
                             
-                            <separator string="Document Note" colspan="4"/>
-                            <field name="xfc_document_note" nolabel="1" colspan="4"/>
+                            <separator string="Document Note" colspan="4" attrs="{'invisible': [('fsc_certified','=',False),('pefc_certified','=',False)]}"/>
+                            <field name="xfc_document_note" nolabel="1" colspan="4" attrs="{'invisible': [('fsc_certified','=',False),('pefc_certified','=',False)]}"/>
                         </group>
                     </sheet>        
                 </form>
@@ -99,8 +100,8 @@
             <field name="inherit_id" ref="product.product_normal_form_view"/>
             <field name="arch" type="xml">
                 <field name="active" position="before">
-                     <field name="fsc_certified" />
-                     <field name="pefc_certified" />
+                     <field name="fsc_certified_id" />
+                     <field name="pefc_certified_id" />
                 </field>
             </field>
         </record>
@@ -110,8 +111,8 @@
             <field name="inherit_id" ref="product.product_search_form_view"/>
             <field name="arch" type="xml">            
                 <xpath expr="//filter[1]" position="after">
-                    <filter name="fsc_certified_on" string="FSC Certified" domain="[('fsc_certified','=',True)]"/>
-                    <filter name="pefc_certified_on" string="PEFC Certified" domain="[('pefc_certified','=',True)]"/>
+                    <filter name="fsc_certified_on" string="FSC Certified" domain="[('fsc_certified_id','!=',False)]"/>
+                    <filter name="pefc_certified_on" string="PEFC Certified" domain="[('pefc_certified_id','!=',False)]"/>
                 </xpath>
             </field>
         </record>
@@ -121,9 +122,9 @@
             <field name="model">product.product</field>
             <field name="priority" eval="50" />
             <field name="arch" type="xml">
-                <tree string="PEFC PFC Product" colors="blue:fsc_certified==True or pefc_certified==True" editable="bottom">
-                    <field name="fsc_certified" />
-                    <field name="pefc_certified" />
+                <tree string="PEFC PFC Product" colors="blue:fsc_certified_id!=False or pefc_certified_id!=False" editable="bottom">
+                    <field name="fsc_certified_id" />
+                    <field name="pefc_certified_id" />
                     
 	                <field name="default_code" readonly="1"/>
 	                <field name="name" readonly="1"/>

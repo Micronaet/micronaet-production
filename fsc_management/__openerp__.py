@@ -37,6 +37,7 @@
     'init_xml': [],
     'demo': [],
     'data': [
+        'security/ir.model.access.csv',
         'fsc_view.xml',
         'wizard/export_invoice_view.xml',
         ],

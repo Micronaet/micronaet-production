@@ -38,6 +38,30 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+class ProductProductWood(orm.Model):
+    """ Model name: ProductProductFSC
+    """
+    
+    _name = 'product.product.wood'
+    _description = 'Wood certification description for product'
+    _order = 'name'
+    
+    _columns = {        
+        'name': fields.char('Name', size=64, required=True),
+        'text': fields.char('Text', size=100, required=True, translate=True),
+        'company_id': fields.many2one('res.company', 'Company'),
+        'start_code': fields.text('Start code',
+            help='Start code of product certification, ex.:127|128|129'),    
+        'mode': fields.selection([
+            ('fsc', 'FSC'),
+            ('pefc', 'PEFC'),
+            ], 'Mode', required=True),
+        }
+
+    _defaults = {
+        'mode': lambda *x: 'pefc',
+        }    
+
 class ResCompany(orm.Model):
     """ Model name: ResCompany
     """
@@ -115,24 +139,32 @@ class ResCompany(orm.Model):
         'fsc_certified': fields.boolean('FSC Certified'),
         'fsc_code': fields.char('FSC Code', size=50),
         'fsc_from_date': fields.date('FSC from date'),
-        'fsc_report_text': fields.char('FSC report text', size=120, 
-            translate=True),
         'fsc_logo': fields.binary(
             'FSC Logo', help='FSC document logo bottom part'),
-        'fsc_start_code': fields.text('FSC Start code',
-            help='Start code of product for FSC, ex.:127|128|129'),    
+        'fsc_text_ids': fields.one2many(
+            'product.product.wood', 'company_id', 'FSC product text'),
 
         'pefc_certified': fields.boolean('PEFC Certified'),
         'pefc_code': fields.char('PEFC Code', size=50),
         'pefc_from_date': fields.date('PEFC from date'),
-        'pefc_report_text': fields.char('PEFC report text', size=120, 
-            translate=True),
         'pefc_logo': fields.binary(
             'PEFC Logo', help='PEFC document logo bottom part'),
-        'pefc_start_code': fields.text('PEFC Start code',
-            help='Start code of product for PEFC, ex.:127|128|129'),    
+        'pefc_text_ids': fields.one2many(
+            'product.product.wood', 'company_id', 'PEFC product text'),
         
-        'xfc_document_note': fields.text('FSC, PEFC Document note'),    
+        'xfc_document_note': fields.text('FSC, PEFC Document note',
+            translate=True),
+            
+            
+        # TODO remove:
+        #'fsc_report_text': fields.char('FSC report text', size=120, 
+        #    translate=True),
+        #'pefc_report_text': fields.char('PEFC report text', size=120, 
+        #    translate=True),
+        #'fsc_start_code': fields.text('FSC Start code',
+        #    help='Start code of product for FSC, ex.:127|128|129'),    
+        #'pefc_start_code': fields.text('PEFC Start code',
+        #    help='Start code of product for PEFC, ex.:127|128|129'),    
         }
 
 class ProductProduct(orm.Model):
@@ -142,7 +174,11 @@ class ProductProduct(orm.Model):
     _inherit = 'product.product'
     
     _columns = {
-        'fsc_certified': fields.boolean('FSC Certified'),
-        'pefc_certified': fields.boolean('PEFC Certified'),
+        #'fsc_certified': fields.boolean('FSC Certified'),
+        #'pefc_certified': fields.boolean('PEFC Certified'),
+        'fsc_certified_id': fields.many2one(
+            'product.product.wood', 'FSC text'),
+        'pefc_certified_id': fields.many2one(
+            'product.product.wood', 'PEFC text'),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
