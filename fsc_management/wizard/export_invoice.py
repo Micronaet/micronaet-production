@@ -317,7 +317,7 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     
                 data = [
                     pick.partner_id.name,
-                    pick.name,
+                    pick.bf_number,#pick.name,
                     pick.date, 
                     product.default_code,
                     product.name,
