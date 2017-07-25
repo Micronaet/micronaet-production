@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-21 07:04+0000\n"
-"PO-Revision-Date: 2017-04-21 09:06+0100\n"
+"POT-Creation-Date: 2017-07-25 15:27+0000\n"
+"PO-Revision-Date: 2017-07-25 17:37+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,18 +18,90 @@ msgstr ""
 "X-Generator: Poedit 1.6.10\n"
 
 #. module: fsc_management
+#: code:addons/fsc_management/wizard/export_invoice.py:266
+#, python-format
+msgid "BF"
+msgstr "BF"
+
+#. module: fsc_management
+#: view:export.xlsx.fsc.report.wizard:fsc_management.print_report_fsc_pefc_wizard_view
+msgid "Cancel"
+msgstr "Annulla"
+
+#. module: fsc_management
+#: code:addons/fsc_management/wizard/export_invoice.py:122
+#: code:addons/fsc_management/wizard/export_invoice.py:270
+#, python-format
+msgid "Certif."
+msgstr "Certif."
+
+#. module: fsc_management
+#: code:addons/fsc_management/wizard/export_invoice.py:117
+#: code:addons/fsc_management/wizard/export_invoice.py:265
+#, python-format
+msgid "Cliente"
+msgstr "Cliente"
+
+#. module: fsc_management
 #: model:ir.model,name:fsc_management.model_res_company
 msgid "Companies"
 msgstr "Aziende"
 
 #. module: fsc_management
+#: field:product.product.wood,company_id:0
+msgid "Company"
+msgstr "Azienda"
+
+#. module: fsc_management
+#: model:ir.actions.act_window,name:fsc_management.action_fsc_pefc_company_certified_form
+#: model:ir.ui.menu,name:fsc_management.menu_pefc_fsc_configuration
+msgid "Company configuration"
+msgstr "Configurazione azienda"
+
+#. module: fsc_management
+#: field:export.xlsx.fsc.report.wizard,create_uid:0
+#: field:product.product.wood,create_uid:0
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: fsc_management
+#: field:export.xlsx.fsc.report.wizard,create_date:0
+#: field:product.product.wood,create_date:0
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: fsc_management
+#: code:addons/fsc_management/wizard/export_invoice.py:119
+#: code:addons/fsc_management/wizard/export_invoice.py:267
+#, python-format
+msgid "Data"
+msgstr "Data"
+
+#. module: fsc_management
+#: code:addons/fsc_management/wizard/export_invoice.py:125
+#: code:addons/fsc_management/wizard/export_invoice.py:273
+#, python-format
+msgid "Discount"
+msgstr "Sconto"
+
+#. module: fsc_management
 #: view:res.company:fsc_management.view_fsc_company_certified_form
+#: view:res.company:fsc_management.view_fsc_company_certified_lite_form
+msgid "Document Note"
+msgstr "Note documento"
+
+#. module: fsc_management
+#: code:addons/fsc_management/wizard/export_invoice.py:91
+#: code:addons/fsc_management/wizard/export_invoice.py:239
+#: selection:product.product.wood,mode:0
+#: view:res.company:fsc_management.view_fsc_company_certified_form
+#, python-format
 msgid "FSC"
 msgstr "FSC"
 
 #. module: fsc_management
 #: view:product.product:fsc_management.view_product_product_fsc_search
-#: field:product.product,fsc_certified:0 field:res.company,fsc_certified:0
+#: field:res.company,fsc_certified:0
 msgid "FSC Certified"
 msgstr "Certificato FSC"
 
@@ -46,7 +118,14 @@ msgstr "Logo FSC"
 #. module: fsc_management
 #: help:res.company,fsc_logo:0
 msgid "FSC document logo bottom part"
-msgstr "Logo per il pié pagina dei documenti FSC"
+msgstr "Logo per il pié pagina dei documenti"
+
+#. module: fsc_management
+#: model:ir.actions.act_window,name:fsc_management.action_pfc_product
+#: model:ir.ui.menu,name:fsc_management.menu_pefc_fsc_product
+#: model:ir.ui.menu,name:fsc_management.menu_pefc_fsc_root
+msgid "FSC e PEFC"
+msgstr "FSC e PEFC"
 
 #. module: fsc_management
 #: field:res.company,fsc_from_date:0
@@ -54,13 +133,88 @@ msgid "FSC from date"
 msgstr "FSC dalla data"
 
 #. module: fsc_management
-#: field:res.company,fsc_report_text:0
-msgid "FSC report text"
-msgstr "FSC testo per le stampe"
+#: field:product.product,fsc_certified_id:0
+msgid "FSC text"
+msgstr "FSC testo"
+
+#. module: fsc_management
+#: field:res.company,xfc_document_note:0
+msgid "FSC, PEFC Document note"
+msgstr "FSC, PEFC Document note"
+
+#. module: fsc_management
+#: code:addons/fsc_management/wizard/export_invoice.py:118
+#, python-format
+msgid "Fattura"
+msgstr "Fattura"
+
+#. module: fsc_management
+#: view:product.product.wood:fsc_management.view_product_product_wood_form
+msgid "For product (start code)"
+msgstr "Per prodotto (codice partenza)"
+
+#. module: fsc_management
+#: view:res.company:fsc_management.view_fsc_company_certified_form
+#: view:res.company:fsc_management.view_fsc_company_certified_lite_form
+msgid "Force FSC"
+msgstr "Forza FSC"
+
+#. module: fsc_management
+#: view:res.company:fsc_management.view_fsc_company_certified_form
+#: view:res.company:fsc_management.view_fsc_company_certified_lite_form
+msgid "Force PEFC"
+msgstr "Forza PEFC"
+
+#. module: fsc_management
+#: field:export.xlsx.fsc.report.wizard,from_date:0
+msgid "From date"
+msgstr "Dalla data"
+
+#. module: fsc_management
+#: field:export.xlsx.fsc.report.wizard,id:0 field:product.product.wood,id:0
+msgid "ID"
+msgstr "ID"
+
+#. module: fsc_management
+#: field:export.xlsx.fsc.report.wizard,write_uid:0
+#: field:product.product.wood,write_uid:0
+msgid "Last Updated by"
+msgstr "Ultimo aggiornamento di"
+
+#. module: fsc_management
+#: field:export.xlsx.fsc.report.wizard,write_date:0
+#: field:product.product.wood,write_date:0
+msgid "Last Updated on"
+msgstr "Ultimo aggiornamento il"
+
+#. module: fsc_management
+#: field:product.product.wood,mode:0
+msgid "Mode"
+msgstr "Modalità"
+
+#. module: fsc_management
+#: field:product.product.wood,name:0
+msgid "Name"
+msgstr "Nome"
+
+#. module: fsc_management
+#: code:addons/fsc_management/wizard/export_invoice.py:121
+#: code:addons/fsc_management/wizard/export_invoice.py:269
+#, python-format
+msgid "Nome"
+msgstr "Nome"
+
+#. module: fsc_management
+#: code:addons/fsc_management/wizard/export_invoice.py:92
+#: code:addons/fsc_management/wizard/export_invoice.py:240
+#: selection:product.product.wood,mode:0
+#, python-format
+msgid "PEFC"
+msgstr "PEFC"
 
 #. module: fsc_management
 #: view:product.product:fsc_management.view_product_product_fsc_search
-#: field:product.product,pefc_certified:0 field:res.company,pefc_certified:0
+#: field:res.company,pefc_certified:0
 msgid "PEFC Certified"
 msgstr "Certificato PEFC"
 
@@ -75,6 +229,11 @@ msgid "PEFC Logo"
 msgstr "Logo PEFC"
 
 #. module: fsc_management
+#: view:product.product:fsc_management.view_pfc_product_tree
+msgid "PEFC PFC Product"
+msgstr "Prodotto PEFC PFC"
+
+#. module: fsc_management
 #: help:res.company,pefc_logo:0
 msgid "PEFC document logo bottom part"
 msgstr "Logo per il pié pagina dei documenti PEFC"
@@ -85,11 +244,117 @@ msgid "PEFC from date"
 msgstr "PEFC dalla data"
 
 #. module: fsc_management
-#: field:res.company,pefc_report_text:0
-msgid "PEFC report text"
-msgstr "PEFC testo per le stampe"
+#: field:res.company,xfc_text_ids:0
+msgid "PEFC product text"
+msgstr "PEFC testo prodotto"
+
+#. module: fsc_management
+#: field:product.product,pefc_certified_id:0
+msgid "PEFC text"
+msgstr "PEFC testo"
+
+#. module: fsc_management
+#: field:export.xlsx.fsc.report.wizard,partner_id:0
+msgid "Partner"
+msgstr "Partner"
+
+#. module: fsc_management
+#: code:addons/fsc_management/wizard/export_invoice.py:124
+#: code:addons/fsc_management/wizard/export_invoice.py:272
+#, python-format
+msgid "Price"
+msgstr "Prezzo"
+
+#. module: fsc_management
+#: view:export.xlsx.fsc.report.wizard:fsc_management.print_report_fsc_pefc_wizard_view
+msgid "Print BF"
+msgstr "Stampa BF"
+
+#. module: fsc_management
+#: view:export.xlsx.fsc.report.wizard:fsc_management.print_report_fsc_pefc_wizard_view
+msgid "Print invoice"
+msgstr "Stampa fatture"
+
+#. module: fsc_management
+#: code:addons/fsc_management/wizard/export_invoice.py:120
+#: code:addons/fsc_management/wizard/export_invoice.py:268
+#, python-format
+msgid "Prodotto"
+msgstr "Prodotto"
 
 #. module: fsc_management
 #: model:ir.model,name:fsc_management.model_product_product
 msgid "Product"
 msgstr "Prodotto"
+
+#. module: fsc_management
+#: code:addons/fsc_management/wizard/export_invoice.py:123
+#: code:addons/fsc_management/wizard/export_invoice.py:271
+#, python-format
+msgid "Q."
+msgstr "Q."
+
+#. module: fsc_management
+#: model:ir.actions.act_window,name:fsc_management.action_print_report_fsc_pefc_wizard
+#: model:ir.ui.menu,name:fsc_management.menu_print_report_fsc_pefc
+msgid "Report FSC PEFC wizard"
+msgstr "Wizard report FSC PEFC"
+
+#. module: fsc_management
+#: view:res.company:fsc_management.view_fsc_company_certified_form
+#: view:res.company:fsc_management.view_fsc_company_certified_lite_form
+msgid "Report text FSC"
+msgstr "Testo report FSC"
+
+#. module: fsc_management
+#: field:product.product.wood,sequence:0
+msgid "Sequence"
+msgstr "Sequenza"
+
+#. module: fsc_management
+#: field:product.product.wood,start_code:0
+msgid "Start code"
+msgstr "Partenza codice"
+
+#. module: fsc_management
+#: help:product.product.wood,start_code:0
+msgid "Start code of product certification, ex.:127|128|129"
+msgstr "Partenza codice per prodotto cerificati, es.:127|128|129"
+
+#. module: fsc_management
+#: view:res.company:fsc_management.view_fsc_company_certified_lite_form
+msgid "String"
+msgstr "Stringa"
+
+#. module: fsc_management
+#: code:addons/fsc_management/wizard/export_invoice.py:126
+#: code:addons/fsc_management/wizard/export_invoice.py:274
+#, python-format
+msgid "Subtotal"
+msgstr "Subtotale"
+
+#. module: fsc_management
+#: field:product.product.wood,text:0
+msgid "Text"
+msgstr "Testo"
+
+#. module: fsc_management
+#: field:export.xlsx.fsc.report.wizard,to_date:0
+msgid "To date"
+msgstr "Alla data"
+
+#. module: fsc_management
+#: view:export.xlsx.fsc.report.wizard:fsc_management.print_report_fsc_pefc_wizard_view
+msgid "Wizard"
+msgstr "Wizard"
+
+#. module: fsc_management
+#: view:product.product.wood:fsc_management.view_product_product_wood_form
+#: view:product.product.wood:fsc_management.view_product_product_wood_tree
+msgid "Wood Certificate"
+msgstr "Certificazione Legno"
+
+#. module: fsc_management
+#: model:ir.model,name:fsc_management.model_product_product_wood
+msgid "Wood certification description for product"
+msgstr "Scritta prodotto per certificazione legno"
