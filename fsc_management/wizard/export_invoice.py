@@ -323,9 +323,9 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     product.name,
                     False,
                     line.product_uom_qty,
-                    '', #line.price_unit,
-                    '',#line.multi_discount_rates or '',
-                    '',#line.price_subtotal,
+                    '', # line.price_unit,
+                    '', # line.multi_discount_rates or '',
+                    '', # line.price_subtotal,
                     ]
                 if fsc:
                     i_fsc += 1
