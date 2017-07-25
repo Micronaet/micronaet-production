@@ -155,6 +155,8 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
 
         account_ids = invoice_pool.search(
             cr, uid, domain, order=order, context=context)        
+        _logger.info('Domain for search: %s [Tot: %s]' % (
+            domain, len(account_ids)))
         i_fsc = 0
         i_pefc = 0
         for invoice in invoice_pool.browse(
@@ -188,6 +190,7 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     data[5] = product.pefc_certified_id.name
                     self.xls_write_row(WS_pefc, i_pefc, data, format_text)
 
+        _logger.info('Totals: PEFC %s  FSC %s' % (i_pefc, i_fsc))
         _logger.info('End FIDO invoice export on %s' % xls_filename)
         WB.close()
 
@@ -300,9 +303,10 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
             domain.append(('date', '>=', from_date))
         if to_date:     
             domain.append(('date', '<=', to_date))
-
         pick_ids = pick_pool.search(
             cr, uid, domain, order=order, context=context)        
+        _logger.info('Domain for search: %s [Tot: %s]' % (
+            domain, len(pick_ids)))
         i_fsc = 0
         i_pefc = 0
         for pick in pick_pool.browse(
@@ -335,7 +339,7 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     i_pefc += 1
                     data[5] = product.pefc_certified_id.name
                     self.xls_write_row(WS_pefc, i_pefc, data, format_text)
-
+        _logger.info('Totals: PEFC %s  FSC %s' % (i_pefc, i_fsc))
         _logger.info('End FIDO BF export on %s' % xls_filename)
         WB.close()
 
