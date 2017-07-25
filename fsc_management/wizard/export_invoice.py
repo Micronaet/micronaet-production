@@ -309,7 +309,7 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
             domain, len(pick_ids)))
         i_fsc = 0
         i_pefc = 0
-        import pdb; pdb.set_trace()
+
         for pick in pick_pool.browse(
                 cr, uid, pick_ids, context=context):
             for line in pick.move_lines:
