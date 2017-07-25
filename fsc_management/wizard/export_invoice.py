@@ -289,8 +289,11 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
         self.xls_write_row(WS_pefc, 0, header, format_title)        
         
         # Export data:
-        order = 'number'
-        domain = [('state', 'in', ('done', ))]
+        order = 'date'
+        domain = [
+            ('bf_number', 'ilike', 'BF'),
+            ('state', 'in', ('done', )),
+            ]
         if partner_id:
             domain.append(('partner_id', '=', partner_id))
         if from_date:
