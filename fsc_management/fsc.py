@@ -104,7 +104,7 @@ class ResCompany(orm.Model):
             # -----------------------------------------------------------------
             # Start code part:            
             # -----------------------------------------------------------------
-            start_code = wood.start_code    
+            start_code = wood.start_code or ''
             for start in start_code.split('|'):
                 # Search product start with this:
                 product_ids = product_pool.search(cr, uid, [
@@ -121,7 +121,7 @@ class ResCompany(orm.Model):
             # -----------------------------------------------------------------
             # Fixed code part:            
             # -----------------------------------------------------------------
-            fixed_code = wood.fixed_code
+            fixed_code = wood.fixed_code or ''
             for default_code in fixed_code.split('|'):
                 default_code = default_code.strip()
                 
