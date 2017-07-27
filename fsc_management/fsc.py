@@ -53,6 +53,8 @@ class ProductProductWood(orm.Model):
         'company_id': fields.many2one('res.company', 'Company'),
         'start_code': fields.text('Start code',
             help='Start code of product certification, ex.:127|128|129'),    
+        'fixed_code': fields.text('Fixed code',
+            help='List of fixed code, ex.:127TXANBIBE|128TXANBIBE'),    
         'mode': fields.selection([
             ('fsc', 'FSC'),
             ('pefc', 'PEFC'),
@@ -98,7 +100,10 @@ class ResCompany(orm.Model):
         for wood in wood_pool.browse(cr, uid, wood_ids, context=context):
             _logger.info('[%s] Updating %s product...' % (
                 wood.sequence, wood.name))
-            
+
+            # -----------------------------------------------------------------
+            # Start code part:            
+            # -----------------------------------------------------------------
             start_code = wood.start_code    
             for start in start_code.split('|'):
                 # Search product start with this:
@@ -112,6 +117,26 @@ class ResCompany(orm.Model):
                     len(product_ids),
                     start,
                     ))        
+
+            # -----------------------------------------------------------------
+            # Fixed code part:            
+            # -----------------------------------------------------------------
+            fixed_code = wood.fixed_code
+            for default_code in fixed_code.split('|'):
+                default_code = default_code.strip()
+                
+                # Search product start with this:
+                product_ids = product_pool.search(cr, uid, [
+                    ('default_code', '=', default_code),
+                    ], context=context)
+                product_pool.write(cr, uid, product_ids, {
+                    '%s_certified_id' % mode: wood.id,
+                    }, context=context)    
+                _logger.info('Update %s product start with: %s' % (
+                    len(product_ids),
+                    start,
+                    ))        
+
         _logger.info('End update procedure')
         return True
     

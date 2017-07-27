@@ -16,6 +16,8 @@
                             <field name="text" colspan="4"/>
                             <separator string="For product (start code)" colspan="4"/>
                             <field name="start_code" colspan="4" nolabel="1"/>
+                            <separator string="Fixed code" colspan="4"/>
+                            <field name="fixed_code" colspan="4" nolabel="1"/>
                             <field name="company_id" invisible="1"/>
                         </group>    
                     </sheet>    
