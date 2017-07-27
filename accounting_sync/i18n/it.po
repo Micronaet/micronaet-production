@@ -1,0 +1,144 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* accounting_sync
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-07-27 16:23+0000\n"
+"PO-Revision-Date: 2017-07-27 18:25+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: accounting_sync
+#: model:ir.actions.act_window,name:accounting_sync.action_res_company_xmlrpc_parameter
+msgid "Accounting XMRPC connection"
+msgstr "Accounting XMRPC connection"
+
+#. module: accounting_sync
+#: field:res.company,accounting_sync_host:0
+msgid "Accounting sync XMLRPC host"
+msgstr "Accounting sync XMLRPC host"
+
+#. module: accounting_sync
+#: field:res.company,accounting_sync_port:0
+msgid "Acounting sync port"
+msgstr "Acounting sync port"
+
+#. module: accounting_sync
+#: model:ir.model,name:accounting_sync.model_res_company
+msgid "Companies"
+msgstr "Aziende"
+
+#. module: accounting_sync
+#: code:addons/accounting_sync/sync.py:205
+#, python-format
+msgid ""
+"Error from accounting:\n"
+"%s"
+msgstr ""
+"Errore dalla contabilita':\n"
+"%s"
+
+#. module: accounting_sync
+#: help:res.company,accounting_sync_host:0
+msgid "IP address: 10.0.0.2  or hostname: server.example.com"
+msgstr "IP address: 10.0.0.2  o hostname: server.example.com"
+
+#. module: accounting_sync
+#: code:addons/accounting_sync/sync.py:81
+#, python-format
+msgid "Import CL error!"
+msgstr "Errore importazione CL!"
+
+#. module: accounting_sync
+#: help:res.company,manual:0
+msgid "Manual confirmation set manual accounting sync"
+msgstr "Conferma manuale, importa manualmente sincro contabile"
+
+#. module: accounting_sync
+#: field:res.company,manual:0
+msgid "Manual sync"
+msgstr "Sincro manuale"
+
+#. module: accounting_sync
+#: model:ir.model,name:accounting_sync.model_mrp_production
+msgid "Manufacturing Order"
+msgstr "Ordine di Produzione"
+
+#. module: accounting_sync
+#: field:res.company,pefc_certified:0
+msgid "PEFC Certified"
+msgstr "Certificato PEFC"
+
+#. module: accounting_sync
+#: field:res.company,pefc_code:0
+msgid "PEFC Code"
+msgstr "Codice PEFC"
+
+#. module: accounting_sync
+#: field:res.company,pefc_logo:0
+msgid "PEFC Logo"
+msgstr "Logo PEFC"
+
+#. module: accounting_sync
+#: help:res.company,pefc_logo:0
+msgid "PEFC document logo bottom part"
+msgstr "Logo per il pié pagina dei documenti PEFC"
+
+#. module: accounting_sync
+#: field:res.company,pefc_from_date:0
+msgid "PEFC from date"
+msgstr "PEFC dalla data"
+
+#. module: accounting_sync
+#: view:res.company:accounting_sync.view_res_company_xmlrpc_form
+msgid "Parameters"
+msgstr "Parametri"
+
+#. module: accounting_sync
+#: code:addons/accounting_sync/sync.py:198
+#: code:addons/accounting_sync/sync.py:204
+#, python-format
+msgid "Sync error!"
+msgstr "Errore sincro!"
+
+#. module: accounting_sync
+#: field:res.company,accounting_sync:0
+msgid "Sync via XMLRPC"
+msgstr "Sincro via XMLRPC"
+
+#. module: accounting_sync
+#: model:ir.ui.menu,name:accounting_sync.menu_res_company_parameter
+msgid "XML parameter"
+msgstr "XML parameteri"
+
+#. module: accounting_sync
+#: code:addons/accounting_sync/sync.py:199
+#, python-format
+msgid "XMLRPC error calling production procedure"
+msgstr "XMLRPC errore chiamando la procedura di produzione"
+
+#. module: accounting_sync
+#: code:addons/accounting_sync/sync.py:85
+#, python-format
+msgid ""
+"XMLRPC for calling importation is not response check if program is open on "
+"XMLRPC server\n"
+"[%s]"
+msgstr ""
+"XMLRPC per chiamare l'importazione se non risponde controlla se il programma "
+"agente di XMLRPC e' acceso sul server del gestionale\n"
+"[%s]"
+
+#. module: accounting_sync
+#: help:res.company,accounting_sync_port:0
+msgid "XMLRPC port, example: 8000"
+msgstr "XMLRPC porta, esempio: 8000"
