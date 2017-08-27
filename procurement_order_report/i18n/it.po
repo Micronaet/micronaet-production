@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-24 14:14+0000\n"
-"PO-Revision-Date: 2017-06-24 16:16+0100\n"
+"POT-Creation-Date: 2017-07-27 16:30+0000\n"
+"PO-Revision-Date: 2017-08-07 13:50+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -69,7 +69,7 @@ msgstr ", famiglia %s"
 #: code:addons/procurement_order_report/report/procurement_parser.py:122
 #, python-format
 msgid ", forecast"
-msgstr ", forecast"
+msgstr ", previsionale"
 
 #. module: procurement_order_report
 #: code:addons/procurement_order_report/report/procurement_parser.py:120

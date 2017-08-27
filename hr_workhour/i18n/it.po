@@ -1,0 +1,190 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* hr_workhour
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-07-27 16:25+0000\n"
+"PO-Revision-Date: 2017-08-05 22:30+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: hr_workhour
+#: view:hr.workhour:hr_workhour.view_hr_workhour_search
+msgid "Contract tipology"
+msgstr "TIpologia contatto\t\t\t"
+
+#. module: hr_workhour
+#: field:hr.workhour.festivity,create_uid:0
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: hr_workhour
+#: field:hr.workhour.festivity,create_date:0
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: hr_workhour
+#: field:hr.workhour.festivity,name:0
+msgid "Description"
+msgstr "Descrizione"
+
+#. module: hr_workhour
+#: view:hr.workhour:hr_workhour.view_hr_workhour_form
+msgid "Details"
+msgstr "Dettagli"
+
+#. module: hr_workhour
+#: model:ir.ui.menu,name:hr_workhour.menu_hr_workhour_festivity_dynamic
+msgid "Dynamic"
+msgstr "Dinamico"
+
+#. module: hr_workhour
+#: view:hr.workhour.festivity:hr_workhour.view_hr_workhour_festivity_form
+msgid "Dynamic date"
+msgstr "Data dinamica"
+
+#. module: hr_workhour
+#: model:ir.model,name:hr_workhour.model_hr_workhour
+#: model:ir.model,name:hr_workhour.model_hr_workhour_day
+msgid "Employee work hour"
+msgstr "Orario impiegati"
+
+#. module: hr_workhour
+#: view:hr.workhour.festivity:hr_workhour.view_hr_workhour_festivity_dynamic_tree
+#: view:hr.workhour.festivity:hr_workhour.view_hr_workhour_festivity_form
+#: view:hr.workhour.festivity:hr_workhour.view_hr_workhour_festivity_search
+#: view:hr.workhour.festivity:hr_workhour.view_hr_workhour_festivity_tree
+#: model:ir.ui.menu,name:hr_workhour.menu_hr_workhour_festivity_root
+msgid "Festivity"
+msgstr "Festività"
+
+#. module: hr_workhour
+#: model:ir.actions.act_window,name:hr_workhour.action_hr_workhour_dynamic_festivity
+#: model:ir.actions.act_window,name:hr_workhour.action_hr_workhour_festivity
+msgid "Festivity (static)"
+msgstr "Festività (statica)"
+
+#. module: hr_workhour
+#: help:hr.workhour.festivity,periodic:0
+msgid ""
+"Festivity is only for a from-to period (ex.: Patronal festivity but for a "
+"period because of changing city)"
+msgstr ""
+"Festività solamente per un periodo da / a (es. festa del patrono, solamente "
+"per un determinato periodo per cambio paese)"
+
+#. module: hr_workhour
+#: field:hr.workhour.festivity,dynamic_from_date:0
+msgid "From date >="
+msgstr "Dalla data >="
+
+#. module: hr_workhour
+#: field:hr.workhour.festivity,periodic_from:0
+msgid "From year >="
+msgstr "Dall'anno >="
+
+#. module: hr_workhour
+#: model:ir.model,name:hr_workhour.model_hr_workhour_festivity
+msgid "HR festivity"
+msgstr "Festività HR"
+
+#. module: hr_workhour
+#: field:hr.workhour.festivity,id:0
+msgid "ID"
+msgstr "ID"
+
+#. module: hr_workhour
+#: help:hr.workhour.festivity,static:0
+msgid ""
+"It means that every year this festivity is the same day (ex. Christmas = 25 "
+"of dec.), if not it's dynamic (ex. Easter monday)"
+msgstr ""
+"Significa che ogni anno questa festività è nello stesso giorno (es. Natale = "
+"25 dicembre), altrimenti è considerata dinamica (es. Lunedì di Pasqua)"
+
+#. module: hr_workhour
+#: field:hr.workhour.festivity,write_uid:0
+msgid "Last Updated by"
+msgstr "Aggiornato da"
+
+#. module: hr_workhour
+#: field:hr.workhour.festivity,write_date:0
+msgid "Last Updated on"
+msgstr "Aggiornato il"
+
+#. module: hr_workhour
+#: view:hr.workhour:hr_workhour.view_hr_workhour_form
+msgid "Note"
+msgstr "Note"
+
+#. module: hr_workhour
+#: field:hr.workhour.festivity,periodic:0
+msgid "Periodic festivity"
+msgstr "Festività periodica"
+
+#. module: hr_workhour
+#: model:ir.ui.menu,name:hr_workhour.menu_hr_workhour_festivity_static
+msgid "Static"
+msgstr "Statica"
+
+#. module: hr_workhour
+#: view:hr.workhour.festivity:hr_workhour.view_hr_workhour_festivity_form
+msgid "Static date"
+msgstr "Data statica"
+
+#. module: hr_workhour
+#: field:hr.workhour.festivity,day:0
+msgid "Static day"
+msgstr "Giorno statico"
+
+#. module: hr_workhour
+#: field:hr.workhour.festivity,static:0
+msgid "Static festivity"
+msgstr "Festività statica"
+
+#. module: hr_workhour
+#: field:hr.workhour.festivity,month:0
+msgid "Static month"
+msgstr "Mese statico"
+
+#. module: hr_workhour
+#: field:hr.workhour.festivity,dynamic_to_date:0
+msgid "To date <="
+msgstr "Alla data <="
+
+#. module: hr_workhour
+#: field:hr.workhour.festivity,periodic_to:0
+msgid "To year <="
+msgstr "All'anno <="
+
+#. module: hr_workhour
+#: model:ir.model,name:hr_workhour.model_res_users
+msgid "Users"
+msgstr "Utenti"
+
+#. module: hr_workhour
+#: view:hr.workhour:hr_workhour.view_hr_workhour_form
+#: view:hr.workhour:hr_workhour.view_hr_workhour_tree
+#: model:ir.actions.act_window,name:hr_workhour.action_hr_workhour
+#: model:ir.ui.menu,name:hr_workhour.menu_hr_workhour_root
+#: field:res.users,workhour_plan_id:0
+msgid "Workhour plan"
+msgstr "Piano di lavoro"
+
+#. module: hr_workhour
+#: help:res.users,workhour_plan_id:0
+msgid ""
+"Working time for this employee like: full time, part time etc. (for manage "
+"hour and presence)"
+msgstr ""
+"Piano lavoro per questo impiegato, come: tempo pieno, mezza giornata ecc. "
+"(per gestire le ore di presenza)"

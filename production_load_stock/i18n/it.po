@@ -1,0 +1,144 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* production_load_stock
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-07-27 16:31+0000\n"
+"PO-Revision-Date: 2017-08-16 15:41+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: production_load_stock
+#: view:sale.order.line:production_load_stock.production_sale_order_line_tree_view
+msgid "BOM"
+msgstr "DB"
+
+#. module: production_load_stock
+#: code:addons/production_load_stock/loading.py:360
+#, python-format
+msgid "Error"
+msgstr "Errore"
+
+#. module: production_load_stock
+#: help:sale.order.line,product_uom_force_qty:0
+msgid "Force extra qty to confirm"
+msgstr "Forza q. extra da confermare"
+
+#. module: production_load_stock
+#: field:sale.order.line,product_uom_force_qty:0
+msgid "Forced"
+msgstr "Forzato"
+
+#. module: production_load_stock
+#: help:stock.move,production_sol_id:0 help:stock.quant,production_sol_id:0
+msgid "Line linked for load / unload for production"
+msgstr "Riga collegata per carico / scarico per la produzione"
+
+#. module: production_load_stock
+#: help:stock.picking,production_id:0
+msgid "Link pick to production"
+msgstr "Collega lo scarico alla produzione"
+
+#. module: production_load_stock
+#: help:stock.picking,unlinked_mrp:0
+msgid "Load/unload for all unlinked SOL (call off movement)"
+msgstr ""
+"Carico / Scarico per tutte le righe scollegate (movimento \"call off\")"
+
+#. module: production_load_stock
+#: field:stock.picking,production_id:0
+msgid "MRP"
+msgstr "Produzione"
+
+#. module: production_load_stock
+#: model:ir.model,name:production_load_stock.model_mrp_production
+msgid "Manufacturing Order"
+msgstr "Ordine di Produzione"
+
+#. module: production_load_stock
+#: selection:stock.move,production_load_type:0
+#: selection:stock.picking,production_load_type:0
+msgid "Material unload"
+msgstr "Materiale scaricato"
+
+#. module: production_load_stock
+#: field:stock.move,persistent:0 field:stock.quant,persistent:0
+msgid "Persistent"
+msgstr "Persistente"
+
+#. module: production_load_stock
+#: model:ir.model,name:production_load_stock.model_stock_picking
+msgid "Picking List"
+msgstr "Lista prelievo"
+
+#. module: production_load_stock
+#: selection:stock.move,production_load_type:0
+#: selection:stock.picking,production_load_type:0
+msgid "Product load"
+msgstr "Carico prodotto"
+
+#. module: production_load_stock
+#: field:stock.move,production_load_type:0
+#: field:stock.picking,production_load_type:0
+msgid "Production load type"
+msgstr "Tipo di carico produzione"
+
+#. module: production_load_stock
+#: field:sale.order.line,move_production_ids:0
+msgid "Production moves"
+msgstr "Movimenti di produzione"
+
+#. module: production_load_stock
+#: model:ir.model,name:production_load_stock.model_stock_quant
+msgid "Quants"
+msgstr "Quant."
+
+#. module: production_load_stock
+#: field:stock.move,production_sol_id:0 field:stock.quant,production_sol_id:0
+msgid "Sale line linked"
+msgstr "Riga ordine collegata"
+
+#. module: production_load_stock
+#: model:ir.model,name:production_load_stock.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Linea d'ordine di vendita"
+
+#. module: production_load_stock
+#: code:addons/production_load_stock/loading.py:361
+#, python-format
+msgid "Set up in company location for stock and mrp!"
+msgstr "Imposta nella scheda azienda la posizione magazzino e produzione!"
+
+#. module: production_load_stock
+#: model:ir.model,name:production_load_stock.model_stock_move
+msgid "Stock Move"
+msgstr "Movimento di magazzino"
+
+#. module: production_load_stock
+#: view:mrp.production:production_load_stock.mrp_production_form_temp_view
+msgid "Stock pick"
+msgstr "Prelievo magazzino"
+
+#. module: production_load_stock
+#: field:stock.picking,unlinked_mrp:0
+msgid "Unlinked MRP"
+msgstr "Scaricato produzione"
+
+#. module: production_load_stock
+#: field:mrp.production,pick_status:0
+msgid "Update status"
+msgstr "Aggiorna stato"
+
+#. module: production_load_stock
+#: view:mrp.production:production_load_stock.mrp_production_form_temp_view
+msgid "Update stock"
+msgstr "Aggiorna magazzino"

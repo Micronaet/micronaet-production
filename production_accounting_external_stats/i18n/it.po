@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-15 11:02+0000\n"
-"PO-Revision-Date: 2016-03-15 12:05+0100\n"
+"POT-Creation-Date: 2017-07-27 16:31+0000\n"
+"PO-Revision-Date: 2017-08-16 15:37+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,11 +18,28 @@ msgstr ""
 "X-Generator: Poedit 1.6.10\n"
 
 #. module: production_accounting_external_stats
+#: view:mrp.production.create.stats.wizard:production_accounting_external_stats.mrp_production_create_stats_wizard_view
+msgid "Cancel"
+msgstr "Annulla"
+
+#. module: production_accounting_external_stats
+#: view:mrp.production.create.stats.wizard:production_accounting_external_stats.mrp_production_create_stats_wizard_view
+msgid "Create"
+msgstr "Creato"
+
+#. module: production_accounting_external_stats
+#: view:mrp.production.create.stats.wizard:production_accounting_external_stats.mrp_production_create_stats_wizard_view
+msgid "Create stat"
+msgstr "Crea stat."
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.create.stats.wizard,create_uid:0
 #: field:mrp.production.stats,create_uid:0
 msgid "Created by"
 msgstr "Creato da"
 
 #. module: production_accounting_external_stats
+#: field:mrp.production.create.stats.wizard,create_date:0
 #: field:mrp.production.stats,create_date:0
 msgid "Created on"
 msgstr "Creato il"
@@ -33,6 +50,7 @@ msgid "Current lavoration"
 msgstr "Lavorazione attuale"
 
 #. module: production_accounting_external_stats
+#: field:mrp.production.create.stats.wizard,date:0
 #: field:mrp.production.stats,date:0
 msgid "Date"
 msgstr "Data"
@@ -40,12 +58,28 @@ msgstr "Data"
 #. module: production_accounting_external_stats
 #: field:mrp.production.stats.mixed,date_planned:0
 msgid "Date planned"
-msgstr "Date pianificata"
+msgstr "Data pianificata"
+
+#. module: production_accounting_external_stats
+#: view:mrp.production.stats.mixed:production_accounting_external_stats.view_mrp_production_stats_mixed_search
+msgid "Day"
+msgstr "Giorno"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats.mixed,is_total:0
+msgid "Day total"
+msgstr "Giorno totale"
 
 #. module: production_accounting_external_stats
 #: field:mrp.production.stats.mixed,maked_qty:0
-msgid "Done q.*"
-msgstr "Q. fatta *"
+msgid "Done q."
+msgstr "Q. fatta"
+
+#. module: production_accounting_external_stats
+#: code:addons/production_accounting_external_stats/wizard/insert_stat.py:67
+#, python-format
+msgid "Error"
+msgstr "Errore"
 
 #. module: production_accounting_external_stats
 #: field:mrp.production.stats.mixed,product_id:0
@@ -58,11 +92,7 @@ msgid "Group By"
 msgstr "Raggruppa per"
 
 #. module: production_accounting_external_stats
-#: field:mrp.production.stats.mixed,hour:0
-msgid "Hour"
-msgstr "Ora"
-
-#. module: production_accounting_external_stats
+#: field:mrp.production.create.stats.wizard,id:0
 #: field:mrp.production.stats,id:0 field:mrp.production.stats.mixed,id:0
 msgid "ID"
 msgstr "ID"
@@ -73,11 +103,13 @@ msgid "Is today"
 msgstr "Oggi"
 
 #. module: production_accounting_external_stats
+#: field:mrp.production.create.stats.wizard,write_uid:0
 #: field:mrp.production.stats,write_uid:0
 msgid "Last Updated by"
-msgstr "Last Updated by"
+msgstr "Aggiornato da"
 
 #. module: production_accounting_external_stats
+#: field:mrp.production.create.stats.wizard,write_date:0
 #: field:mrp.production.stats,write_date:0
 msgid "Last Updated on"
 msgstr "Last Updated on"
@@ -88,14 +120,11 @@ msgid "Lavoration q."
 msgstr "Q. lavorazione"
 
 #. module: production_accounting_external_stats
+#: field:mrp.production.create.stats.wizard,workcenter_id:0
+#: field:mrp.production.stats,workcenter_id:0
 #: field:mrp.production.stats.mixed,workcenter_id:0
 msgid "Line"
 msgstr "Linea"
-
-#. module: production_accounting_external_stats
-#: field:mrp.production.stats.mixed,name:0
-msgid "MRP name"
-msgstr "Produzione"
 
 #. module: production_accounting_external_stats
 #: view:mrp.production.stats.mixed:production_accounting_external_stats.view_mrp_production_stats_mixed_search
@@ -121,6 +150,13 @@ msgid "Manufacturing Order"
 msgstr "Ordine di Produzione"
 
 #. module: production_accounting_external_stats
+#: code:addons/production_accounting_external_stats/wizard/insert_stat.py:68
+#, python-format
+msgid "No parent production!"
+msgstr "No parent production!"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.create.stats.wizard,mrp_id:0
 #: field:mrp.production.stats,mrp_id:0
 #: view:mrp.production.stats.mixed:production_accounting_external_stats.view_mrp_production_stats_mixed_search
 #: field:mrp.production.stats.mixed,production_id:0
@@ -134,24 +170,14 @@ msgid "Production Stats"
 msgstr "Statistiche produzione"
 
 #. module: production_accounting_external_stats
-#: field:mrp.production,stat_start_date:0
-msgid "Ref. Date"
-msgstr "Data rif."
-
-#. module: production_accounting_external_stats
 #: field:mrp.production,stat_start_total:0
 msgid "Ref. Total"
 msgstr "Totale rif."
 
 #. module: production_accounting_external_stats
-#: help:mrp.production,stat_start_date:0
-msgid "Ref. date for blocking operation"
-msgstr "Data rif. operazione bloccaggio"
-
-#. module: production_accounting_external_stats
 #: field:mrp.production.stats.mixed,remain_qty:0
-msgid "Remain q.*"
-msgstr "Q. rimanente*"
+msgid "Remain q."
+msgstr "Remain q."
 
 #. module: production_accounting_external_stats
 #: view:mrp.production:production_accounting_external_stats.mrp_production_lavoration_form_startup_view
@@ -159,9 +185,15 @@ msgid "Start"
 msgstr "Avvia"
 
 #. module: production_accounting_external_stats
-#: field:mrp.production,stat_startup:0 field:mrp.production.stats,startup:0
+#: field:mrp.production.create.stats.wizard,startup:0
+#: field:mrp.production.stats,startup:0
 msgid "Start up time"
 msgstr "Tempo approntamento"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats.mixed,startup:0
+msgid "Startup"
+msgstr "Startup"
 
 #. module: production_accounting_external_stats
 #: field:mrp.production,stats_ids:0
@@ -179,6 +211,18 @@ msgid "Stop"
 msgstr "Stop"
 
 #. module: production_accounting_external_stats
+#: field:mrp.production.create.stats.wizard,hour:0
+#: field:mrp.production.stats,hour:0
+msgid "Tot. H"
+msgstr "Tot. H"
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.stats.mixed,hour:0
+msgid "Tot. H."
+msgstr "Tot. H."
+
+#. module: production_accounting_external_stats
+#: field:mrp.production.create.stats.wizard,total:0
 #: field:mrp.production.stats,total:0
 msgid "Total"
 msgstr "Totale"
@@ -190,8 +234,14 @@ msgstr "Totale articoli quando parte l'operazione di bloccaggio"
 
 #. module: production_accounting_external_stats
 #: field:mrp.production.stats.mixed,todo_qty:0
-msgid "Total q.*"
-msgstr "Q. prod. totale *"
+msgid "Total q."
+msgstr "Total q."
+
+#. module: production_accounting_external_stats
+#: code:addons/production_accounting_external_stats/stats.py:213
+#, python-format
+msgid "Update Stats"
+msgstr "Update Stats"
 
 #. module: production_accounting_external_stats
 #: view:mrp.production.stats.mixed:production_accounting_external_stats.view_mrp_production_stats_mixed_search
@@ -199,6 +249,8 @@ msgid "Workcenter"
 msgstr "Centro di lavoro"
 
 #. module: production_accounting_external_stats
+#: field:mrp.production.create.stats.wizard,workers:0
+#: field:mrp.production.stats,workers:0
 #: field:mrp.production.stats.mixed,workers:0
-msgid "Workers *"
-msgstr "Addetti *"
+msgid "Workers"
+msgstr "Workers"

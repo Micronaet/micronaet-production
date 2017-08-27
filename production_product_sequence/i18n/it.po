@@ -1,0 +1,167 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* production_product_sequence
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-07-27 16:31+0000\n"
+"PO-Revision-Date: 2017-08-16 15:50+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: production_product_sequence
+#: view:mrp.production:production_product_sequence.default_mrp_production_form_sequence_view
+msgid "All line of this block will be unlinked, confirm?"
+msgstr "Tutte le righe di questo blocco saranno scollegate, confermi?"
+
+#. module: production_product_sequence
+#: code:addons/production_product_sequence/sequence.py:66
+#, python-format
+msgid "Codice prodotto non presente: %s"
+msgstr "Codice prodotto non presente: %s"
+
+#. module: production_product_sequence
+#: field:mrp.production.sequence,create_uid:0
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: production_product_sequence
+#: field:mrp.production.sequence,create_date:0
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: production_product_sequence
+#: view:mrp.production:production_product_sequence.default_mrp_production_form_sequence_view
+msgid "Force order"
+msgstr "Forza ordinamento"
+
+#. module: production_product_sequence
+#: view:mrp.production:production_product_sequence.default_mrp_production_form_sequence_view
+msgid "Free all block"
+msgstr "Libera tutto il blocco"
+
+#. module: production_product_sequence
+#: field:mrp.production.sequence,id:0
+msgid "ID"
+msgstr "ID"
+
+#. module: production_product_sequence
+#: field:mrp.production.sequence,write_uid:0
+msgid "Last Updated by"
+msgstr "Aggiornato da"
+
+#. module: production_product_sequence
+#: field:mrp.production.sequence,write_date:0
+msgid "Last Updated on"
+msgstr "Aggiornato il"
+
+#. module: production_product_sequence
+#: view:mrp.production:production_product_sequence.default_mrp_production_form_sequence_view
+msgid "Load list"
+msgstr "Lista carico"
+
+#. module: production_product_sequence
+#: field:mrp.production.sequence,mrp_id:0
+msgid "MRP order"
+msgstr "Ordine di produzione"
+
+#. module: production_product_sequence
+#: model:ir.model,name:production_product_sequence.model_mrp_production_sequence
+msgid "MRP production sequence"
+msgstr "Sequenze produzioni"
+
+#. module: production_product_sequence
+#: model:ir.model,name:production_product_sequence.model_mrp_production
+msgid "Manufacturing Order"
+msgstr "Ordine di Produzione"
+
+#. module: production_product_sequence
+#: view:mrp.production:production_product_sequence.default_mrp_production_form_sequence_view
+msgid "Order lines"
+msgstr "Righe ordine"
+
+#. module: production_product_sequence
+#: field:mrp.production,sequence_mode:0
+msgid "Order mode"
+msgstr "Modalità ordinamento"
+
+#. module: production_product_sequence
+#: field:mrp.production.sequence,name:0
+msgid "Parent"
+msgstr "Padre"
+
+#. module: production_product_sequence
+#: selection:mrp.production,sequence_mode:0
+msgid "Parent mode (XXX..........)"
+msgstr "Modalità padre (XXX..........)"
+
+#. module: production_product_sequence
+#: field:mrp.production,sequence_ids:0
+msgid "Parent order"
+msgstr "Ordine padre"
+
+#. module: production_product_sequence
+#: selection:mrp.production,sequence_mode:0
+msgid "Parent-Frame mode (XXX...XX.....)"
+msgstr "Modalità Padre-Telaio (XXX...XX.....)"
+
+#. module: production_product_sequence
+#: code:addons/production_product_sequence/sequence.py:65
+#, python-format
+msgid "Product code"
+msgstr "Codice prodotto"
+
+#. module: production_product_sequence
+#: field:mrp.production.sequence,total:0
+msgid "Quantity"
+msgstr "Quantità"
+
+#. module: production_product_sequence
+#: view:mrp.production:production_product_sequence.default_mrp_production_form_sequence_view
+#: field:mrp.production.sequence,sequence:0
+msgid "Sequence"
+msgstr "Sequenza"
+
+#. module: production_product_sequence
+#: code:addons/production_product_sequence/sequence.py:118
+#, python-format
+msgid "Sequence error"
+msgstr "Errore sequenza"
+
+#. module: production_product_sequence
+#: view:mrp.production:production_product_sequence.default_mrp_production_form_sequence_view
+msgid "Sequence from parent"
+msgstr "Sequenza da padre"
+
+#. module: production_product_sequence
+#: view:mrp.production:production_product_sequence.default_mrp_production_form_sequence_view
+msgid "Sequence:"
+msgstr "Sequenza:"
+
+#. module: production_product_sequence
+#: help:mrp.production,sequence_ids:0
+msgid ""
+"Set order for parent code and after confirm with button for all sale order "
+"line"
+msgstr ""
+"Imposta ordinamento per codice padre e, dopo conferma con bottone, per tutte "
+"le righe ordine"
+
+#. module: production_product_sequence
+#: view:mrp.production:production_product_sequence.default_mrp_production_form_sequence_view
+msgid "Sort operation:"
+msgstr "Operazione ordinamento:"
+
+#. module: production_product_sequence
+#: code:addons/production_product_sequence/sequence.py:119
+#, python-format
+msgid "Unmanage sequence: %s"
+msgstr "Sequenza non gestita: %s"

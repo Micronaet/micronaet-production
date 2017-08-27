@@ -1,19 +1,42 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-#	* production_working_bom
+# 	* production_working_bom
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-10 07:40+0000\n"
-"PO-Revision-Date: 2015-03-10 09:00+0100\n"
-"Last-Translator: Nicola Riolini <nicola.riolini@gmail.com>\n"
+"POT-Creation-Date: 2017-07-27 16:31+0000\n"
+"PO-Revision-Date: 2017-08-16 15:51+0100\n"
+"Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: production_working_bom
+#: field:res.company,employee:0
+msgid "# employee"
+msgstr "# impiegati"
+
+#. module: production_working_bom
+#: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
+msgid "# lav."
+msgstr "# lav."
+
+#. module: production_working_bom
+#: code:addons/production_working_bom/production.py:496
+#, python-format
+msgid "Add lavoration to BOM!"
+msgstr "Aggiungi lavorazione alla DB!"
+
+#. module: production_working_bom
+#: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
+msgid "BOM H."
+msgstr "Ore DB"
 
 #. module: production_working_bom
 #: model:ir.model,name:production_working_bom.model_mrp_bom_lavoration
@@ -21,9 +44,22 @@ msgid "BOM Lavoration"
 msgstr "Distinta base di lavorazione"
 
 #. module: production_working_bom
+#: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
+msgid "Block pz."
+msgstr "Pz. blocco"
+
+#. module: production_working_bom
 #: view:mrp.production.status.wizard:production_working_bom.mrp_production_status_wizard
 msgid "Cancel"
 msgstr "Annulla"
+
+#. module: production_working_bom
+#: code:addons/production_working_bom/production.py:491
+#, python-format
+msgid "Cannot calculate item x hour or total durationcheck parameters"
+msgstr ""
+"Non è possibile calcolare articoli per ora o totale durata, controllare i "
+"parametri"
 
 #. module: production_working_bom
 #: model:ir.model,name:production_working_bom.model_res_company
@@ -31,11 +67,71 @@ msgid "Companies"
 msgstr "Aziende"
 
 #. module: production_working_bom
-#: code:addons/production_working_bom/production.py:204
-#: code:addons/production_working_bom/production.py:206
+#: field:mrp.production.status.wizard,create_uid:0
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: production_working_bom
+#: field:mrp.production.status.wizard,create_date:0
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: production_working_bom
+#: field:mrp.production.status.wizard,days:0
+msgid "Days from today"
+msgstr "Days from today"
+
+#. module: production_working_bom
+#: field:mrp.production.workcenter.line,duration:0
+msgid "Duration"
+msgstr "Duration"
+
+#. module: production_working_bom
+#: help:mrp.production.workcenter.line,duration:0
+msgid "Duration in hour:minute for lavoration of quantity piece"
+msgstr "Duration in hour:minute for lavoration of quantity piece"
+
+#. module: production_working_bom
+#: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
+msgid "Empl."
+msgstr "Empl."
+
+#. module: production_working_bom
+#: field:mrp.production,worker_ids:0
+#: field:mrp.production.workcenter.line,worker_ids:0
+msgid "Employee"
+msgstr "Employee"
+
+#. module: production_working_bom
+#: code:addons/production_working_bom/production.py:293
+#: code:addons/production_working_bom/production.py:400
+#: code:addons/production_working_bom/production.py:467
+#: code:addons/production_working_bom/production.py:470
+#: code:addons/production_working_bom/production.py:490
+#: code:addons/production_working_bom/production.py:495
 #, python-format
 msgid "Error"
 msgstr "Errore"
+
+#. module: production_working_bom
+#: field:res.company,extra_hour_day:0
+msgid "Extra hour day"
+msgstr "Extra hour day"
+
+#. module: production_working_bom
+#: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
+msgid "From"
+msgstr "From"
+
+#. module: production_working_bom
+#: field:mrp.bom.lavoration,schedule_from_date:0
+msgid "From date"
+msgstr "From date"
+
+#. module: production_working_bom
+#: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
+msgid "H. tot."
+msgstr "H. tot."
 
 #. module: production_working_bom
 #: view:website:production_working_bom.report_status_hour
@@ -48,9 +144,36 @@ msgid "H/m:"
 msgstr "H/m:"
 
 #. module: production_working_bom
+#: field:mrp.production.status.wizard,id:0
+#: field:report.production_working_bom.report_status_hour,id:0
+msgid "ID"
+msgstr "ID"
+
+#. module: production_working_bom
+#: field:mrp.production.status.wizard,write_uid:0
+msgid "Last Updated by"
+msgstr "Last Updated by"
+
+#. module: production_working_bom
+#: field:mrp.production.status.wizard,write_date:0
+msgid "Last Updated on"
+msgstr "Last Updated on"
+
+#. module: production_working_bom
 #: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
+#: field:mrp.production,lavoration_ids:0
 msgid "Lavoration"
 msgstr "Lavorazione"
+
+#. module: production_working_bom
+#: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
+msgid "Lavoration blocks:"
+msgstr "Lavoration blocks:"
+
+#. module: production_working_bom
+#: field:mrp.production.workcenter.line,lavoration_qty:0
+msgid "Lavoration qty"
+msgstr "Lavoration qty"
 
 #. module: production_working_bom
 #: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
@@ -58,9 +181,19 @@ msgid "Lavorations"
 msgstr "Lavorazioni"
 
 #. module: production_working_bom
+#: field:mrp.production.workcenter.line,level:0
+msgid "Level"
+msgstr "Level"
+
+#. module: production_working_bom
 #: view:website:production_working_bom.report_status_hour
 msgid "Linee"
 msgstr "Linee"
+
+#. module: production_working_bom
+#: field:mrp.production.workcenter.line,lavoration_id:0
+msgid "Linked lavoration"
+msgstr "Linked lavoration"
 
 #. module: production_working_bom
 #: model:ir.model,name:production_working_bom.model_mrp_production
@@ -68,21 +201,64 @@ msgid "Manufacturing Order"
 msgstr "Ordine di Produzione"
 
 #. module: production_working_bom
+#: field:mrp.bom.lavoration,master:0
+msgid "Master"
+msgstr "Master"
+
+#. module: production_working_bom
 #: model:ir.actions.act_window,name:production_working_bom.mrp_production_status_wizard_action
 msgid "Material status wizard"
 msgstr "Wizard stato materiali"
 
 #. module: production_working_bom
-#: code:addons/production_working_bom/production.py:206
+#: help:res.company,employee:0
+msgid "Medium number of employee this company for work"
+msgstr "Medium number of employee this company for work"
+
+#. module: production_working_bom
+#: help:mrp.production.status.wizard,month_window:0
+msgid ""
+"Month back for medium production monthly index (Kg / month of prime material)"
+msgstr ""
+"Month back for medium production monthly index (Kg / month of prime material)"
+
+#. module: production_working_bom
+#: code:addons/production_working_bom/production.py:470
 #, python-format
 msgid "No start date for schedule!"
 msgstr "Nessuna data inizio per scedulazione!"
 
 #. module: production_working_bom
-#: code:addons/production_working_bom/production.py:204
+#: code:addons/production_working_bom/production.py:467
 #, python-format
 msgid "No work hour type setted!"
 msgstr "Nessun orario lavorativo impostato"
+
+#. module: production_working_bom
+#: code:addons/production_working_bom/production.py:294
+#, python-format
+msgid "No workhour time planned!"
+msgstr "No workhour time planned!"
+
+#. module: production_working_bom
+#: help:res.company,extra_hour_day:0
+msgid "Normal extra work for one man in a day"
+msgstr "Normal extra work for one man in a day"
+
+#. module: production_working_bom
+#: help:res.company,work_hour_day:0
+msgid "Normal work hour for one man in a day"
+msgstr "Normal work hour for one man in a day"
+
+#. module: production_working_bom
+#: field:mrp.production.status.wizard,negative:0
+msgid "Only negative"
+msgstr "Only negative"
+
+#. module: production_working_bom
+#: field:mrp.production.status.wizard,active:0
+msgid "Only record with data"
+msgstr "Only record with data"
 
 #. module: production_working_bom
 #: view:mrp.production.workcenter.line:production_working_bom.mrp_production_workcenter_line_calendar_default_view
@@ -91,9 +267,20 @@ msgid "Operations"
 msgstr "Lavorazioni"
 
 #. module: production_working_bom
+#: code:addons/production_working_bom/production.py:401
+#, python-format
+msgid "Parameter for creation not passed (mrp_data)"
+msgstr "Parameter for creation not passed (mrp_data)"
+
+#. module: production_working_bom
 #: view:res.company:production_working_bom.view_res_company_parameter_form
 msgid "Parameters"
 msgstr "Parametri"
+
+#. module: production_working_bom
+#: field:mrp.production.workcenter.line,phase_id:0
+msgid "Phase"
+msgstr "Phase"
 
 #. module: production_working_bom
 #: view:mrp.production.status.wizard:production_working_bom.mrp_production_status_wizard
@@ -117,7 +304,17 @@ msgid "Product status wizard"
 msgstr "Wizard stato prodotti"
 
 #. module: production_working_bom
-#: code:addons/production_working_bom/production.py:136
+#: field:mrp.bom.lavoration,production_id:0
+msgid "Production"
+msgstr "Production"
+
+#. module: production_working_bom
+#: field:mrp.bom.lavoration,production_bom_id:0
+msgid "Production BOM"
+msgstr "Production BOM"
+
+#. module: production_working_bom
+#: code:addons/production_working_bom/production.py:215
 #, python-format
 msgid "Production elements"
 msgstr "Elementi produzione"
@@ -129,14 +326,19 @@ msgid "Production schedulation"
 msgstr "Schedulazione produzione"
 
 #. module: production_working_bom
-#: model:ir.model,name:production_working_bom.model_mrp_prouction_schedulation_wizard
-msgid "Production schedule wizard"
-msgstr "Wizard Schedula produzione"
+#: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
+msgid "Pz/H"
+msgstr "Pz/H"
+
+#. module: production_working_bom
+#: help:mrp.production.workcenter.line,lavoration_qty:0
+msgid "Quantity lavoration"
+msgstr "Quantity lavoration"
 
 #. module: production_working_bom
 #: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
-msgid "Re-schedule process"
-msgstr "Rischedula processo"
+msgid "Re-schedule all"
+msgstr "Re-schedule all"
 
 #. module: production_working_bom
 #: model:ir.actions.act_window,name:production_working_bom.action_res_company_parameter
@@ -150,9 +352,68 @@ msgid "Scheduled"
 msgstr "Schedulato"
 
 #. module: production_working_bom
+#: help:mrp.bom.lavoration,schedule_from_date:0
+msgid "Scheduled from date to start lavorations"
+msgstr "Scheduled from date to start lavorations"
+
+#. module: production_working_bom
+#: field:mrp.production,scheduled_lavoration_ids:0
+msgid "Scheduled lavoration"
+msgstr "Scheduled lavoration"
+
+#. module: production_working_bom
+#: field:mrp.bom.lavoration,scheduled_ids:0
+msgid "Scheduled lavorations"
+msgstr "Scheduled lavorations"
+
+#. module: production_working_bom
+#: field:product.product,show_in_status:0
+msgid "Show in status report"
+msgstr "Show in status report"
+
+#. module: production_working_bom
+#: help:mrp.production.status.wizard,active:0
+msgid "Show only product and material with movement"
+msgstr "Show only product and material with movement"
+
+#. module: production_working_bom
+#: help:mrp.production.status.wizard,negative:0
+msgid "Show only product and material with negative value in range"
+msgstr "Show only product and material with negative value in range"
+
+#. module: production_working_bom
+#: field:res.company,start_hour:0
+msgid "Start hour"
+msgstr "Start hour"
+
+#. module: production_working_bom
+#: help:res.company,start_hour:0
+msgid "Start hour for create working process"
+msgstr "Start hour for create working process"
+
+#. module: production_working_bom
+#: field:mrp.production.status.wizard,month_window:0
+msgid "Statistic production window "
+msgstr "Statistic production window "
+
+#. module: production_working_bom
 #: model:ir.actions.report.xml,name:production_working_bom.action_report_status_hour
 msgid "Status hour"
 msgstr "Stato ore"
+
+#. module: production_working_bom
+#: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
+msgid ""
+"This delete all lavoration and phase and recreate with date and workhour "
+"setted up, confirm?"
+msgstr ""
+"This delete all lavoration and phase and recreate with date and workhour "
+"setted up, confirm?"
+
+#. module: production_working_bom
+#: help:mrp.bom.lavoration,master:0
+msgid "This lavoration is a master block, else original create"
+msgstr "This lavoration is a master block, else original create"
 
 #. module: production_working_bom
 #: view:mrp.production.workcenter.line:production_working_bom.mrp_production_workcenter_line_form_embedded_view
@@ -160,19 +421,70 @@ msgid "Total"
 msgstr "Total"
 
 #. module: production_working_bom
+#: help:mrp.bom.lavoration,total_number:0
+msgid "Total # of child lavorarion for this operation phase"
+msgstr "Total # of child lavorarion for this operation phase"
+
+#. module: production_working_bom
+#: field:mrp.bom.lavoration,total_duration:0
+msgid "Total duration"
+msgstr "Total duration"
+
+#. module: production_working_bom
+#: field:mrp.bom.lavoration,total_number:0
+msgid "Total number"
+msgstr "Total number"
+
+#. module: production_working_bom
+#: field:mrp.bom.lavoration,total_product:0
+msgid "Total product"
+msgstr "Total product"
+
+#. module: production_working_bom
+#: help:mrp.bom.lavoration,total_product:0
+msgid "Total quantity of product for this operation phase"
+msgstr "Total quantity of product for this operation phase"
+
+#. module: production_working_bom
+#: help:mrp.bom.lavoration,total_duration:0
+msgid "Total time of this operation phase"
+msgstr "Total time of this operation phase"
+
+#. module: production_working_bom
 #: view:website:production_working_bom.report_status_hour
 msgid "Totale H/u"
 msgstr "Totale H/u"
 
 #. module: production_working_bom
-#: model:ir.model,name:production_working_bom.model_mrp_workcenter
-msgid "Work Center"
-msgstr "Centro di lavoro"
+#: field:mrp.production.workcenter.line,updated:0
+msgid "Updated"
+msgstr "Updated"
+
+#. module: production_working_bom
+#: field:mrp.production.status.wizard,with_medium:0
+msgid "With m(x)"
+msgstr "With m(x)"
 
 #. module: production_working_bom
 #: model:ir.model,name:production_working_bom.model_mrp_production_workcenter_line
 msgid "Work Order"
 msgstr "Ordine di Lavoro"
+
+#. module: production_working_bom
+#: field:mrp.bom.lavoration,workhour_id:0
+msgid "Work hour"
+msgstr "Work hour"
+
+#. module: production_working_bom
+#: field:res.company,work_hour_day:0
+msgid "Work hour day"
+msgstr "Work hour day"
+
+#. module: production_working_bom
+#: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
+#: field:mrp.production.workcenter.line,workers:0
+msgid "Workers"
+msgstr "Workers"
 
 #. module: production_working_bom
 #: view:mrp.production.workcenter.line:production_working_bom.mrp_production_workcenter_line_form_embedded_view
@@ -181,7 +493,28 @@ msgstr "context.get('embedded',False)"
 
 #. module: production_working_bom
 #: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
+msgid "duration"
+msgstr "duration"
+
+#. module: production_working_bom
+#: help:mrp.production.status.wizard,with_medium:0
+msgid ""
+"if check in report there's production m(x), if not check report is more fast"
+msgstr ""
+"if check in report there's production m(x), if not check report is more fast"
+
+#. module: production_working_bom
+#: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
+msgid "lavoration"
+msgstr "lavoration"
+
+#. module: production_working_bom
+#: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
+msgid "quantity"
+msgstr "quantity"
+
+#. module: production_working_bom
+#: view:mrp.production:production_working_bom.mrp_production_lavoration_form_view
 #: view:mrp.production.workcenter.line:production_working_bom.mrp_production_workcenter_line_form_embedded_view
 msgid "total"
 msgstr "totale"
-

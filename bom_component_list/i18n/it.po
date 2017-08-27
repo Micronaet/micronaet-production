@@ -1,0 +1,56 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* bom_component_list
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-07-27 16:23+0000\n"
+"PO-Revision-Date: 2017-07-27 18:44+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: bom_component_list
+#: code:addons/bom_component_list/component.py:56
+#: view:mrp.bom.line:bom_component_list.view_bom_component_line_search
+#, python-format
+msgid "BOM"
+msgstr "DB"
+
+#. module: bom_component_list
+#: model:ir.actions.act_window,name:bom_component_list.action_bom_component_line_form
+#: model:ir.ui.menu,name:bom_component_list.menu_action_bom_component_line_form
+msgid "BOM component"
+msgstr "Componente DB"
+
+#. module: bom_component_list
+#: view:mrp.bom.line:bom_component_list.view_bom_component_line_search
+msgid "BOM line search"
+msgstr "Ricerca dettagli DB"
+
+#. module: bom_component_list
+#: view:mrp.bom.line:bom_component_list.view_bom_component_line_tree
+msgid "Componenti"
+msgstr "Componenti"
+
+#. module: bom_component_list
+#: view:mrp.bom.line:bom_component_list.view_bom_component_line_search
+msgid "Group By..."
+msgstr "Raggruppa per..."
+
+#. module: bom_component_list
+#: view:mrp.bom.line:bom_component_list.view_bom_component_line_tree
+msgid "Open BOM"
+msgstr "Apri DB"
+
+#. module: bom_component_list
+#: view:mrp.bom.line:bom_component_list.view_bom_component_line_search
+msgid "Product"
+msgstr "Prodotto"

@@ -1,19 +1,21 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-#	* working_bom
+# 	* working_bom
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-10 07:39+0000\n"
-"PO-Revision-Date: 2015-03-10 09:01+0100\n"
-"Last-Translator: Nicola Riolini <nicola.riolini@gmail.com>\n"
+"POT-Creation-Date: 2017-07-27 16:32+0000\n"
+"PO-Revision-Date: 2017-08-16 17:13+0100\n"
+"Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
 
 #. module: working_bom
 #: field:mrp.bom.lavoration,bom_id:0
@@ -21,9 +23,16 @@ msgid "BOM"
 msgstr "Distinta base"
 
 #. module: working_bom
+#: field:mrp.bom.lavoration,duration:0
+msgid "BOM Duration"
+msgstr "Durata DB"
+
+#. module: working_bom
 #: model:ir.model,name:working_bom.model_mrp_bom_lavoration
 #: view:mrp.bom.lavoration:working_bom.mrp_bom_lavoration_form_view
 #: view:mrp.bom.lavoration:working_bom.mrp_bom_lavoration_tree_view
+#: view:mrp.bom.lavoration.phase:working_bom.mrp_bom_lavoration_phase_form_view
+#: view:mrp.bom.lavoration.phase:working_bom.mrp_bom_lavoration_phase_tree_view
 msgid "BOM Lavoration"
 msgstr "Distinta base di lavorazione"
 
@@ -38,21 +47,25 @@ msgid "Bill of Material"
 msgstr "Distinta Base"
 
 #. module: working_bom
+#: field:mrp.bom.lavoration,create_date:0
+msgid "Create date"
+msgstr "Data creazione"
+
+#. module: working_bom
 #: field:mrp.bom.lavoration,create_uid:0
 #: field:mrp.bom.lavoration.phase,create_uid:0
 msgid "Created by"
 msgstr "Creato da"
 
 #. module: working_bom
-#: field:mrp.bom.lavoration,create_date:0
 #: field:mrp.bom.lavoration.phase,create_date:0
 msgid "Created on"
 msgstr "Creato il"
 
 #. module: working_bom
-#: field:mrp.bom.lavoration.phase,line_id:0
+#: field:mrp.bom.lavoration.phase,workcenter_id:0
 msgid "Default line"
-msgstr "Linea predefinita"
+msgstr "Riga predefinita"
 
 #. module: working_bom
 #: field:mrp.bom.lavoration,workers:0
@@ -60,14 +73,9 @@ msgid "Default workers"
 msgstr "Addetti predefiniti"
 
 #. module: working_bom
-#: field:mrp.bom.lavoration,duration:0
-msgid "Duration"
-msgstr "Durata"
-
-#. module: working_bom
 #: help:mrp.bom.lavoration,duration:0
-msgid "Duration in hour:minute for lavoration of quantity piece"
-msgstr "Durata in ore:minuti per produrre la quantità di pezzi indicata"
+msgid "Duration in hour:minute for fixed lavoration"
+msgstr "Durata in ore:minuti per lavorazioni fisse"
 
 #. module: working_bom
 #: field:mrp.bom.lavoration,fixed:0
@@ -75,15 +83,24 @@ msgid "Fixed"
 msgstr "Fisso"
 
 #. module: working_bom
+#: help:mrp.bom.lavoration,fixed:0
+msgid "Fixed time, not function of total items"
+msgstr "Tempo fisso, non in funzione del numero di pezzi"
+
+#. module: working_bom
 #: field:mrp.bom,has_lavoration:0
 msgid "Has lavoration"
 msgstr "Ha la lavorazione"
 
 #. module: working_bom
-#: field:mrp.bom.lavoration,id:0
-#: field:mrp.bom.lavoration.phase,id:0
+#: field:mrp.bom.lavoration,id:0 field:mrp.bom.lavoration.phase,id:0
 msgid "ID"
 msgstr "ID"
+
+#. module: working_bom
+#: field:mrp.bom.lavoration,item_hour:0
+msgid "Item x hour"
+msgstr "Articoli per ora"
 
 #. module: working_bom
 #: field:mrp.bom.lavoration,write_uid:0
@@ -109,36 +126,36 @@ msgid "Level"
 msgstr "Livello"
 
 #. module: working_bom
-#: field:mrp.bom.lavoration,line_id:0
+#: field:mrp.bom.lavoration,workcenter_id:0
 msgid "Line"
-msgstr "Linea"
+msgstr "Riga"
 
 #. module: working_bom
-#: code:addons/working_bom/bom.py:75
+#: code:addons/working_bom/bom.py:80
 #, python-format
 msgid "No phase"
 msgstr "Nessuna fase"
 
 #. module: working_bom
+#: view:mrp.bom.lavoration.phase:working_bom.mrp_bom_lavoration_phase_form_view
 #: field:mrp.bom.lavoration.phase,note:0
 msgid "Note"
 msgstr "Note"
 
 #. module: working_bom
-#: help:mrp.bom.lavoration,quantity:0
-msgid "Number of piece producted in duration time"
-msgstr "Numero di pezzi prodotti nella durata di tempo"
+#: help:mrp.bom.lavoration,item_hour:0
+msgid "Number of item per hour, for possibile recalc operation"
+msgstr "Numero articoli per ora, per possibile operazione di ricalc."
 
 #. module: working_bom
-#: field:mrp.bom.lavoration,phase_id:0
-#: field:mrp.bom.lavoration.phase,name:0
+#: field:mrp.bom.lavoration,phase_id:0 field:mrp.bom.lavoration.phase,name:0
 msgid "Phase"
 msgstr "Fase"
 
 #. module: working_bom
-#: field:mrp.bom.lavoration,quantity:0
-msgid "Quantity"
-msgstr "Quantità"
+#: field:mrp.bom.lavoration.phase,production_phase:0
+msgid "Production phase"
+msgstr "Fase produzione"
 
 #. module: working_bom
 #: help:mrp.bom.lavoration.phase,unload_material:0
@@ -150,3 +167,12 @@ msgstr "Questa fase scarica materiale dal magazzino"
 msgid "Unload material"
 msgstr "Scarica materiale"
 
+#. module: working_bom
+#: view:mrp.bom:working_bom.view_mrp_bom_filter_family
+msgid "With lavoration"
+msgstr "Con lavorazione"
+
+#. module: working_bom
+#: view:mrp.bom:working_bom.view_mrp_bom_filter_family
+msgid "Without lavoration"
+msgstr "Senza lavorazione"

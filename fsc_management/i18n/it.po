@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-25 15:27+0000\n"
-"PO-Revision-Date: 2017-07-25 17:37+0100\n"
+"POT-Creation-Date: 2017-07-27 16:25+0000\n"
+"PO-Revision-Date: 2017-08-05 22:24+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -150,6 +150,12 @@ msgstr "Fattura"
 
 #. module: fsc_management
 #: view:product.product.wood:fsc_management.view_product_product_wood_form
+#: field:product.product.wood,fixed_code:0
+msgid "Fixed code"
+msgstr "Codice fisso"
+
+#. module: fsc_management
+#: view:product.product.wood:fsc_management.view_product_product_wood_form
 msgid "For product (start code)"
 msgstr "Per prodotto (codice partenza)"
 
@@ -188,6 +194,11 @@ msgid "Last Updated on"
 msgstr "Ultimo aggiornamento il"
 
 #. module: fsc_management
+#: help:product.product.wood,fixed_code:0
+msgid "List of fixed code, ex.:127TXANBIBE|128TXANBIBE"
+msgstr "Lista codici fissi, es.:127TXANBIBE|128TXANBIBE"
+
+#. module: fsc_management
 #: field:product.product.wood,mode:0
 msgid "Mode"
 msgstr "Modalità"
@@ -214,34 +225,13 @@ msgstr "PEFC"
 
 #. module: fsc_management
 #: view:product.product:fsc_management.view_product_product_fsc_search
-#: field:res.company,pefc_certified:0
 msgid "PEFC Certified"
 msgstr "Certificato PEFC"
-
-#. module: fsc_management
-#: field:res.company,pefc_code:0
-msgid "PEFC Code"
-msgstr "Codice PEFC"
-
-#. module: fsc_management
-#: field:res.company,pefc_logo:0
-msgid "PEFC Logo"
-msgstr "Logo PEFC"
 
 #. module: fsc_management
 #: view:product.product:fsc_management.view_pfc_product_tree
 msgid "PEFC PFC Product"
 msgstr "Prodotto PEFC PFC"
-
-#. module: fsc_management
-#: help:res.company,pefc_logo:0
-msgid "PEFC document logo bottom part"
-msgstr "Logo per il pié pagina dei documenti PEFC"
-
-#. module: fsc_management
-#: field:res.company,pefc_from_date:0
-msgid "PEFC from date"
-msgstr "PEFC dalla data"
 
 #. module: fsc_management
 #: field:res.company,xfc_text_ids:0

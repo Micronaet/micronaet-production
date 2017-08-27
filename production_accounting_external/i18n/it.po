@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-07 10:47+0000\n"
-"PO-Revision-Date: 2017-06-07 13:48+0100\n"
+"POT-Creation-Date: 2017-07-27 16:31+0000\n"
+"PO-Revision-Date: 2017-08-16 15:36+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -104,13 +104,13 @@ msgid ""
 "        "
 msgstr ""
 "<p class=\"oe_view_nocontent_create\">\n"
-"                Click to create a quotation that can be converted into a "
-"sales\n"
-"                order.\n"
+"                Cliccare per creare una offerta che viene poi convertita in "
+"ordine\n"
+"                di vendita.\n"
 "            </p><p>\n"
-"                Odoo will help you efficiently handle the complete sales "
-"flow:\n"
-"                quotation, sales order, delivery, invoicing and payment.\n"
+"                Odoo vi aiuterà a gestire con efficienza il flusso di ogni "
+"ordine:\n"
+"                offerta, ordine, consegna, fatturazione e pagamento.\n"
 "            </p>\n"
 "        "
 
@@ -161,7 +161,7 @@ msgstr ""
 "                     }\n"
 "                </style>\n"
 "                <table class='table_status'>\n"
-"                <tr><th>Date</th>\n"
+"                <tr><th>Data</th>\n"
 "                    <th>Prod.</th>\n"
 "                    <th>Q.</th>                    \n"
 "                </tr>"
@@ -291,8 +291,8 @@ msgstr "Annulla"
 
 #. module: production_accounting_external
 #: selection:mrp.production.report.wizard,mode:0
-msgid "Clean from delivery"
-msgstr "Pulito da consegna"
+msgid "Clean from delivery and maked"
+msgstr "Pulisci da consegne e produzioni fatte"
 
 #. module: production_accounting_external
 #: selection:sale.order.line,sync_state:0
@@ -581,7 +581,7 @@ msgstr "Obbl."
 #. module: production_accounting_external
 #: view:sale.order.line:production_accounting_external.production_sale_order_line_tree_view
 msgid "Mand."
-msgstr "Obblig."
+msgstr "Fix"
 
 #. module: production_accounting_external
 #: view:sale.order.line.previsional:production_accounting_external.sale_order_line_previsional_tree_view
@@ -606,7 +606,7 @@ msgstr "Scadenza massima trovata nella riga ordine!"
 #. module: production_accounting_external
 #: field:product.template,maximum_qty:0
 msgid "Max. quantity"
-msgstr "Max. quantity"
+msgstr "Quantità massima"
 
 #. module: production_accounting_external
 #: help:product.template,maximum_qty:0
@@ -679,7 +679,7 @@ msgstr "Nessuna distinta base o riga trovata!"
 #: code:addons/production_accounting_external/accounting.py:600
 #, python-format
 msgid "No ref."
-msgstr "No ref."
+msgstr "No rif."
 
 #. module: production_accounting_external
 #: selection:mrp.production.report.wizard,mode:0
@@ -741,7 +741,7 @@ msgstr "Righe OC"
 #. module: production_accounting_external
 #: model:ir.ui.menu,name:production_accounting_external.menu_sale_order_line_m1_mandatory
 msgid "OC mandatory"
-msgstr "OC tassativi"
+msgstr "OC fix"
 
 #. module: production_accounting_external
 #: field:sale.order.line,mrp_similar_info:0
@@ -772,7 +772,7 @@ msgstr "Operazione:"
 #: code:addons/production_accounting_external/accounting.py:420
 #, python-format
 msgid "Order %s\n"
-msgstr "ORdine %s\n"
+msgstr "Ordine %s\n"
 
 #. module: production_accounting_external
 #: field:sale.order.line,order_confirmed:0
@@ -915,17 +915,17 @@ msgstr "Produzione"
 #. module: production_accounting_external
 #: model:ir.actions.report.xml,name:production_accounting_external.aeroo_production_cut_report_id
 msgid "Production Cut Report"
-msgstr "Report produzione per taglio"
+msgstr "Stampa produzione per taglio"
 
 #. module: production_accounting_external
 #: model:ir.actions.report.xml,name:production_accounting_external.aeroo_production_report_id
 msgid "Production Report"
-msgstr "Report produzione"
+msgstr "Stampa produzione"
 
 #. module: production_accounting_external
 #: model:ir.actions.report.xml,name:production_accounting_external.aeroo_production_report_check_id
 msgid "Production Report check"
-msgstr "Report controllo produzione"
+msgstr "Stampa controllo produzione"
 
 #. module: production_accounting_external
 #: help:mrp.production.assign.wizard,used_mrp_id:0
@@ -940,7 +940,7 @@ msgstr "Produzione aperta sulla linea di questa produzione"
 #. module: production_accounting_external
 #: model:ir.actions.report.xml,name:production_accounting_external.aeroo_production_remain_report_id
 msgid "Production remain Report"
-msgstr "Report produzione rimanente"
+msgstr "Stampa produzione rimanente"
 
 #. module: production_accounting_external
 #: model:ir.model,name:production_accounting_external.model_mrp_production_report_wizard
@@ -992,11 +992,6 @@ msgstr "Rimanente"
 #: field:mrp.production.report.wizard,mode:0
 msgid "Report mode"
 msgstr "Modalità report"
-
-#. module: production_accounting_external
-#: field:sale.order,residual_notified:0
-msgid "Residual notified by mail"
-msgstr "Residuo notificato per email"
 
 #. module: production_accounting_external
 #: model:ir.ui.menu,name:production_accounting_external.menu_base_sale_order_root

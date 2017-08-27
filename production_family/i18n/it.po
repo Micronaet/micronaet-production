@@ -1,19 +1,21 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-#	* production_family
+# 	* production_family
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-10 11:51+0000\n"
-"PO-Revision-Date: 2015-03-10 11:51+0000\n"
+"POT-Creation-Date: 2017-07-27 16:31+0000\n"
+"PO-Revision-Date: 2017-08-08 23:53+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
 
 #. module: production_family
 #: model:ir.model,name:production_family.model_mrp_bom
@@ -35,7 +37,6 @@ msgstr "Lista codici (divisi per |), es.: 001|002 per 001* e 002*"
 #: field:mrp.production.workcenter.line,family:0
 #: view:product.template:production_family.product_template_family_search_view
 #: field:product.template,family_id:0
-#: field:sale.order.line,family_id:0
 msgid "Family"
 msgstr "Famiglia"
 
@@ -45,14 +46,14 @@ msgid "Family list"
 msgstr "Lista famiglia"
 
 #. module: production_family
+#: view:mrp.bom:production_family.view_mrp_bom_filter_family
 #: view:product.template:production_family.product_template_family_search_view
 #: field:product.template,is_family:0
 msgid "Is family"
 msgstr "E' una famiglia"
 
 #. module: production_family
-#: field:mrp.bom,family:0
-#: field:mrp.production,family:0
+#: field:mrp.bom,family:0 field:mrp.production,family:0
 msgid "Is family BOM"
 msgstr "E' distinta base famiglia"
 
@@ -65,6 +66,11 @@ msgstr "E' un prodotto"
 #: model:ir.model,name:production_family.model_mrp_production
 msgid "Manufacturing Order"
 msgstr "Ordine di Produzione"
+
+#. module: production_family
+#: field:product.template,no_stock_operation:0
+msgid "No stock operation"
+msgstr "Nessuna operazione di magazzino"
 
 #. module: production_family
 #: help:product.template,family_id:0
@@ -82,12 +88,13 @@ msgid "Product family"
 msgstr "Famiglia prodotto"
 
 #. module: production_family
-#: model:ir.model,name:production_family.model_sale_order_line
-msgid "Sales Order Line"
-msgstr "Linea d'ordine di vendita"
+#: help:product.template,no_stock_operation:0
+msgid "Some production are a sort of order so no CL or SL"
+msgstr "Alcuni produzioni sono un tipo di ordine così ne CL o SL"
 
 #. module: production_family
 #: view:product.template:production_family.product_template_family_form_view
+#: view:product.template:production_family.product_template_family_tree_view
 msgid "Update product"
 msgstr "Aggiorna prodotti"
 
@@ -95,4 +102,3 @@ msgstr "Aggiorna prodotti"
 #: model:ir.model,name:production_family.model_mrp_production_workcenter_line
 msgid "Work Order"
 msgstr "Ordine di Lavoro"
-

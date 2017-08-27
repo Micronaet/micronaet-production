@@ -1,19 +1,27 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-#	* production_order_mandatory
+# 	* production_order_mandatory
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-10 07:33+0000\n"
-"PO-Revision-Date: 2015-03-11 16:42+0100\n"
-"Last-Translator: Nicola Riolini <nicola.riolini@gmail.com>\n"
+"POT-Creation-Date: 2017-07-27 16:31+0000\n"
+"PO-Revision-Date: 2017-08-08 23:55+0100\n"
+"Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: production_order_mandatory
+#: view:sale.order:production_order_mandatory.view_sale_order_mandatory_button_order_list_tree
+#: view:sale.order:production_order_mandatory.view_sale_order_mandatory_button_tree
+msgid "Fix"
+msgstr "Fisso"
 
 #. module: production_order_mandatory
 #: view:res.partner:production_order_mandatory.view_res_partner_deadline_mandatory
@@ -23,23 +31,22 @@ msgstr "Forza"
 #. module: production_order_mandatory
 #: view:sale.order.line:production_order_mandatory.view_sale_order_line_mandatory
 msgid "Mand."
-msgstr "Fix"
+msgstr "Fisso"
 
 #. module: production_order_mandatory
 #: view:sale.order.line:production_order_mandatory.view_sale_order_line_search_mandatory
 msgid "Mandatory"
-msgstr "Fix"
+msgstr "Fisso"
 
 #. module: production_order_mandatory
 #: field:res.partner,has_mandatory_delivery:0
 #: view:sale.order.line:production_order_mandatory.view_sale_order_line_search_mandatory
 #: field:sale.order.line,has_mandatory_delivery:0
 msgid "Mandatory delivery"
-msgstr "Consegna fix"
+msgstr "Consegna fissa"
 
 #. module: production_order_mandatory
 #: model:ir.model,name:production_order_mandatory.model_res_partner
-#: field:sale.order.line,partner_id:0
 msgid "Partner"
 msgstr "Partner"
 
@@ -59,3 +66,8 @@ msgstr "Linea d'ordine di vendita"
 msgid "This partner has always mandatory order"
 msgstr "Questo partner ha la consegna tassativa (fix)"
 
+#. module: production_order_mandatory
+#: view:sale.order:production_order_mandatory.view_sale_order_mandatory_button_order_list_tree
+#: view:sale.order:production_order_mandatory.view_sale_order_mandatory_button_tree
+msgid "Unfix"
+msgstr "Non fisso"
