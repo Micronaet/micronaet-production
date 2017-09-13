@@ -363,6 +363,118 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
             'target': 'self',
             }   
 
+    def action_print_inventory(self, cr, uid, ids, context=None):
+        ''' Event for button done
+        '''
+        if context is None: 
+            context = {}
+        
+        # Pool used:
+        product_pool = self.pool.get('product.product')
+        
+        # ---------------------------------------------------------------------
+        # Export XLSX file:
+        # ---------------------------------------------------------------------
+        xls_filename = '/tmp/fsc_pefc_inventory_report.xlsx'
+        _logger.info(
+            'Start FSC and PEFC inventory export on %s' % xls_filename)
+        
+        # Open file and write header
+        WB = xlsxwriter.Workbook(xls_filename)
+        WS_fsc = WB.add_worksheet(_('FSC'))
+        WS_pefc = WB.add_worksheet(_('PEFC'))
+
+        # Format:
+        format_title = WB.add_format({
+            'bold': True, 
+            'font_color': 'black',
+            'font_name': 'Arial',
+            'font_size': 10,
+            'align': 'center',
+            'valign': 'vcenter',
+            'bg_color': 'gray',
+            'border': 1,
+            'text_wrap': True,
+            })
+
+        format_text = WB.add_format({
+            'font_name': 'Arial',
+            'font_size': 9,
+            #'align': 'right',
+            #'bg_color': 'c1e7b3',
+            'border': 1,
+            #'num_format': '0.00',
+            })        
+        
+        header = [
+            _('Codice'),
+            _('Nome'),
+            _('Commento'),
+            _('Disponibilità'),
+           ]
+
+        # Column dimension:
+        for WS in (WS_fsc, WS_pefc):
+            WS.set_column(0, 0, 12)
+            WS.set_column(1, 1, 40)
+            WS.set_column(1, 1, 30)
+            WS.set_column(2, 2, 8)
+        
+        # Export Header:
+        self.xls_write_row(WS_fsc, 0, header, format_title)        
+        self.xls_write_row(WS_pefc, 0, header, format_title)        
+        
+        # Export data:
+        product_ids = product_pool.search(cr, uid, ['|', 
+                ('fsc_certified_id', '!=', False),
+                ('pefc_certified_id', '!=', False),                
+                ], order='default_code', context=context)
+                
+        _logger.info('Product find: [Tot: %s]' % len(product_ids))
+        i_fsc = 0
+        i_pefc = 0
+        for product in product_pool.browse(
+                cr, uid, product_ids, context=context):
+            data = [
+                product.default_code,
+                product.name,
+                False, # TODO replace (depend on certification)
+                product.mx_net_mrp_qty, 
+                ]
+
+            if product.fsc_certified_id:
+                i_fsc += 1
+                data[2] = product.fsc_certified_id.name
+                self.xls_write_row(WS_fsc, i_fsc, data, format_text)
+                
+            if product.pefc_certified_id:                    
+                i_pefc += 1
+                data[2] = product.pefc_certified_id.name                
+                self.xls_write_row(WS_pefc, i_pefc, data, format_text)
+
+        _logger.info('Totals: PEFC %s  FSC %s' % (i_pefc, i_fsc))
+        _logger.info('End inventory file export on %s' % xls_filename)
+        WB.close()
+
+        attachment_pool = self.pool.get('ir.attachment')
+        b64 = open(xls_filename, 'rb').read().encode('base64')
+        attachment_id = attachment_pool.create(cr, uid, {
+            'name': 'Wood Cert. inventory report',
+            'datas_fname': 'fsc_pefc_inventory_report.xlsx',
+            'type': 'binary',
+            'datas': b64,
+            'partner_id': 1,
+            'res_model': 'res.partner',
+            'res_id': 1,
+            }, context=context)
+        
+        return {
+            'type' : 'ir.actions.act_url',
+            'url': '/web/binary/saveas?model=ir.attachment&field=datas&'
+                'filename_field=datas_fname&id=%s' % attachment_id,
+            'target': 'self',
+            }
+
     _columns = {
         'partner_id': fields.many2one(
             'res.partner', 'Partner'),

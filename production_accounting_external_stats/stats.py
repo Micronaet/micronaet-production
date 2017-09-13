@@ -44,7 +44,7 @@ class MrpProductionStat(orm.Model):
         'workcenter_id': fields.many2one(
             'mrp.workcenter', 'Line', required=True), 
         'date': fields.date('Date', required=True),
-        'total': fields.integer('Total', required=True), 
+        'total': fields.integer('Total'),# Removed for line:, required=True),
         'workers': fields.integer('Workers'),
         'hour': fields.float('Tot. H'),
         'startup': fields.float('Start up time', digits=(16, 3)),     

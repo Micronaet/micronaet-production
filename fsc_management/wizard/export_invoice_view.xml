@@ -11,6 +11,7 @@
                        <button string="Cancel" special="cancel" />
                        <button name="action_print" string="Print invoice" type="object" icon="gtk-print" class="oe_highlight" />
                        <button name="action_print_bf" string="Print BF" type="object" icon="gtk-print" class="oe_highlight" />
+                       <button name="action_print_inventory" string="Print inventory" type="object" icon="gtk-print" class="oe_highlight" />
                    </header>                   
                    <group colspan="4" col="4">
                         <field name="partner_id" domain="[('customer', '=', True), ('is_company', '=', True), ('is_address', '=', False)]"/>
