@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-27 16:25+0000\n"
-"PO-Revision-Date: 2017-08-05 22:24+0100\n"
+"POT-Creation-Date: 2017-09-13 08:43+0000\n"
+"PO-Revision-Date: 2017-09-13 10:43+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -41,6 +41,18 @@ msgstr "Certif."
 #, python-format
 msgid "Cliente"
 msgstr "Cliente"
+
+#. module: fsc_management
+#: code:addons/fsc_management/wizard/export_invoice.py:410
+#, python-format
+msgid "Codice"
+msgstr "Codice"
+
+#. module: fsc_management
+#: code:addons/fsc_management/wizard/export_invoice.py:412
+#, python-format
+msgid "Commento"
+msgstr "Commento"
 
 #. module: fsc_management
 #: model:ir.model,name:fsc_management.model_res_company
@@ -85,6 +97,12 @@ msgid "Discount"
 msgstr "Sconto"
 
 #. module: fsc_management
+#: code:addons/fsc_management/wizard/export_invoice.py:413
+#, python-format
+msgid "Disponibilità"
+msgstr "Disponibilità"
+
+#. module: fsc_management
 #: view:res.company:fsc_management.view_fsc_company_certified_form
 #: view:res.company:fsc_management.view_fsc_company_certified_lite_form
 msgid "Document Note"
@@ -93,6 +111,7 @@ msgstr "Note documento"
 #. module: fsc_management
 #: code:addons/fsc_management/wizard/export_invoice.py:91
 #: code:addons/fsc_management/wizard/export_invoice.py:239
+#: code:addons/fsc_management/wizard/export_invoice.py:384
 #: selection:product.product.wood,mode:0
 #: view:res.company:fsc_management.view_fsc_company_certified_form
 #, python-format
@@ -140,7 +159,7 @@ msgstr "FSC testo"
 #. module: fsc_management
 #: field:res.company,xfc_document_note:0
 msgid "FSC, PEFC Document note"
-msgstr "FSC, PEFC Document note"
+msgstr "FSC, PEFC Note documento"
 
 #. module: fsc_management
 #: code:addons/fsc_management/wizard/export_invoice.py:118
@@ -211,6 +230,7 @@ msgstr "Nome"
 #. module: fsc_management
 #: code:addons/fsc_management/wizard/export_invoice.py:121
 #: code:addons/fsc_management/wizard/export_invoice.py:269
+#: code:addons/fsc_management/wizard/export_invoice.py:411
 #, python-format
 msgid "Nome"
 msgstr "Nome"
@@ -218,6 +238,7 @@ msgstr "Nome"
 #. module: fsc_management
 #: code:addons/fsc_management/wizard/export_invoice.py:92
 #: code:addons/fsc_management/wizard/export_invoice.py:240
+#: code:addons/fsc_management/wizard/export_invoice.py:385
 #: selection:product.product.wood,mode:0
 #, python-format
 msgid "PEFC"
@@ -262,6 +283,11 @@ msgstr "Stampa BF"
 
 #. module: fsc_management
 #: view:export.xlsx.fsc.report.wizard:fsc_management.print_report_fsc_pefc_wizard_view
+msgid "Print inventory"
+msgstr "Stampa inventario"
+
+#. module: fsc_management
+#: view:export.xlsx.fsc.report.wizard:fsc_management.print_report_fsc_pefc_wizard_view
 msgid "Print invoice"
 msgstr "Stampa fatture"
 
@@ -288,7 +314,7 @@ msgstr "Q."
 #: model:ir.actions.act_window,name:fsc_management.action_print_report_fsc_pefc_wizard
 #: model:ir.ui.menu,name:fsc_management.menu_print_report_fsc_pefc
 msgid "Report FSC PEFC wizard"
-msgstr "Wizard report FSC PEFC"
+msgstr "Wizard stampa FSC PEFC"
 
 #. module: fsc_management
 #: view:res.company:fsc_management.view_fsc_company_certified_form
