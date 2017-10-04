@@ -241,6 +241,7 @@
                     <group string="Order lines" colspan="4" col="4">
                         <!--<button name="force_production_sequence" string="Force order" type="object" />-->
                         <button name="close_all_production" type="object" string="All produced" icon="gtk-ok" />
+                        <button name="row_in_tree_view" string="Dettaglio righe" type="object" />
                         <!--<button name="accounting_sync" type="object" string="Accounting sync" icon="terp-gtk-jump-to-ltr" />-->
                         <newline />
                         <!--embed sale.order.line modified:-->

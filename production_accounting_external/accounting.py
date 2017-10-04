@@ -451,6 +451,34 @@ class MrpProduction(orm.Model):
         return self.write(cr, uid, ids, {
             'state': 'draft'}, context=context)
 
+    def row_in_tree_view(self, cr, uid, ids, context=None):
+        ''' Open line in tree vindow for manage better
+        '''        
+        sol_pool = self.pool.get('sale.order.line')
+        sol_ids = sol_pool.search(cr, uid, [
+            ('mrp_id', '=', ids[0]),
+            ], context=context)
+            
+        model_pool = self.pool.get('ir.model.data')
+        tree_id = model_pool.get_object_reference(
+            cr, uid, 'production_accounting_external',
+            'production_sale_order_line_tree_view',
+            )[1]
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Righe'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            #'res_id': 1,
+            'res_model': 'sale.order.line',
+            'view_id': tree_id,
+            'views': [(tree_id, 'tree')],
+            'domain': [('id', 'in', sol_ids)],
+            'context': context,
+            'target': 'current', # 'new'
+            'nodestroy': False,
+            }
     def close_all_production(self, cr, uid, ids, context=None):
         ''' Close all production
         '''
