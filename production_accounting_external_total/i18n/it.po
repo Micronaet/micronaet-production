@@ -21,7 +21,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:production_accounting_external_total.action_mrp_production_close
 #: model:ir.ui.menu,name:production_accounting_external_total.menu_action_openerp_model_tree
 msgid "Close production"
-msgstr "Chiudi produzione"
+msgstr "Produzioni chiuse"
 
 #. module: production_accounting_external_total
 #: view:mrp.production:production_accounting_external_total.view_mrp_production_for_close_tree
