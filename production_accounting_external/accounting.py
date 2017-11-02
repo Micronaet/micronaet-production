@@ -414,8 +414,12 @@ class MrpProduction(orm.Model):
         # Test if line has accounting element sync:
         order_locked = ''
         for production in self.browse(cr, uid, ids, context=context):
+            # Unlink if no produce remain and not order closed:
             test = [line.product_uom_maked_sync_qty 
-                for line in production.order_line_ids]
+                for line in production.order_line_ids \
+                    #if not line.mx_closed # XXX vedere se attivare (complicaz)
+                    ]
+
             if any(test):
                 order_locked += _('Order %s\n') % production.name
 
