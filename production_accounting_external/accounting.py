@@ -299,6 +299,7 @@ class SaleOrderLine(orm.Model):
                     'Non definita')
             except:
                 res[item.id] = _('Non definita')
+                
     # Store function fields:
     def _refresh_in_production(self, cr, uid, ids, context=None):
         ''' Get state of production from state of order
