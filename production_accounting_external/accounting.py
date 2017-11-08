@@ -293,13 +293,12 @@ class SaleOrderLine(orm.Model):
         ''' Save family name for group clause
         '''       
         res = {}
-
-        for item in self.browse(cr, uid, ids, context=context):
+        for sol in self.browse(cr, uid, ids, context=context):
             try:
-                res[item.id] = item.product_id.family_id.name or _(
+                res[sol.id] = sol.product_id.family_id.name or _(
                     'Non definita')
             except:
-                res[item.id] = _('Non definita')
+                res[sol.id] = _('Non definita')
         return res       
                 
     # Store function fields:
@@ -318,6 +317,7 @@ class SaleOrderLine(orm.Model):
     def _store_sol_product_id(self, cr, uid, ids, context=None):
         ''' Change product in sale order line
         '''
+        _logger.warning('Store sol product_id change')
         return ids
 
     def _store_sol_template_id(self, cr, uid, ids, context=None):
@@ -328,8 +328,10 @@ class SaleOrderLine(orm.Model):
         sol_ids = sol_pool.search(cr, uid, [
             ('product_id.product_tmpl_id', 'in', ids),
             ], context=context)
-        _logger.warning('Update %s lines, template %s' % (len(sol_ids), ids))
-        return ids        
+        _logger.warning('Update %s lines, template %s' % (
+            len(sol_ids), ids,
+            ))
+        return sol_ids        
             
     _columns = {        
         'mrp_id': fields.many2one(
@@ -348,7 +350,7 @@ class SaleOrderLine(orm.Model):
                     _refresh_in_production, ['state'], 10),
                 'sale.order.line': (
                     _refresh_line_in_production, ['order_id'], 10),
-                }), 
+                }),
                  
         # Delivered:    
         'product_uom_delivered_qty': fields.float(
@@ -374,7 +376,7 @@ class SaleOrderLine(orm.Model):
 
         'family_name': fields.function(
             _get_sol_family_name, method=True, type='char', 
-            size=80, string='Nome famiglia', 
+            size=80, string='Famiglia', 
             store={
                 'sale.order.line': (
                     _store_sol_product_id, ['product_id'], 10),
