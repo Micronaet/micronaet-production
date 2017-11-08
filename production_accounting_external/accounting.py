@@ -293,12 +293,14 @@ class SaleOrderLine(orm.Model):
         ''' Save family name for group clause
         '''       
         res = {}
+
         for item in self.browse(cr, uid, ids, context=context):
             try:
                 res[item.id] = item.product_id.family_id.name or _(
                     'Non definita')
             except:
                 res[item.id] = _('Non definita')
+        return res       
                 
     # Store function fields:
     def _refresh_in_production(self, cr, uid, ids, context=None):
