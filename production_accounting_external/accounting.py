@@ -288,7 +288,7 @@ class SaleOrderLine(orm.Model):
             else:
                 res[item.id] = True
         return res        
-    
+
     def _get_sol_family_name(self, cr, uid, ids, fields, args, context=None):
         ''' Save family name for group clause
         '''       
@@ -376,7 +376,7 @@ class SaleOrderLine(orm.Model):
 
         'family_name': fields.function(
             _get_sol_family_name, method=True, type='char', 
-            size=80, string='Famiglia', 
+            size=80, string='Famiglia', translate=True,
             store={
                 'sale.order.line': (
                     _store_sol_product_id, ['product_id'], 10),
