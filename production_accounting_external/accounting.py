@@ -289,17 +289,17 @@ class SaleOrderLine(orm.Model):
                 res[item.id] = True
         return res        
 
-    def _get_sol_family_name(self, cr, uid, ids, fields, args, context=None):
-        ''' Save family name for group clause
-        '''       
-        res = {}
-        for sol in self.browse(cr, uid, ids, context=context):
-            try:
-                res[sol.id] = sol.product_id.family_id.name or _(
-                    'Non definita')
-            except:
-                res[sol.id] = _('Non definita')
-        return res       
+    #def _get_sol_family_name(self, cr, uid, ids, fields, args, context=None):
+    #    ''' Save family name for group clause
+    #    '''       
+    #    res = {}
+    #    for sol in self.browse(cr, uid, ids, context=context):
+    #        try:
+    #            res[sol.id] = sol.product_id.family_id.name or _(
+    #                'Non definita')
+    #        except:
+    #            res[sol.id] = _('Non definita')
+    #    return res       
                 
     # Store function fields:
     def _refresh_in_production(self, cr, uid, ids, context=None):
@@ -314,24 +314,24 @@ class SaleOrderLine(orm.Model):
         return ids
         
     # family_name:    
-    def _store_sol_product_id(self, cr, uid, ids, context=None):
-        ''' Change product in sale order line
-        '''
-        _logger.warning('Store sol product_id change')
-        return ids
+    #def _store_sol_product_id(self, cr, uid, ids, context=None):
+    #    ''' Change product in sale order line
+    #    '''
+    #    _logger.warning('Store sol product_id change')
+    #    return ids
 
-    def _store_sol_template_id(self, cr, uid, ids, context=None):
-        ''' Change family in product template
-            change product with this template in sol
-        '''
-        sol_pool = self.pool.get('sale.order.line')
-        sol_ids = sol_pool.search(cr, uid, [
-            ('product_id.product_tmpl_id', 'in', ids),
-            ], context=context)
-        _logger.warning('Update %s lines, template %s' % (
-            len(sol_ids), ids,
-            ))
-        return sol_ids        
+    #def _store_sol_template_id(self, cr, uid, ids, context=None):
+    #    ''' Change family in product template
+    #        change product with this template in sol
+    #    '''
+    #    sol_pool = self.pool.get('sale.order.line')
+    #    sol_ids = sol_pool.search(cr, uid, [
+    #        ('product_id.product_tmpl_id', 'in', ids),
+    #        ], context=context)
+    #    _logger.warning('Update %s lines, template %s' % (
+    #        len(sol_ids), ids,
+    #        ))
+    #    return sol_ids        
             
     _columns = {        
         'mrp_id': fields.many2one(
@@ -374,15 +374,15 @@ class SaleOrderLine(orm.Model):
 
         'production_note': fields.char('Note', size=100),    
 
-        'family_name': fields.function(
-            _get_sol_family_name, method=True, type='char', 
-            size=80, string='Famiglia', translate=True,
-            store={
-                'sale.order.line': (
-                    _store_sol_product_id, ['product_id'], 10),
-                'product.template': (
-                    _store_sol_template_id, ['family_id'], 10),
-                }), 
+        #'family_name': fields.function(
+        #    _get_sol_family_name, method=True, type='char', 
+        #    size=80, string='Famiglia', translate=True,
+        #    store={
+        #        'sale.order.line': (
+        #            _store_sol_product_id, ['product_id'], 10),
+        #        'product.template': (
+        #            _store_sol_template_id, ['family_id'], 10),
+        #        }), 
 
         #'default_code': fields.related('product_id','default_code', 
         #    type='char', string='Code'),

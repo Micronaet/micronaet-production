@@ -315,7 +315,7 @@
                 <field name="family_id" string="Family" filter_domain="[('family_id','=',self)]"/>
             </field>    
             <filter name="group_order" position="after">
-                <filter name="group_family" string="Family" context="{'group_by':'family_name'}"/>            
+                <filter name="group_family" string="Family" context="{'group_by':'family_id'}"/>            
             </filter>    
         </field>
     </record>
@@ -329,8 +329,7 @@
                 <attribute name="colors">blue:has_mandatory_delivery==True</attribute>
             </xpath>
             <field name="order_id" position="after">
-                <field name="family_id" invisible="1"/>
-                <field name="family_name" />
+                <field name="family_id" />
             </field>
             <field name="state" position="before">
                 <field name="mrp_id"/>
@@ -345,8 +344,7 @@
         <field name="inherit_id" ref="sql_sale_order.view_sale_order_line_form"/>
         <field name="arch" type="xml">
             <field name="sequence" position="after">
-                <field name="family_id" invisible="1"/>
-                <field name="family_name" />
+                <field name="family_id" />                
             </field>
         </field>
     </record>
