@@ -481,9 +481,6 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
         'from_date': fields.date('From date'),    
         'to_date': fields.date('To date'),    
         }
-        
-    _defaults = {
-        }    
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 
 
