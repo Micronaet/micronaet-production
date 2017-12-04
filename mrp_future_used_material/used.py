@@ -83,6 +83,7 @@ class MrpProduction(orm.Model):
         ''' Regenerate future movement database 
         '''
         _logger.info('Start udpate future movement of MRP')
+        
         # Pool used:
         move_pool = self.pool.get('mrp.production.future.move')
         sol_pool = self.pool.get('sale.order.line')
@@ -104,7 +105,7 @@ class MrpProduction(orm.Model):
         sol_ids = sol_pool.search(cr, uid, [
             ('mrp_id.state', 'not in', ('cancel', 'done')), # XXX draft?            
             ], context=context)
-            
+
         total = {}
         for sol in sol_pool.browse(cr, uid, sol_ids, context=context):            
             # Qty used:
@@ -137,7 +138,7 @@ class MrpProduction(orm.Model):
                     total[material.id] += qty
                 else:   
                     total[material.id] = qty
-                    
+
                 data.update({
                     'material_id': material.id,
                     'qty': qty,

@@ -1,7 +1,123 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <!--mrp.production.future.move-->
+        <record model="ir.ui.view" id="view_mrp_production_future_move_tree">
+            <field name="name">mrp.production.future.move.tree</field>
+            <field name="model">mrp.production.future.move</field>
+            <field name="arch" type="xml">
+                <tree string="Future move" editable="bottom">
+                    <field name="date" invisible="1"/>
+                    <field name="week" />
+                    <field name="mrp_id" />
+                    <field name="sol_id" invisible="1"/>
+                    <field name="product_id" />
+                    <field name="remain" />
+                    <field name="material_id" />
+                    <field name="qty" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_mrp_production_future_move_form">
+            <field name="name">mrp.production.future.move.form</field>
+            <field name="model">mrp.production.future.move</field>
+            <field name="arch" type="xml">
+                <tree string="Future move" editable="bottom">
+                    <field name="date" invisible="1"/>
+                    <field name="week" />
+                    <field name="mrp_id" />
+                    <field name="sol_id" invisible="1"/>
+                    <field name="product_id" />
+                    <field name="remain" />
+                    <field name="material_id" />
+                    <field name="qty" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_mrp_production_future_move_search">
+            <field name="name">mrp.production.future.move.search</field>
+            <field name="model">mrp.production.future.move</field>
+            <field name="arch" type="xml">
+                <search string="Future move" version="7.0">
+                    <field name="date" />
+                    <field name="week" />
+                    <field name="mrp_id" />
+                    <field name="product_id" />
+                    <field name="material_id" />
 
+                    <group expand="0" string="Group By...">
+                        <filter name="group_mrp" string="MRP" context="{'group_by': 'mrp_id'}"/>
+                        <filter name="group_product" string="Product" context="{'group_by': 'product_id'}"/>
+                        <filter name="group_material" string="Material" context="{'group_by': 'material_id'}"/>
+                    </group>                
+                </search>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_mrp_production_future_move">
+            <field name="name">MRP future move</field>
+            <field name="res_model">mrp.production.future.move</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_mrp_production_future_move_tree"/>
+            <field name="search_view_id" ref="view_mrp_production_future_move_search"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+        
+        <!--product.product-->
+        <record model="ir.ui.view" id="view_product_product_total_move_tree">
+            <field name="name">product.product.total.move.tree</field>
+            <field name="model">product.product</field>
+            <field name="arch" type="xml">
+                <tree string="Future move total" editable="bottom">
+                    <field name="name" />
+                    <field name="default_code" />
+                    <field name="mx_mrp_future_qty" />
+                    <field name="state" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_product_product_total_move_form">
+            <field name="name">product.product.total.move.form</field>
+            <field name="model">product.product</field>
+            <field name="arch" type="xml">
+                <tree string="Future move total" editable="bottom">
+                    <field name="name" />
+                    <field name="default_code" />
+                    <field name="mx_mrp_future_qty" />
+                    <field name="state" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_mrp_production_future_move">
+            <field name="name">MRP total move</field>
+            <field name="res_model">product.product</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_product_product_total_move_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[('mx_mrp_future_qty','&gt;', 0)]</field>
+        </record>
+                
+        <menuitem 
+            parent="mrp.menu_mrp_production_action" 
+            id="menu_mrp_production_future_move_root" 
+            action="action_mrp_production_future_move"
+            sequence="90"
+            name="Future MRP movement"
+            />
+            <menuitem 
+                parent="menu_mrp_production_future_move_root" 
+                id="menu_mrp_production_future_move_all" 
+                action="action_mrp_production_future_move"
+                sequence="10"
+                />
+            <menuitem 
+                parent="menu_mrp_production_future_move_root" 
+                id="menu_mrp_production_future_move_product" 
+                action="action_mrp_production_future_move"
+                sequence="20"
+                />
     </data>
 </openerp>
 

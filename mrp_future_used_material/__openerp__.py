@@ -41,7 +41,7 @@
     'data': [
         'security/ir.model.access.csv',    
         'used_view.xml',
-        #'scheduler.xml',
+        'scheduler.xml',
         ],
     'active': False,
     'installable': True,
