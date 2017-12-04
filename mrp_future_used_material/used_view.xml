@@ -39,13 +39,13 @@
             <field name="model">mrp.production.future.move</field>
             <field name="arch" type="xml">
                 <search string="Future move" version="7.0">
-                    <field name="date" />
                     <field name="week" />
                     <field name="mrp_id" />
                     <field name="product_id" />
                     <field name="material_id" />
 
                     <group expand="0" string="Group By...">
+                        <filter name="group_date" string="Date" context="{'group_by': 'date'}"/>
                         <filter name="group_mrp" string="MRP" context="{'group_by': 'mrp_id'}"/>
                         <filter name="group_product" string="Product" context="{'group_by': 'product_id'}"/>
                         <filter name="group_material" string="Material" context="{'group_by': 'material_id'}"/>
@@ -89,7 +89,7 @@
                 </tree>
             </field>
         </record>
-        <record model="ir.actions.act_window" id="action_mrp_production_future_move">
+        <record model="ir.actions.act_window" id="action_product_product_future_move">
             <field name="name">MRP total move</field>
             <field name="res_model">product.product</field>
             <field name="view_type">form</field>
@@ -102,7 +102,6 @@
         <menuitem 
             parent="mrp.menu_mrp_production_action" 
             id="menu_mrp_production_future_move_root" 
-            action="action_mrp_production_future_move"
             sequence="90"
             name="Future MRP movement"
             />
@@ -115,7 +114,7 @@
             <menuitem 
                 parent="menu_mrp_production_future_move_root" 
                 id="menu_mrp_production_future_move_product" 
-                action="action_mrp_production_future_move"
+                action="action_product_product_future_move"
                 sequence="20"
                 />
     </data>

@@ -32,6 +32,7 @@
     'depends': [
         'base',
         'mrp',
+        'product',
         'sale', # SOL in production
         'production_accounting_external', # MRP management
         'bom_dynamic_structured', # BOM dynamic management

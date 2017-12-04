@@ -82,7 +82,7 @@ class MrpProduction(orm.Model):
     def regenerate_production_future_movement(self, cr, uid, context=None):
         ''' Regenerate future movement database 
         '''
-        _logger.info('Start udpate future movement of MRP')
+        _logger.info('Start update future movement of MRP')
         
         # Pool used:
         move_pool = self.pool.get('mrp.production.future.move')
@@ -95,9 +95,11 @@ class MrpProduction(orm.Model):
         # Remove all movement
         move_ids = move_pool.search(cr, uid, [], context=context)
         move_pool.unlink(cr, uid, move_ids, context=context)
+        _logger.info('Deletet future movement')
         
         # Reset total in product:
         cr.execute('UPDATE product_product set mx_mrp_future_qty=0;')
+        _logger.info('Reset product total')
         
         # ---------------------------------------------------------------------
         # Load all line with remain:
@@ -121,10 +123,11 @@ class MrpProduction(orm.Model):
                 continue # jump product done or delivered
                 
             product = sol.product_id
+            mrp = sol.mrp_id
             data = {
                 # MRP data:
-                'mrp_id': sol_id.mrp_id.id,
-                'date': sol_id.date_planned,
+                'mrp_id': mrp.id,
+                'date': mrp.date_planned,
                 
                 # SOL data:
                 'sol_id': sol.id,
@@ -133,7 +136,7 @@ class MrpProduction(orm.Model):
                 }
             for line in product.dynamic_bom_line_ids:            
                 material = line.product_id
-                qty = remain * item.product_qty
+                qty = remain * line.product_qty
                 if material.id in total:
                     total[material.id] += qty
                 else:   
@@ -144,6 +147,7 @@ class MrpProduction(orm.Model):
                     'qty': qty,
                     })
                 move_pool.create(cr, uid,data, context=context)    
+        _logger.info('Create future movement')
                 
         # ---------------------------------------------------------------------
         # Load all total in product:
@@ -152,6 +156,6 @@ class MrpProduction(orm.Model):
             product_pool.write(cr, uid, product_id, {
                 'mx_mrp_future_qty': mx_mrp_future_qty,
                 }, context=context)
-        _logger.info('End udpate future movement of MRP')
+        _logger.info('End update future movement of MRP')
         return True
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
