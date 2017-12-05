@@ -108,6 +108,7 @@ class MrpProduction(orm.Model):
             ('mrp_id.state', 'not in', ('cancel', 'done')), # XXX draft?            
             ], context=context)
 
+        dbs = {} # for speed product bom load
         total = {}
         i_tot = len(sol_ids)
         i = 0
@@ -139,7 +140,9 @@ class MrpProduction(orm.Model):
                 'product_id': product.id,
                 'remain': remain,                
                 }
-            for line in product.dynamic_bom_line_ids:            
+            if product not in dbs:
+                dbs[product] = product.dynamic_bom_line_ids
+            for line in dbs[product]:
                 material = line.product_id
                 qty = remain * line.product_qty
                 if material.id in total:
