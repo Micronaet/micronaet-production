@@ -146,7 +146,8 @@ class MrpProduction(orm.Model):
                     'material_id': material.id,
                     'qty': qty,
                     })
-                move_pool.create(cr, uid,data, context=context)    
+                _logger.info('Data %s' % (data, ))    
+                move_pool.create(cr, uid, data, context=context)    
         _logger.info('Create future movement')
                 
         # ---------------------------------------------------------------------

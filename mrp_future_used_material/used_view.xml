@@ -89,6 +89,25 @@
                 </tree>
             </field>
         </record>
+        <!--<record model="ir.ui.view" id="view_product_product_total_move_search">
+            <field name="name">product.product.total.move.search</field>
+            <field name="model">product.product</field>
+            <field name="arch" type="xml">
+                <search string="Future move total" version="7.0">
+                    <field name="name" />
+                    <field name="default_code" />
+                    <field name="product_id" />
+                    <field name="material_id" />
+
+                    <group expand="0" string="Group By...">
+                        <filter name="group_date" string="Date" context="{'group_by': 'date'}"/>
+                        <filter name="group_mrp" string="MRP" context="{'group_by': 'mrp_id'}"/>
+                        <filter name="group_product" string="Product" context="{'group_by': 'product_id'}"/>
+                        <filter name="group_material" string="Material" context="{'group_by': 'material_id'}"/>
+                    </group>                
+                </search>
+            </field>
+        </record>-->
         <record model="ir.actions.act_window" id="action_product_product_future_move">
             <field name="name">MRP total move</field>
             <field name="res_model">product.product</field>
