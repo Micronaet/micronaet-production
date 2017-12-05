@@ -74,6 +74,7 @@
                     <field name="default_code" />
                     <field name="mx_mrp_future_qty" />
                     <field name="state" invisible="1"/>
+                    <button name="open_button_form" string="Dettaglio" type="object" icon="gtk-goto-last"/>
                 </tree>
             </field>
         </record>

@@ -66,6 +66,31 @@ class ProductProduct(orm.Model):
     """
     
     _inherit = 'product.product'
+
+    # -------------------------------------------------------------------------
+    # Button event:
+    # -------------------------------------------------------------------------
+    def open_button_form(self, cr, uid, ids, context=None):
+        ''' Open form button
+        '''
+        #model_pool = self.pool.get('ir.model.data')
+        #view_id = model_pool.get_object_reference(
+        #    cr, uid, 'module_name', 'view_name')[1]
+    
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Product'),
+            'view_type': 'form',
+            'view_mode': 'form,tree',
+            'res_id': ids[0],
+            'res_model': 'product.product',
+            #'view_id': view_id, # False
+            'views': [(False, 'form'),(False, 'tree')],
+            'domain': [],
+            'context': context,
+            'target': 'current', # 'new'
+            'nodestroy': False,
+            }
     
     _columns = {
         'mx_mrp_future_qty': fields.float(
