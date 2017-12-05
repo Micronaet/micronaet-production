@@ -109,7 +109,12 @@ class MrpProduction(orm.Model):
             ], context=context)
 
         total = {}
-        for sol in sol_pool.browse(cr, uid, sol_ids, context=context):            
+        i_tot = len(sol_ids)
+        i = 0
+        for sol in sol_pool.browse(cr, uid, sol_ids, context=context):
+            i += 1
+            _logger.info('SOL analysed: %s of %s' % (i, i_tot))
+            
             # Qty used:
             oc_qty = sol.product_uom_qty
             delivered_qty = sol.delivered_qty
@@ -146,7 +151,6 @@ class MrpProduction(orm.Model):
                     'material_id': material.id,
                     'qty': qty,
                     })
-                _logger.info('Data %s' % (data, ))    
                 move_pool.create(cr, uid, data, context=context)    
         _logger.info('Create future movement')
                 
