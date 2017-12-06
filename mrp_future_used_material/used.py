@@ -73,10 +73,6 @@ class ProductProduct(orm.Model):
     def open_button_form(self, cr, uid, ids, context=None):
         ''' Open form button
         '''
-        #model_pool = self.pool.get('ir.model.data')
-        #view_id = model_pool.get_object_reference(
-        #    cr, uid, 'module_name', 'view_name')[1]
-    
         return {
             'type': 'ir.actions.act_window',
             'name': _('Product'),
