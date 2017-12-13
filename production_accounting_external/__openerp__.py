@@ -51,6 +51,7 @@
         # Family in sale.order.line:
         'production_order_line_family', # Micronaet/micronaet-mx8.git 
         'order_line_view', # Micronaet/micronaet-mx8.git
+        # 'sale_order_line_analysis', # default code taked from here now
         ],
     'init_xml': [],
     'demo': [],

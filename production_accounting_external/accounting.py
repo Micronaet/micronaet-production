@@ -300,8 +300,35 @@ class SaleOrderLine(orm.Model):
         ''' Get state of production from state of order
         '''
         return ids
+
+    """# sale.order.line:
+    def _mrp_get_default_code_from_sol(self, cr, uid, ids, context=None):
+        ''' When change sol line order
+        '''
+        _logger.warning('MRP Change product_id in sale.order.line')
+        return ids
+
+    def _mrp_get_default_code_from_product(self, cr, uid, ids, context=None):
+        ''' Change defauld code in product
+        '''
+        _logger.warning('MRP Change default_code in product.product')
+        sol_pool = self.pool.get('sale.order.line')
+        return sol_pool.search(cr, uid, [
+            ('product_id', 'in', ids),
+            ], context=context)"""
         
-    _columns = {        
+    _columns = {
+        # XXX 13-12-2017 (not used for now!)
+        # Not used default_code for much module that has override this field!
+        #'mrp_default_code': fields.related(
+        #    'product_id', 'default_code', type='char',
+        #    store={
+        #        'sale.order.line':
+        #            (_mrp_get_default_code_from_sol, ['product_id'], 10),
+        #        'product.product':
+        #            (_mrp_get_default_code_from_product, ['default_code'], 10),
+        #        }, string='Cod. Prod.'),
+        
         'mrp_id': fields.many2one(
             'mrp.production', 'Production', ondelete='set null', ),
         'mrp_unlinked': fields.boolean('MRP unlinked'),
