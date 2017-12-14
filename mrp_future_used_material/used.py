@@ -109,6 +109,7 @@ class MrpProduction(orm.Model):
         move_pool = self.pool.get('mrp.production.future.move')
         sol_pool = self.pool.get('sale.order.line')
         product_pool = self.pool.get('product.product')
+        cron_pool = self.pool.get('ir.cron')
         
         # ---------------------------------------------------------------------
         # Reset situations:
