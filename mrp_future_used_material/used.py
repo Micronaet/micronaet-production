@@ -100,7 +100,9 @@ class MrpProduction(orm.Model):
     _inherit = 'mrp.production'
 
     # Scheduled action:
-    def regenerate_production_future_movement(self, cr, uid, context=None):
+    def regenerate_production_future_movement(self, cr, uid, 
+            department_select=None, only_hw=False, send_mail=True, 
+            context=None):
         ''' Regenerate future movement database 
         '''
         _logger.info('Start update future movement of MRP')
@@ -110,10 +112,20 @@ class MrpProduction(orm.Model):
         sol_pool = self.pool.get('sale.order.line')
         product_pool = self.pool.get('product.product')
         cron_pool = self.pool.get('ir.cron')
-        
-        # Filter XXX parametrize:
-        category_select = ['cut']
-        
+
+        if department_select is None:
+            department_select = []
+        else:
+            if type(department_select) not in (list, tuple):
+                department_select = department_select.split(',')
+                
+        _logger.info(
+            'Start future movement department: %s, only HW: %s, mail: %s ' % (
+            department_select,
+            only_hw,
+            send_mail,
+            ))
+
         # ---------------------------------------------------------------------
         # Reset situations:
         # ---------------------------------------------------------------------
@@ -169,11 +181,16 @@ class MrpProduction(orm.Model):
                 }
             if product not in dbs:
                 dbs[product] = product.dynamic_bom_line_ids
-            import pdb; pdb.set_trace()    
+
             for line in dbs[product]:
-                if category_select and line.category_id not in category_select:
-                    continue
-                material = line.product_id
+                if department_select and line.category_id and \
+                        line.category_id.department not in department_select:
+                    continue # jump department not used
+
+                material = line.product_id                
+                if material.bom_placeholder or material.bom_alternative:
+                    continue # jump placeholder
+
                 qty = remain * line.product_qty
                 if material.id in total:
                     total[material.id] += qty
@@ -221,6 +238,9 @@ class MrpProduction(orm.Model):
         # ---------------------------------------------------------------------
         # Send report:
         # ---------------------------------------------------------------------
+        if not send_mail:
+            return True
+            
         # Send mail with attachment:
         group_pool = self.pool.get('res.groups')
         model_pool = self.pool.get('ir.model.data')
