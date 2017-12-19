@@ -111,6 +111,9 @@ class MrpProduction(orm.Model):
         product_pool = self.pool.get('product.product')
         cron_pool = self.pool.get('ir.cron')
         
+        # Filter XXX parametrize:
+        category_select = ['cut']
+        
         # ---------------------------------------------------------------------
         # Reset situations:
         # ---------------------------------------------------------------------
@@ -166,7 +169,10 @@ class MrpProduction(orm.Model):
                 }
             if product not in dbs:
                 dbs[product] = product.dynamic_bom_line_ids
+            import pdb; pdb.set_trace()    
             for line in dbs[product]:
+                if category_select and line.category_id not in category_select:
+                    continue
                 material = line.product_id
                 qty = remain * line.product_qty
                 if material.id in total:
