@@ -57,17 +57,42 @@ class Parser(report_sxw.rml_parse):
             'get_objects': self.get_objects,
         })
 
-    def get_objects(self, o):
+    def get_objects(self, data):
         ''' All available halfwork
         '''
+        # Readability:
+        cr = self.cr
+        uid = self.uid
+        context = {}
+
         res = []
-        product_pool = self.pool.get ('product.product')
+        product_pool = self.pool.get('product.product')
+        
+        # ---------------------------------------------------------------------
         # 1. Select product with future move:
+        # ---------------------------------------------------------------------
+        product_ids = product_pool.search (cr, uid, [
             ('mx_mrp_future_qty', '>', 0.0),
             ], context=context)
+            
+        # ---------------------------------------------------------------------
         # 2. Search product with available quantity:
-        for product in 
-        # 3. Sort product
-        
-        return res
+        # ---------------------------------------------------------------------
+        for product in product_pool.browse(
+                cr, uid, product_ids, context=context):
+            net = product.mx_net_mrp_qty
+            future = product.mx_mrp_future_qty
+            difference = net - future
+            if difference > 0.0:
+                res.append((
+                    product,
+                    net,
+                    future,
+                    difference,
+                    ))
+         
+        # ---------------------------------------------------------------------
+        # 3. Sort product                
+        # ---------------------------------------------------------------------
+        return sorted(res, key= lambda x: x[0].default_code)
 
