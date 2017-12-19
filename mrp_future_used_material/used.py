@@ -194,11 +194,6 @@ class MrpProduction(orm.Model):
         # Send email with available data
         # ---------------------------------------------------------------------
         _logger.info('Create mail for send report')
-
-        if context is None:
-            context = {}
-        if 'lang' not in context:
-            context['lang'] = 'it_IT'
         datas = {}
 
         # -----------------------------------------------------------------

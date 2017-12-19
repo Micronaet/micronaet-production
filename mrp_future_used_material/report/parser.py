@@ -61,5 +61,13 @@ class Parser(report_sxw.rml_parse):
         ''' All available halfwork
         '''
         res = []
+        product_pool = self.pool.get ('product.product')
+        # 1. Select product with future move:
+            ('mx_mrp_future_qty', '>', 0.0),
+            ], context=context)
+        # 2. Search product with available quantity:
+        for product in 
+        # 3. Sort product
+        
         return res
 
