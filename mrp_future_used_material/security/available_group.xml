@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+   <data>
+        <record id="group_mrp_hw_available_status" model="res.groups">
+            <field name="name">MRP available status report admin</field>
+        </record>
+   </data>
+</openerp>

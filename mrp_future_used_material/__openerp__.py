@@ -41,8 +41,17 @@
     'init_xml': [],
     'demo': [],
     'data': [
-        'security/ir.model.access.csv',    
+        # Security:
+        'security/available_group.xml',
+        'security/ir.model.access.csv',
+        
+        # View:
         'used_view.xml',
+        
+        # Report:
+        'report/report_available.xml',
+
+        # Scheduled action:
         'scheduler.xml',
         ],
     'active': False,

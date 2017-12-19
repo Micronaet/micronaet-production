@@ -114,6 +114,7 @@ class MrpProduction(orm.Model):
         # ---------------------------------------------------------------------
         # Reset situations:
         # ---------------------------------------------------------------------
+        _logger.info('Remove all movements')
         # Remove all movement
         move_ids = move_pool.search(cr, uid, [], context=context)
         move_pool.unlink(cr, uid, move_ids, context=context)
@@ -126,6 +127,7 @@ class MrpProduction(orm.Model):
         # ---------------------------------------------------------------------
         # Load all line with remain:
         # ---------------------------------------------------------------------
+        _logger.info('Explore MRP situation for future movements')
         sol_ids = sol_pool.search(cr, uid, [
             ('mrp_id.state', 'not in', ('cancel', 'done')), # XXX draft?            
             ], context=context)
@@ -177,15 +179,72 @@ class MrpProduction(orm.Model):
                     'qty': qty,
                     })
                 move_pool.create(cr, uid, data, context=context)    
-        _logger.info('Create future movement')
                 
         # ---------------------------------------------------------------------
         # Load all total in product:
         # ---------------------------------------------------------------------
+        _logger.info('Create future movement')
         for product_id, mx_mrp_future_qty in total.iteritems():
             product_pool.write(cr, uid, product_id, {
                 'mx_mrp_future_qty': mx_mrp_future_qty,
                 }, context=context)
         _logger.info('End update future movement of MRP')
+
+        # ---------------------------------------------------------------------
+        # Send email with available data
+        # ---------------------------------------------------------------------
+        _logger.info('Create mail for send report')
+
+        if context is None:
+            context = {}
+        if 'lang' not in context:
+            context['lang'] = 'it_IT'
+        datas = {}
+
+        # -----------------------------------------------------------------
+        # Call report:            
+        # -----------------------------------------------------------------
+        try:
+            result, extension = openerp.report.render_report(
+                cr, uid, False, 'mrp_available_future_hw_report', 
+                datas, context)
+        except:
+            _logger.error('Error generation TX report [%s]' % (
+                sys.exc_info(),))
+            return False    
+
+        now = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        now = now.replace('-', '_').replace(':', '.')
+        attachments = [('Semilavorati_disponibili_%s.odt' % now, result)]
+                
+        # ---------------------------------------------------------------------
+        # Send report:
+        # ---------------------------------------------------------------------
+        # Send mail with attachment:
+        group_pool = self.pool.get('res.groups')
+        model_pool = self.pool.get('ir.model.data')
+        thread_pool = self.pool.get('mail.thread')
+        group_id = model_pool.get_object_reference(
+            cr, uid, 
+            'mrp_future_used_material', 'group_mrp_hw_available_status')[1]    
+        partner_ids = []
+        for user in group_pool.browse(
+                cr, uid, group_id, context=context).users:
+            partner_ids.append(user.partner_id.id)
+            
+        thread_pool = self.pool.get('mail.thread')
+        thread_pool.message_post(cr, uid, False, 
+            type='email', 
+            body='''
+                Situazione semilavorati disponibili in base alle produzioni
+                schedulate future.
+                ''', 
+            subject=u'Invio automatico stato disponibilità materiali: %s' % (
+                datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT),
+                ),
+            partner_ids=[(6, 0, partner_ids)],
+            attachments=attachments, 
+            context=context,
+            )
         return True
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
