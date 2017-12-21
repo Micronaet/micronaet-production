@@ -102,7 +102,7 @@ class MrpProduction(orm.Model):
     # Scheduled action:
     def regenerate_production_future_movement(self, cr, uid, 
             department_select=None, only_hw=False, send_mail=True, 
-            context=None):
+            regenerate=True, context=None):
         ''' Regenerate future movement database 
         '''
         _logger.info('Start update future movement of MRP')
@@ -119,112 +119,122 @@ class MrpProduction(orm.Model):
             if type(department_select) not in (list, tuple):
                 department_select = department_select.split(',')
                 
-        _logger.info(
-            'Start future movement department: %s, only HW: %s, mail: %s ' % (
-            department_select,
-            only_hw,
-            send_mail,
-            ))
+        _logger.info('''
+            Parameter: 
+            [Department %s] [Only HW: %s] [mail: %s] [Regenerate %s]
+            ''' % (
+                department_select,
+                only_hw,
+                send_mail,
+                regenerate,
+                ))
 
-        # ---------------------------------------------------------------------
-        # Reset situations:
-        # ---------------------------------------------------------------------
-        _logger.info('Remove all movements')
-        # Remove all movement
-        move_ids = move_pool.search(cr, uid, [], context=context)
-        move_pool.unlink(cr, uid, move_ids, context=context)
-        _logger.info('Deletet future movement')
-        
-        # Reset total in product:
-        cr.execute('UPDATE product_product set mx_mrp_future_qty=0;')
-        _logger.info('Reset product total')
-        
-        # ---------------------------------------------------------------------
-        # Load all line with remain:
-        # ---------------------------------------------------------------------
-        _logger.info('Explore MRP situation for future movements')
-        sol_ids = sol_pool.search(cr, uid, [
-            ('mrp_id.state', 'not in', ('cancel', 'done')), # XXX draft?            
-            ], context=context)
-
-        dbs = {} # for speed product bom load
-        total = {}
-        i_tot = len(sol_ids)
-        i = 0
-        for sol in sol_pool.browse(cr, uid, sol_ids, context=context):
-            i += 1
-            _logger.info('SOL analysed: %s of %s' % (i, i_tot))
+        if regenerate:
+            # -----------------------------------------------------------------
+            # Reset situations:
+            # -----------------------------------------------------------------
+            _logger.info('Remove all movements')
+            # Remove all movement
+            move_ids = move_pool.search(cr, uid, [], context=context)
+            move_pool.unlink(cr, uid, move_ids, context=context)
+            _logger.info('Deletet future movement')
             
-            # Qty used:
-            oc_qty = sol.product_uom_qty
-            delivered_qty = sol.delivered_qty
-            b_qty = sol.product_uom_maked_sync_qty
-            
-            if delivered_qty > b_qty: # Delivered
-                remain = oc_qty - delivered_qty
-            else: # Produced:
-                remain = oc_qty - b_qty
-            if not remain: 
-                continue # jump product done or delivered
+            # Reset total in product:
+            cr.execute('UPDATE product_product set mx_mrp_future_qty=0;')
+            _logger.info('Reset product total')
+        
+            # -----------------------------------------------------------------
+            # Load all line with remain:
+            # -----------------------------------------------------------------
+            _logger.info('Explore MRP situation for future movements')
+            sol_ids = sol_pool.search(cr, uid, [
+                ('mrp_id.state', 'not in', ('cancel', 'done')), # XXX draft?            
+                ], context=context)
+
+            dbs = {} # for speed product bom load
+            total = {}
+            i_tot = len(sol_ids)
+            i = 0
+            for sol in sol_pool.browse(cr, uid, sol_ids, context=context):
+                i += 1
+                _logger.info('SOL analysed: %s of %s' % (i, i_tot))
                 
-            product = sol.product_id
-            mrp = sol.mrp_id
-            data = {
-                # MRP data:
-                'mrp_id': mrp.id,
-                'date': mrp.date_planned,
+                # Qty used:
+                oc_qty = sol.product_uom_qty
+                delivered_qty = sol.delivered_qty
+                b_qty = sol.product_uom_maked_sync_qty
                 
-                # SOL data:
-                'sol_id': sol.id,
-                'product_id': product.id,
-                'remain': remain,                
-                }
-            if product not in dbs:
-                dbs[product] = product.dynamic_bom_line_ids
+                if delivered_qty > b_qty: # Delivered
+                    remain = oc_qty - delivered_qty
+                else: # Produced:
+                    remain = oc_qty - b_qty
+                if not remain: 
+                    continue # jump product done or delivered
+                    
+                product = sol.product_id
+                mrp = sol.mrp_id
+                data = {
+                    # MRP data:
+                    'mrp_id': mrp.id,
+                    'date': mrp.date_planned,                    
+                    # SOL data:
+                    'sol_id': sol.id,
+                    'product_id': product.id,
+                    'remain': remain,                
+                    }
+                if product not in dbs:
+                    dbs[product] = product.dynamic_bom_line_ids
 
-            for line in dbs[product]:
-                if department_select and line.category_id and \
-                        line.category_id.department not in department_select:
-                    continue # jump department not used
+                for line in dbs[product]:
+                    if department_select and line.category_id and \
+                            line.category_id.department not in \
+                            department_select:
+                        continue # jump department not used
 
-                material = line.product_id                
-                if material.bom_placeholder or material.bom_alternative:
-                    continue # jump placeholder
+                    material = line.product_id                
+                    if material.bom_placeholder or material.bom_alternative:
+                        continue # jump placeholder
 
-                qty = remain * line.product_qty
-                if material.id in total:
-                    total[material.id] += qty
-                else:   
-                    total[material.id] = qty
+                    qty = remain * line.product_qty
+                    if material.id in total:
+                        total[material.id] += qty
+                    else:   
+                        total[material.id] = qty
 
-                data.update({
-                    'material_id': material.id,
-                    'qty': qty,
-                    })
-                move_pool.create(cr, uid, data, context=context)    
-                
-        # ---------------------------------------------------------------------
-        # Load all total in product:
-        # ---------------------------------------------------------------------
-        _logger.info('Create future movement')
-        for product_id, mx_mrp_future_qty in total.iteritems():
-            product_pool.write(cr, uid, product_id, {
-                'mx_mrp_future_qty': mx_mrp_future_qty,
-                }, context=context)
-        _logger.info('End update future movement of MRP')
+                    data.update({
+                        'material_id': material.id,
+                        'qty': qty,
+                        })
+                    move_pool.create(cr, uid, data, context=context)    
+
+            # -----------------------------------------------------------------
+            # Load all total in product:
+            # -----------------------------------------------------------------
+            _logger.info('Create future movement')
+            for product_id, mx_mrp_future_qty in total.iteritems():
+                product_pool.write(cr, uid, product_id, {
+                    'mx_mrp_future_qty': mx_mrp_future_qty,
+                    }, context=context)
+            _logger.info('End update future movement of MRP')
 
         # ---------------------------------------------------------------------
         # Send email with available data
         # ---------------------------------------------------------------------
         _logger.info('Create mail for send report')
-        datas = {}
+        datas = {
+            'model': 'mrp.production.future.move',
+            #'active_id': False,
+            #'active_ids': [],
+            #'context': context,
+            }
 
-        # -----------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # Call report:            
-        # -----------------------------------------------------------------
+        # ---------------------------------------------------------------------
         try:
             result, extension = openerp.report.render_report(
-                cr, uid, False, 'mrp_available_future_hw_report', 
+                cr, uid, [], #future_ids, 
+                'mrp_available_future_hw_report_status', 
                 datas, context)
         except:
             _logger.error('Error generation TX report [%s]' % (
@@ -255,8 +265,7 @@ class MrpProduction(orm.Model):
             
         thread_pool = self.pool.get('mail.thread')
         thread_pool.message_post(cr, uid, False, 
-            type='email', 
-            body='''
+            type='email', body='''
                 Situazione semilavorati disponibili in base alle produzioni
                 schedulate future.
                 ''', 

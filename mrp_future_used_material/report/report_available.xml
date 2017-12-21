@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <openerp>
 <data noupdate="1">
-    <record id="aeroo_mrp_available_future_hw_report_id" model="ir.actions.report.xml">
+    <record id="aeroo_mrp_available_future_hw_report_status_id" model="ir.actions.report.xml">
         <field name="name">MRP available halfwork</field>
         <field name="type">ir.actions.report.xml</field>
         <field name="model">mrp.production.future.move</field>
-        <field name="report_name">mrp_available_future_hw_report</field>
+        <field name="report_name">mrp_available_future_hw_report_status</field>
         <field name="report_type">aeroo</field>
         <field name="in_format">oo-odt</field>
         <field name="parser_loc">mrp_future_used_material/report/parser.py</field>
@@ -19,7 +19,7 @@
         <field eval="'client_print_multi'" name="key2"/>
         <field eval="['sale.order']" name="models"/>
         <field name="name">mrp_available_future_hw_report_set</field>
-        <field eval="'ir.actions.report.xml,'+str(aeroo_mrp_available_future_hw_report_id)" name="value"/>
+        <field eval="'ir.actions.report.xml,'+str(aeroo_mrp_available_future_hw_report_status_id)" name="value"/>
         <field eval="True" name="isobject"/>
         <field eval="True" name="replace"/>
     </ir_set>
