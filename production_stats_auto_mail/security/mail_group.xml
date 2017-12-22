@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+   <data>
+        <record id="group_mrp_stats_manager" model="res.groups">
+            <field name="name">MRP Stats mail manager</field>
+        </record>
+   </data>
+</openerp>
