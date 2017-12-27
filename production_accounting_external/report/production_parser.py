@@ -155,6 +155,28 @@ class Parser(report_sxw.rml_parse):
             Sort for [4:6]-[9:12]
             Break on 2 block for total
         '''
+        def get_bom_status_stock(product):
+            ''' Return BOM elements status with future exit present                
+            '''
+            res = ''
+            
+            for item in product.dynamic_bom_line_ids:
+                p = item.product_id
+                try:
+                    if p.mx_mrp_future_qty <= 0:
+                        continue # no future elements monitored
+                except:
+                    break # field not present so no module installed        
+                available = p.mx_net_mrp_qty - p.mx_mrp_future_qty
+                if available <= 0.0:    
+                    continue
+                res += _('[%s q. %s] ') % (
+                    p.default_code,
+                    available
+                    )
+                
+            return res
+            
         if data is None:
             data = {}
         mode = data.get('mode', 'clean')    
@@ -174,9 +196,13 @@ class Parser(report_sxw.rml_parse):
         code1 = code2 = False
         total1 = total2 = 0.0
         records = []
+        last_product = False
 
         self.frames = {}
         for line in lines:
+            if last_product == False:
+                last_product = line.product_id
+                
             # Variable:
             product_uom_qty = line.product_uom_qty
             product_uom_maked_sync_qty = line.product_uom_maked_sync_qty            
@@ -219,6 +245,9 @@ class Parser(report_sxw.rml_parse):
                 total1 += product_uom_qty
             else:
                 code1 = color
+                # Add extra line for BOM status:
+                records.append(
+                    ('BOM', line, get_bom_status_stock(last_product)))
                 records.append(('T1', line, total1))
                 total1 = product_uom_qty
 
@@ -238,9 +267,15 @@ class Parser(report_sxw.rml_parse):
             # Append record line:
             # -------------------
             records.append(('L', line, False))
+            
+            # XXX Always ast line of the loop
+            if line.product_id != last_product:
+                last_product = line.product_id 
 
         # Append last totals if there's records:
-        if records:                
+        if records:
+            records.append(
+                ('BOM', line, get_bom_status_stock(last_product)))
             records.append(('T1', line, total1))
             records.append(('T2', line, total2))
         return records
