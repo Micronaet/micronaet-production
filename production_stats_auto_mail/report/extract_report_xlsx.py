@@ -70,6 +70,30 @@ class MrpProductionStatsMixed(orm.Model):
         _logger.info('Start sending MRP report')
         
         # ---------------------------------------------------------------------
+        #                               UTILITY:
+        # ---------------------------------------------------------------------
+        def format_date(value):
+            ''' Format hour DD:MM:YYYY
+            '''
+            if not value:
+                return ''
+            return '%s/%s/%s' % (
+                value[8:10],
+                value[5:7],
+                value[:4],
+                )
+
+        def format_hour(value):
+            ''' Format hour HH:MM
+            '''
+            if not value:
+                return '00:00'
+                
+            hour = int(value)
+            minute = int((value - hour) * 60)
+            return '%02d:%02d' % (hour, minute) 
+        
+        # ---------------------------------------------------------------------
         #                  Collect stats data in database:
         # ---------------------------------------------------------------------
         res = {}
@@ -137,20 +161,43 @@ class MrpProductionStatsMixed(orm.Model):
                 #'align': 'left',
                 'border': 1,
                 }),
+            'text_number': WB.add_format({
+                'font_color': 'black',
+                'font_name': 'Courier 10 pitch',
+                'font_size': 9,
+                'align': 'right',
+                'border': 1,
+                }),
             'text_today': WB.add_format({
                 'font_color': 'black',
                 'font_name': 'Courier 10 pitch',
                 'font_size': 9,
-                #'align': 'left',
+                #'align': 'right',
                 'border': 1,
                 'bg_color': '#e6ffe6',
+                }),
+            'text_number_today': WB.add_format({
+                'font_color': 'black',
+                'font_name': 'Courier 10 pitch',
+                'font_size': 9,
+                'align': 'right',
+                'border': 1,
+                'bg_color': '#e6ffe6',
+                }),
+            'text_number_total': WB.add_format({
+                'font_color': 'black',
+                'font_name': 'Courier 10 pitch',
+                'font_size': 9,
+                'align': 'right',
+                'border': 1,
+                #'bg_color': '#e6ffe6',
                 }),
             'text_total': WB.add_format({
                 'font_color': 'blue',
                 'bold': True,
                 'font_name': 'Courier 10 pitch',
                 'font_size': 10,
-                #'align': 'left',
+                'align': 'right',
                 'border': 1,
                 }),
             'text_total_today': WB.add_format({
@@ -158,7 +205,7 @@ class MrpProductionStatsMixed(orm.Model):
                 'bold': True,
                 'font_name': 'Courier 10 pitch',
                 'font_size': 10,
-                #'align': 'left',
+                'align': 'right',
                 'border': 1,
                 'bg_color': '#e6ffe6',
                 }),
@@ -219,15 +266,15 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 1, _('Data'), xls_format['header'])
         WS.write(row, 2, _('Num. prod.'), xls_format['header']) # MRP
         WS.write(row, 3, _('Famiglia'), xls_format['header']) 
-        WS.write(row, 4, _('Appront.'), xls_format['header']) 
-        WS.write(row, 5, _('Lavoratori'), xls_format['header'])
+        WS.write(row, 4, _('Lavoratori'), xls_format['header'])
+        WS.write(row, 5, _('Appront.'), xls_format['header']) 
         WS.write(row, 6, _('Tot. pezzi'), xls_format['header'])
         WS.write(row, 7, _('Tempo'), xls_format['header'])
 
         # Write data:
         for wc in sorted(res, key=lambda x: x.name):
             wc_start = row
-            for date_planned in sorted(res[wc]):
+            for date_planned in sorted(res[wc], reverse=True):
                 dp_start = row
                 for line in res[wc][date_planned]:
                     row += 1     
@@ -237,23 +284,35 @@ class MrpProductionStatsMixed(orm.Model):
                             cell_format = xls_format['text_total_today']
                         else:    
                             cell_format = xls_format['text_total']
+                        cell_number_format = cell_format # same of text
+                            
                         WS.merge_range(
-                            row, 2, row, 3, _('TOTALE'), cell_format)
+                            row, 2, row, 4, _('TOTALE'), cell_format)
+                        WS.write(row, 4, '', cell_format) # No total workers
                     else:
                         if line.is_today:
                             cell_format = xls_format['text_today']
+                            cell_number_format = xls_format[
+                                'text_number_today']
                         else:    
                             cell_format = xls_format['text']
+                            cell_number_format = xls_format[
+                                'text_number_total']
+
                         WS.write(row, 2, line.production_id.name, cell_format)
                         WS.write(row, 3, line.product_id.name, cell_format) 
+                        WS.write(row, 4, line.workers, cell_format)
 
                     #Common part:                        
-                    WS.write(row, 4, line.startup, cell_format) 
-                    WS.write(row, 5, line.workers, cell_format)
-                    WS.write(row, 6, line.lavoration_qty, cell_format)
-                    WS.write(row, 7, line.hour, cell_format)
+                    WS.write(row, 5, format_hour(line.startup), 
+                        cell_number_format) 
+                    WS.write(row, 6, line.maked_qty, 
+                        cell_number_format)
+                    WS.write(row, 7, format_hour(line.hour), 
+                        cell_number_format)
                 dp_end = row
-                WS.merge_range(dp_start + 1, 1, dp_end, 1, date_planned, 
+                WS.merge_range(dp_start + 1, 1, dp_end, 1, 
+                    format_date(date_planned), 
                     xls_format['merge'])
                     
             wc_end = row
