@@ -167,14 +167,13 @@ class Parser(report_sxw.rml_parse):
                         continue # no future elements monitored
                 except:
                     break # field not present so no module installed        
-                available = p.mx_net_mrp_qty - p.mx_mrp_future_qty
+                available = int(p.mx_net_mrp_qty - p.mx_mrp_future_qty)
                 if available <= 0.0:    
                     continue
                 res += _('[%s q. %s] ') % (
                     p.default_code,
-                    available
-                    )
-                
+                    available,
+                    )                
             return res
             
         if data is None:
@@ -246,8 +245,9 @@ class Parser(report_sxw.rml_parse):
             else:
                 code1 = color
                 # Add extra line for BOM status:
-                records.append(
-                    ('BOM', line, get_bom_status_stock(last_product)))
+                bom_text = get_bom_status_stock(last_product)
+                if bom_text:
+                    records.append(('BOM', line, bom_text))
                 records.append(('T1', line, total1))
                 total1 = product_uom_qty
 
@@ -274,8 +274,9 @@ class Parser(report_sxw.rml_parse):
 
         # Append last totals if there's records:
         if records:
-            records.append(
-                ('BOM', line, get_bom_status_stock(last_product)))
+            bom_text = get_bom_status_stock(last_product)
+            if bom_text:
+                records.append(('BOM', line, bom_text))
             records.append(('T1', line, total1))
             records.append(('T2', line, total2))
         return records
