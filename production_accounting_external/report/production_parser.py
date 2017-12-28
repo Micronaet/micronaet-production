@@ -123,7 +123,6 @@ class Parser(report_sxw.rml_parse):
                 return name.split('/')[-1]
         except:
             return name        
-            
 
     def previous_record(self, value=False):
         ''' Save passed value as previouse record
@@ -155,26 +154,21 @@ class Parser(report_sxw.rml_parse):
             Sort for [4:6]-[9:12]
             Break on 2 block for total
         '''
-        def get_bom_status_stock(product):
-            ''' Return BOM elements status with future exit present                
+        def add_material_cut(product, material_db, todo):
+            ''' Add product in database for add on report
+                line: mrp.bom.line element
+                material_db: database for report
             '''
-            res = ''
-            
-            for item in product.dynamic_bom_line_ids:
-                p = item.product_id
-                try:
-                    if p.mx_mrp_future_qty <= 0:
-                        continue # no future elements monitored
-                except:
-                    break # field not present so no module installed        
-                available = int(p.mx_net_mrp_qty - p.mx_mrp_future_qty)
-                if available <= 0.0:    
-                    continue
-                res += _('[%s q. %s] ') % (
-                    p.default_code,
-                    available,
-                    )                
-            return res
+            for bom in product.dynamic_bom_line_ids:
+                if bom.category_id.department != 'cut':
+                    continue # only category element with department cut
+                
+                component = bom.product_id
+                todo_q = todo * bom.product_qty # Remain total
+                if component in material_db:
+                    material_db[component] += todo_q
+                else:    
+                    material_db[component] = todo_q
             
         if data is None:
             data = {}
@@ -195,20 +189,18 @@ class Parser(report_sxw.rml_parse):
         code1 = code2 = False
         total1 = total2 = 0.0
         records = []
-        last_product = False
 
         self.frames = {}
-        for line in lines:
-            if last_product == False:
-                last_product = line.product_id
-                
+        self.material_db = {}
+        for line in lines: # sale order line
+               
             # Variable:
-            product_uom_qty = line.product_uom_qty
-            product_uom_maked_sync_qty = line.product_uom_maked_sync_qty            
+            product_uom_qty = line.product_uom_qty # OC
+            product_uom_maked_sync_qty = line.product_uom_maked_sync_qty # B
+            delivered_qty = line.delivered_qty # Del.
             default_code = line.default_code
 
             if mode == 'clean': # remove delivered qty (OC and Maked)
-                delivered_qty = line.delivered_qty
                 product_uom_qty -= delivered_qty
                 product_uom_maked_sync_qty -= delivered_qty
                 if not product_uom_qty:
@@ -220,7 +212,15 @@ class Parser(report_sxw.rml_parse):
                     product_uom_qty -= product_uom_maked_sync_qty
                     if not product_uom_qty:
                         continue # jump empty line
-                    product_uom_maked_sync_qty = 0.0                    
+                    product_uom_maked_sync_qty = 0.0
+                todo = product_uom_qty
+            else: # normal mode
+                if product_uom_maked_sync_qty >= delivered_qty:
+                    todo = product_uom_qty - product_uom_maked_sync_qty
+                else:
+                    todo = product_uom_qty - delivered_qty
+            
+            add_material_cut(line.product_id, self.material_db, todo)
             
             # -------------
             # Check Frames:
@@ -244,10 +244,8 @@ class Parser(report_sxw.rml_parse):
                 total1 += product_uom_qty
             else:
                 code1 = color
+                
                 # Add extra line for BOM status:
-                bom_text = get_bom_status_stock(last_product)
-                if bom_text:
-                    records.append(('BOM', line, bom_text))
                 records.append(('T1', line, total1))
                 total1 = product_uom_qty
 
@@ -267,16 +265,9 @@ class Parser(report_sxw.rml_parse):
             # Append record line:
             # -------------------
             records.append(('L', line, False))
-            
-            # XXX Always ast line of the loop
-            if line.product_id != last_product:
-                last_product = line.product_id 
 
         # Append last totals if there's records:
         if records:
-            bom_text = get_bom_status_stock(last_product)
-            if bom_text:
-                records.append(('BOM', line, bom_text))
             records.append(('T1', line, total1))
             records.append(('T2', line, total2))
         return records
