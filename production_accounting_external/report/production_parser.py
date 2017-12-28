@@ -54,6 +54,7 @@ class Parser(report_sxw.rml_parse):
             'get_object_with_total_cut': self.get_object_with_total_cut,
             'get_pre_production': self.get_pre_production,
             'get_frames': self.get_frames,
+            'get_materials': self.get_materials,
             
             # remain report:
             'get_object_remain': self.get_object_remain,
@@ -149,6 +150,33 @@ class Parser(report_sxw.rml_parse):
         '''
         return self.frames
 
+    def get_materials(self, ):    
+        ''' Return materials object:
+        '''
+        res = []
+        # TODO check procedure:
+        for component in sorted(
+                self.material_db, key=lambda x: x.default_code):
+            stock = component.mx_net_mrp_qty
+            current = self.material_db[component]
+            future = component.mx_mrp_future_qty - current # NOTE: without this
+            available = stock - future
+            if not current:
+                cut = 0
+            elif available:
+                cut = current - available
+            else:
+                cut = current
+            
+            res.append((
+                component, # Component
+                int(current), # This MRP
+                int(stock), # Stock
+                int(future), # MRP open
+                int(cut), # Cut net
+                ))
+        return res
+
     def get_object_with_total_cut(self, o, data=None):
         ''' Get object with totals for normal report
             Sort for [4:6]-[9:12]
@@ -191,14 +219,14 @@ class Parser(report_sxw.rml_parse):
         records = []
 
         self.frames = {}
-        self.material_db = {}
+        self.material_db = {} # Database for next report
         for line in lines: # sale order line
+            default_code = line.default_code
                
             # Variable:
             product_uom_qty = line.product_uom_qty # OC
             product_uom_maked_sync_qty = line.product_uom_maked_sync_qty # B
             delivered_qty = line.delivered_qty # Del.
-            default_code = line.default_code
 
             if mode == 'clean': # remove delivered qty (OC and Maked)
                 product_uom_qty -= delivered_qty
@@ -213,7 +241,7 @@ class Parser(report_sxw.rml_parse):
                     if not product_uom_qty:
                         continue # jump empty line
                     product_uom_maked_sync_qty = 0.0
-                todo = product_uom_qty
+                todo = product_uom_qty # for next report 
             else: # normal mode
                 if product_uom_maked_sync_qty >= delivered_qty:
                     todo = product_uom_qty - product_uom_maked_sync_qty
