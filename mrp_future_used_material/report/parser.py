@@ -79,21 +79,18 @@ class Parser(report_sxw.rml_parse):
         bom_ids = bom_pool.search(cr, uid, [
             ('bom_id.bom_category', '=', 'dynamic'),
             ], context=context)
+
         product_ids = []    
         for line in bom_pool.browse(cr, uid, bom_ids, context=context):                
             if not line.category_id or not line.category_id.department or \
                     line.category_id.department not in department_select:
                 continue # jump department not used
-            cmpt = line.product_id                
+            cmpt = line.product_id        
             if cmpt.bom_placeholder or cmpt.bom_alternative:
                 continue # jump placeholder
             if cmpt.id not in product_ids:
                 product_ids.append(cmpt.id)
 
-        #product_ids = product_pool.search (cr, uid, [
-        #    ('mx_mrp_future_qty', '>', 0.0),
-        #    ], context=context)
-            
         # ---------------------------------------------------------------------
         # 2. Search product with available quantity:
         # ---------------------------------------------------------------------
@@ -102,16 +99,11 @@ class Parser(report_sxw.rml_parse):
             net = product.mx_net_mrp_qty
             future = product.mx_mrp_future_qty
             difference = net - future
+            # All records also difference negative
             if difference > 0.0:
-                res.append((
-                    product,
-                    net,
-                    future,
-                    difference,
-                    ))
+                res.append((product, net, future, difference))
          
         # ---------------------------------------------------------------------
         # 3. Sort product                
         # ---------------------------------------------------------------------
-        return sorted(res, key= lambda x: x[0].default_code)
-
+        return sorted(res, key=lambda x: x[0].default_code)
