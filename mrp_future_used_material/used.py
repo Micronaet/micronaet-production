@@ -160,9 +160,9 @@ class MrpProduction(orm.Model):
                 ], context=context)
 
             dbs = {} # for speed product bom load
-            # key = product browse, 
-            # value = list of (material, quantity) cut category and no placeh.
-            total = {}
+            #    key = product browse, 
+            #    value = list of (material, quantity) cut category and no p.h.
+            total = {} # product total (save in product future q.)
             i_tot = len(sol_ids)
             i = 0
             log_pool.log_data(u'SOL total: %s' % len(sol_ids), event_data)
@@ -224,7 +224,8 @@ class MrpProduction(orm.Model):
             # -----------------------------------------------------------------
             # Load all total in product:
             # -----------------------------------------------------------------
-            log_pool.log_data(u'Create future movement', event_data)
+            log_pool.log_data(
+                u'Update product total: # %s' % len(total), event_data)
             for product_id, mx_mrp_future_qty in total.iteritems():
                 product_pool.write(cr, uid, product_id, {
                     'mx_mrp_future_qty': mx_mrp_future_qty,
