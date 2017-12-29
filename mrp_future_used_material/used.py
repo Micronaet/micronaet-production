@@ -145,10 +145,6 @@ class MrpProduction(orm.Model):
             move_pool.unlink(cr, uid, move_ids, context=context)
             log_pool.log_data(u'Deleted future movement', event_data)
             
-            # Reset total in product:
-            cr.execute('UPDATE product_product set mx_mrp_future_qty=0;')
-            log_pool.log_data(u'Reset product total', event_data)
-        
             # -----------------------------------------------------------------
             # Load all line with remain:
             # -----------------------------------------------------------------
@@ -199,18 +195,16 @@ class MrpProduction(orm.Model):
                 if product not in dbs:
                     dbs[product] = [] # list of elements (component, qty)
                     for line in product.dynamic_bom_line_ids:
-                        if not line.category_id or not \
-                                line.category_id.department or \
-                                line.category_id.department not in \
-                                    department_select:
+                        if not (line.category_id and \
+                                line.category_id.department in
+                                    department_select):
                             continue # jump department not used
                         cmpt = line.product_id                
                         if cmpt.bom_placeholder or cmpt.bom_alternative:
                             continue # jump placeholder
-                        dbs[product].append((cmpt, line.product_qty))
+                        dbs[product].append((cmpt, line.product_qty))                        
 
                 for (cmpt, product_qty) in dbs[product]:
-                    cmpt = line.product_id                
                     qty = remain * product_qty
                     if cmpt.id in total:
                         total[cmpt.id] += qty
@@ -226,6 +220,11 @@ class MrpProduction(orm.Model):
             # -----------------------------------------------------------------
             # Load all total in product:
             # -----------------------------------------------------------------
+            # Reset total in product:
+            cr.execute('UPDATE product_product set mx_mrp_future_qty=0;')
+            log_pool.log_data(u'Reset product total', event_data)
+            
+            # Reload totals:
             log_pool.log_data(
                 u'Update product total: # %s' % len(total), event_data)
             for product_id, mx_mrp_future_qty in total.iteritems():
