@@ -114,4 +114,7 @@ class Parser(report_sxw.rml_parse):
         # ---------------------------------------------------------------------
         # 3. Sort product                
         # ---------------------------------------------------------------------        
-        return sorted(res, key=lambda x: x[0].default_code)
+        all_object = sorted(res, key=lambda x: x[0].default_code)
+        top10_object = sorted(res, key=lambda x: x[3], reverse=True)[:10]
+        return all_object, top10_object
+        #sorted(res, key=lambda x: x[0].default_code)
