@@ -110,11 +110,13 @@ class Parser(report_sxw.rml_parse):
 
         # Restore status no_inventory_status:
         user_pool.set_no_inventory_status(
-            cr, uid, value=previous_status, context=context)            
+            cr, uid, value=previous_status, context=context)    
+                    
         # ---------------------------------------------------------------------
         # 3. Sort product                
-        # ---------------------------------------------------------------------        
-        all_object = sorted(res, key=lambda x: x[0].default_code)
-        top10_object = sorted(res, key=lambda x: x[3], reverse=True)[:10]
-        return all_object, top10_object
+        # ---------------------------------------------------------------------
+        return [(
+            sorted(res, key=lambda x: x[0].default_code), # All
+            sorted(res, key=lambda x: x[3], reverse=True)[:10], # Top 10
+            )]
         #sorted(res, key=lambda x: x[0].default_code)
