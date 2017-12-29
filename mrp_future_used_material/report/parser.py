@@ -64,6 +64,9 @@ class Parser(report_sxw.rml_parse):
         cr = self.cr
         uid = self.uid
         context = {}
+        
+        # Parameter:
+        department_select = ('cut', )
 
         res = []
         product_pool = self.pool.get('product.product')
@@ -71,9 +74,25 @@ class Parser(report_sxw.rml_parse):
         # ---------------------------------------------------------------------
         # 1. Select product with future move:
         # ---------------------------------------------------------------------
-        product_ids = product_pool.search (cr, uid, [
-            ('mx_mrp_future_qty', '>', 0.0),
+        # list of product of 'cut' category department, no placeholder:
+        bom_pool = self.pool.get('mrp.bom.line')
+        bom_ids = bom_pool.search(cr, uid, [
+            ('bom_id.bom_category', '=', 'dynamic'),
             ], context=context)
+        product_ids = []    
+        for line in bom_pool.browse(cr, uid, bom_ids, context=context):                
+            if not line.category_id or not line.category_id.department or \
+                    line.category_id.department not in department_select:
+                continue # jump department not used
+            cmpt = line.product_id                
+            if cmpt.bom_placeholder or cmpt.bom_alternative:
+                continue # jump placeholder
+            if cmpt.id not in product_ids:
+                product_ids.append(cmpt.id)
+
+        #product_ids = product_pool.search (cr, uid, [
+        #    ('mx_mrp_future_qty', '>', 0.0),
+        #    ], context=context)
             
         # ---------------------------------------------------------------------
         # 2. Search product with available quantity:

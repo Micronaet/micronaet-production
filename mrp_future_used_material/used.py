@@ -119,11 +119,12 @@ class MrpProduction(orm.Model):
             cr, uid, 'FUTUREMRP', context=context)
         event_data = {}
 
-        if department_select is None:
-            department_select = []
-        else:
-            if type(department_select) not in (list, tuple):
-                department_select = department_select.split(',')
+        if type(department_select) not in (list, tuple): # End with error!
+            log_pool.log_data(u'No department list passed: %s' % (
+                department_select,
+                ), event_data, mode='error')
+            return log_pool.log_stop_event(
+                cr, uid, event_id, event_data, context=context)                    
         
         log_pool.log_data(u'''Parameter: 
             [Department %s] [Only HW: %s] [mail: %s] [Regenerate %s]''' % (
@@ -198,9 +199,10 @@ class MrpProduction(orm.Model):
                 if product not in dbs:
                     dbs[product] = [] # list of elements (component, qty)
                     for line in product.dynamic_bom_line_ids:
-                        if department_select and line.category_id and \
+                        if not line.category_id or not \
+                                line.category_id.department or \
                                 line.category_id.department not in \
-                                department_select:
+                                    department_select:
                             continue # jump department not used
                         cmpt = line.product_id                
                         if cmpt.bom_placeholder or cmpt.bom_alternative:
