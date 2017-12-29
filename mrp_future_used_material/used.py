@@ -160,6 +160,8 @@ class MrpProduction(orm.Model):
                 ], context=context)
 
             dbs = {} # for speed product bom load
+            # key = product browse, 
+            # value = list of (material, quantity) cut category and no placeh.
             total = {}
             i_tot = len(sol_ids)
             i = 0
@@ -191,20 +193,24 @@ class MrpProduction(orm.Model):
                     'product_id': product.id,
                     'remain': remain,                
                     }
+                
+                # Speed up loading now elements:    
                 if product not in dbs:
-                    dbs[product] = product.dynamic_bom_line_ids
+                    dbs[product] = [] # list of elements (component, qty)
+                    for line in product.dynamic_bom_line_ids:
+                        if department_select and line.category_id and \
+                                line.category_id.department not in \
+                                department_select:
+                            continue # jump department not used
+                        material = line.product_id                
+                        if material.bom_placeholder or 
+                                material.bom_alternative:
+                            continue # jump placeholder
+                        dbs[product].append((material, line.product_qty))
 
-                for line in dbs[product]:
-                    if department_select and line.category_id and \
-                            line.category_id.department not in \
-                            department_select:
-                        continue # jump department not used
-
+                for (material, product_qty) in dbs[product]:
                     material = line.product_id                
-                    if material.bom_placeholder or material.bom_alternative:
-                        continue # jump placeholder
-
-                    qty = remain * line.product_qty
+                    qty = remain * product_qty
                     if material.id in total:
                         total[material.id] += qty
                     else:   
