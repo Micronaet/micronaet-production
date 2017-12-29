@@ -71,6 +71,11 @@ class Parser(report_sxw.rml_parse):
         res = []
         product_pool = self.pool.get('product.product')
         
+        # Set inventory status: 
+        user_pool = self.pool.get('res.users')
+        previous_status = user_pool.set_no_inventory_status(
+            cr, uid, value=False, context=context)
+        
         # ---------------------------------------------------------------------
         # 1. Select product with future move:
         # ---------------------------------------------------------------------
@@ -102,8 +107,11 @@ class Parser(report_sxw.rml_parse):
             # All records also difference negative
             if difference > 0.0:
                 res.append((product, net, future, difference))
-         
+
+        # Restore status no_inventory_status:
+        user_pool.set_no_inventory_status(
+            cr, uid, value=previous_status, context=context)            
         # ---------------------------------------------------------------------
         # 3. Sort product                
-        # ---------------------------------------------------------------------
+        # ---------------------------------------------------------------------        
         return sorted(res, key=lambda x: x[0].default_code)
