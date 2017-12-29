@@ -81,7 +81,7 @@ class ProductProduct(orm.Model):
             'res_id': ids[0],
             'res_model': 'product.product',
             #'view_id': view_id, # False
-            'views': [(False, 'form'),(False, 'tree')],
+            'views': [(False, 'form'), (False, 'tree')],
             'domain': [],
             'context': context,
             'target': 'current', # 'new'
