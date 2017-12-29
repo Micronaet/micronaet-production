@@ -38,6 +38,7 @@
         'production_accounting_external', # MRP management
         'bom_dynamic_structured', # BOM dynamic management
         'report_aeroo',
+        'activity_start_stop_log', # Log event
         ],
     'init_xml': [],
     'demo': [],

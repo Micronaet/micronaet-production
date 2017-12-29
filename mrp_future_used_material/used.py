@@ -108,45 +108,53 @@ class MrpProduction(orm.Model):
         _logger.info('Start update future movement of MRP')
         
         # Pool used:
+        log_pool = self.pool.get('ir.activity.log.event')
         move_pool = self.pool.get('mrp.production.future.move')
         sol_pool = self.pool.get('sale.order.line')
         product_pool = self.pool.get('product.product')
         cron_pool = self.pool.get('ir.cron')
+
+        # Log event:
+        event_id = log_pool.log_start_event(
+            cr, uid, 'FUTUREMRP', context=context)
+        event_data = {}
 
         if department_select is None:
             department_select = []
         else:
             if type(department_select) not in (list, tuple):
                 department_select = department_select.split(',')
-                
-        _logger.info('''
-            Parameter: 
-            [Department %s] [Only HW: %s] [mail: %s] [Regenerate %s]
-            ''' % (
+        
+        log_pool.log_data(u'''Parameter: 
+            [Department %s] [Only HW: %s] [mail: %s] [Regenerate %s]''' % (
                 department_select,
                 only_hw,
                 send_mail,
                 regenerate,
-                ))
+                ), event_data)
 
         if regenerate:
             # -----------------------------------------------------------------
             # Reset situations:
             # -----------------------------------------------------------------
-            _logger.info('Remove all movements')
+            log_pool.log_data(u'Remove all movements', event_data)
+            
             # Remove all movement
             move_ids = move_pool.search(cr, uid, [], context=context)
             move_pool.unlink(cr, uid, move_ids, context=context)
-            _logger.info('Deletet future movement')
+            log_pool.log_data(u'Deleted future movement', event_data)
             
             # Reset total in product:
             cr.execute('UPDATE product_product set mx_mrp_future_qty=0;')
-            _logger.info('Reset product total')
+            log_pool.log_data(u'Reset product total', event_data)
         
             # -----------------------------------------------------------------
             # Load all line with remain:
             # -----------------------------------------------------------------
-            _logger.info('Explore MRP situation for future movements')
+            log_pool.log_data(
+                u'Explore MRP situation for future movements', 
+                event_data,
+                )
             sol_ids = sol_pool.search(cr, uid, [
                 ('mrp_id.state', 'not in', ('cancel', 'done')), # XXX draft?            
                 ], context=context)
@@ -155,9 +163,10 @@ class MrpProduction(orm.Model):
             total = {}
             i_tot = len(sol_ids)
             i = 0
+            log_pool.log_data(u'SOL total: %s' % len(sol_ids), event_data)
             for sol in sol_pool.browse(cr, uid, sol_ids, context=context):
                 i += 1
-                _logger.info('SOL analysed: %s of %s' % (i, i_tot))
+                _logger.info(u'SOL analysed: %s of %s' % (i, i_tot))
                 
                 # Qty used:
                 oc_qty = sol.product_uom_qty
@@ -210,17 +219,17 @@ class MrpProduction(orm.Model):
             # -----------------------------------------------------------------
             # Load all total in product:
             # -----------------------------------------------------------------
-            _logger.info('Create future movement')
+            log_pool.log_data(u'Create future movement', event_data)
             for product_id, mx_mrp_future_qty in total.iteritems():
                 product_pool.write(cr, uid, product_id, {
                     'mx_mrp_future_qty': mx_mrp_future_qty,
                     }, context=context)
-            _logger.info('End update future movement of MRP')
+            log_pool.log_data(u'End update future movement of MRP', event_data)
 
         # ---------------------------------------------------------------------
         # Send email with available data
         # ---------------------------------------------------------------------
-        _logger.info('Create mail for send report')
+        log_pool.log_data(u'Create mail for send report', event_data)
         datas = {
             'model': 'mrp.production.future.move',
             #'active_id': False,
@@ -237,8 +246,10 @@ class MrpProduction(orm.Model):
                 'mrp_available_future_hw_report_status', 
                 datas, context)
         except:
-            _logger.error('Error generation TX report [%s]' % (
-                sys.exc_info(),))
+            log_pool.log_data(u'Error generation TX report [%s]' % (
+                sys.exc_info(), ), event_data, mode='error')
+            log_pool.log_stop_event(
+                cr, uid, event_id, event_data, context=context)    
             return False    
 
         now = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
@@ -249,6 +260,10 @@ class MrpProduction(orm.Model):
         # Send report:
         # ---------------------------------------------------------------------
         if not send_mail:
+            # Log stop event:    
+            log_pool.log_data(u'No mail report sent', event_data)
+            log_pool.log_stop_event(
+                cr, uid, event_id, event_data, context=context)    
             return True
             
         # Send mail with attachment:
@@ -276,5 +291,11 @@ class MrpProduction(orm.Model):
             attachments=attachments, 
             context=context,
             )
+            
+        # Log stop event:
+        log_pool.log_data(u'Mail report sent: partner_ids: %s' % (
+            partner_ids, ), event_data)
+        log_pool.log_stop_event(
+            cr, uid, event_id, event_data, context=context)    
         return True
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
