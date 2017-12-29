@@ -202,22 +202,21 @@ class MrpProduction(orm.Model):
                                 line.category_id.department not in \
                                 department_select:
                             continue # jump department not used
-                        material = line.product_id                
-                        if material.bom_placeholder or 
-                                material.bom_alternative:
+                        cmpt = line.product_id                
+                        if cmpt.bom_placeholder or cmpt.bom_alternative:
                             continue # jump placeholder
-                        dbs[product].append((material, line.product_qty))
+                        dbs[product].append((cmpt, line.product_qty))
 
-                for (material, product_qty) in dbs[product]:
-                    material = line.product_id                
+                for (cmpt, product_qty) in dbs[product]:
+                    cmpt = line.product_id                
                     qty = remain * product_qty
-                    if material.id in total:
-                        total[material.id] += qty
+                    if cmpt.id in total:
+                        total[cmpt.id] += qty
                     else:   
-                        total[material.id] = qty
+                        total[cmpt.id] = qty
 
                     data.update({
-                        'material_id': material.id,
+                        'material_id': cmpt.id,
                         'qty': qty,
                         })
                     move_pool.create(cr, uid, data, context=context)    
