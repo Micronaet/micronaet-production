@@ -87,10 +87,24 @@ class ProductProduct(orm.Model):
             'target': 'current', # 'new'
             'nodestroy': False,
             }
-    
+
+    # Fields function:    
+    def _get_mx_mrp_future_qty(self, cr, uid, ids, fields, args, context=None):
+        ''' Fields function for calculate future total for product
+        '''    
+        res = {}
+        for product in self.browse(cr, uid, ids, context=context):
+            res[product.id] = 0.0
+            for future in product.future_ids:
+                res[product.id] += future.qty
+        return res
+        
     _columns = {
-        'mx_mrp_future_qty': fields.float(
-            'Q. MRP future', digits=(16, 3)),
+        'mx_mrp_future_qty': fields.function(
+            _get_mx_mrp_future_qty, method=True, 
+            type='float', string='Q. MRP future', store=False),                         
+        'future_ids': fields.one2many(
+            'mrp.production.future.move', 'material_id', 'Future material'),
         }    
 
 class MrpProduction(orm.Model):
@@ -159,7 +173,6 @@ class MrpProduction(orm.Model):
             dbs = {} # for speed product bom load
             #    key = product browse, 
             #    value = list of (material, quantity) cut category and no p.h.
-            total = {} # product total (save in product future q.)
             i_tot = len(sol_ids)
             i = 0
             log_pool.log_data(u'SOL total: %s' % len(sol_ids), event_data)
@@ -205,33 +218,11 @@ class MrpProduction(orm.Model):
                         dbs[product].append((cmpt, line.product_qty))                        
 
                 for (cmpt, product_qty) in dbs[product]:
-                    qty = remain * product_qty
-                    if cmpt.id in total:
-                        total[cmpt.id] += qty
-                    else:   
-                        total[cmpt.id] = qty
-
                     data.update({
                         'material_id': cmpt.id,
-                        'qty': qty,
+                        'qty': remain * product_qty,
                         })
                     move_pool.create(cr, uid, data, context=context)    
-
-            # -----------------------------------------------------------------
-            # Load all total in product:
-            # -----------------------------------------------------------------
-            # Reset total in product:
-            cr.execute('UPDATE product_product set mx_mrp_future_qty=0;')
-            log_pool.log_data(u'Reset product total', event_data)
-            
-            # Reload totals:
-            log_pool.log_data(
-                u'Update product total: # %s' % len(total), event_data)
-            for product_id, mx_mrp_future_qty in total.iteritems():
-                product_pool.write(cr, uid, product_id, {
-                    'mx_mrp_future_qty': mx_mrp_future_qty,
-                    }, context=context)
-            log_pool.log_data(u'End update future movement of MRP', event_data)
 
         # ---------------------------------------------------------------------
         # Send email with available data
