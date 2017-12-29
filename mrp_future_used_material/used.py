@@ -239,9 +239,7 @@ class MrpProduction(orm.Model):
         log_pool.log_data(u'Create mail for send report', event_data)
         datas = {
             'model': 'mrp.production.future.move',
-            #'active_id': False,
-            #'active_ids': [],
-            #'context': context,
+            #'active_id': False, 'active_ids': [], 'context': context,
             }
 
         # ---------------------------------------------------------------------
