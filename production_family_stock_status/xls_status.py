@@ -191,15 +191,15 @@ class ProductTemplate(orm.Model):
             }
 
         # Setup columns:
-        WS['raw'][0].set_column('A:C', 12)
+        WS['raw'][0].set_column('A:D', 12)
         WS['raw'][0].set_column('B:B', 25)
-        WS['raw'][0].set_column('D:D', 50)
+        WS['raw'][0].set_column('E:E', 50)
         
-        WS['hw'][0].set_column('A:C', 12)
+        WS['hw'][0].set_column('A:D', 12)
         WS['hw'][0].set_column('B:B', 25)
-        WS['hw'][0].set_column('D:D', 50)
+        WS['hw'][0].set_column('E:ED', 50)
 
-        WS['product'][0].set_column('A:C', 12)
+        WS['product'][0].set_column('A:D', 12)
         WS['product'][0].set_column('B:B', 25)
 
         # Header:
