@@ -240,7 +240,6 @@ class MrpProductionStatsMixed(orm.Model):
         # ---------------------------------------------------------------------
         #                   EXCEL: SHEET 1 Today statistic:
         # ---------------------------------------------------------------------
-        import pdb; pdb.set_trace()
         # Collect data:
         line_pool = self.pool.get('mrp.production.stats')
         line_ids = line_pool.search(cr, uid, [
