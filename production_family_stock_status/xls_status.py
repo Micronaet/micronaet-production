@@ -232,7 +232,7 @@ class ProductTemplate(orm.Model):
                 products.append(product)
                 
             # XXX No dynamic bom in product is error         
-            for l1 in product.dynamic_bom_ids:
+            for l1 in product.dynamic_bom_line_ids:
                 product_l1 = l1.product_id
                 half_bom_ids = product_l1.half_bom_ids # Has HW BOM?
                 
