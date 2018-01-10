@@ -242,7 +242,7 @@ class ProductTemplate(orm.Model):
                 cr, uid, product_ids, context=context):                
                 
             if product not in products:
-                products[product] = False # not used
+                products[product] = () # not used
                 
             # XXX No dynamic bom in product is error         
             for l1 in product.dynamic_bom_line_ids:
@@ -277,9 +277,10 @@ class ProductTemplate(orm.Model):
                 WS[block][0].write(row, 1, product.name, cell_format)
                 WS[block][0].write(row, 2, product.mx_net_mrp_qty, cell_format)
                 WS[block][0].write(row, 3, product.mx_lord_qty, cell_format)
-                if table[product]: # Write precence:
+                presence =  WS[block][2][product]
+                if presence:
                     text = '%s' % ([p.default_code for p in sorted(
-                        table[product]], key=lambda x: x.default_code), )
+                        presence, key=lambda x: x.default_code)], )
                     WS[block][0].write(row, 4, text, cell_format)                    
         WB.close()
         
