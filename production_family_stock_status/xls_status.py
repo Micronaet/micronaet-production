@@ -185,31 +185,43 @@ class ProductTemplate(orm.Model):
         # ---------------------------------------------------------------------
         # Create WS: 
         WS = {
-            'raw': [WB.add_worksheet('Stato componenti'), 1, []],
-            'hw': [WB.add_worksheet('Stato semilavorati'), 1, []],
-            'product': [WB.add_worksheet('Prodotti'), 1, []],
+            'raw': [WB.add_worksheet('Stato componenti'), 1, {}],
+            'hw': [WB.add_worksheet('Stato semilavorati'), 1, {}],
+            'product': [WB.add_worksheet('Prodotti'), 1, {}],
             }
 
         # Setup columns:
-        WS['raw'][0].set_column('A:F', 12)
-        WS['hw'][0].set_column('A:F', 12)
-        WS['product'][0].set_column('A:F', 12)
+        WS['raw'][0].set_column('A:C', 12)
+        WS['raw'][0].set_column('B:B', 25)
+        WS['raw'][0].set_column('D:D', 50)
+        
+        WS['hw'][0].set_column('A:C', 12)
+        WS['hw'][0].set_column('B:B', 25)
+        WS['hw'][0].set_column('D:D', 50)
+
+        WS['product'][0].set_column('A:C', 12)
+        WS['product'][0].set_column('B:B', 25)
 
         # Header:
         row = 0
-        WS['raw'][0].write(row, 0, 'Prodotto', xls_format['header'])
-        WS['raw'][0].write(row, 1, 'Netto', xls_format['header'])
-        WS['raw'][0].write(row, 2, 'Lordo', xls_format['header'])
+        WS['raw'][0].write(row, 0, 'Codice', xls_format['header'])
+        WS['raw'][0].write(row, 1, 'Nome', xls_format['header'])
+        WS['raw'][0].write(row, 2, 'Netto', xls_format['header'])
+        WS['raw'][0].write(row, 3, 'Lordo', xls_format['header'])
+        WS['raw'][0].write(row, 4, 'Presenza', xls_format['header'])
         #WS['component'][0].write(row, 1, 'Future', xls_format['title'])
 
-        WS['hw'][0].write(row, 0, 'Prodotto', xls_format['header'])
-        WS['hw'][0].write(row, 1, 'Netto', xls_format['header'])
-        WS['hw'][0].write(row, 2, 'Lordo', xls_format['header'])
+        WS['hw'][0].write(row, 0, 'Codice', xls_format['header'])
+        WS['hw'][0].write(row, 1, 'Nome', xls_format['header'])
+        WS['hw'][0].write(row, 2, 'Netto', xls_format['header'])
+        WS['hw'][0].write(row, 3, 'Lordo', xls_format['header'])
+        WS['hw'][0].write(row, 4, 'Presenza', xls_format['header'])
         #WS['component'][0].write(row, 1, 'Future', xls_format['title'])
 
-        WS['product'][0].write(row, 0, 'Prodotto', xls_format['header'])
-        WS['product'][0].write(row, 1, 'Netto', xls_format['header'])
-        WS['product'][0].write(row, 2, 'Lordo', xls_format['header'])
+        WS['product'][0].write(row, 0, 'Codice', xls_format['header'])
+        WS['product'][0].write(row, 1, 'Nome', xls_format['header'])
+        WS['product'][0].write(row, 2, 'Netto', xls_format['header'])
+        WS['product'][0].write(row, 3, 'Lordo', xls_format['header'])
         #WS['component'][0].write(row, 1, 'Future', xls_format['title'])
                 
         # ---------------------------------------------------------------------
@@ -230,7 +242,7 @@ class ProductTemplate(orm.Model):
                 cr, uid, product_ids, context=context):                
                 
             if product not in products:
-                products.append(product)
+                products[product] = False # not used
                 
             # XXX No dynamic bom in product is error         
             for l1 in product.dynamic_bom_line_ids:
@@ -239,17 +251,21 @@ class ProductTemplate(orm.Model):
                 
                 if half_bom_ids: # is HW level 1 element
                     if product_l1 not in hws:
-                        hws.append(product_l1)
+                        hws[product_l1] = []
+                    hws[product_l1].append(product) # product precence
                         
                     for l2 in half_bom_ids: # Loop raw material level 2
                         product_l2 = l2.product_id
                         
                         if product_l2 not in raws:
-                            raws.append(product_l2)
+                            raws[product_l2] = []
+                        raws[product_l2].append(product)    
 
                 else: # Is raw material level 1 element
                     if product_l1 not in raws:
-                        raws.append(product_l1)
+                        raws[product_l1] = []
+                    raws[product_l1].append(product)    
+                        
                         
         cell_format = xls_format['text']
         for block in WS:
@@ -261,6 +277,10 @@ class ProductTemplate(orm.Model):
                 WS[block][0].write(row, 1, product.name, cell_format)
                 WS[block][0].write(row, 2, product.mx_net_mrp_qty, cell_format)
                 WS[block][0].write(row, 3, product.mx_lord_qty, cell_format)
+                if table[product]: # Write precence:
+                    text = '%s' % ([p.default_code for p in sorted(
+                        table[product]], key=lambda x: x.default_code), )
+                    WS[block][0].write(row, 4, text, cell_format)                    
         WB.close()
         
         # Return XLSX file:       
