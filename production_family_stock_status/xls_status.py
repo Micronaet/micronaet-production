@@ -216,6 +216,7 @@ class ProductTemplate(orm.Model):
         # Collect data:        
         # ---------------------------------------------------------------------
         product_pool = self.pool.get('product.product')
+        attachment_pool = self.pool.get('ir.attachment')
         product_ids = product_pool.search(cr, uid, [
             ('family_id', '=', ids[0]),
             ], context=None)
