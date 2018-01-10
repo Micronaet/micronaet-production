@@ -98,21 +98,14 @@ class MrpProductionStatsMixed(orm.Model):
         # ---------------------------------------------------------------------
         res = {}
         now = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        
         # TODO Collect data in res
         now_0 = datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
+        now_1 = (datetime.now() - timedelta(days=1)).strftime(
+            DEFAULT_SERVER_DATE_FORMAT)
         now_9 = (datetime.now() - timedelta(days=9)).strftime(
             DEFAULT_SERVER_DATE_FORMAT)
-        stats_ids = self.search(cr, uid, [
-            #('date_planned', '>=', now_9),
-            #('date_planned', '<=', now_0),            
-            ], context=context)
-        for line in self.browse(cr, uid, stats_ids, context=context):
-            if line.workcenter_id not in res:
-                res[line.workcenter_id] = {}
-            if line.date_planned not in res[line.workcenter_id]:
-                res[line.workcenter_id][line.date_planned] = []
-            res[line.workcenter_id][line.date_planned].append(line)
-        
+            
         # ---------------------------------------------------------------------
         #                           Excel file:
         # ---------------------------------------------------------------------
@@ -121,7 +114,6 @@ class MrpProductionStatsMixed(orm.Model):
         _logger.info('Temp file: %s' % filename)        
 
         WB = xlsxwriter.Workbook(filename)
-        WS = WB.add_worksheet('Statistiche')
         
         # B. Format class:
         num_format = '#,##0'
@@ -245,14 +237,79 @@ class MrpProductionStatsMixed(orm.Model):
                 }),
             }
             
-        # C. Prepare file layout:
+        # ---------------------------------------------------------------------
+        #                   EXCEL: SHEET 1 Today statistic:
+        # ---------------------------------------------------------------------
+        # Collect data:
+        line_pool = self.pool.get('mrp.production.stats')
+        line_ids = line_pool.search(cr, uid, [
+            ('date', '=', now_1),
+            ], context=context)
+
+        WS = WB.add_worksheet('Ieri')
+        WS.set_column('A:F', 12)
+        
+        # Write title row:
+        row = 0
+        WS.write(row, 0, 
+            'Produzione di ieri, data rif.: %s' % now_1, 
+            xls_format['title'],
+            )
+
+        # Header line:
+        row += 1
+        WS.write(row, 0, _('Linea'), xls_format['header'])
+        WS.write(row, 1, _('Data'), xls_format['header'])
+        WS.write(row, 2, _('Num. prod.'), xls_format['header']) # MRP
+        WS.write(row, 3, _('Famiglia'), xls_format['header']) 
+        WS.write(row, 4, _('Lavoratori'), xls_format['header'])
+        WS.write(row, 5, _('Appront.'), xls_format['header']) 
+        WS.write(row, 6, _('Tot. pezzi'), xls_format['header'])
+        WS.write(row, 7, _('Tempo'), xls_format['header'])
+        WS.write(row, 8, _('Pz / H'), xls_format['header'])
+
+        # Write data:
+        for line in sorted(
+                line_pool.browse(cr, uid, line_ids, context=context), 
+                key=lambda x: (
+                    x.name, # Line
+                    x.mrp_id.bom_id.product_tmpl_id.name, # Family
+                    )):
+            WS.write(row, 0, line.workcenter_id.name, cell_format)
+            WS.write(row, 1, line.date, cell_format)
+            WS.write(row, 2, line.mrp_id.name, cell_format)
+            WS.write(row, 3, line.mrp_id.bom_id.product_tmpl_id.name, 
+                cell_format)
+            WS.write(row, 4, line.workers, cell_format)
+            WS.write(row, 5, line.startup, cell_format)
+            WS.write(row, 6, line.total, cell_format)
+            WS.write(row, 7, line.hour, cell_format)
+            if line.hour:
+                WS.write(row, 8, line.total / line.hour, cell_format)
+            else:    
+                WS.write(row, 8, 'ERRORE', cell_format)
+            row += 1
+        
+        # ---------------------------------------------------------------------
+        #                 EXCEL: SHEET 2 Week total statistic:
+        # ---------------------------------------------------------------------
+        # Collect data:
+        stats_ids = self.search(cr, uid, [
+            #('date_planned', '>=', now_9),
+            #('date_planned', '<=', now_0),            
+            ], context=context)
+        for line in self.browse(cr, uid, stats_ids, context=context):
+            if line.workcenter_id not in res:
+                res[line.workcenter_id] = {}
+            if line.date_planned not in res[line.workcenter_id]:
+                res[line.workcenter_id][line.date_planned] = []
+            res[line.workcenter_id][line.date_planned].append(line)
+
+        WS = WB.add_worksheet('Settimanali')
         WS.set_column('A:A', 12)
         WS.set_column('B:D', 15)
         WS.set_column('E:H', 8)
-        
-        # ---------------------------------------------------------------------
-        # Write data on file:
-        # ---------------------------------------------------------------------
+
         # Write title row:
         row = 0
         WS.write(row, 0, 
