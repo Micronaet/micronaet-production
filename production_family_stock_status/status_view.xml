@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_button_open_family_status_report_tree">
+            <field name="name">product.product.tree</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_product_tree_view"/>
+            <field name="arch" type="xml">
+                <field name="state" position="before">
+                    <field name="family_id" invisible="1" />
+                    <button name="template_print_family_stock_status" string="Stato magazzino componenti famiglia" type="object" icon="gtk-print" attrs="{'invisible': [('family_id','=',False)]}" />
+                </field>
+            </field>
+        </record>
+
+    </data>
+</openerp>
+
