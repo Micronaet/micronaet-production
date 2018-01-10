@@ -279,8 +279,8 @@ class ProductTemplate(orm.Model):
                 WS[block][0].write(row, 3, product.mx_lord_qty, cell_format)
                 presence =  WS[block][2][product]
                 if presence:
-                    text = '%s' % ([p.default_code for p in sorted(
-                        presence, key=lambda x: x.default_code)], )
+                    text = ' '.join(['[%s]' % p.default_code for p in sorted(
+                        presence, key=lambda x: x.default_code)])
                     WS[block][0].write(row, 4, text, cell_format)                    
         WB.close()
         
