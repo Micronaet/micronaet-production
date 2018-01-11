@@ -14,6 +14,13 @@
             </field>
         </record>
 
+    <!--Add menu in sales-->
+    <menuitem name="Famiglie"
+        parent="base.menu_base_config" 
+        id="menu_configuration_family_sales" 
+        action="production_family.action_view_configuration_family" 
+        sequence="30" />       
+
     </data>
 </openerp>
 
