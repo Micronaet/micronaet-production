@@ -181,29 +181,44 @@ class ProductTemplate(orm.Model):
             }
             
         # ---------------------------------------------------------------------
+        # Collect data:        
+        # ---------------------------------------------------------------------
+        product_pool = self.pool.get('product.product')
+        attachment_pool = self.pool.get('ir.attachment')
+        product_ids = product_pool.search(cr, uid, [
+            ('family_id', '=', ids[0]),
+            ], context=None)
+        product_proxy = product_pool.browse(
+            cr, uid, product_ids, context=context)
+        if product_ids:
+            family_name = product_proxy[0].family_id.name
+        else:
+            family_name = '?'
+
+        # ---------------------------------------------------------------------
         #               EXCEL: Product status component
         # ---------------------------------------------------------------------
         # Create WS: 
         WS = {
             'raw': [WB.add_worksheet('Stato componenti'), 1, {}],
             'hw': [WB.add_worksheet('Stato semilavorati'), 1, {}],
-            'product': [WB.add_worksheet('Prodotti'), 1, {}],
+            'product': [WB.add_worksheet('Prodotti'), 2, {}],
             }
 
         # Setup columns:
         WS['raw'][0].set_column('A:A', 12)
-        WS['raw'][0].set_column('B:B', 25)
-        WS['raw'][0].set_column('C:D', 12)
-        WS['raw'][0].set_column('E:E', 100)
+        WS['raw'][0].set_column('B:B', 35)
+        WS['raw'][0].set_column('C:D', 8)
+        WS['raw'][0].set_column('E:E', 120)
         
         WS['hw'][0].set_column('A:A', 12)
-        WS['hw'][0].set_column('B:B', 25)
-        WS['hw'][0].set_column('C:D', 12)
-        WS['hw'][0].set_column('E:E', 100)
+        WS['hw'][0].set_column('B:B', 35)
+        WS['hw'][0].set_column('C:D', 8)
+        WS['hw'][0].set_column('E:E', 120)
 
         WS['product'][0].set_column('A:A', 12)
-        WS['product'][0].set_column('B:B', 25)
-        WS['product'][0].set_column('C:D', 12)
+        WS['product'][0].set_column('B:B', 35)
+        WS['product'][0].set_column('C:D', 8)
 
         # Header:
         row = 0
@@ -221,28 +236,24 @@ class ProductTemplate(orm.Model):
         WS['hw'][0].write(row, 4, 'Presenza', xls_format['header'])
         #WS['component'][0].write(row, 1, 'Future', xls_format['title'])
 
-        WS['product'][0].write(row, 0, 'Codice', xls_format['header'])
-        WS['product'][0].write(row, 1, 'Nome', xls_format['header'])
-        WS['product'][0].write(row, 2, 'Netto', xls_format['header'])
-        WS['product'][0].write(row, 3, 'Lordo', xls_format['header'])
+        WS['product'][0].write(
+            0, 0, 
+            'Famiglia selezionata: %s' % family_name, 
+            xls_format['title'],
+            )
+
+        WS['product'][0].write(1, 0, 'Codice', xls_format['header'])
+        WS['product'][0].write(1, 1, 'Nome', xls_format['header'])
+        WS['product'][0].write(1, 2, 'Netto', xls_format['header'])
+        WS['product'][0].write(1, 3, 'Lordo', xls_format['header'])
         #WS['component'][0].write(row, 1, 'Future', xls_format['title'])
                 
-        # ---------------------------------------------------------------------
-        # Collect data:        
-        # ---------------------------------------------------------------------
-        product_pool = self.pool.get('product.product')
-        attachment_pool = self.pool.get('ir.attachment')
-        product_ids = product_pool.search(cr, uid, [
-            ('family_id', '=', ids[0]),
-            ], context=None)
-
         # Database:
         raws = WS['raw'][2] # Level 1 and 2 raw material
         hws = WS['hw'][2] # Level 1 HW only
         products = WS['product'][2] # List of product
-        
-        for product in product_pool.browse(
-                cr, uid, product_ids, context=context):                
+
+        for product in product_proxy:                
                 
             if product not in products:
                 products[product] = () # not used
