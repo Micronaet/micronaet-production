@@ -290,7 +290,7 @@ class ProductTemplate(orm.Model):
                 WS[block][0].write(row, 0, product.default_code, cell_format)
                 WS[block][0].write(row, 1, product.name, cell_format)
                 WS[block][0].write(row, 2, product.mx_net_mrp_qty, cell_format)
-                WS[block][0].write(row, 3, product.mx_lord_qty, cell_format)
+                WS[block][0].write(row, 3, product.mx_lord_mrp_qty, cell_format)
                 presence =  WS[block][2][product]
                 if presence:
                     text = ' '.join(['[%s]' % p.default_code for p in sorted(
