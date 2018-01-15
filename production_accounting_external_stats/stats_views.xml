@@ -116,7 +116,7 @@
                     <group colspan="4" col="6">                    
                         <button name="start_blocking_stats" string="Start" type="object" />
                         <button name="stop_blocking_stats" string="Stop" type="object" />
-                        <field name="stat_start_total" readonly="1"/>
+                        <field name="stat_start_total_text" readonly="1"/>
                     </group>
                 </field>
             </field>

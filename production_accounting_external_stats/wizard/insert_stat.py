@@ -99,6 +99,28 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
     _defaults = {
         'date': datetime.now().strftime( DEFAULT_SERVER_DATE_FORMAT),
         }
+
+class CreateMrpProductionStatsWizard(orm.TransientModel):
+    ''' Create statistic for production
+    '''    
+    _name = 'mrp.production.create.stats.detail.wizard'
+    
+    _columns = {
+        'wizard_id': fields.many2one(
+            'mrp.production.create.stats.wizard', 'Wizard'),
+        'default_code': fields.char('Codice rif.', size=18),
+        'qty': fields.integer('Q.'),
+        }
         
+class CreateMrpProductionStatsWizard(orm.TransientModel):
+    ''' Create statistic for production
+    '''    
+    _inherit = 'mrp.production.create.stats.wizard'
+    
+    _columns = {
+        'detail_ids': fields.one2many(
+            'mrp.production.create.stats.detail.wizard', 
+            'wizard_id', 'Dettagli'),
+        }
         
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
