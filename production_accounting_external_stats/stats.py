@@ -58,6 +58,29 @@ class MrpProductionStat(orm.Model):
         'date': lambda *x: datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT),    
         }
 
+class MrpProductionStatLine(orm.Model):
+    ''' Statistic data
+    '''
+    _name = 'mrp.production.stats.line'
+    _description = 'MRP stats line'
+
+    _columns = {
+        'stat_id': fields.many2one(
+            'mrp.production.stats', 'Stat.'),
+        'default_code': fields.char('Codice rif.', size=18),
+        'qty': fields.integer('Q.'),
+        }
+
+class MrpProductionStat(orm.Model):
+    ''' Statistic data
+    '''
+    _inherit = 'mrp.production.stats'
+    
+    _columns = {
+        'line_ids': fields.one2many(
+            'mrp.production.stats.line', 'stat_id', 'Righe'),
+        }
+
 class MrpProductionStatMixed(osv.osv):
     ''' Create view object
     '''
@@ -257,8 +280,10 @@ class MrpProduction(orm.Model):
         res = {}
         for mrp in self.browse(cr, uid, ids, context=context):
             res[mrp.id] = ''
-            for default_code, total in mrp.stat_start_total:   
-                res[mrp.id] += '[\'%s\': %s] ' % (default_code, total)
+            if mrp.stat_start_total:
+                for default_code, total in eval(
+                        mrp.stat_start_total).iteritems():
+                    res[mrp.id] += '[\'%s\': %s] ' % (default_code, total)
         return res
         
     _columns = {
