@@ -241,124 +241,42 @@ class MrpProductionStatsMixed(orm.Model):
         #                   EXCEL: SHEET 1 Today statistic:
         # ---------------------------------------------------------------------
         # Collect data:
-        line_pool = self.pool.get('mrp.production.stats.line')
+        line_pool = self.pool.get('mrp.production.stats')
         line_ids = line_pool.search(cr, uid, [
-            ('stat_id.date', '>=', now_9),
+            ('date', '=', now_1),
             ], context=context)
 
-        WS = WB.add_worksheet('Statistiche produzione')
-        WS.set_column('A:A', 12)
-        WS.set_column('B:E', 15)
-        WS.set_column('F:H', 8)
-
+        WS = WB.add_worksheet('Ieri')
+        WS.set_column('A:F', 12)
+        
         # Write title row:
         row = 0
         WS.write(row, 0, 
-            'Statistiche di produzione dalla data: %s' % now_9, 
+            'Produzione di ieri, data rif.: %s' % now_1, 
             xls_format['title'],
             )
 
         # Header line:
         row += 1
         WS.write(row, 0, _('Linea'), xls_format['header'])
-        WS.write(row, 1, _('Data'), xls_format['header']) # TODO dow!
-        WS.write(row, 2, _('Codice'), xls_format['header']) 
+        WS.write(row, 1, _('Data'), xls_format['header'])
+        WS.write(row, 2, _('Num. prod.'), xls_format['header']) # MRP
         WS.write(row, 3, _('Famiglia'), xls_format['header']) 
-        WS.write(row, 4, _('Num. prod.'), xls_format['header']) # MRP
-        WS.write(row, 5, _('Lavoratori'), xls_format['header'])
-        WS.write(row, 6, _('Appront.'), xls_format['header']) 
-        WS.write(row, 7, _('Tot. pezzi'), xls_format['header'])
-        WS.write(row, 8, _('Tempo'), xls_format['header'])
-        WS.write(row, 9, _('Pz / H'), xls_format['header'])
+        WS.write(row, 4, _('Lavoratori'), xls_format['header'])
+        WS.write(row, 5, _('Appront.'), xls_format['header']) 
+        WS.write(row, 6, _('Tot. pezzi'), xls_format['header'])
+        WS.write(row, 7, _('Tempo'), xls_format['header'])
+        WS.write(row, 8, _('Pz / H'), xls_format['header'])
 
         # Write data:
         cell_format = xls_format['text']
-        
-        # Prepare res database for reporting:
-        res = {}
-        for line in line_pool.browse(cr, uid, line_ids, context=context):
-            stat = line.stat_id
-            # 1 level: Line
-            if stat.workcenter_id not in res:
-                res[stat.workcenter_id] = {}
-            # 2 level: date    
-            if stat.date_planned not in res[stat.workcenter_id]:
-                res[stat.workcenter_id][stat.date_planned] = []
-            # 3 level: code    
-            if line.default_code not in res[
-                    stat.workcenter_id][stat.date_planned]:
-                res[stat.workcenter_id][stat.date_planned][default_code] = []    
-
-            res[stat.workcenter_id][stat.date_planned][default_code].append(
-                line)
-
-        # Write data:
-        # 1 level: Line
-        cell_format = xls_format['text'] # TODO
-        for wc in sorted(res, key=lambda x: x.name):
-            #wc_start = row
-            # 2 level: data
-            for date_planned in sorted(res[wc], reverse=True):
-                
-                # 3 level: code:
-                for code in sorted(res[wc][date_planned]):
-
-                    # 4 level: line data to sum            
-                    #dp_start = row
-                    for line in res[wc][date_planned][code]:                        
-                        row += 1
-                        mrp = line.stat_id.mrp_id
-                        # Total depend:      
-                        # TODO Total
-                        # TODO Today                  
-                        #WS.merge_range(
-                        #    row, 2, row, 4, _('TOTALE'), cell_format)
-                        #WS.write(row, 4, '', cell_format) # No total workers
-                        #cell_format = xls_format['text_total']
-                        #cell_number_format = cell_format # same of text
-                        #cell_format = xls_format['text']
-                        #cell_number_format = xls_format['text_number_total']
-
-                        WS.write(row, 3, line.production_id.name, cell_format)
-                        WS.write(row, 4, line.production_id.name, cell_format)
-                        WS.write(row, 3, line.product_id.name, cell_format) 
-                        WS.write(row, 4, line.workers, cell_format)
-
-                        WS.write(row, 0, wc.name, cell_format)
-                        WS.write(row, 1,
-                            format_date(date_planned), cell_format)
-                        WS.write(row, 2, line.default_code, cell_format)
-                        WS.write(row, 3, mrp.bom_id.product_tmpl_id.name) 
-                        WS.write(row, 3, mrp.name, cell_format)
-                        WS.write(row, 4, line.workers, cell_format)
-                        WS.write(row, 5, 
-                            format_hour(line.startup), cell_format)
-                        WS.write(row, 6, line.total, cell_format)
-                        WS.write(row, 7, format_hour(line.hour), cell_format)
-                        if line.hour:
-                            WS.write(
-                                row, 8, line.total / line.hour, cell_format)
-                        else:    
-                            WS.write(row, 8, 'ERRORE', cell_format)
-
-                        #Common part:                        
-                        WS.write(row, 5, format_hour(line.startup), 
-                            cell_number_format) 
-                        WS.write(row, 6, line.maked_qty, 
-                            cell_number_format)
-                        WS.write(row, 7, format_hour(line.hour), 
-                            cell_number_format)
-                    #dp_end = row
-                    #WS.merge_range(dp_start + 1, 1, dp_end, 1, 
-                    #    format_date(date_planned), 
-                    #    xls_format['merge'])
-                    
-            #wc_end = row
-            #WS.merge_range(wc_start + 1, 0, wc_end, 0, wc.name, 
-            #    xls_format['merge'])
-        
-
-
+        for line in sorted(
+                line_pool.browse(cr, uid, line_ids, context=context), 
+                key=lambda x: (
+                    x.workcenter_id.name, # Line
+                    x.mrp_id.name, # Data
+                    x.mrp_id.bom_id.product_tmpl_id.name, # Family
+                    )):
             row += 1
             WS.write(row, 0, line.workcenter_id.name, cell_format)
             WS.write(row, 1, format_date(line.date), cell_format)
@@ -373,6 +291,92 @@ class MrpProductionStatsMixed(orm.Model):
                 WS.write(row, 8, line.total / line.hour, cell_format)
             else:    
                 WS.write(row, 8, 'ERRORE', cell_format)
+        
+        # ---------------------------------------------------------------------
+        #                 EXCEL: SHEET 2 Week total statistic:
+        # ---------------------------------------------------------------------
+        # Collect data:
+        stats_ids = self.search(cr, uid, [
+            #('date_planned', '>=', now_9),
+            #('date_planned', '<=', now_0),            
+            ], context=context)
+        for line in self.browse(cr, uid, stats_ids, context=context):
+            if line.workcenter_id not in res:
+                res[line.workcenter_id] = {}
+            if line.date_planned not in res[line.workcenter_id]:
+                res[line.workcenter_id][line.date_planned] = []
+            res[line.workcenter_id][line.date_planned].append(line)
+
+        WS = WB.add_worksheet('Settimanali')
+        WS.set_column('A:A', 12)
+        WS.set_column('B:D', 15)
+        WS.set_column('E:H', 8)
+
+        # Write title row:
+        row = 0
+        WS.write(row, 0, 
+            'Produzioni settimana passata, data rif.: %s' % now, 
+            xls_format['title'],
+            )
+
+        # Header line:
+        row += 1
+        WS.write(row, 0, _('Linea'), xls_format['header'])
+        WS.write(row, 1, _('Data'), xls_format['header'])
+        WS.write(row, 2, _('Num. prod.'), xls_format['header']) # MRP
+        WS.write(row, 3, _('Famiglia'), xls_format['header']) 
+        WS.write(row, 4, _('Lavoratori'), xls_format['header'])
+        WS.write(row, 5, _('Appront.'), xls_format['header']) 
+        WS.write(row, 6, _('Tot. pezzi'), xls_format['header'])
+        WS.write(row, 7, _('Tempo'), xls_format['header'])
+
+        # Write data:
+        for wc in sorted(res, key=lambda x: x.name):
+            wc_start = row
+            for date_planned in sorted(res[wc], reverse=True):
+                dp_start = row
+                for line in res[wc][date_planned]:
+                    row += 1     
+                    # Total depend:                        
+                    if line.is_total:
+                        if line.is_today:
+                            cell_format = xls_format['text_total_today']
+                        else:    
+                            cell_format = xls_format['text_total']
+                        cell_number_format = cell_format # same of text
+                            
+                        WS.merge_range(
+                            row, 2, row, 4, _('TOTALE'), cell_format)
+                        WS.write(row, 4, '', cell_format) # No total workers
+                    else:
+                        if line.is_today:
+                            cell_format = xls_format['text_today']
+                            cell_number_format = xls_format[
+                                'text_number_today']
+                        else:    
+                            cell_format = xls_format['text']
+                            cell_number_format = xls_format[
+                                'text_number_total']
+
+                        WS.write(row, 2, line.production_id.name, cell_format)
+                        WS.write(row, 3, line.product_id.name, cell_format) 
+                        WS.write(row, 4, line.workers, cell_format)
+
+                    #Common part:                        
+                    WS.write(row, 5, format_hour(line.startup), 
+                        cell_number_format) 
+                    WS.write(row, 6, line.maked_qty, 
+                        cell_number_format)
+                    WS.write(row, 7, format_hour(line.hour), 
+                        cell_number_format)
+                dp_end = row
+                WS.merge_range(dp_start + 1, 1, dp_end, 1, 
+                    format_date(date_planned), 
+                    xls_format['merge'])
+                    
+            wc_end = row
+            WS.merge_range(wc_start + 1, 0, wc_end, 0, wc.name, 
+                xls_format['merge'])
         
         WB.close()
         

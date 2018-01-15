@@ -205,7 +205,6 @@ class MrpProduction(orm.Model):
             else:    
                 locked[default_code] = item.product_uom_maked_sync_qty
         return locked        
-
         
     # Button events:
     def start_blocking_stats(self, cr, uid, ids, context=None):
