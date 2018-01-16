@@ -165,6 +165,9 @@ class Parser(report_sxw.rml_parse):
                 cut = 0
             elif available:
                 cut = current - available
+                # if negative no cut:
+                if cut < 0:
+                    cut = 0 
             else:
                 cut = current
             
