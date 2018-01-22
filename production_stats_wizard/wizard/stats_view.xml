@@ -9,11 +9,14 @@
                 <form string="Wizard" version="7.0">
                    <header>
                        <button string="Cancel" special="cancel" />
-                       <button name="action_print" string="Print" type="object" class="oe_highlight" icon="gkt-print"/>
+                       <button name="action_print" string="Print" type="object" class="oe_highlight" icon="gtk-print"/>
                    </header>                   
                    <group colspan="4" col="4">
+                       <separator string="Filter:" colspan="4"/>
                        <field name="from_date" />
                        <field name="to_date" />
+                       <separator string="Sorting:" colspan="4"/>
+                       <field name="sort" />
                    </group>
                 </form>
             </field>

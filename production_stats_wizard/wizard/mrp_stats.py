@@ -60,35 +60,61 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # Parameters:
         from_date = wiz_browse.from_date
         to_date = wiz_browse.to_date
+        sort = wiz_browse.sort
         #wc_id = wiz_browse.workcenter_id.id
-        
+
+        if sort == 'line':        
+            sort_key = lambda x: (
+                x.workcenter_id.name, # Line
+                x.mrp_id.bom_id.product_tmpl_id.name, # Family
+                x.mrp_id.name, # Data
+                )
+        else: # family        
+            sort_key = lambda x: (
+                x.mrp_id.bom_id.product_tmpl_id.name, # Family
+                x.workcenter_id.name, # Line
+                x.mrp_id.name, # Data
+                )
+
+        # Pool used:        
         excel_pool = self.pool.get('excel.writer')
+        line_pool = self.pool.get('mrp.production.stats')
         
         # ---------------------------------------------------------------------
-        # Create XLSX file:
+        #                           CREATE EXCEL FILE:
         # ---------------------------------------------------------------------
         WS_name = 'Statistica'
-        excel_poool.create_worksheet(WS_name)
+        excel_pool.create_worksheet(WS_name)
         
-        #column_width
-        #set_format
-        f_title = get_format('title')
-        f_header = get_format('header')
-        f_line = get_format('line')
-        #excel_pool.write_xls_line(WS_name, row, line, default_format=False)
+        excel_pool.set_format()
+        
+        # Format type:
+        f_title = excel_pool.get_format('title')
+        f_header = excel_pool.get_format('header')
+        f_line = excel_pool.get_format('line')
+        f_number = excel_pool.get_format('number')
 
+        # Setup columns:
+        excel_pool.column_width(WS_name, [
+            10, 10, 10, 20, 10, 10, 10, 10, 10,
+            ])
 
+        # ---------------------------------------------------------------------
         # Collect data:
-        line_pool = self.pool.get('mrp.production.stats')
+        # ---------------------------------------------------------------------
     
         # Domain depend on wizard parameters:
         domain = []
+        wiz_filter = ''
         if from_date:
             domain.append(('date', '>=', from_date))
+            wiz_filter += _('Dalla data: %s ') % excel_pool.format_date(
+                from_date)
         if to_date:
             domain.append(('date', '<', to_date))
+            wiz_filter += _('Alla data: %s ') % excel_pool.format_date(to_date)
+        wiz_filter = wiz_filter or _('Tutti')
         
-            
         line_ids = line_pool.search(cr, uid, domain, context=context)
         
         # Title row:
@@ -98,7 +124,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             ], f_title)
             
         # Header line:
-        row = 1
+        row = 2
         excel_pool.write_xls_line(WS_name, row, [
             _('Linea'),
             _('Data'),
@@ -114,30 +140,30 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # Write data:
         for line in sorted(
                 line_pool.browse(cr, uid, line_ids, context=context), 
-                key=lambda x: (
-                    x.workcenter_id.name, # Line
-                    x.mrp_id.name, # Data
-                    x.mrp_id.bom_id.product_tmpl_id.name, # Family
-                    )):
+                key=sort_key):
             row += 1
-        excel_pool.write_xls_line(WS_name, row, [
-            line.workcenter_id.name,
-            excel_pool.format_date(line.date),
-            line.mrp_id.name,
-            line.mrp_id.bom_id.product_tmpl_id.name,
-            line.workers,
-            excel_pool.format_hour(line.startup),
-            line.total,
-            excel_pool.format_hour(line.hour),
-            line.total / line.hour if line.hour else '#ERR',
-            ], f_line)
+            excel_pool.write_xls_line(WS_name, row, [
+                line.workcenter_id.name,
+                excel_pool.format_date(line.date),
+                line.mrp_id.name,
+                line.mrp_id.bom_id.product_tmpl_id.name,
+                line.workers,
+                (excel_pool.format_hour(line.startup), f_number),
+                (line.total, f_number),
+                (excel_pool.format_hour(line.hour), f_number),
+                (line.total / line.hour if line.hour else '#ERR', f_number),
+                ], f_line)
 
         return excel_pool.return_attachment(cr, uid, 
             'Statistiche di produzione', context=context)
         
     _columns = {        
         'from_date': fields.date('From date >='),
-        'to_date': fields.date('From date <'),
+        'to_date': fields.date('To date <'),
+        'sort': fields.selection([
+            ('line', 'Line-Family-Date'),
+            ('family', 'Family-Line-Date'),
+            ], 'sort', required=True)
         #'workcenter_id': fields.many2one('mrp.workcenter', 'Workcenter'),
         # TODO family
         # TODO line
@@ -145,10 +171,11 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         }
         
     _defaults = {
-        'from_date': lambda *x: '%s01' % datetime.now().strftime(
-            DEFAULT_SERVER_DATE_FORMAT),
-        'to_date': lambda *x: '%s01' % (datetime.now() - reletivedelta(
+        'from_date': lambda *x: '%s01' % (datetime.now() - relativedelta(
             months=1)).strftime(DEFAULT_SERVER_DATE_FORMAT)[:8],
+        'to_date': lambda *x: '%s01' % datetime.now().strftime(
+            DEFAULT_SERVER_DATE_FORMAT),
+        'sort': lambda *x: 'line',
         }    
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

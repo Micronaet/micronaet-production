@@ -1,0 +1,99 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* production_stats_wizard
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-01-22 11:41+0000\n"
+"PO-Revision-Date: 2018-01-22 12:42+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: production_stats_wizard
+#: view:mrp.stats.excel.report.wizard:production_stats_wizard.mrp_stats_excel_report_wizard_view
+msgid "Cancel"
+msgstr "Annulla"
+
+#. module: production_stats_wizard
+#: field:mrp.stats.excel.report.wizard,create_uid:0
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: production_stats_wizard
+#: field:mrp.stats.excel.report.wizard,create_date:0
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: production_stats_wizard
+#: selection:mrp.stats.excel.report.wizard,sort:0
+msgid "Family-Line-Date"
+msgstr "Famiglia  - Linea - Data"
+
+#. module: production_stats_wizard
+#: view:mrp.stats.excel.report.wizard:production_stats_wizard.mrp_stats_excel_report_wizard_view
+msgid "Filter:"
+msgstr "Filtro:"
+
+#. module: production_stats_wizard
+#: field:mrp.stats.excel.report.wizard,from_date:0
+msgid "From date >="
+msgstr "Dalla data >="
+
+#. module: production_stats_wizard
+#: field:mrp.stats.excel.report.wizard,id:0
+msgid "ID"
+msgstr "ID"
+
+#. module: production_stats_wizard
+#: field:mrp.stats.excel.report.wizard,write_uid:0
+msgid "Last Updated by"
+msgstr "Ultimo aggiornamento di"
+
+#. module: production_stats_wizard
+#: field:mrp.stats.excel.report.wizard,write_date:0
+msgid "Last Updated on"
+msgstr "Ultimo aggiornamento il"
+
+#. module: production_stats_wizard
+#: selection:mrp.stats.excel.report.wizard,sort:0
+msgid "Line-Family-Date"
+msgstr "Linea - Famiglia - Data"
+
+#. module: production_stats_wizard
+#: model:ir.actions.act_window,name:production_stats_wizard.action_mrp_stats_excel_report_wizard_view
+#: model:ir.ui.menu,name:production_stats_wizard.menu_mrp_stats_excel_report_wizard_view
+msgid "MRP stat. report"
+msgstr "Stat. prod. report"
+
+#. module: production_stats_wizard
+#: view:mrp.stats.excel.report.wizard:production_stats_wizard.mrp_stats_excel_report_wizard_view
+msgid "Print"
+msgstr "Stampa"
+
+#. module: production_stats_wizard
+#: view:mrp.stats.excel.report.wizard:production_stats_wizard.mrp_stats_excel_report_wizard_view
+msgid "Sorting:"
+msgstr "Ordinamento:"
+
+#. module: production_stats_wizard
+#: field:mrp.stats.excel.report.wizard,to_date:0
+msgid "To date <"
+msgstr "Alla data <"
+
+#. module: production_stats_wizard
+#: view:mrp.stats.excel.report.wizard:production_stats_wizard.mrp_stats_excel_report_wizard_view
+msgid "Wizard"
+msgstr "Wizard"
+
+#. module: production_stats_wizard
+#: field:mrp.stats.excel.report.wizard,sort:0
+msgid "sort"
+msgstr "ordinamento"
