@@ -56,29 +56,6 @@ class MrpProductionStat(orm.Model):
         'date': lambda *x: datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT),    
         }
 
-class MrpProductionStatLine(orm.Model):
-    ''' Statistic data
-    '''
-    _name = 'mrp.production.stats.line'
-    _description = 'MRP stats line'
-
-    _columns = {
-        'stat_id': fields.many2one(
-            'mrp.production.stats', 'Stat.'),
-        'default_code': fields.char('Codice rif.', size=18),
-        'qty': fields.integer('Q.'),
-        }
-
-class MrpProductionStat(orm.Model):
-    ''' Statistic data
-    '''
-    _inherit = 'mrp.production.stats'
-    
-    _columns = {
-        'line_ids': fields.one2many(
-            'mrp.production.stats.line', 'stat_id', 'Righe'),
-        }
-
 class MrpProductionStatMixed(osv.osv):
     ''' Create view object
     '''
@@ -243,6 +220,7 @@ class MrpProduction(orm.Model):
             'nodestroy': False,
         }
             
+    
     _columns = {
         'stat_start_total': fields.integer('Ref. Total',
             help='Total current item when start blocking operation'),

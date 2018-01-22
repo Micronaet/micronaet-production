@@ -56,7 +56,6 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
 
         # Pool used:
         stats_pool = self.pool.get('mrp.production.stats')
-        line_pool = self.pool.get('mrp.production.stats.line')
         mrp_pool = self.pool.get('mrp.production')
 
         # Wizard proxy:
@@ -68,8 +67,7 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
                 _('Error'),
                 _('No parent production!'))
 
-        # Create header:
-        stat_id = stats_pool.create(               
+        stats_pool.create(               
             cr, uid, {
                 'date': wiz_proxy.date,
                 'total': wiz_proxy.total,
@@ -79,19 +77,11 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
                 'mrp_id': mrp_id,
                 'workcenter_id': wiz_proxy.workcenter_id.id,
                 }, context=context)
-        
-        # Create details:
-        for line in wiz_proxy.detail_ids:
-            line_pool.create(cr, uid, {
-                'stat_id': stat_id,
-                'default_code': line.default_code,
-                'qty': line.qty,
-                }, context=context)
                 
         # Reset old total        
         mrp_pool.write(cr, uid, mrp_id, {
-            'stat_start_total': '',
-            }, context=context)    
+            'stat_start_total': 0.0,
+            }, context=context)        
         return True
 
     _columns = {

@@ -75,30 +75,22 @@
                             <field name="workers" />
                             <field name="startup" widget="float_time"/>
                             <field name="total" />
-                            <separator string="Dettagli:" colspan="4"/>
-                            <field name="line_ids" colspan="4" nolabel="1">
-                                <tree string="Dettagli" editable="bottom">
-                                    <field name="default_code" />
-                                    <field name="qty" />
-                                </tree>
-                            </field>                        
-                        </group>    
-                     </sheet>   
+                        </group>
+                    </sheet>  
                 </form>            
             </field>
         </record>
-
         <record model="ir.ui.view" id="view_mrp_production_stats_tree">
             <field name="name">MRP Stats</field>
             <field name="model">mrp.production.stats</field>
             <field name="arch" type="xml">
-                <tree string="MRP stats" ><!--editable="bottom"-->
-                    <field name="workcenter_id"/>
-                    <field name="date" />
-                    <field name="workers" />
-                    <field name="startup" widget="float_time"/>
-                    <field name="hour" widget="float_time"/>
-                    <field name="total" />
+                <tree string="MRP stats" editable="bottom">
+                        <field name="workcenter_id"/>
+                        <field name="date" />
+                        <field name="workers" />
+                        <field name="startup" widget="float_time"/>
+                        <field name="hour" widget="float_time"/>
+                        <field name="total" />
                 </tree>            
             </field>
         </record>
