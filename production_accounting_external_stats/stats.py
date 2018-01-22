@@ -50,8 +50,6 @@ class MrpProductionStat(orm.Model):
         'startup': fields.float('Start up time', digits=(16, 3)),     
         'mrp_id': fields.many2one(
             'mrp.production', 'Production', ondelete='cascade'),
-        'stat_start_total': fields.text('Ref. Total',
-            help='Blocked per code totals'),            
         }
 
     _defaults = {
@@ -192,51 +190,24 @@ class MrpProduction(orm.Model):
     '''
     _inherit = 'mrp.production'
     
-    # Utility:
-    def get_current_locked_status(self, cr, uid, ids, context=None):
-        ''' Dict for locked with code 6 char
-        '''
-        locked = {}
-        for item in self.browse(
-                cr, uid, ids, context=context)[0].order_line_ids:
-            default_code = item.product_id.default_code[:6] # 6 totals
-            if default_code in locked:
-                locked[default_code] += item.product_uom_maked_sync_qty
-            else:    
-                locked[default_code] = item.product_uom_maked_sync_qty
-        return locked        
-        
     # Button events:
     def start_blocking_stats(self, cr, uid, ids, context=None):
         ''' Save current production to check difference
         '''
-        return self.write(cr, uid, ids, {
-            'stat_start_total': '%s' % (
-                self.get_current_locked_status(cr, uid, ids, context=context),
-                ), # save as text
+        blocked = sum([item.product_uom_maked_sync_qty for item in self.browse(
+            cr, uid, ids, context=context)[0].order_line_ids])
+        self.write(cr, uid, ids, {
+            'stat_start_total': blocked,            
             }, context=context)
+        return True
 
     def stop_blocking_stats(self, cr, uid, ids, context=None):
         ''' Get default and open wizard
         '''
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
-        
-        # Check difference:
-        current = self.get_current_locked_status(
-            cr, uid, ids, context=context)
-        previous = eval(mrp_proxy.stat_start_total)
-
-        total = 0
-        default_res = []
-        for default_code, current_tot in current.iteritems():
-            last_tot = previous.get(default_code, 0)
-            if last_tot != current_tot: # TODO negative?                
-                partial = current_tot - last_tot # difference
-                total += partial
-                default_res.append({
-                    'default_code': default_code, 
-                    'qty': partial,
-                    })
+        blocked = sum([item.product_uom_maked_sync_qty for item in self.browse(
+            cr, uid, ids, context=context)[0].order_line_ids])
+        total = blocked - mrp_proxy.stat_start_total
 
         ctx = context.copy()
         try:
@@ -259,7 +230,6 @@ class MrpProduction(orm.Model):
             'default_workcenter_id': workcenter_id,
             'default_workers': workers,
             'default_hour': hour,
-            'default_detail_ids': default_res,
             })
         return {
             'type': 'ir.actions.act_window',
@@ -271,26 +241,11 @@ class MrpProduction(orm.Model):
             'context': ctx,
             'target': 'new',
             'nodestroy': False,
-        }            
-    
-    def _function_start_readable_text(self, cr, uid, ids, fields, args, context=None):
-        ''' Fields function for calculate 
-        '''
-        res = {}
-        for mrp in self.browse(cr, uid, ids, context=context):
-            res[mrp.id] = ''
-            if mrp.stat_start_total:
-                for default_code, total in eval(
-                        mrp.stat_start_total).iteritems():
-                    res[mrp.id] += '[\'%s\': %s] ' % (default_code, total)
-        return res
-        
+        }
+            
     _columns = {
-        'stat_start_total': fields.text('Ref. Total',
+        'stat_start_total': fields.integer('Ref. Total',
             help='Total current item when start blocking operation'),
-        'stat_start_total_text': fields.function(
-            _function_start_readable_text, method=True, 
-            type='char', size=200, string='Totale rif.', store=False), 
         'stats_ids': fields.one2many(
             'mrp.production.stats', 'mrp_id', 'Stats'), 
         }
