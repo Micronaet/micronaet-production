@@ -238,62 +238,7 @@ class MrpProductionStatsMixed(orm.Model):
             }
             
         # ---------------------------------------------------------------------
-        #                   EXCEL: SHEET 1 Today statistic:
-        # ---------------------------------------------------------------------
-        # Collect data:
-        line_pool = self.pool.get('mrp.production.stats')
-        line_ids = line_pool.search(cr, uid, [
-            ('date', '=', now_1),
-            ], context=context)
-
-        WS = WB.add_worksheet('Ieri')
-        WS.set_column('A:F', 12)
-        
-        # Write title row:
-        row = 0
-        WS.write(row, 0, 
-            'Produzione di ieri, data rif.: %s' % now_1, 
-            xls_format['title'],
-            )
-
-        # Header line:
-        row += 1
-        WS.write(row, 0, _('Linea'), xls_format['header'])
-        WS.write(row, 1, _('Data'), xls_format['header'])
-        WS.write(row, 2, _('Num. prod.'), xls_format['header']) # MRP
-        WS.write(row, 3, _('Famiglia'), xls_format['header']) 
-        WS.write(row, 4, _('Lavoratori'), xls_format['header'])
-        WS.write(row, 5, _('Appront.'), xls_format['header']) 
-        WS.write(row, 6, _('Tot. pezzi'), xls_format['header'])
-        WS.write(row, 7, _('Tempo'), xls_format['header'])
-        WS.write(row, 8, _('Pz / H'), xls_format['header'])
-
-        # Write data:
-        cell_format = xls_format['text']
-        for line in sorted(
-                line_pool.browse(cr, uid, line_ids, context=context), 
-                key=lambda x: (
-                    x.workcenter_id.name, # Line
-                    x.mrp_id.name, # Data
-                    x.mrp_id.bom_id.product_tmpl_id.name, # Family
-                    )):
-            row += 1
-            WS.write(row, 0, line.workcenter_id.name, cell_format)
-            WS.write(row, 1, format_date(line.date), cell_format)
-            WS.write(row, 2, line.mrp_id.name, cell_format)
-            WS.write(row, 3, line.mrp_id.bom_id.product_tmpl_id.name, 
-                cell_format)
-            WS.write(row, 4, line.workers, cell_format)
-            WS.write(row, 5, format_hour(line.startup), cell_format)
-            WS.write(row, 6, line.total, cell_format)
-            WS.write(row, 7, format_hour(line.hour), cell_format)
-            if line.hour:
-                WS.write(row, 8, line.total / line.hour, cell_format)
-            else:    
-                WS.write(row, 8, 'ERRORE', cell_format)
-        
-        # ---------------------------------------------------------------------
-        #                 EXCEL: SHEET 2 Week total statistic:
+        #                 EXCEL: SHEET 1 Week total statistic:
         # ---------------------------------------------------------------------
         # Collect data:
         stats_ids = self.search(cr, uid, [
@@ -377,6 +322,61 @@ class MrpProductionStatsMixed(orm.Model):
             wc_end = row
             WS.merge_range(wc_start + 1, 0, wc_end, 0, wc.name, 
                 xls_format['merge'])
+
+        # ---------------------------------------------------------------------
+        #                   EXCEL: SHEET 1 Today statistic:
+        # ---------------------------------------------------------------------
+        # Collect data:
+        line_pool = self.pool.get('mrp.production.stats')
+        line_ids = line_pool.search(cr, uid, [
+            ('date', '=', now_1),
+            ], context=context)
+
+        WS = WB.add_worksheet('Ieri')
+        WS.set_column('A:F', 12)
+        
+        # Write title row:
+        row = 0
+        WS.write(row, 0, 
+            'Produzione di ieri, data rif.: %s' % now_1, 
+            xls_format['title'],
+            )
+
+        # Header line:
+        row += 1
+        WS.write(row, 0, _('Linea'), xls_format['header'])
+        WS.write(row, 1, _('Data'), xls_format['header'])
+        WS.write(row, 2, _('Num. prod.'), xls_format['header']) # MRP
+        WS.write(row, 3, _('Famiglia'), xls_format['header']) 
+        WS.write(row, 4, _('Lavoratori'), xls_format['header'])
+        WS.write(row, 5, _('Appront.'), xls_format['header']) 
+        WS.write(row, 6, _('Tot. pezzi'), xls_format['header'])
+        WS.write(row, 7, _('Tempo'), xls_format['header'])
+        WS.write(row, 8, _('Pz / H'), xls_format['header'])
+
+        # Write data:
+        cell_format = xls_format['text']
+        for line in sorted(
+                line_pool.browse(cr, uid, line_ids, context=context), 
+                key=lambda x: (
+                    x.workcenter_id.name, # Line
+                    x.mrp_id.name, # Data
+                    x.mrp_id.bom_id.product_tmpl_id.name, # Family
+                    )):
+            row += 1
+            WS.write(row, 0, line.workcenter_id.name, cell_format)
+            WS.write(row, 1, format_date(line.date), cell_format)
+            WS.write(row, 2, line.mrp_id.name, cell_format)
+            WS.write(row, 3, line.mrp_id.bom_id.product_tmpl_id.name, 
+                cell_format)
+            WS.write(row, 4, line.workers, cell_format)
+            WS.write(row, 5, format_hour(line.startup), cell_format)
+            WS.write(row, 6, line.total, cell_format)
+            WS.write(row, 7, format_hour(line.hour), cell_format)
+            if line.hour:
+                WS.write(row, 8, line.total / line.hour, cell_format)
+            else:    
+                WS.write(row, 8, 'ERRORE', cell_format)
         
         WB.close()
         
