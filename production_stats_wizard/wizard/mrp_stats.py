@@ -137,16 +137,40 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             _('Pz / H'),
             ], f_header)
 
-        # Write data:
+        # Write data:        
+        # XXX Part for break code in report:
+        #break_code = {
+        #    'line': [False, 0],
+        #    'date': [False, 0],
+        #    'family': [False, 0],
+        #    }
+            
         for line in sorted(
                 line_pool.browse(cr, uid, line_ids, context=context), 
                 key=sort_key):
             row += 1
+            
+            # Key data:            
+            data = { # last key, last row
+                'line': line.workcenter_id.name,
+                'date': excel_pool.format_date(line.date),
+                'family': line.mrp_id.bom_id.product_tmpl_id.name,
+                }
+            
+            #for key in data:   
+            #    if break_code == False or break_code[key][0] != data[key]:
+            #        break_code[key][0] = data[key]
+            #        break_code[key][1] = row # Save start row
+            #        # TODO merge previous
+            #    else: # not writed:
+            #        data[key] = '' # Not writed
+                
+            
             excel_pool.write_xls_line(WS_name, row, [
-                line.workcenter_id.name,
-                excel_pool.format_date(line.date),
+                data['line'],
+                data['date'],
                 line.mrp_id.name,
-                line.mrp_id.bom_id.product_tmpl_id.name,
+                data['family'],
                 line.workers,
                 (excel_pool.format_hour(line.startup), f_number),
                 (line.total, f_number),
