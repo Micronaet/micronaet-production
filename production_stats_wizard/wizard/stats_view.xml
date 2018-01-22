@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+       <!-- mrp.stats.excel.report.wizard -->
+       <record id="mrp_stats_excel_report_wizard_view" model="ir.ui.view">
+            <field name="name">Statistic XLSX report wizard</field>
+            <field name="model">mrp.stats.excel.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Wizard" version="7.0">
+                   <header>
+                       <button string="Cancel" special="cancel" />
+                       <button name="action_print" string="Print" type="object" class="oe_highlight" icon="gkt-print"/>
+                   </header>                   
+                   <group colspan="4" col="4">
+                       <field name="from_date" />
+                       <field name="to_date" />
+                   </group>
+                </form>
+            </field>
+      </record>
+
+      <record model="ir.actions.act_window" id="action_mrp_stats_excel_report_wizard_view">
+          <field name="name">MRP stat. report</field>
+          <field name="res_model">mrp.stats.excel.report.wizard</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">form</field>
+          <field name="target">new</field>
+          <field name="view_id" ref="mrp_stats_excel_report_wizard_view"/>
+      </record>
+      <menuitem 
+          parent="production_accounting_external_stats.menu_mrp_production_stats_mixed" 
+          id="menu_mrp_stats_excel_report_wizard_view" 
+          action="action_mrp_stats_excel_report_wizard_view"
+          sequence="10"
+          />
+      
+    </data>
+</openerp>
