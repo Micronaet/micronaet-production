@@ -40,6 +40,17 @@ class MrpProductionStat(orm.Model):
     _order = 'date'
     _rec_name = 'date'
 
+    def _function_start_total_text(self, cr, uid, ids, fields, args, 
+            context=None):
+        ''' Fields function for calculate detail in text mode
+        '''
+        res = {}
+        for stat in self.browse(cr, uid, ids, context=context):
+            res[stat.id] = ''
+            for line in stat.line_ids:
+                res[stat.id] += '[\'%s\': %s] ' % (default_code, total)
+        return res            
+
     _columns = {
         'workcenter_id': fields.many2one(
             'mrp.workcenter', 'Line', required=True), 
@@ -52,6 +63,10 @@ class MrpProductionStat(orm.Model):
             'mrp.production', 'Production', ondelete='cascade'),
         'stat_start_total': fields.text('Ref. Total', 
             help='Blocked per code[:6] totals'),    
+
+        'total_text_detail': fields.function(
+            _function_start_total_text, method=True, 
+            type='text', string='Dettaglio', store=False),
         }
 
     _defaults = {
@@ -211,21 +226,16 @@ class MrpProduction(orm.Model):
     def start_blocking_stats(self, cr, uid, ids, context=None):
         ''' Save current production to check difference
         '''
-        #blocked = sum([item.product_uom_maked_sync_qty for item in self.browse(
-        #    cr, uid, ids, context=context)[0].order_line_ids])
         return self.write(cr, uid, ids, {
-            #'stat_start_total': blocked,
             'stat_start_total': '%s' % (
                 self.get_current_locked_status(cr, uid, ids, context=context),
+                )
             }, context=context)
 
     def stop_blocking_stats(self, cr, uid, ids, context=None):
         ''' Get default and open wizard
         '''
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
-        #blocked = sum([item.product_uom_maked_sync_qty for item in self.browse(
-        #    cr, uid, ids, context=context)[0].order_line_ids])
-        #total = blocked - mrp_proxy.stat_start_total
 
         # Check difference:
         current = self.get_current_locked_status(
@@ -279,14 +289,13 @@ class MrpProduction(orm.Model):
             'nodestroy': False,
         }
         
-    def _function_start_readable_text(self, cr, uid, ids, fields, args, context=None):
+    def _function_start_readable_text(self, cr, uid, ids, fields, args, 
+            context=None):
         ''' Fields function for calculate 
         '''
         res = {}
         for mrp in self.browse(cr, uid, ids, context=context):
             res[mrp.id] = ''
-            #for default_code, total in mrp.stat_start_total:   
-            #    res[mrp.id] += '[\'%s\': %s] ' % (default_code, total)
             if mrp.stat_start_total:
                 for default_code, total in eval(
                         mrp.stat_start_total).iteritems():
