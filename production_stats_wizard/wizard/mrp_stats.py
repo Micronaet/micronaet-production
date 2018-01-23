@@ -91,7 +91,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # Format type:
         f_title = excel_pool.get_format('title')
         f_header = excel_pool.get_format('header')
-        f_line = excel_pool.get_format('line')
+        f_text = excel_pool.get_format('text')
         f_number = excel_pool.get_format('number')
 
         # Setup columns:
@@ -120,11 +120,16 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # Title row:
         row = 0
         excel_pool.write_xls_line(WS_name, row, [
-            'Statistiche di produzione, filtro: %s' % wiz_filter,
+            'Statistiche di produzione',
+            ], f_title)
+
+        row += 1
+        excel_pool.write_xls_line(WS_name, row, [
+            'Filtro: %s' % wiz_filter,
             ], f_title)
             
         # Header line:
-        row = 2
+        row += 2
         excel_pool.write_xls_line(WS_name, row, [
             _('Linea'),
             _('Data'),
@@ -176,7 +181,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 (line.total, f_number),
                 (excel_pool.format_hour(line.hour), f_number),
                 (line.total / line.hour if line.hour else '#ERR', f_number),
-                ], f_line)
+                ], f_text)
 
         return excel_pool.return_attachment(cr, uid, 
             'Statistiche di produzione', context=context)

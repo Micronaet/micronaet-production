@@ -75,8 +75,15 @@
                             <field name="workers" />
                             <field name="startup" widget="float_time"/>
                             <field name="total" />
-                        </group>
-                    </sheet>  
+                            <separator string="Dettagli:" colspan="4"/>
+                            <field name="line_ids" colspan="4" nolabel="1">
+                                <tree string="Dettagli" editable="bottom">
+                                    <field name="default_code" />
+                                    <field name="qty" />
+                                </tree>
+                            </field>                        
+                        </group>    
+                     </sheet>   
                 </form>            
             </field>
         </record>
@@ -84,7 +91,7 @@
             <field name="name">MRP Stats</field>
             <field name="model">mrp.production.stats</field>
             <field name="arch" type="xml">
-                <tree string="MRP stats" editable="bottom">
+                <tree string="MRP stats"><!--editable="bottom"-->
                         <field name="workcenter_id"/>
                         <field name="date" />
                         <field name="workers" />
@@ -116,7 +123,7 @@
                     <group colspan="4" col="6">                    
                         <button name="start_blocking_stats" string="Start" type="object" />
                         <button name="stop_blocking_stats" string="Stop" type="object" />
-                        <field name="stat_start_total" readonly="1"/>
+                        <field name="stat_start_total_text" readonly="1"/>
                     </group>
                 </field>
             </field>

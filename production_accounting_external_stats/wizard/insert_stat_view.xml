@@ -19,6 +19,13 @@
                        <field name="workers" />
                        <field name="hour" widget="float_time"/>
                        <field name="startup" widget="float_time"/>
+                       <separator string="Dettagli:" colspan="4"/>
+                       <field name="detail_ids" colspan="4" nolabel="1">
+                           <tree string="Dettagli" editable="bottom">
+                               <field name="default_code" />
+                               <field name="qty" />
+                           </tree>
+                       </field>
                    </group>
                 </form>
             </field>

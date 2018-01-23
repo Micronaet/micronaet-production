@@ -50,10 +50,35 @@ class MrpProductionStat(orm.Model):
         'startup': fields.float('Start up time', digits=(16, 3)),     
         'mrp_id': fields.many2one(
             'mrp.production', 'Production', ondelete='cascade'),
+        'stat_start_total': fields.text('Ref. Total', 
+            help='Blocked per code[:6] totals'),    
         }
 
     _defaults = {
         'date': lambda *x: datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT),    
+        }
+
+class MrpProductionStatLine(orm.Model):
+    ''' Statistic data
+    '''
+    _name = 'mrp.production.stats.line'
+    _description = 'MRP stats line'
+
+    _columns = {
+        'stat_id': fields.many2one(
+            'mrp.production.stats', 'Stat.'),
+        'default_code': fields.char('Codice rif.', size=18),
+        'qty': fields.integer('Q.'),
+        }
+
+class MrpProductionStat(orm.Model):
+    ''' Statistic data
+    '''
+    _inherit = 'mrp.production.stats'
+    
+    _columns = {
+        'line_ids': fields.one2many(
+            'mrp.production.stats.line', 'stat_id', 'Righe'),
         }
 
 class MrpProductionStatMixed(osv.osv):
@@ -167,24 +192,57 @@ class MrpProduction(orm.Model):
     '''
     _inherit = 'mrp.production'
     
+    # Utility:
+    def get_current_locked_status(self, cr, uid, ids, code_pos=6, 
+            context=None):
+        ''' Dict for locked with code 6 char
+        '''
+        locked = {}
+        for item in self.browse(
+                cr, uid, ids, context=context)[0].order_line_ids:
+            default_code = item.product_id.default_code[:code_pos]
+            if default_code in locked:
+                locked[default_code] += item.product_uom_maked_sync_qty
+            else:    
+                locked[default_code] = item.product_uom_maked_sync_qty
+        return locked        
+
     # Button events:
     def start_blocking_stats(self, cr, uid, ids, context=None):
         ''' Save current production to check difference
         '''
-        blocked = sum([item.product_uom_maked_sync_qty for item in self.browse(
-            cr, uid, ids, context=context)[0].order_line_ids])
-        self.write(cr, uid, ids, {
-            'stat_start_total': blocked,            
+        #blocked = sum([item.product_uom_maked_sync_qty for item in self.browse(
+        #    cr, uid, ids, context=context)[0].order_line_ids])
+        return self.write(cr, uid, ids, {
+            #'stat_start_total': blocked,
+            'stat_start_total': '%s' % (
+                self.get_current_locked_status(cr, uid, ids, context=context),
             }, context=context)
-        return True
 
     def stop_blocking_stats(self, cr, uid, ids, context=None):
         ''' Get default and open wizard
         '''
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
-        blocked = sum([item.product_uom_maked_sync_qty for item in self.browse(
-            cr, uid, ids, context=context)[0].order_line_ids])
-        total = blocked - mrp_proxy.stat_start_total
+        #blocked = sum([item.product_uom_maked_sync_qty for item in self.browse(
+        #    cr, uid, ids, context=context)[0].order_line_ids])
+        #total = blocked - mrp_proxy.stat_start_total
+
+        # Check difference:
+        current = self.get_current_locked_status(
+            cr, uid, ids, context=context)
+        previous = eval(mrp_proxy.stat_start_total)
+
+        total = 0
+        default_res = []
+        for default_code, current_tot in current.iteritems():
+            last_tot = previous.get(default_code, 0)
+            if last_tot != current_tot: # TODO negative?                
+                partial = current_tot - last_tot # difference
+                total += partial
+                default_res.append({
+                    'default_code': default_code, 
+                    'qty': partial,
+                    })
 
         ctx = context.copy()
         try:
@@ -207,6 +265,7 @@ class MrpProduction(orm.Model):
             'default_workcenter_id': workcenter_id,
             'default_workers': workers,
             'default_hour': hour,
+            'default_detail_ids': default_res,
             })
         return {
             'type': 'ir.actions.act_window',
@@ -219,13 +278,30 @@ class MrpProduction(orm.Model):
             'target': 'new',
             'nodestroy': False,
         }
-            
+        
+    def _function_start_readable_text(self, cr, uid, ids, fields, args, context=None):
+        ''' Fields function for calculate 
+        '''
+        res = {}
+        for mrp in self.browse(cr, uid, ids, context=context):
+            res[mrp.id] = ''
+            #for default_code, total in mrp.stat_start_total:   
+            #    res[mrp.id] += '[\'%s\': %s] ' % (default_code, total)
+            if mrp.stat_start_total:
+                for default_code, total in eval(
+                        mrp.stat_start_total).iteritems():
+                    res[mrp.id] += '[\'%s\': %s] ' % (default_code, total)
+        return res            
     
     _columns = {
-        'stat_start_total': fields.integer('Ref. Total',
+        'stat_start_total': fields.text('Ref. Total',
             help='Total current item when start blocking operation'),
+            
         'stats_ids': fields.one2many(
             'mrp.production.stats', 'mrp_id', 'Stats'), 
+        'stat_start_total_text': fields.function(
+            _function_start_readable_text, method=True, 
+            type='char', size=200, string='Totale rif.', store=False),
         }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

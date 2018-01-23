@@ -56,6 +56,7 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
 
         # Pool used:
         stats_pool = self.pool.get('mrp.production.stats')
+        line_pool = self.pool.get('mrp.production.stats.line')
         mrp_pool = self.pool.get('mrp.production')
 
         # Wizard proxy:
@@ -67,7 +68,8 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
                 _('Error'),
                 _('No parent production!'))
 
-        stats_pool.create(               
+        # Create header:
+        stat_id = stats_pool.create(     
             cr, uid, {
                 'date': wiz_proxy.date,
                 'total': wiz_proxy.total,
@@ -77,10 +79,19 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
                 'mrp_id': mrp_id,
                 'workcenter_id': wiz_proxy.workcenter_id.id,
                 }, context=context)
+
+        
+        # Create details:
+        for line in wiz_proxy.detail_ids:
+            line_pool.create(cr, uid, {
+                'stat_id': stat_id,
+                'default_code': line.default_code,
+                'qty': line.qty,
+                }, context=context)
                 
         # Reset old total        
         mrp_pool.write(cr, uid, mrp_id, {
-            'stat_start_total': 0.0,
+            'stat_start_total': '',
             }, context=context)        
         return True
 
@@ -100,5 +111,27 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
         'date': datetime.now().strftime( DEFAULT_SERVER_DATE_FORMAT),
         }
         
+class CreateMrpProductionStatsWizard(orm.TransientModel):
+    ''' Create statistic for production
+    '''    
+    _name = 'mrp.production.create.stats.detail.wizard'
+    
+    _columns = {
+        'wizard_id': fields.many2one(
+            'mrp.production.create.stats.wizard', 'Wizard'),
+        'default_code': fields.char('Codice rif.', size=18),
+        'qty': fields.integer('Q.'),
+        }
+         
+class CreateMrpProductionStatsWizard(orm.TransientModel):
+    ''' Create statistic for production
+    '''    
+    _inherit = 'mrp.production.create.stats.wizard'
+    
+    _columns = {
+        'detail_ids': fields.one2many(
+            'mrp.production.create.stats.detail.wizard', 
+            'wizard_id', 'Dettagli'),
+        }
         
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
