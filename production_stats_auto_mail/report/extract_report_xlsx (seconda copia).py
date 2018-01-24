@@ -66,37 +66,12 @@ class MrpProductionStatsMixed(orm.Model):
     # -------------------------------------------------------------------------
     def scheduled_send_stats_report(self, cr, uid, context=None):
         ''' Send report to partner in group with dashboard statistics
-            In scheduled report reload data from stats because need extra
-            field not present in mixed query information
         '''
         _logger.info('Start sending MRP report')
         
         # ---------------------------------------------------------------------
         #                               UTILITY:
         # ---------------------------------------------------------------------
-        def clean_extra_detail(value):
-            ''' Add extra detail total common
-            '''
-            if not value:
-                return value
-            
-            value = value.strip().replace('[', '')
-            value_ids = value.split(']')
-            res_ids = {}
-            for v in value_ids:
-                if not v:
-                    continue # jump last row
-                v2 = v.split('>>')
-                v2[0] = v2[0].strip()
-                if v2[0] not in res_ids:
-                    res_ids[v2[0]] = 0.0
-                res_ids[v2[0]] += int(v2[1].strip())
-            res = ''
-            for code in sorted(res_ids):
-                res += '[%s >> %s] ' % (code, res_ids[code])    
-            return res
-                
-                
         def format_date(value):
             ''' Format hour DD:MM:YYYY
             '''
@@ -130,16 +105,14 @@ class MrpProductionStatsMixed(orm.Model):
             DEFAULT_SERVER_DATE_FORMAT)
         now_9 = (datetime.now() - timedelta(days=9)).strftime(
             DEFAULT_SERVER_DATE_FORMAT)
-        # Add extra period for not get empty data in extra info
-        now_11 = (datetime.now() - timedelta(days=11)).strftime( 
-            DEFAULT_SERVER_DATE_FORMAT)
-        
+            
         # ---------------------------------------------------------------------
         #                           Excel file:
         # ---------------------------------------------------------------------
         # A. Create file:
         filename = '/tmp/send_stats_mrp_report.xlsx'
-        _logger.info('Temp file: %s' % filename)
+        _logger.info('Temp file: %s' % filename)        
+
         WB = xlsxwriter.Workbook(filename)
         
         # B. Format class:
@@ -267,24 +240,8 @@ class MrpProductionStatsMixed(orm.Model):
         # ---------------------------------------------------------------------
         #                 EXCEL: SHEET 1 Week total statistic:
         # ---------------------------------------------------------------------
-        # Collect data for extra info:
-        extra_detail = {}
-        stats_pool = self.pool.get('mrp.production.stats')
-        stats_ids = stats_pool.search(cr, uid, [
-            ('date', '>=', now_11), # last 11 days (for cover 9 days)
-            ], context=context)
-        for stats in stats_pool.browse(cr, uid, stats_ids, context=context):
-            key = (
-                stats.workcenter_id.id, 
-                stats.date,
-                stats.mrp_id.id,
-                )
-            if key not in extra_detail:
-                extra_detail[key] = ''
-            extra_detail[key] += stats.total_text_detail
-
-        # Collect data for stats mixed:
-        stats_ids = self.search(cr, uid, [ # Filter yet present in query
+        # Collect data:
+        stats_ids = self.search(cr, uid, [
             #('date_planned', '>=', now_9),
             #('date_planned', '<=', now_0),            
             ], context=context)
@@ -299,7 +256,6 @@ class MrpProductionStatsMixed(orm.Model):
         WS.set_column('A:A', 12)
         WS.set_column('B:D', 15)
         WS.set_column('E:H', 8)
-        WS.set_column('I:I', 60)
 
         # Write title row:
         row = 0
@@ -318,7 +274,6 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 5, _('Appront.'), xls_format['header']) 
         WS.write(row, 6, _('Tot. pezzi'), xls_format['header'])
         WS.write(row, 7, _('Tempo'), xls_format['header'])
-        WS.write(row, 8, _('Dettaglio'), xls_format['header'])
 
         # Write data:
         for wc in sorted(res, key=lambda x: x.name):
@@ -337,8 +292,7 @@ class MrpProductionStatsMixed(orm.Model):
                             
                         WS.merge_range(
                             row, 2, row, 4, _('TOTALE'), cell_format)
-                        WS.write(row, 4, '', cell_format) # No total workers                        
-                        WS.write(row, 8, '', cell_format) # Empty detail
+                        WS.write(row, 4, '', cell_format) # No total workers
                     else:
                         if line.is_today:
                             cell_format = xls_format['text_today']
@@ -352,13 +306,6 @@ class MrpProductionStatsMixed(orm.Model):
                         WS.write(row, 2, line.production_id.name, cell_format)
                         WS.write(row, 3, line.product_id.name, cell_format) 
                         WS.write(row, 4, line.workers, cell_format)
-                        WS.write(row, 8, clean_extra_detail(
-                            extra_detail.get((
-                                wc.id, 
-                                date_planned,
-                                line.production_id.id,
-                                ), '')), 
-                            cell_format)
 
                     #Common part:                        
                     WS.write(row, 5, format_hour(line.startup), 
@@ -375,7 +322,7 @@ class MrpProductionStatsMixed(orm.Model):
             wc_end = row
             WS.merge_range(wc_start + 1, 0, wc_end, 0, wc.name, 
                 xls_format['merge'])
-        
+
         # ---------------------------------------------------------------------
         #                   EXCEL: SHEET 1 Today statistic:
         # ---------------------------------------------------------------------

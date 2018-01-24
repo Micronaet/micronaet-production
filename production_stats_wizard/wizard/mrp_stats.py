@@ -96,7 +96,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
 
         # Setup columns:
         excel_pool.column_width(WS_name, [
-            10, 10, 10, 20, 10, 10, 10, 10, 10,
+            10, 10, 10, 20, 10, 10, 10, 10, 10, 60,
             ])
 
         # ---------------------------------------------------------------------
@@ -140,6 +140,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             _('Tot. pezzi'),
             _('Tempo'),
             _('Pz / H'),
+            _('Dettaglio')
             ], f_header)
 
         # Write data:        
@@ -181,6 +182,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 (line.total, f_number),
                 (excel_pool.format_hour(line.hour), f_number),
                 (line.total / line.hour if line.hour else '#ERR', f_number),
+                line.total_text_detail or ''
                 ], f_text)
 
         return excel_pool.return_attachment(cr, uid, 

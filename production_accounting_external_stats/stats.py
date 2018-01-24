@@ -48,7 +48,8 @@ class MrpProductionStat(orm.Model):
         for stat in self.browse(cr, uid, ids, context=context):
             res[stat.id] = ''
             for line in stat.line_ids:
-                res[stat.id] += '[\'%s\': %s] ' % (default_code, total)
+                res[stat.id] += '[\'%s\' >> %s] ' % (
+                    line.default_code, line.qty)
         return res            
 
     _columns = {
