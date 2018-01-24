@@ -133,6 +133,9 @@ class MrpProductionStatsMixed(orm.Model):
         # Add extra period for not get empty data in extra info
         now_11 = (datetime.now() - timedelta(days=11)).strftime( 
             DEFAULT_SERVER_DATE_FORMAT)
+        # Statitic 20 days page:    
+        now_20 = (datetime.now() - timedelta(days=20)).strftime( 
+            DEFAULT_SERVER_DATE_FORMAT)
         
         # ---------------------------------------------------------------------
         #                           Excel file:
@@ -267,28 +270,31 @@ class MrpProductionStatsMixed(orm.Model):
         # ---------------------------------------------------------------------
         #                 EXCEL: SHEET 1 Week total statistic:
         # ---------------------------------------------------------------------
+        # Pool used:
+        line_pool = self.pool.get('mrp.production.stats')
+
         # Collect data for extra info:
         extra_detail = {}
-        stats_pool = self.pool.get('mrp.production.stats')
-        stats_ids = stats_pool.search(cr, uid, [
+        
+        line_ids = line_pool.search(cr, uid, [
             ('date', '>=', now_11), # last 11 days (for cover 9 days)
             ], context=context)
-        for stats in stats_pool.browse(cr, uid, stats_ids, context=context):
+        for line in line_pool.browse(cr, uid, line_ids, context=context):
             key = (
-                stats.workcenter_id.id, 
-                stats.date,
-                stats.mrp_id.id,
+                line.workcenter_id.id, 
+                line.date,
+                line.mrp_id.id,
                 )
             if key not in extra_detail:
                 extra_detail[key] = ''
-            extra_detail[key] += stats.total_text_detail
+            extra_detail[key] += line.total_text_detail
 
         # Collect data for stats mixed:
-        stats_ids = self.search(cr, uid, [ # Filter yet present in query
+        line_ids = self.search(cr, uid, [ # Filter yet present in query
             #('date_planned', '>=', now_9),
             #('date_planned', '<=', now_0),            
             ], context=context)
-        for line in self.browse(cr, uid, stats_ids, context=context):
+        for line in self.browse(cr, uid, line_ids, context=context):
             if line.workcenter_id not in res:
                 res[line.workcenter_id] = {}
             if line.date_planned not in res[line.workcenter_id]:
@@ -321,6 +327,8 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 8, _('Dettaglio'), xls_format['header'])
 
         # Write data:
+        cell_format = xls_format['text']
+        cell_number_format = xls_format['text_number_today']
         for wc in sorted(res, key=lambda x: x.name):
             wc_start = row
             for date_planned in sorted(res[wc], reverse=True):
@@ -376,17 +384,95 @@ class MrpProductionStatsMixed(orm.Model):
             WS.merge_range(wc_start + 1, 0, wc_end, 0, wc.name, 
                 xls_format['merge'])
         
+
         # ---------------------------------------------------------------------
-        #                   EXCEL: SHEET 1 Today statistic:
+        #                   EXCEL: SHEET 1 Detail last 14 days
+        # ---------------------------------------------------------------------
+        #    sort_key = lambda x: (
+        #        x.workcenter_id.name, # Line
+        #        x.mrp_id.bom_id.product_tmpl_id.name, # Family
+        #        x.mrp_id.name, # Data
+        #        )
+        sort_key = lambda x: (
+            x.mrp_id.bom_id.product_tmpl_id.name, # Family
+            x.workcenter_id.name, # Line
+            x.mrp_id.name, # Data
+            )
+
+        # Setup columns:
+        WS = WB.add_worksheet('Dettaglio 20 gg.')
+        WS.set_column('A:C', 10)
+        WS.set_column('D:D', 20)
+        WS.set_column('E:I', 10)
+        WS.set_column('J:J', 60)
+
         # ---------------------------------------------------------------------
         # Collect data:
-        line_pool = self.pool.get('mrp.production.stats')
+        # ---------------------------------------------------------------------    
+        line_ids = line_pool.search(cr, uid, [
+            ('date', '>=', now_20),
+            ], context=context)
+        
+        # Title row:
+        row = 0
+        WS.write(row, 0, 
+            'Dettaglio statistiche (ultimi 20 gg.)', 
+            xls_format['title'],
+            )
+            
+        # Header line:
+        row += 2
+        WS.write(row, 0, _('Linea'), xls_format['header'])
+        WS.write(row, 1, _('Data'), xls_format['header'])
+        WS.write(row, 2, _('Num. prod.'), xls_format['header'])
+        WS.write(row, 3, _('Famiglia'), xls_format['header'])
+        WS.write(row, 4, _('Lavoratori'), xls_format['header'])
+        WS.write(row, 5, _('Appront.'), xls_format['header'])
+        WS.write(row, 6, _('Tot. pezzi'), xls_format['header'])
+        WS.write(row, 7, _('Tempo'), xls_format['header'])
+        WS.write(row, 8, _('Pz / H'), xls_format['header'])
+        WS.write(row, 9, _('Dettaglio'), xls_format['header'])
+
+        # Setup again:
+        cell_format = xls_format['text']
+        cell_number_format = xls_format['text_number_today']
+        for line in sorted(
+                line_pool.browse(cr, uid, line_ids, context=context), 
+                key=sort_key):
+            row += 1
+            
+            # Key data:            
+            data = { # last key, last row
+                'line': line.workcenter_id.name,
+                'date': format_date(line.date),
+                'family': line.mrp_id.bom_id.product_tmpl_id.name,
+                }
+                    
+            WS.write(row, 0, data['line'], cell_format)
+            WS.write(row, 1, data['date'], cell_format)
+            WS.write(row, 2, line.mrp_id.name, cell_format)
+            WS.write(row, 3, data['family'], cell_format)
+            WS.write(row, 4, line.workers, cell_format)
+            WS.write(row, 5, format_hour(line.startup), cell_format)
+            WS.write(row, 6, line.total, cell_number_format)
+            WS.write(row, 7, format_hour(line.hour), cell_format)
+            WS.write(row, 8, line.total / line.hour if line.hour else '#ERR', 
+                cell_number_format)
+            WS.write(row, 9, line.total_text_detail, cell_format)
+        
+        # ---------------------------------------------------------------------
+        #                   EXCEL: SHEET 2 Today statistic:
+        # ---------------------------------------------------------------------
+        # Collect data:
         line_ids = line_pool.search(cr, uid, [
             ('date', '=', now_1),
             ], context=context)
 
         WS = WB.add_worksheet('Ieri')
-        WS.set_column('A:F', 12)
+        WS.set_column('A:C', 10)
+        WS.set_column('D:D', 20)
+        WS.set_column('E:I', 10)
+        WS.set_column('J:J', 60)
         
         # Write title row:
         row = 0
@@ -406,9 +492,9 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 6, _('Tot. pezzi'), xls_format['header'])
         WS.write(row, 7, _('Tempo'), xls_format['header'])
         WS.write(row, 8, _('Pz / H'), xls_format['header'])
+        WS.write(row, 9, _('Dettaglio'), xls_format['header'])
 
         # Write data:
-        cell_format = xls_format['text']
         for line in sorted(
                 line_pool.browse(cr, uid, line_ids, context=context), 
                 key=lambda x: (
@@ -424,12 +510,13 @@ class MrpProductionStatsMixed(orm.Model):
                 cell_format)
             WS.write(row, 4, line.workers, cell_format)
             WS.write(row, 5, format_hour(line.startup), cell_format)
-            WS.write(row, 6, line.total, cell_format)
+            WS.write(row, 6, line.total, cell_number_format)
             WS.write(row, 7, format_hour(line.hour), cell_format)
             if line.hour:
-                WS.write(row, 8, line.total / line.hour, cell_format)
+                WS.write(row, 8, line.total / line.hour, cell_number_format)
             else:    
-                WS.write(row, 8, 'ERRORE', cell_format)
+                WS.write(row, 8, '#ERR', cell_number_format)
+            WS.write(row, 9, line.total_text_detail, cell_number_format)
         
         WB.close()
         
