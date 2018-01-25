@@ -1,3 +1,5 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
 access_mrp_production_stats_user,mrp.production.stats,model_mrp_production_stats,base.group_user,1,1,1,1
-access_mrp_production_stats_mixed_user,mrp.production.stats:mixed,model_mrp_production_stats_mixed,base.group_user,1,1,1,1
+access_mrp_production_stats_mixed_user,mrp.production.stats_mixed,model_mrp_production_stats_mixed,base.group_user,1,1,1,1
+access_mrp_production_stats_line_user,mrp.production.stats_line,model_mrp_production_stats_line,base.group_user,1,1,1,1
+
