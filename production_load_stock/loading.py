@@ -598,10 +598,15 @@ class SaleOrder(orm.Model):
         res_id = super(SaleOrder, self).create(
             cr, uid, vals, context=context)
         
-        # Check maked qty for create production moves:
+        # Check maked qty for create production moves:        
         maked_qty = vals.get('product_uom_maked_sync_qty', 0.0)
+        # TODO duplication problem is correct to keep movement?
         if maked_qty:
-            self._recreate_production_sol_move(cr, uid, [res_ids], 
+            raise osv.except_osv(
+                _('Errore duplicazione'), 
+                _('Attenzione ci sono dei carichi che verrebbero raddoppiati'),
+                )
+            self._recreate_production_sol_move(cr, uid, [res_id], 
                 context=context)            
         return res_id
     
