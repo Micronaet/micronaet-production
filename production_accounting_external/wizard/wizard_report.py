@@ -61,6 +61,7 @@ class MrpProductionReportWizard(orm.TransientModel):
         datas['wizard_show_lavoration'] = wiz_proxy.show_lavoration
         datas['wizard_show_sale'] = wiz_proxy.show_sale
         datas['wizard_show_frame'] = wiz_proxy.show_frame
+        datas['wizard_show_note'] = wiz_proxy.show_note
         #datas['show_cut'] = wiz_proxy.show_cut
 
         return {
@@ -95,7 +96,7 @@ class MrpProductionReportWizard(orm.TransientModel):
         'show_lavoration': fields.boolean('A. Show lavoration'),
         'show_sale': fields.boolean('B. Show sale part'),
         'show_frame': fields.boolean('C. Show frame part'),
-        #'show_cut': fields.boolean('Show cut part'),        
+        'show_note': fields.boolean('Mostra sistema note'),
         }
         
     _defaults = {
@@ -103,5 +104,6 @@ class MrpProductionReportWizard(orm.TransientModel):
         'show_lavoration': lambda *x: True,
         'show_sale': lambda *x: True,
         'show_frame': lambda *x: True,
+        'show_note': lambda *x: True,
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

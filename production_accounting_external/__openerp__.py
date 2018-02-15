@@ -44,6 +44,7 @@
         'sql_sale_order',
         'production_order_mandatory',
         'pricelist_order',
+        'note_system_management', # for note in report
         
         #'production_workhour', # Replaced with:
         'hr_workhour',

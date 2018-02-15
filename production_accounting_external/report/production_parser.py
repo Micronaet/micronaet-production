@@ -60,8 +60,126 @@ class Parser(report_sxw.rml_parse):
             'get_object_remain': self.get_object_remain,
             'previous_record': self.previous_record,
             'clean_order': self.clean_order,
+            
+            # Note system:
+            'get_note_system': self.get_note_system,
+            'get_note_reference': self.get_note_reference,
         })
 
+    def get_note_reference(self, note):
+        ''' Linked obj for note
+        '''
+        if note.line_id:
+            return 'Riga: %s ordine: %s' % (
+                note.line_id.product_id.default_code or \
+                    note.line_id.product_id.name or '',
+                note.order_id.name,
+                )
+        elif note.order_id:
+            return 'Ordine: %s' % (
+                note.order_id.name,
+                )
+        elif note.product_id:
+            return 'Prodotto: %s' % (
+                note.product_id.default_code or \
+                    note.product_id.name or '',
+                )
+        elif note.address_id:
+            return 'Destinazione: %s' % (
+                note.address_id.name,
+                )
+        elif note.partner_id:
+            return 'Cliente: %s' % (
+                note.partner_id.name,
+                )
+        else:                
+            return 'Non chiaro il collegamento!'
+            
+    def get_note_system(self, department, objects, data=None):
+        ''' Read all partner, destination, order, product, line from 
+            object and get all data from note system
+            filter also depend on data  
+            department is the name of Production or Cut Department
+            
+            @return list of data and error if present
+            ([], Error)
+        '''
+        if data is None:
+            data = {}
+        
+        # Pool used:
+        dept_pool = self.pool.get('note.department')
+        category_pool = self.pool.get('note.category')
+        note_pool = self.pool.get('note.note')
+
+        # ---------------------------------------------------------------------
+        # Find all category for filter note:
+        # ---------------------------------------------------------------------
+        # Get department ID:        
+        dept_ids = dept_pool.search(cr, uid, [
+            ('name', '=', department),
+            ], context=context)
+        if not dept_ids:
+            return [], 'Nessun dipartimento %s presente' % department
+        dept_id = dept_ids[0]    
+        
+        # Get category ID:
+        category_ids = category_pool.search(cr, uid, [], context=context)
+        selected_category_ids = []
+        for category in category_pool.browse(cr, uid, category_ids, 
+                context=context):
+            if dept_id in category.department_ids:
+                selected_category_ids.append(category.id)                
+        if not selected_category_ids:
+            return [], 'Nessuna categoria con dipartimento %s' % department
+        
+        # ---------------------------------------------------------------------
+        # Find all note:
+        # ---------------------------------------------------------------------
+        # Generate control list for get note:
+        partner_ids = []
+        address_ids = []
+        product_ids = []
+        order_ids = []
+        line_ids = []
+        
+        for o in objects: # sale order line
+            # Get check fields:
+            partner_id = o.order_id.partner_id.id
+            address_id = o.order_id.destination_partner_id.id
+            product_id = o.product_id.id
+            order_id = o.order_id.id
+            line_id = o.id
+
+            # Update list:            
+            if partner_id not in partner_ids:
+                partner_ids.append(partner_id)
+            if address_id not in address_ids:
+                address_ids.append(address_id)
+            if product_id not in product_ids:
+                product_ids.append(product_id)
+            if order_id not in order_ids:
+                order_ids.append(order_id)
+            if line_id not in line_ids:
+                line_ids.append(line_id)
+        
+        note_ids = note_pool.search(cr, uid, [
+            '&', ('category_id', 'in', selected_category_ids),
+            '|', ('partner_id', 'in', partner_ids),
+            '|', ('address_id', 'in', address_ids),
+            '|', ('product_id', 'in', product_ids),
+            '|', ('order_id', 'in', order_ids),
+            ('line_id', 'in', line_ids),            
+            ], context=context)
+            
+        note_proxy = note_pool.browse(cr, uid, note_ids, context=context)
+        return sorted(note_proxy, key=lambda x: (
+            x.partner_id.name or '',
+            x.destination_id.name or '',
+            x.product_id.default_code or '',            
+            x.order_id.name or '',            
+            ))
+            
     def get_pre_production(self):
         ''' List of family with order to do and order planned (open)
         '''
