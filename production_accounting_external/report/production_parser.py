@@ -95,43 +95,45 @@ class Parser(report_sxw.rml_parse):
         else:                
             return 'Non chiaro il collegamento!'
             
-    def get_note_system(self, department, objects, data=None):
+    def get_note_system(self, department):
         ''' Read all partner, destination, order, product, line from 
             object and get all data from note system
             filter also depend on data  
             department is the name of Production or Cut Department
             
-            @return list of data and error if present
-            ([], Error)
+            @return list
         '''
-        if data is None:
-            data = {}
-        
+        cr = self.cr
+        uid = self.uid
+        context = {}    
+
         # Pool used:
         dept_pool = self.pool.get('note.department')
-        category_pool = self.pool.get('note.category')
+        type_pool = self.pool.get('note.type')
         note_pool = self.pool.get('note.note')
 
         # ---------------------------------------------------------------------
-        # Find all category for filter note:
+        # Find all type for filter note:
         # ---------------------------------------------------------------------
         # Get department ID:        
         dept_ids = dept_pool.search(cr, uid, [
             ('name', '=', department),
             ], context=context)
         if not dept_ids:
-            return [], 'Nessun dipartimento %s presente' % department
+            _logger.error('Nessun dipartimento %s presente' % department)
+            return []
         dept_id = dept_ids[0]    
         
-        # Get category ID:
-        category_ids = category_pool.search(cr, uid, [], context=context)
-        selected_category_ids = []
-        for category in category_pool.browse(cr, uid, category_ids, 
+        # Get type ID:
+        type_ids = type_pool.search(cr, uid, [], context=context)
+        selected_type_ids = []
+        for item in type_pool.browse(cr, uid, type_ids, 
                 context=context):
-            if dept_id in category.department_ids:
-                selected_category_ids.append(category.id)                
-        if not selected_category_ids:
-            return [], 'Nessuna categoria con dipartimento %s' % department
+            if dept_id in [c.id for c in item.department_ids]:
+                selected_type_ids.append(item.id)                
+        if not selected_type_ids:
+            _logger.error('Nessuna categoria con dipartimento %s' % department)
+            return []
         
         # ---------------------------------------------------------------------
         # Find all note:
@@ -142,44 +144,66 @@ class Parser(report_sxw.rml_parse):
         product_ids = []
         order_ids = []
         line_ids = []
-        
-        for o in objects: # sale order line
+
+        for sol in self.mrp_sol: # order line (collected data during print)
             # Get check fields:
-            partner_id = o.order_id.partner_id.id
-            address_id = o.order_id.destination_partner_id.id
-            product_id = o.product_id.id
-            order_id = o.order_id.id
-            line_id = o.id
+            partner_id = sol.order_id.partner_id.id
+            address_id = sol.order_id.destination_partner_id.id
+            product_id = sol.product_id.id
+            order_id = sol.order_id.id
+            line_id = sol.id
 
             # Update list:            
-            if partner_id not in partner_ids:
+            if partner_id and partner_id not in partner_ids:
                 partner_ids.append(partner_id)
-            if address_id not in address_ids:
+            if address_id and address_id not in address_ids:
                 address_ids.append(address_id)
-            if product_id not in product_ids:
+            if product_id and product_id not in product_ids:
                 product_ids.append(product_id)
-            if order_id not in order_ids:
+            if order_id and order_id not in order_ids:
                 order_ids.append(order_id)
-            if line_id not in line_ids:
+            if line_id and line_id not in line_ids:
                 line_ids.append(line_id)
-        
+
         note_ids = note_pool.search(cr, uid, [
-            '&', ('category_id', 'in', selected_category_ids),
-            '|', ('partner_id', 'in', partner_ids),
-            '|', ('address_id', 'in', address_ids),
-            '|', ('product_id', 'in', product_ids),
-            '|', ('order_id', 'in', order_ids),
-            ('line_id', 'in', line_ids),            
+            ('type_id', 'in', selected_type_ids), # only category       
             ], context=context)
-            
-        note_proxy = note_pool.browse(cr, uid, note_ids, context=context)
-        return sorted(note_proxy, key=lambda x: (
+        note_selected = []
+        
+        for note in note_pool.browse(cr, uid, note_ids, context=context):
+            partner_id = note.partner_id.id
+            address_id = note.address_id.id
+            product_id = note.product_id.id
+            order_id = note.order_id.id
+            line_id = note.line_id.id
+
+            if line_id in line_ids or order_id in order_ids:
+                # Order and line:
+                note_selected.append(note)                
+            elif address_id in address_ids and product_id in product_ids:
+                # Address - Product
+                note_selected.append(note)                
+            elif partner_id in partner_ids and product_id in product_ids:
+                # Partner - Product
+                note_selected.append(note)                
+            elif not address_id and not partner_id and \
+                    product_id in product_ids:
+                # Product
+                note_selected.append(note)           
+            elif address_id in address_ids and not product_id:
+                note_selected.append(note)                
+            elif partner_id in partner_ids and not product_id:
+                note_selected.append(note)                
+                
+        
+        return sorted(note_selected, key=lambda x: (
+            x.print_label, # after label
             x.partner_id.name or '',
-            x.destination_id.name or '',
+            x.address_id.name or '',
             x.product_id.default_code or '',            
             x.order_id.name or '',            
             ))
-            
+
     def get_pre_production(self):
         ''' List of family with order to do and order planned (open)
         '''
@@ -332,13 +356,13 @@ class Parser(report_sxw.rml_parse):
                     item.product_id.default_code[0:3],
                     )):
             lines.append(line)
-        print lines
 
         # Total for code break:
         code1 = code2 = False
         total1 = total2 = 0.0
         records = []
 
+        self.mrp_sol = [] # Note management
         self.frames = {}
         self.material_db = {} # Database for next report
         for line in lines: # sale order line
@@ -414,6 +438,7 @@ class Parser(report_sxw.rml_parse):
             # Append record line:
             # -------------------
             records.append(('L', line, False))
+            self.mrp_sol.append(line)
 
         # Append last totals if there's records:
         if records:
@@ -438,6 +463,7 @@ class Parser(report_sxw.rml_parse):
         records = []
 
         self.frames = {}
+        self.mrp_sol = []
         old_line = False
         for line in lines:
             # Variable:
@@ -505,6 +531,7 @@ class Parser(report_sxw.rml_parse):
                     product_uom_qty, product_uom_maked_sync_qty,
                     )))
             old_line = line
+            self.mrp_sol.append(line) # for note system
 
         # Append last totals if there's records:
         if records:                
