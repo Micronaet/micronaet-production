@@ -144,6 +144,7 @@ class Parser(report_sxw.rml_parse):
         product_ids = []
         order_ids = []
         line_ids = []
+        product_partic = []
 
         for sol in self.mrp_sol: # order line (collected data during print)
             # Get check fields:
@@ -165,6 +166,12 @@ class Parser(report_sxw.rml_parse):
             if line_id and line_id not in line_ids:
                 line_ids.append(line_id)
 
+            # Partic:
+            if partner_id and product_id:
+                product_partic.append((partner_id, product_id))
+            if address_id and product_id:
+                product_partic.append((address_id, product_id))    
+
         note_ids = note_pool.search(cr, uid, [
             ('type_id', 'in', selected_type_ids), # only category       
             ], context=context)
@@ -179,13 +186,17 @@ class Parser(report_sxw.rml_parse):
 
             if line_id in line_ids or order_id in order_ids:
                 # Order and line:
+                note_selected.append(note)
+            elif (partner_id, product_id) in product_partic:
                 note_selected.append(note)                
-            elif address_id in address_ids and product_id in product_ids:
-                # Address - Product
-                note_selected.append(note)                
-            elif partner_id in partner_ids and product_id in product_ids:
-                # Partner - Product
-                note_selected.append(note)                
+            elif (address_id, product_id) in product_partic:
+                note_selected.append(note)
+            #elif address_id in address_ids and product_id in product_ids:
+            #    # Address - Product
+            #    note_selected.append(note)                
+            #elif partner_id in partner_ids and product_id in product_ids:
+            #    # Partner - Product
+            #    note_selected.append(note)                
             elif not address_id and not partner_id and \
                     product_id in product_ids:
                 # Product
