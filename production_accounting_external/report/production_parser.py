@@ -196,14 +196,17 @@ class Parser(report_sxw.rml_parse):
             #    note_selected.append(note)                
             #elif partner_id in partner_ids and product_id in product_ids:
             #    # Partner - Product
-            #    note_selected.append(note)                
+            #    note_selected.append(note)
+                            
             elif not address_id and not partner_id and \
                     product_id in product_ids:
                 # Product
                 note_selected.append(note)           
-            elif address_id in address_ids and not product_id:
+            
+            # Only partner / address (no product partic and no order partic)    
+            elif address_id in address_ids and not product_id and not order_id:
                 note_selected.append(note)                
-            elif partner_id in partner_ids and not product_id:
+            elif partner_id in partner_ids and not product_id and not order_id:
                 note_selected.append(note)                
                 
         
