@@ -212,6 +212,7 @@ class Parser(report_sxw.rml_parse):
         
         return sorted(note_selected, key=lambda x: (
             x.print_label, # after label
+            x.type_id.name, # Change order type (after label)
             x.partner_id.name or '',
             x.address_id.name or '',
             x.product_id.default_code or '',            
