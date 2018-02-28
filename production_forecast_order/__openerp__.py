@@ -32,6 +32,7 @@
         'base',
         'sale',
         'production_accounting_external',
+        'order_previsional', # for mark previsional FC order
         ],
     'init_xml': [],
     'demo': [],

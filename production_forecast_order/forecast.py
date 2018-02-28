@@ -105,6 +105,7 @@ class MrpProduction(orm.Model):
                 'partner_id': mrp_proxy.company_id.partner_id.id,
                 'date_order': datetime.now(),
                 'forecasted_production_id': mrp_proxy.id,
+                'previsional': True, # XXX 28 feb 2018: ADD after for mark it!
                 # TODO 'date_deadline': # end of year?
                 
                 # TODO remove when there's no importation
