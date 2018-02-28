@@ -69,21 +69,52 @@ class Parser(report_sxw.rml_parse):
     def get_note_reference(self, note):
         ''' Linked obj for note
         '''
+        def get_product(product):
+            return product.default_code or product.name or ''
+            
+        # ---------------------------------------------------------------------    
+        # Line:
+        # ---------------------------------------------------------------------    
         if note.line_id:
             return 'Riga: %s ordine: %s' % (
-                note.line_id.product_id.default_code or \
-                    note.line_id.product_id.name or '',
+                get_product(note.line_id.product_id),
                 note.order_id.name,
+                )
+                
+        # ---------------------------------------------------------------------    
+        # Order:        
+        # ---------------------------------------------------------------------    
+        elif note.product_id and note.order_id:
+            return 'Ordine-Prodotto: %s-%s' % (
+                note.order_id.name,
+                get_product(note.product_id),
                 )
         elif note.order_id:
             return 'Ordine: %s' % (
                 note.order_id.name,
                 )
+        
+        # ---------------------------------------------------------------------    
+        # Product:        
+        # ---------------------------------------------------------------------    
+        elif note.product_id and note.address_id: # TODO order_id False
+            return 'Destinazione-Prodotto: %s-%s' % (
+                note.address_id.name,
+                get_product(note.product_id),
+                )
+        elif note.product_id and note.partner_id:
+            return 'Cliente-Prodotto: %s-%s' % (
+                note.partner_id.name,
+                get_product(note.product_id),
+                )
         elif note.product_id:
             return 'Prodotto: %s' % (
-                note.product_id.default_code or \
-                    note.product_id.name or '',
+                get_product(note.product_id),
                 )
+        
+        # ---------------------------------------------------------------------    
+        # Partner and Address:        
+        # ---------------------------------------------------------------------    
         elif note.address_id:
             return 'Destinazione: %s' % (
                 note.address_id.name,
