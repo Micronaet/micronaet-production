@@ -421,6 +421,16 @@
         <field name="domain">['|',('mrp_unlinked','=',True),('mrp_id','=',False),('pricelist_order','=',False),('go_in_production','=',True),('is_manufactured','=',True),('mx_closed','=',False)]</field>
         <!--TODO remove filter for accounting when accounting will not be present! -->
     </record>
+    <record model="ir.actions.act_window" id="action_view_sale_order_production_all_line">
+        <field name="name">Sale order all not closed line</field>
+        <field name="res_model">sale.order.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,graph</field>
+        <field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>
+        <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>        
+        <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form','search_default_group_family':True}</field>
+        <field name="domain">[('pricelist_order','=',False),('go_in_production','=',True),('is_manufactured','=',True),('mx_closed','=',False)]</field>
+    </record>
     <record model="ir.actions.act_window" id="action_view_sale_order_production_line_no_family">
         <field name="name">Sale order line without family</field>
         <field name="res_model">sale.order.line</field>
@@ -583,6 +593,7 @@
        parent="mrp.menu_mrp_manufacturing" 
        id="menu_base_sale_order_root" 
        sequence="0" />   
+       
       <menuitem name="OC line production"
           parent="menu_base_sale_order_root" 
           id="menu_sale_order_line_m1" 
@@ -593,17 +604,24 @@
               id="menu_sale_order_line_m1_no_family" 
               action="action_view_sale_order_production_line_no_family" 
               sequence="10" />
+
+      <menuitem name="OC line production"
+          parent="menu_base_sale_order_root" 
+          id="menu_sale_order_line_m1" 
+          action="action_view_sale_order_production_all_line" 
+          sequence="20" />          
           
       <menuitem name="OC line"
           parent="menu_base_sale_order_root" 
           id="menu_sale_order_line_m0" 
           action="action_view_sale_order_line" 
-          sequence="20" />
+          sequence="30" />
+          
       <menuitem name="OC mandatory"
           parent="menu_base_sale_order_root" 
           id="menu_sale_order_line_m1_mandatory" 
           action="action_view_sale_order_line_mandatory" 
-          sequence="30" />
+          sequence="40" />
 
      <!-- SALES -->
      <!--<menuitem 
