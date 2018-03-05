@@ -422,7 +422,7 @@
         <!--TODO remove filter for accounting when accounting will not be present! -->
     </record>
     <record model="ir.actions.act_window" id="action_view_sale_order_production_all_line">
-        <field name="name">Sale order all not closed line</field>
+        <field name="name">Righe OC produzione (tutte)</field>
         <field name="res_model">sale.order.line</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,graph</field>
@@ -587,7 +587,7 @@
         action="sql_sale_order.action_quotations_accounting"
         name="Production order"/>
 
-    <!--                       MENUITEM:                                    -->
+    <!-- MENUITEM: -->
    <!-- PRODUCTION -->
    <menuitem name="Sale order" 
        parent="mrp.menu_mrp_manufacturing" 
@@ -605,9 +605,9 @@
               action="action_view_sale_order_production_line_no_family" 
               sequence="10" />
 
-      <menuitem name="OC line production"
+      <menuitem name="Righe produzione OC (tutte)"
           parent="menu_base_sale_order_root" 
-          id="menu_sale_order_line_m1" 
+          id="menu_sale_order_line_all_oc_m1" 
           action="action_view_sale_order_production_all_line" 
           sequence="20" />          
           
