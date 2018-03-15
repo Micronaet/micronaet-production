@@ -456,9 +456,15 @@ class Parser(report_sxw.rml_parse):
         codes = sorted(products)
         self.general_total = [0, 0, 0, 0]
         for default_code in codes:
-            total = [0, 0, 0, 0]
+            total = [0, 0, 0, 0, 
+                '', # Use stock without locked
+                ]
             # Add product line:
+            product_proxy = False
             for line in products[default_code]:
+                if product_proxy == False:
+                    product_proxy = line.product_id
+
                 res.append(('P', line))
 
                 # Quantity used:
@@ -482,6 +488,19 @@ class Parser(report_sxw.rml_parse):
                 self.general_total[2] += remain
                 self.general_total[3] += delivered_qty
     
+            # Stock status available:
+            if product_proxy:
+                stock_available = int(product_proxy.mx_net_mrp_qty - \
+                    product_proxy.mx_mrp_b_locked)
+                if stock_available > 0:
+                    net_to_produce = int(total[2] - stock_available)
+                    total[4] = '[%s] (usabili mag. %s)' % (
+                        net_to_produce if net_to_produce > 0 else '0', 
+                        stock_available,
+                        )
+                else:        
+                    total[4] = '[%s]' % int(total[2])
+
             # Add total line:    
             res.append(('T', total))                
         return res
