@@ -490,16 +490,21 @@ class Parser(report_sxw.rml_parse):
     
             # Stock status available:
             if product_proxy:
-                stock_available = int(product_proxy.mx_net_mrp_qty - \
+                stock_total = int(product_proxy.mx_net_mrp_qty)
+                stock_available = int(stock_total - \
                     product_proxy.mx_mrp_b_locked)
                 if stock_available > 0:
                     net_to_produce = int(total[2] - stock_available)
-                    total[4] = '[%s] (usabili mag. %s)' % (
+                    total[4] = '[%s] (usabili %s mag. %s)' % (
                         net_to_produce if net_to_produce > 0 else '0', 
                         stock_available,
+                        stock_total,
                         )
                 else:        
-                    total[4] = '[%s]' % int(total[2])
+                    total[4] = '[%s] (usabili 0 mag. %s)' % (
+                        int(total[2]),
+                        stock_total,
+                        )
 
             # Add total line:    
             res.append(('T', total))                
