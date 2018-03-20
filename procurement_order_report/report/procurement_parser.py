@@ -323,8 +323,36 @@ class Parser(report_sxw.rml_parse):
             'get_filter_description': self.get_filter_description,
             
             'get_general_total': self.get_general_total,
+            
+            'extract_measure': self.extract_measure,
         })
 
+    def extract_measure(self, name=''):
+        ''' Extract dimension from order
+        '''
+        res = ''
+        dimension_db = '0123456789. xX()'
+        start = False
+        more = False
+
+        for c in name:
+            if c != ' ': # blank not count!
+                if c in dimension_db:
+                    if not start:
+                        start = True
+                        if more:
+                            res += ' - ' # add extra space
+                else:
+                    if start:
+                        start = False        
+                        more = True
+            if start:
+                res += c     
+        res = res.strip()
+        if res:
+            res += ' '
+        return res        
+        
     def get_general_total(self, ):
         ''' Return instance general total
         '''
