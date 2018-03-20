@@ -332,11 +332,16 @@ class Parser(report_sxw.rml_parse):
         '''
         res = ''
         dimension_db = '0123456789. xX()'
+        no_start = '. xX'
         start = False
         more = False
 
         for c in name:
-            if c != ' ': # blank not count!
+            # Jump not start char:
+            if not start and c in no_start:
+                continue # jump
+            # Blank not count for test    
+            if c != ' ':
                 if c in dimension_db:
                     if not start:
                         start = True
