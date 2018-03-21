@@ -327,9 +327,13 @@ class Parser(report_sxw.rml_parse):
             'extract_measure': self.extract_measure,
         })
 
-    def extract_measure(self, name=''):
+    def extract_measure(self, name='', datas=None):
         ''' Extract dimension from order
         '''
+        # Only if checked
+        if datas is None or datas.get('with_extract_dimension', False):
+            return ''
+            
         res = ''
         dimension_db = '0123456789. xX()'
         no_start = '. xX'

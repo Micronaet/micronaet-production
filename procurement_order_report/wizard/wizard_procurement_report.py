@@ -287,6 +287,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
         datas['code_partial'] = wiz_proxy.code_partial
         
         datas['no_forecast'] = wiz_proxy.no_forecast
+        datas['with_extract_dimension'] = wiz_proxy.with_extract_dimension
         datas['code_from'] = wiz_proxy.code_from
 
         datas['record_select'] = wiz_proxy.record_select
@@ -313,6 +314,8 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
             domain=[('is_family', '=', True)]),
             
         'no_forecast':fields.boolean('No forecast'),
+        'with_extract_dimension': fields.boolean('Estrai dimensione', 
+            help='Estrae la dimensione dal nome e la mette nelle note'),
         'record_select': fields.selection([
             ('all', 'Tutti'),
             ('mrp', 'Rimanenti da produrre'),

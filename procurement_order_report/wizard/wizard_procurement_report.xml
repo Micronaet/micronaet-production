@@ -16,7 +16,7 @@
                             <field name="report_type" />
                             <field name="family_id" />
                             <field name="no_forecast" />
-                            <newline/>
+                            <field name="with_extract_dimension" />
                             
                             <separator string="Code filter:" colspan="4" />
                             <field name="code_start" />
