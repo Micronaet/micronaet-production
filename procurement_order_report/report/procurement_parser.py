@@ -439,15 +439,6 @@ class Parser(report_sxw.rml_parse):
         products = {}
         browse_line = self.browse_order_line(data)
         
-        # --------------------
-        # Manage partial code:
-        # --------------------
-        #code_from = int(data.get('code_from', 1))
-        #code_partial = data.get('code_partial', '')
-        #if code_partial:
-        #    from_partial = code_from - 1
-        #    to_partial = from_partial + len(code_partial)
-
         record_select = data.get('record_select', 'all') #
         only_remain = record_select != 'all'
         no_forecast = data.get('no_forecast', False)
@@ -474,13 +465,6 @@ class Parser(report_sxw.rml_parse):
                     'Default code not found: %s\n' % (
                         line.product_id.name))
 
-            #if code_partial and \
-            #        default_code[from_partial: to_partial] != code_partial:
-            #    _logger.info('Code partial jumped: %s ! %s' % (
-            #    code_partial, 
-            #    default_code[from_partial: to_partial]))    
-            #    continue # jump line
-                
             product_uom_qty = line.product_uom_qty
             product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
             delivered_qty = line.delivered_qty
@@ -592,16 +576,11 @@ class Parser(report_sxw.rml_parse):
         self.order_ids = [] # list of order interessed from movement
 
         # Manage partial code
-        #code_from = int(data.get('code_from', 1))
-        #code_partial = data.get('code_partial', '')
         #families = {} # Database for family
  
         record_select = data.get('record_select', 'all')
         only_remain = record_select != 'all'
        
-        #if code_partial:
-        #    from_partial = code_from - 1
-        #    to_partial = from_partial + len(code_partial)
 
         for line in browse_line:
             # First test for speed up: added 17 giu 2016
@@ -616,11 +595,6 @@ class Parser(report_sxw.rml_parse):
                     'Default code not found: %s\n' % (
                         line.product_id.name))                        
                 
-            # Filter for partial:.
-            #if code_partial and default_code[
-            #        from_partial: to_partial] != code_partial:
-            #    continue # jump line
-
             product_uom_qty = line.product_uom_qty
             product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
             delivered_qty = line.delivered_qty
