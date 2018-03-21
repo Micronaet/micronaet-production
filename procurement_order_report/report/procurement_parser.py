@@ -67,6 +67,9 @@ class SaleOrder(orm.Model):
         
         # Get wizard information:
         code_start = data.get('code_start', False)       
+        code_from = int(data.get('code_from', 1))
+        code_partial = data.get('code_partial', '')        
+
         no_forecast = data.get('no_forecast', False)        
         no_dimension = data.get('with_extract_dimension', False)        
 
@@ -88,8 +91,6 @@ class SaleOrder(orm.Model):
         to_date = data.get('to_date', False)
         from_deadline = data.get('from_deadline', False)
         to_deadline = data.get('to_deadline', False)
-        code_from = int(data.get('code_from', 1))
-        code_partial = data.get('code_partial', '')        
 
         # ---------------------------------------------------------------------
         #                      Sale order filter
@@ -147,12 +148,33 @@ class SaleOrder(orm.Model):
         # ---------------------------------------------------------------------
         #                      Sale order line filter
         # ---------------------------------------------------------------------
-        domain = [('order_id', 'in', order_ids)]        
+        domain = [('order_id', 'in', order_ids)] # All selected order line      
 
+        # -----------------------------
+        # default_code mask generation:
+        # -----------------------------
+        code_mask = ''
         if code_partial:
-            self.filter_description += _(
-                ', Partial code filter: %s (from char: %s) ') % ( 
-                    code_partial, code_from)
+            underscore_tot = code_from - 1
+            code_mask = '%s%s' % ('_' * underscore_tot, code_partial)
+        else:
+            underscore_tot = 0            
+        
+        if code_start:
+            len_code_start = len(code_start)
+            if underscore_tot and len_code_start > underscore_tot:
+                self.filter_description += ', FILTRO CODICE ACCAVALLATO!'
+            code_mask = '%s%s' % (
+                code_start,
+                code_mask[len_code_start:],
+                )
+
+        if code_mask:
+            code_mask += '%' # Extra dont' care
+            domain.append(
+                ('product_id.default_code', '=ilike', code_mask),
+                )
+            self.filter_description += ', filtro codice %s' % code_mask
 
         if from_deadline:
             domain.append(('date_deadline', '>=', from_deadline))
@@ -161,10 +183,6 @@ class SaleOrder(orm.Model):
             domain.append(('date_deadline', '<=', to_deadline))
             self.filter_description += _(', deadline <= %s') % to_deadline
             
-        if code_start:
-            domain.append(('product_id.default_code', '=ilike', '%s%s' % (
-                code_start, '%')))  
-            self.filter_description += _(', code start %s') % code_start
 
         if family_id:
             domain.append(('product_id.family_id', '=', family_id))  
@@ -194,11 +212,11 @@ class SaleOrder(orm.Model):
         xlsx = data.get('xlsx', False) # Mode XLSX
 
         # Manage partial default_code
-        code_from = int(data.get('code_from', 1))
-        code_partial = data.get('code_partial', '')
-        if code_partial:
-            from_partial = code_from - 1
-            to_partial = from_partial + len(code_partial)
+        #code_from = int(data.get('code_from', 1))
+        #code_partial = data.get('code_partial', '')
+        #if code_partial:
+        #    from_partial = code_from - 1
+        #    to_partial = from_partial + len(code_partial)
 
         mrp_date_db = {}
         for line in browse_line:
@@ -207,9 +225,9 @@ class SaleOrder(orm.Model):
                 continue # jump if no item or all produced
 
             # Filter for partial:.
-            if code_partial and line.product_id.default_code[
-                    from_partial: to_partial] != code_partial:
-                continue # jump line
+            #if code_partial and line.product_id.default_code[
+            #        from_partial: to_partial] != code_partial:
+            #    continue # jump line
 
             product_uom_qty = line.product_uom_qty
             product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
@@ -424,11 +442,11 @@ class Parser(report_sxw.rml_parse):
         # --------------------
         # Manage partial code:
         # --------------------
-        code_from = int(data.get('code_from', 1))
-        code_partial = data.get('code_partial', '')
-        if code_partial:
-            from_partial = code_from - 1
-            to_partial = from_partial + len(code_partial)
+        #code_from = int(data.get('code_from', 1))
+        #code_partial = data.get('code_partial', '')
+        #if code_partial:
+        #    from_partial = code_from - 1
+        #    to_partial = from_partial + len(code_partial)
 
         record_select = data.get('record_select', 'all') #
         only_remain = record_select != 'all'
@@ -456,12 +474,12 @@ class Parser(report_sxw.rml_parse):
                     'Default code not found: %s\n' % (
                         line.product_id.name))
 
-            if code_partial and \
-                    default_code[from_partial: to_partial] != code_partial:
-                _logger.info('Code partial jumped: %s ! %s' % (
-                code_partial, 
-                default_code[from_partial: to_partial]))    
-                continue # jump line
+            #if code_partial and \
+            #        default_code[from_partial: to_partial] != code_partial:
+            #    _logger.info('Code partial jumped: %s ! %s' % (
+            #    code_partial, 
+            #    default_code[from_partial: to_partial]))    
+            #    continue # jump line
                 
             product_uom_qty = line.product_uom_qty
             product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
@@ -573,16 +591,16 @@ class Parser(report_sxw.rml_parse):
         self.order_ids = [] # list of order interessed from movement
 
         # Manage partial code
-        code_from = int(data.get('code_from', 1))
-        code_partial = data.get('code_partial', '')
+        #code_from = int(data.get('code_from', 1))
+        #code_partial = data.get('code_partial', '')
         #families = {} # Database for family
  
         record_select = data.get('record_select', 'all')
         only_remain = record_select != 'all'
        
-        if code_partial:
-            from_partial = code_from - 1
-            to_partial = from_partial + len(code_partial)
+        #if code_partial:
+        #    from_partial = code_from - 1
+        #    to_partial = from_partial + len(code_partial)
 
         for line in browse_line:
             # First test for speed up: added 17 giu 2016
@@ -598,9 +616,9 @@ class Parser(report_sxw.rml_parse):
                         line.product_id.name))                        
                 
             # Filter for partial:.
-            if code_partial and default_code[
-                    from_partial: to_partial] != code_partial:
-                continue # jump line
+            #if code_partial and default_code[
+            #        from_partial: to_partial] != code_partial:
+            #    continue # jump line
 
             product_uom_qty = line.product_uom_qty
             product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
