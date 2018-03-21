@@ -66,8 +66,9 @@ class SaleOrder(orm.Model):
         line_pool = self.pool.get('sale.order.line')
         
         # Get wizard information:
-        code_start = data.get('code_start', False)        
+        code_start = data.get('code_start', False)       
         no_forecast = data.get('no_forecast', False)        
+        no_dimension = data.get('with_extract_dimension', False)        
 
         record_select = data.get('record_select', 'all')
         only_remain = record_select != 'all'
@@ -120,6 +121,11 @@ class SaleOrder(orm.Model):
             self.filter_description += _(', no forecast')
         else:
             self.filter_description += _(', forecast')
+
+        if no_dimension:
+            self.filter_description += _(', senza dimensioni')
+        else:
+            self.filter_description += _(', con dimensioni')
                     
         if from_date:
             domain.append(('date_order', '>=', from_date))
