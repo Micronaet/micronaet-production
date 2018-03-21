@@ -507,9 +507,10 @@ class Parser(report_sxw.rml_parse):
                 pass # nothing for all
 
             code = default_code
-            if default_code not in products:
-                products[default_code] = []
-            products[default_code].append(line)
+            if default_code in products:
+                products[default_code].append(line)
+            else:    
+                products[default_code] = [line]
             _logger.info('Code added: %s' % default_code)
         
         # create a res order by product default_code
