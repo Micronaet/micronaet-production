@@ -174,7 +174,7 @@ class SaleOrder(orm.Model):
             domain.append(
                 ('product_id.default_code', '=ilike', code_mask),
                 )
-            self.filter_description += ', filtro codice %s' % code_mask
+            self.filter_description += ', Filtro codice %s' % code_mask
 
         if from_deadline:
             domain.append(('date_deadline', '>=', from_deadline))
