@@ -351,7 +351,7 @@ class Parser(report_sxw.rml_parse):
         no_start = '. xX'
         start = False
         more = False
-
+        
         for c in name:
             # Jump not start char:
             if not start and c in no_start:
@@ -370,8 +370,22 @@ class Parser(report_sxw.rml_parse):
             if start:
                 res += c     
         res = res.strip()
+
+        # material:
+        name = name.upper()
+        
+        if 'ACCIAIO' in name:
+            material = 'ACCIAIO '
+        elif 'FERRO' in name:    
+            material = 'FERRO '
+        elif 'ALLUMINIO' in name:
+            material = 'ALLUMINIO '
+        else:
+            material = ''
+            
         if res:
             res += ' '
+        res += material    
         return res        
         
     def get_general_total(self, ):
