@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="product_template_family_form_dropbox_view">
+            <field name="name">product.product.family.dropbox.form</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="production_family.product_template_family_form_view" />
+            <field name="arch" type="xml">
+                <button name="update_family" position="after">
+                    <newline/>
+                    <field name="dropbox" />
+                </button>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="product_template_family_tree_dropbox_view">
+            <field name="name">product.product.tree.dropbox.form</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="production_family.product_template_family_tree_view" />
+            <field name="arch" type="xml">
+                 <field name="no_stock_operation" position="after">
+                     <field name="dropbox" />
+                 </field>
+            </field>
+        </record>
+    </data>
+</openerp>
+
