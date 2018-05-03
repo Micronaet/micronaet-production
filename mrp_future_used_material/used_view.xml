@@ -12,9 +12,9 @@
                     <field name="mrp_id" />
                     <field name="sol_id" invisible="1"/>
                     <field name="product_id" />
-                    <field name="remain" />
+                    <field name="remain" total="remain"/>
                     <field name="material_id" />
-                    <field name="qty" />
+                    <field name="qty" total="qty" />
                 </tree>
             </field>
         </record>

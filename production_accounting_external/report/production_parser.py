@@ -339,33 +339,42 @@ class Parser(report_sxw.rml_parse):
         '''
         return self.frames
 
-    def get_materials(self, ):    
+    def get_materials(self, mrp_id):    
         ''' Return materials object:
         '''
         res = []
+        
         # TODO check procedure:
         for component in sorted(
                 self.material_db, key=lambda x: x.default_code):
             stock = component.mx_net_mrp_qty
             current = self.material_db[component]
-            future = component.mx_mrp_future_qty - current # NOTE: without this
-            available = stock - future
-            if not current:
-                cut = 0
-            elif available:
-                cut = current - available
-                # in negative no cut:
-                if cut < 0:
-                    cut = 0
-            else:
-                cut = current
+            future = component.mx_mrp_future_qty#-current#XXX WAS: without this
+            #available = stock - future
+            #if not current:
+            #    cut = 0
+            #elif available:
+            #    cut = available#XXX WAS: current - available
+            #    # in negative no cut:
+            #    if cut < 0:
+            #        cut = 0
+            #else:
+            #    cut = current
             
+            # Load other MO (not this)
+            production_list = set(
+                [('%s ' % (c.mrp_id.name or 'OC')).replace(
+                    'MO', '').lstrip('0') \
+                        for c in component.future_ids if \
+                            c.mrp_id.id != mrp_id])
+
             res.append((
                 component, # Component
                 int(current), # This MRP
                 int(stock), # Stock
                 int(future), # MRP open
-                int(cut), # Cut net
+                0,# XXX int(cut), # Cut net
+                production_list, # List of production
                 ))
         return res
 
