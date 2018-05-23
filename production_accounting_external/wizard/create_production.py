@@ -405,7 +405,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         ''' Get list of order for confirm as default
             context: used for select product or family (grouping clause)
         '''
-        
+        import pdb; pdb.set_trace()
         if context is None:
             context = {}
 
