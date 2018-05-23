@@ -344,6 +344,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 })        
 
         # Create a production order:
+        import pdb; pdb.set_trace()
         if wiz_proxy.operation in ('create'):
             # Create lavoration:
             p_id = production_pool.create(cr, uid, {
@@ -359,7 +360,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
 
                 # Not necessary for this installation:
                 'product_id': product_id,
-                'product_uom': wiz_proxy.product_id.uom_id.id,                    
+                'product_uom': wiz_proxy.product_id.uom_id.id or \
+                    wiz_proxy.product_tmpl_id.uom_id.id,
                 }, context=context)
 
             # Update line:
@@ -405,7 +407,6 @@ class CreateMrpProductionWizard(orm.TransientModel):
         ''' Get list of order for confirm as default
             context: used for select product or family (grouping clause)
         '''
-        import pdb; pdb.set_trace()
         if context is None:
             context = {}
 
