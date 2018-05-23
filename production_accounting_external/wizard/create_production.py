@@ -360,8 +360,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
 
                 # Not necessary for this installation:
                 'product_id': product_id,
-                'product_uom': wiz_proxy.product_id.uom_id.id or \
-                    wiz_proxy.product_tmpl_id.uom_id.id,
+                'product_uom': wiz_proxy.product_id.uom_id.id,# or \
+                #    wiz_proxy.product_tmpl_id.uom_id.id,
                 }, context=context)
 
             # Update line:
