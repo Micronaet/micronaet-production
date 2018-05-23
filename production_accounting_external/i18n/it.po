@@ -444,7 +444,7 @@ msgstr "Svincola riga"
 #. module: production_accounting_external
 #: field:mrp.production.create.wizard,schedule_from_date:0
 msgid "From date"
-msgstr "Falla data"
+msgstr "Dalla data"
 
 #. module: production_accounting_external
 #: field:mrp.production.create.wizard,from_deadline:0
