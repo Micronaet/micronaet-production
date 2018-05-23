@@ -344,7 +344,6 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 })        
 
         # Create a production order:
-        import pdb; pdb.set_trace()
         if wiz_proxy.operation in ('create'):
             # Create lavoration:
             p_id = production_pool.create(cr, uid, {
