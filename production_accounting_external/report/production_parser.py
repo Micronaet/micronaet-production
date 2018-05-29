@@ -49,9 +49,12 @@ class Parser(report_sxw.rml_parse):
             
             # production report:
             'get_hour': self.get_hour,
-            
+        
+            'get_report_extra_data': self.get_report_extra_data,    
             'get_object_with_total': self.get_object_with_total,
             'get_object_with_total_cut': self.get_object_with_total_cut,
+            'setup_data_mrp': self.setup_data_mrp,
+            'setup_data_cut': self.setup_data_cut,
             'get_pre_production': self.get_pre_production,
             'get_frames': self.get_frames,
             'get_materials': self.get_materials,
@@ -449,6 +452,11 @@ class Parser(report_sxw.rml_parse):
                     todo = product_uom_qty - product_uom_maked_sync_qty
                 else:
                     todo = product_uom_qty - delivered_qty
+
+            # Total operations:
+            self.report_extra_data['total_qty'] += product_uom_qty
+            self.report_extra_data['done_qty'] += product_uom_maked_sync_qty
+            
             
             add_material_cut(line.product_id, self.material_db, todo)
             
@@ -501,8 +509,37 @@ class Parser(report_sxw.rml_parse):
         if records:
             records.append(('T1', line, total1))
             records.append(('T2', line, total2))
+        
+        self.report_extra_data['records'] = records
         return records
 
+    def setup_data_cut(self, o, data=None):
+        ''' Setup data and totals
+        '''
+        self.report_extra_data = {
+            'records': False,
+            'total_qty': 0.0,
+            'done_qty': 0.0,
+            }
+        self.get_object_with_total_cut(o, data=data)
+            
+
+    def setup_data_mrp(self, o, data=None):
+        ''' Setup data and totals
+        '''
+        self.report_extra_data = {
+            'records': False,
+            'total_qty': 0.0,
+            'done_qty': 0.0,
+            }
+        
+        self.get_object_with_total(o, data=data)
+    
+    def get_report_extra_data(self, field):
+        ''' Return extra data report same for mrp and cut
+        '''
+        return self.report_extra_data.get(field, '')
+        
     def get_object_with_total(self, o, data=None):
         ''' Get object with totals for normal report
         '''
@@ -542,6 +579,10 @@ class Parser(report_sxw.rml_parse):
                     if not product_uom_qty:
                         continue # jump empty line
                     product_uom_maked_sync_qty = 0.0                    
+            
+            # Total operations:
+            self.report_extra_data['total_qty'] += product_uom_qty
+            self.report_extra_data['done_qty'] += product_uom_maked_sync_qty
             
             # -------------
             # Check Frames:
@@ -594,8 +635,9 @@ class Parser(report_sxw.rml_parse):
         if records:                
             records.append(('T1', old_line, total1))
             records.append(('T2', old_line, total2))
-            
-        return records
+        
+        self.report_extra_data['records'] = records
+        return records # TODO remove?
         
     def get_object_remain(self, ):
         ''' Get as browse obj all record with unsync elements
