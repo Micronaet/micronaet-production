@@ -75,6 +75,7 @@ class SaleOrder(orm.Model):
                  continue # Unlinked order no re-unlink
 
             # Unlink line:
+            context['production_order_id'] = line.mrp_id.id
             sol_pool.free_line(cr, uid, [line.id], context=context)
             
             # Log unlinked:
@@ -90,7 +91,9 @@ class SaleOrder(orm.Model):
                     line.product_uom_maked_sync_qty,
                     line.delivered_qty,
                     )
-        
+        if 'production_order_id' in context:
+            del(context['production_order_id'])
+            
         # --------------------------
         # Log message for operation:
         # --------------------------
