@@ -47,6 +47,68 @@ class SaleOrder(orm.Model):
     # -------------------------------------------------------------------------
     # Override: button force close:
     # -------------------------------------------------------------------------
+    def action_cancel(self, cr, uid, ids, context=None):
+        ''' Override method for check order to unlink
+        '''
+        # ---------------------------------------------------------------------
+        # Unlink production before 
+        # ---------------------------------------------------------------------
+        order_proxy = self.browse(cr, uid, ids, context=context)
+        html_log = ''        
+        line_ids = []
+        for line in order_proxy.order_line:
+            if not line.mrp_id: # not production_mrp_id
+                continue # Manage only linked to production line
+            
+            if line.product_uom_maked_sync_qty > 0:
+                raise osv.except_osv(
+                    _('Cannot cancel'), 
+                    _('''This order has production with (B)locked qty, close
+                        residual instead of canceling'''),
+                    )
+            line_ids.append(line.id)
+            html_log += '''
+                <tr>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                </tr>\n''' % (
+                    line.product_id.default_code,
+                    line.product_uom_qty,
+                    line.product_uom_maked_sync_qty,
+                    line.delivered_qty,
+                    line.mrp_id.name or '',
+                    )
+        
+        if line_ids:
+            # Disconnect manually from MRP:
+            self.pool.get('sale.order.line').write(cr, uid, line_ids, {
+                'mrp_id': False,
+                }, context=context)
+                
+            message = _('''
+                <p>UNLINKED MRP lines to produce:</p>
+                <table class='oe_list_content'>
+                    <tr>
+                        <td class='oe_list_field_cell'>Prod.</td>
+                        <td class='oe_list_field_cell'>Order</td>
+                        <td class='oe_list_field_cell'>Done</td>
+                        <td class='oe_list_field_cell'>Delivered</td>
+                        <td class='oe_list_field_cell'>MRP</td>
+                    </tr>
+                    %s
+                </table>
+                ''') % html_log
+                                
+            # Send message
+            self.message_post(cr, uid, ids, body=message, context=context)
+            
+        return super(SaleOrder, self).action_cancel(
+            cr, uid, ids, context=context)
+
+        
     def force_close_residual_order(self, cr, uid, ids, context=None):
         ''' Force order and line closed:
         '''
