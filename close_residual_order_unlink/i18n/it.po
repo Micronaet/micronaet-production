@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-06-04 14:59+0000\n"
-"PO-Revision-Date: 2018-06-04 17:00+0100\n"
+"POT-Creation-Date: 2018-06-04 16:07+0000\n"
+"PO-Revision-Date: 2018-06-04 18:09+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,7 +18,39 @@ msgstr ""
 "X-Generator: Poedit 1.6.10\n"
 
 #. module: close_residual_order_unlink
-#: code:addons/close_residual_order_unlink/unlink_mrp.py:98
+#: code:addons/close_residual_order_unlink/unlink_mrp.py:91
+#, python-format
+msgid ""
+"\n"
+"                <p>UNLINKED MRP lines to produce:</p>\n"
+"                <table class='oe_list_content'>\n"
+"                    <tr>\n"
+"                        <td class='oe_list_field_cell'>Prod.</td>\n"
+"                        <td class='oe_list_field_cell'>Order</td>\n"
+"                        <td class='oe_list_field_cell'>Done</td>\n"
+"                        <td class='oe_list_field_cell'>Delivered</td>\n"
+"                        <td class='oe_list_field_cell'>MRP</td>\n"
+"                    </tr>\n"
+"                    %s\n"
+"                </table>\n"
+"                "
+msgstr ""
+"\n"
+"                <p>SCOLLEGATO PRODUZIONE righe da produrre:</p>\n"
+"                <table class='oe_list_content'>\n"
+"                    <tr>\n"
+"                        <td class='oe_list_field_cell'>Prodotto</td>\n"
+"                        <td class='oe_list_field_cell'>Ordine</td>\n"
+"                        <td class='oe_list_field_cell'>Fatti</td>\n"
+"                        <td class='oe_list_field_cell'>Consegnati</td>\n"
+"                        <td class='oe_list_field_cell'>Produzione</td>\n"
+"                    </tr>\n"
+"                    %s\n"
+"                </table>\n"
+"                "
+
+#. module: close_residual_order_unlink
+#: code:addons/close_residual_order_unlink/unlink_mrp.py:163
 #, python-format
 msgid ""
 "\n"
@@ -49,6 +81,22 @@ msgstr ""
 "                "
 
 #. module: close_residual_order_unlink
+#: code:addons/close_residual_order_unlink/unlink_mrp.py:65
+#, python-format
+msgid "Cannot cancel"
+msgstr "Impossibile annullare"
+
+#. module: close_residual_order_unlink
 #: model:ir.model,name:close_residual_order_unlink.model_sale_order
 msgid "Sales Order"
 msgstr "Ordine di vendita"
+
+#. module: close_residual_order_unlink
+#: code:addons/close_residual_order_unlink/unlink_mrp.py:66
+#, python-format
+msgid ""
+"This order has production with (B)locked qty, close\n"
+"                        residual instead of canceling"
+msgstr ""
+"Questo ordine di produzione ha delle quantità (B)locate.\n"
+"Utilizzare in alternativa alla cancellazione il \"chiudi residuo\""
