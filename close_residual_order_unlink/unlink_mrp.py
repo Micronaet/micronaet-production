@@ -50,7 +50,6 @@ class SaleOrder(orm.Model):
     def action_cancel(self, cr, uid, ids, context=None):
         ''' Override method for check order to unlink
         '''
-        import pdb; pdb.set_trace()
         # ---------------------------------------------------------------------
         # Unlink production before 
         # ---------------------------------------------------------------------
