@@ -454,9 +454,9 @@ class Parser(report_sxw.rml_parse):
                     todo = product_uom_qty - delivered_qty
 
             # Total operations:
+            #if not line.order_id.mx_closed: # only for not closed order
             self.report_extra_data['total_qty'] += product_uom_qty
             self.report_extra_data['done_qty'] += product_uom_maked_sync_qty
-            
             
             add_material_cut(line.product_id, self.material_db, todo)
             

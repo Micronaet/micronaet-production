@@ -1,0 +1,54 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* close_residual_order_unlink
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-06-04 14:59+0000\n"
+"PO-Revision-Date: 2018-06-04 17:00+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: close_residual_order_unlink
+#: code:addons/close_residual_order_unlink/unlink_mrp.py:98
+#, python-format
+msgid ""
+"\n"
+"                <p>UNLINKED Remain line to produce:</p>\n"
+"                <table class='oe_list_content'>\n"
+"                    <tr>\n"
+"                        <td class='oe_list_field_cell'>Prod.</td>\n"
+"                        <td class='oe_list_field_cell'>Order</td>\n"
+"                        <td class='oe_list_field_cell'>Done</td>\n"
+"                        <td class='oe_list_field_cell'>Delivered</td>\n"
+"                    </tr>\n"
+"                    %s\n"
+"                </table>\n"
+"                "
+msgstr ""
+"\n"
+"                <p>SCOLLEGATO: Tolgo righe ordine da produzione ancora non "
+"completate:</p>\n"
+"                <table class='oe_list_content'>\n"
+"                    <tr>\n"
+"                        <td class='oe_list_field_cell'>Prodotto</td>\n"
+"                        <td class='oe_list_field_cell'>Ordinati</td>\n"
+"                        <td class='oe_list_field_cell'>Fatti</td>\n"
+"                        <td class='oe_list_field_cell'>Consegnati</td>\n"
+"                    </tr>\n"
+"                    %s\n"
+"                </table>\n"
+"                "
+
+#. module: close_residual_order_unlink
+#: model:ir.model,name:close_residual_order_unlink.model_sale_order
+msgid "Sales Order"
+msgstr "Ordine di vendita"
