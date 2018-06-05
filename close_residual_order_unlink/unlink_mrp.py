@@ -210,5 +210,4 @@ class SaleOrder(orm.Model):
             # Send message
             self.message_post(cr, uid, ids, body=message, context=context)
         return True
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
