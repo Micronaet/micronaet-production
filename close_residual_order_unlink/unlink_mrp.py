@@ -134,7 +134,8 @@ class SaleOrder(orm.Model):
             if line.product_uom_qty - line.product_uom_maked_sync_qty <= 0:
                 continue # Manage only residual production todo
                 
-            if 'UNLINK' in line.mrp_id.name:
+            if 'UNLINK' in line.mrp_id.name and \
+                    line.product_uom_maked_sync_qty > 0:
                  continue # Unlinked order no re-unlink
 
             # Unlink line:
