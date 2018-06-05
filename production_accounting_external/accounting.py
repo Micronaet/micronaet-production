@@ -302,7 +302,8 @@ class SaleOrderLine(orm.Model):
     def _refresh_line_in_production(self, cr, uid, ids, context=None):
         ''' Get state of production from state of order
         '''
-        _logger.warning('Go in production change sol mrp or order')
+        _logger.warning('Go in production change sol mrp or order: %s' % (
+            ids, ))
         return ids
 
     """# sale.order.line:
