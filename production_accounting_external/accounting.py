@@ -295,12 +295,14 @@ class SaleOrderLine(orm.Model):
     def _refresh_in_production(self, cr, uid, ids, context=None):
         ''' Get state of production from state of order
         '''
+        _logger.warning('Go in production change order state or closed')
         return self.pool.get('sale.order.line').search(cr, uid, [
             ('order_id', 'in', ids)], context=context)            
 
     def _refresh_line_in_production(self, cr, uid, ids, context=None):
         ''' Get state of production from state of order
         '''
+        _logger.warning('Go in production change sol mrp or order')
         return ids
 
     """# sale.order.line:
