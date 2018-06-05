@@ -127,29 +127,53 @@ class SaleOrder(orm.Model):
         # Read data for log and get information:
         # --------------------------------------
         html_log = ''
+        unlink_no_production_ids = []
         for line in order_proxy.order_line:
-            if not line.mrp_id: # not production_mrp_id
-                continue # Manage only linked to production line
+            if not line.mrp_id: # not production_mrp_id                
+                continue # Nothing to do: no MRP
             
             if line.product_uom_qty - line.product_uom_maked_sync_qty <= 0:
-                continue # Manage only residual production todo
+                continue # All done remain in MRP order
                 
-            if 'UNLINK' in line.mrp_id.name and \
-                    line.product_uom_maked_sync_qty > 0:
-                 continue # Unlinked order no re-unlink
+            if 'UNLINK' in line.mrp_id.name:
+                if line.product_uom_maked_sync_qty <= 0: # no production remove
+                    unlink_no_production_ids.append(line.id)
+                    html_log += _('''
+                        <tr>
+                            <td>%s (MRP UNLINKED: %s)</td>
+                            <td>%s</td><td>%s</td><td>%s</td>
+                        </tr>\n''') % (
+                            line.product_id.default_code,
+                            line.mrp_id.name,
+                            line.product_uom_qty,
+                            line.product_uom_maked_sync_qty,
+                            line.delivered_qty,
+                            )
+                continue
 
-            # Unlink line:
+            # Normal production not B(locked) will be deleted:
+            if line.product_uom_maked_sync_qty <= 0: # no production remove
+                unlink_no_production_ids.append(line.id)
+                html_log += _('''
+                    <tr>
+                        <td>%s (EX MRP: %s)</td>
+                        <td>%s</td><td>%s</td><td>%s</td>
+                    </tr>\n''') % (
+                        line.product_id.default_code,
+                        line.mrp_id.name,
+                        line.product_uom_qty,
+                        line.product_uom_maked_sync_qty,
+                        line.delivered_qty,
+                        )
+                continue
+                        
+            # Remain has production linked so UNLINK:
             context['production_order_id'] = line.mrp_id.id
             sol_pool.free_line(cr, uid, [line.id], context=context)
             
             # Log unlinked:
             html_log += '''
-                <tr>
-                    <td>%s</td>
-                    <td>%s</td>
-                    <td>%s</td>
-                    <td>%s</td>
-                </tr>\n''' % (
+                <tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n''' % (
                     line.product_id.default_code,
                     line.product_uom_qty,
                     line.product_uom_maked_sync_qty,
@@ -157,7 +181,15 @@ class SaleOrder(orm.Model):
                     )
         if 'production_order_id' in context:
             del(context['production_order_id'])
-            
+        
+        # Unlink unlinked production with no B(locked)
+        if unlink_no_production_ids:
+            _logger.warning('Disconnect unlinked production without B # %s' % (
+                len(unlink_no_production_ids), ))
+            sol_pool.write(cr, uid, unlink_no_production_ids, {
+                'mrp_id': False,
+                }, context=context)
+                
         # --------------------------
         # Log message for operation:
         # --------------------------
