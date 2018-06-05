@@ -283,7 +283,9 @@ class SaleOrderLine(orm.Model):
         
         for item in self.browse(cr, uid, ids, context=context):
             # check state fot not to go in production:
-            if item.order_id.state in ('draft', 'sent', 'cancel', 'done'):
+            if item.order_id.state in ('draft', 'sent', 'cancel', 'done') or \
+                    item.order_id.mx_closed:
+                # Only working state and closed:
                 res[item.id] = False                  
             else:
                 res[item.id] = True
@@ -342,9 +344,9 @@ class SaleOrderLine(orm.Model):
             _go_in_production_from_state, method=True, type='boolean', 
             string='Go in production', store={
                 'sale.order': (
-                    _refresh_in_production, ['state'], 10),
+                    _refresh_in_production, ['mx_closed', 'state'], 10),
                 'sale.order.line': (
-                    _refresh_line_in_production, ['order_id'], 10),
+                    _refresh_line_in_production, ['mrp_id', 'order_id'], 10),
                 }),
                  
         # Delivered:    

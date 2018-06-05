@@ -44,6 +44,7 @@ class SaleOrder(orm.Model):
     
     _inherit = 'sale.order'    
 
+    # TODO update go_in_production
     # -------------------------------------------------------------------------
     # Override: button force close:
     # -------------------------------------------------------------------------

@@ -35,6 +35,7 @@
         'product',
         'stock',
         'sale',
+        'mx_close_order', # for close order management
         'sql_sale_order',
         'production_family',
         'production_working_bom',
