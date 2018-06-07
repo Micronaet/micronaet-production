@@ -283,6 +283,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         ''' Create production order based on product_tmpl_id depend on quantity
             Redirect mrp.production form after
         '''
+        import pdb; pdb.set_trace()
         if context is None:
             context = {}
            
