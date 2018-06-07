@@ -283,7 +283,6 @@ class CreateMrpProductionWizard(orm.TransientModel):
         ''' Create production order based on product_tmpl_id depend on quantity
             Redirect mrp.production form after
         '''
-        import pdb; pdb.set_trace()
         if context is None:
             context = {}
            
@@ -481,7 +480,6 @@ class CreateMrpProductionWizard(orm.TransientModel):
             
         try:
             if field == "bom":        
-                import pdb; pdb.set_trace()
                 if ref_field == 'product_id':
                     tmpl_id = sol_browse[0].product_id.product_tmpl_id.id
                 else: # family
