@@ -481,6 +481,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             
         try:
             if field == "bom":        
+                import pdb; pdb.set_trace()
                 if ref_field == 'product_id':
                     tmpl_id = sol_browse[0].product_id.product_tmpl_id.id
                 else: # family
