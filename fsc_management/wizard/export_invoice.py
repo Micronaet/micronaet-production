@@ -315,6 +315,8 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
             for line in pick.move_lines:
                 # Check FSC or PEFC
                 product = line.product_id
+                if product.defalt_code == 'TEL235':
+                    import pdb; pdb.set_trace()
                 fsc = product.fsc_certified_id
                 pefc = product.pefc_certified_id
                 if not fsc and not pefc:
