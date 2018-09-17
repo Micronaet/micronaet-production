@@ -112,6 +112,7 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
         format_title = excel_pool.get_format('title')
         format_header = excel_pool.get_format('header')
         format_text = excel_pool.get_format('text')
+        format_number = excel_pool.get_format('number')
         
         # ---------------------------------------------------------------------
         # Column dimension:
@@ -253,7 +254,7 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     product.default_code, # TODO HW change if component
                     product.default_code,
                     product.name,
-                    line.quantity,
+                    [line.quantity, format_number],
                     'pezzi',
                     ]
 
@@ -274,23 +275,23 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     for component in bom[product][report]:
                         row[report] += 1
                         data[8] = component.product_id.default_code
-                        data[11] = line.quantity * component.product_qty
+                        data[11][0] = line.quantity * component.product_qty
                         excel_pool.write_xls_line(
                             WS_name[report], row[report], data, 
                             format_text)
                         if component.product_id in total[report]:
-                             total[report][component.product_id] += data[11]
+                             total[report][component.product_id] += data[11][0]
                         else:    
-                            total[report][component.product_id] = data[11]
+                            total[report][component.product_id] = data[11][0]
                             
                 else: # Without BOM (direct sale):
                     row[report] += 1
                     excel_pool.write_xls_line(
                         WS_name[report], row[report], data, format_text)
                     if product in total[report]: 
-                         total[report][product] += data[11]
+                         total[report][product] += data[11][0]
                     else:    
-                         total[report][product] = data[11]
+                         total[report][product] = data[11][0]
         _logger.info('Totals: PEFC %s  FSC %s' % (row['pefc'], row['fsc']))
 
 
@@ -299,8 +300,8 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         col = 5 # move 4 col right
 
-        row['pefc'] += 2
-        row['fsc'] += 2
+        row['pefc'] += 3
+        row['fsc'] += 3
         header = [
             _(u'Gruppo di Prodotto'),
             _(u'Dichiarazione FSC'),
@@ -328,7 +329,7 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     '',                    
                     component.default_code,
                     component.name,
-                    total[report][component],
+                    (total[report][component], format_number),
                     '',
                     'PZ',
                     ]
