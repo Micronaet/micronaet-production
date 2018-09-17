@@ -297,6 +297,8 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         # Total block:
         # ---------------------------------------------------------------------
+        col = 5 # move 4 col right
+
         row['pefc'] += 2
         row['fsc'] += 2
         header = [
@@ -311,14 +313,14 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
            ]           
         # Write data:
         excel_pool.write_xls_line(
-            WS_name['fsc'], row['fsc'], header, format_header)        
+            WS_name['fsc'], row['fsc'], header, format_header, col=col)
         header[1] = _(u'Dichiarazione PEFC')
         excel_pool.write_xls_line(
-            WS_name['pefc'], row['pefc'], header, format_header)        
+            WS_name['pefc'], row['pefc'], header, format_header, col=col)
         
-        # col = 4
         for report in total:
-            for component in sorted(total[report], key=lambda p: p.default_code):            
+            for component in sorted(
+                    total[report], key=lambda p: p.default_code):            
                 row[report] += 1
                 data = [
                     '',
@@ -327,11 +329,11 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     component.default_code,
                     component.name,
                     total[report][component],
-                    ''
+                    '',
                     'PZ',
                     ]
                 excel_pool.write_xls_line(
-                    WS_name[report], row[report], data, format_text)
+                    WS_name[report], row[report], data, format_text, col=col)
             
             
         return excel_pool.return_attachment(
