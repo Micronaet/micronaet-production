@@ -84,10 +84,12 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         # Export XLSX file:
         # ---------------------------------------------------------------------
-        WS_name_fsc = 'FSC'
-        WS_name_pefc = 'PEFC'        
-        excel_pool.create_worksheet(WS_name_fsc)
-        excel_pool.create_worksheet(WS_name_pefc)
+        WS_name = {
+            'fsc': 'FSC',
+            'pefc': 'PEFC',            
+            }
+        excel_pool.create_worksheet(WS_name['fsc'])
+        excel_pool.create_worksheet(WS_name['pefc'])
 
         # ---------------------------------------------------------------------
         # Format:
@@ -100,40 +102,60 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
         # Column dimension:
         # ---------------------------------------------------------------------
         col_width = (50, 18, 18, 18, 10, 30, 20, 20, 20, 20, 40, 10, 10)
-        excel_pool.column_width(WS_name_fsc, col_width)
-        excel_pool.column_width(WS_name_pefc, col_width)
+        excel_pool.column_width(WS_name['fsc'], col_width)
+        excel_pool.column_width(WS_name['pefc'], col_width)
 
         # ---------------------------------------------------------------------
-        # Export Header:
+        #                               Export Header:
         # ---------------------------------------------------------------------
-        i_fsc = 0
-        i_pefc = 0
-        header = [u'PRODUZIONE / VENDITE', ]        
-        excel_pool.write_xls_line(WS_name_fsc, i_fsc, header, format_header)        
-        excel_pool.write_xls_line(WS_name_pefc, i_pefc, header, format_header)
+
+        # ---------------------------------------------------------------------
+        # Row 1
+        # ---------------------------------------------------------------------
+        row = {
+            'fsc': 0,
+            'pefc': 0,
+            }
+        header = [u'PRODUZIONE / VENDITE', '', '', '', '', '', '', '', '',
+            '', '', '', '']        
+        excel_pool.write_xls_line(WS_name['fsc'], row['fsc'], header, format_header)        
+        excel_pool.write_xls_line(WS_name['pefc'], row['pefc'], header, format_header)
         # Merge cells:
-        excel_pool.merge_cell(WS_name_fsc, [i_fsc, 0, i_fsc, 12])
-        excel_pool.merge_cell(WS_name_pefc, [i_fsc, 0, i_fsc, 12])
+        excel_pool.merge_cell(WS_name['fsc'], [row['fsc'], 0, row['fsc'], 12])
+        excel_pool.merge_cell(WS_name['pefc'], [row['pefc'], 0, row['pefc'], 12])
 
-        i_fsc += 1
-        i_pefc += 1
+        # ---------------------------------------------------------------------
+        # Row 2
+        # ---------------------------------------------------------------------
+        row['fsc'] += 1
+        row['pefc'] += 1
         header = [
             'CLIENTE', 'DETTAGLI FATTURE VENDITE', '', '', '', '',
             'CODIFICA PRODOTTI', '', '', '', '', '', '']
         # Merge cells:
-        excel_pool.merge_cell(WS_name_fsc, [i_fsc, 0, i_fsc +1, 0])
-        excel_pool.merge_cell(WS_name_pefc, [i_fsc, 0, i_fsc +1, 0])
-        excel_pool.merge_cell(WS_name_fsc, [i_fsc, 1, i_fsc, 5])
-        excel_pool.merge_cell(WS_name_pefc, [i_fsc, 1, i_fsc, 5])
-        excel_pool.merge_cell(WS_name_fsc, [i_fsc, 6, i_fsc, 12])
-        excel_pool.merge_cell(WS_name_pefc, [i_fsc, 6, i_fsc, 12])
-        
-        
-        excel_pool.write_xls_line(WS_name_fsc, i_fsc, header, format_header)        
-        excel_pool.write_xls_line(WS_name_pefc, i_pefc, header, format_header)        
+        excel_pool.merge_cell(
+            WS_name['fsc'], [row['fsc'], 0, row['fsc'] +1, 0])
+        excel_pool.merge_cell(
+            WS_name['pefc'], [row['pefc'], 0, row['pefc'] +1, 0])
+        excel_pool.merge_cell(
+            WS_name['fsc'], [row['fsc'], 1,row['fsc'], 5])
+        excel_pool.merge_cell(
+            WS_name['pefc'], [row['pefc'], 1, row['pefc'], 5])
+        excel_pool.merge_cell(
+            WS_name['fsc'], [row['fsc'], 6, row['fsc'], 12])
+        excel_pool.merge_cell(
+            WS_name['pefc'], [row['pefc'], 6, row['pefc'], 12])
+        # Write data:
+        excel_pool.write_xls_line(
+            WS_name['fsc'], row['fsc'], header, format_header)        
+        excel_pool.write_xls_line(
+            WS_name['pefc'], row['pefc'], header, format_header)        
 
-        i_fsc += 1
-        i_pefc += 1
+        # ---------------------------------------------------------------------
+        # Row 3
+        # ---------------------------------------------------------------------
+        row['fsc'] += 1
+        row['pefc'] += 1
         header = [
             _(u''),
 
@@ -151,10 +173,12 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
             _(u'Quantità'),            
             _(u'Un. di Mis.'),            
            ]
-
-        excel_pool.write_xls_line(WS_name_fsc, i_fsc, header, format_header)        
+        # Write data:
+        excel_pool.write_xls_line(
+            WS_name['fsc'], row['fsc'], header, format_header)        
         header[5] = _(u'Dichiarazione PEFC')
-        excel_pool.write_xls_line(WS_name_pefc, i_pefc, header, format_header)        
+        excel_pool.write_xls_line(
+            WS_name['pefc'], row['pefc'], header, format_header)        
         
         # ---------------------------------------------------------------------
         # Export data:
@@ -173,16 +197,30 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
         _logger.info('Domain for search: %s [Tot: %s]' % (
             domain, len(account_ids)))
 
+        bom_db = {}
         for invoice in invoice_pool.browse(
                 cr, uid, account_ids, context=context):
             for line in invoice.invoice_line:
                 # Check FSC or PEFC
                 product = line.product_id
+                if product not in bom_db:                
+                    bom[product] = {
+                        'fsc': [],
+                        'pefc': [],
+                        }                        
+                    for component in product.dynamic_bom_line_ids:
+                        cmpt_product = component.product_id
+                        if cmpt_product.fsc_certified_id:
+                            bom[product]['fsc'].append(cmpt_product)
+                        if cmpt_product.pefc_certified_id:
+                            bom[product]['pefc'].append(cmpt_product)
+                            
+                bom = bom_db[product]                            
                 fsc = product.fsc_certified_id
                 pefc = product.pefc_certified_id
                 if not fsc and not pefc:
                     continue
-                    
+
                 data = [
                     invoice.partner_id.name,
                     '',
@@ -192,22 +230,31 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     '', # 5. fsc / pefc
                     'Robina Pseudoacacia', # XXX change?!? 
                     '09012 Garden Furnitures',
-                    '', # HW
+                    product.default_code, # TODO HW change if component
                     product.default_code,
                     product.name,
                     line.quantity,
                     'pezzi',
                     ]
+
+                # Cert dependent data:
                 if fsc:
-                    i_fsc += 1
+                    cert_mode = 'fsc'
                     data[5] = product.fsc_certified_id.name
-                    excel_pool.write_xls_line(
-                        WS_name_fsc, i_fsc, data, format_text)
-                else: # pefc
-                    i_pefc += 1
+                else: # PEFC
+                    cert_mode = 'pefc'
                     data[5] = product.pefc_certified_id.name
+
+                if bom[cert_mode]: # With BOM:
+                    for component in bom[cert_mode]:
+                        row[cert_mode] += 1
+                        data[8] = component.default_code
+                        excel_pool.write_xls_line(
+                            WS_name[cert_mode], row[cert_mode], data, format_text)
+                else: # WIthout BOM:
+                    row[cert_mode] += 1
                     excel_pool.write_xls_line(
-                        WS_name_pefc, i_pefc, data, format_text)
+                        WS_name[cert_mode], row[cert_mode], data, format_text)
 
         _logger.info('Totals: PEFC %s  FSC %s' % (i_pefc, i_fsc))
         return excel_pool.return_attachment(
