@@ -326,7 +326,7 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                 
                 data = [
                     get_extra_data(report, 'type'),                    
-                    component.product_id.__getattribute__(
+                    component.__getattribute__(
                         '%s_certified_id' % report).name,
                     get_extra_data(report, 'material'),
                     component.default_code,
