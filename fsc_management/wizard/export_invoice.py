@@ -64,6 +64,155 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
     # -------------------------------------------------------------------------
     # Wizard button event:
     # -------------------------------------------------------------------------    
+    def action_print_registry(self, cr, uid, ids, context=None):
+        ''' Event for button registry
+        '''
+
+        if context is None: 
+            context = {}
+        
+        # Pool used:
+        excel_pool = self.pool.get('excel.writer')
+        invoice_pool = self.pool.get('account.invoice')
+        
+        # Read parameters:
+        wiz_browse = self.browse(cr, uid, ids, context=context)[0]
+        partner_id = wiz_browse.partner_id.id
+        from_date = wiz_browse.from_date
+        to_date = wiz_browse.to_date
+
+        # ---------------------------------------------------------------------
+        # Export XLSX file:
+        # ---------------------------------------------------------------------
+        WS_name_fsc = 'FSC'
+        WS_name_pefc = 'PEFC'        
+        excel_pool.create_worksheet(WS_name_fsc)
+        excel_pool.create_worksheet(WS_name_pefc)
+
+        # ---------------------------------------------------------------------
+        # Format:
+        # ---------------------------------------------------------------------
+        format_title = excel_pool.get_format('title')
+        format_header = excel_pool.get_format('header')
+        format_text = excel_pool.get_format('text')
+        
+        # ---------------------------------------------------------------------
+        # Column dimension:
+        # ---------------------------------------------------------------------
+        col_width = (50, 18, 18, 18, 10, 30, 20, 20, 20, 20, 40, 10, 10)
+        excel_pool.column_width(WS_name_fsc, col_width)
+        excel_pool.column_width(WS_name_pefc, col_width)
+
+        # ---------------------------------------------------------------------
+        # Export Header:
+        # ---------------------------------------------------------------------
+        i_fsc = 0
+        i_pefc = 0
+        header = [u'PRODUZIONE / VENDITE', ]        
+        excel_pool.write_xls_line(WS_name_fsc, i_fsc, header, format_header)        
+        excel_pool.write_xls_line(WS_name_pefc, i_pefc, header, format_header)
+        # Merge cells:
+        excel_pool.merge_cell(WS_name_fsc, [i_fsc, 0, i_fsc, 12])
+        excel_pool.merge_cell(WS_name_pefc, [i_fsc, 0, i_fsc, 12])
+
+        i_fsc += 1
+        i_pefc += 1
+        header = [
+            'CLIENTE', 'DETTAGLI FATTURE VENDITE', '', '', '', '',
+            'CODIFICA PRODOTTI', '', '', '', '', '', '']
+        # Merge cells:
+        excel_pool.merge_cell(WS_name_fsc, [i_fsc, 0, i_fsc +1, 0])
+        excel_pool.merge_cell(WS_name_pefc, [i_fsc, 0, i_fsc +1, 0])
+        excel_pool.merge_cell(WS_name_fsc, [i_fsc, 1, i_fsc, 5])
+        excel_pool.merge_cell(WS_name_pefc, [i_fsc, 1, i_fsc, 5])
+        excel_pool.merge_cell(WS_name_fsc, [i_fsc, 6, i_fsc, 12])
+        excel_pool.merge_cell(WS_name_pefc, [i_fsc, 6, i_fsc, 12])
+        
+        
+        excel_pool.write_xls_line(WS_name_fsc, i_fsc, header, format_header)        
+        excel_pool.write_xls_line(WS_name_pefc, i_pefc, header, format_header)        
+
+        i_fsc += 1
+        i_pefc += 1
+        header = [
+            _(u''),
+
+            _(u'N. Ordine Fiam'),
+            _(u'N. Ordine Vendita'),
+            _(u'N. Fattura Vendita'),
+            _(u'Data'),
+            _(u'Dichiarazione FSC'),
+            
+            _(u'Specie vegetali'),            
+            _(u'Gruppo di Prodotto'),
+            _(u'Codice Articolo Semilavorato da cui deriva'),
+            _(u'Codice Articolo PF'),
+            _(u'Descrizione'),
+            _(u'Quantità'),            
+            _(u'Un. di Mis.'),            
+           ]
+
+        excel_pool.write_xls_line(WS_name_fsc, i_fsc, header, format_header)        
+        header[5] = _(u'Dichiarazione PEFC')
+        excel_pool.write_xls_line(WS_name_pefc, i_pefc, header, format_header)        
+        
+        # ---------------------------------------------------------------------
+        # Export data:
+        # ---------------------------------------------------------------------
+        order = 'number'
+        domain = [('state', 'in', ('open', 'paid'))]
+        if partner_id:
+            domain.append(('partner_id', '=', partner_id))
+        if from_date:
+            domain.append(('date_invoice', '>=', from_date))
+        if to_date:     
+            domain.append(('date_invoice', '<=', to_date))
+
+        account_ids = invoice_pool.search(
+            cr, uid, domain, order=order, context=context)        
+        _logger.info('Domain for search: %s [Tot: %s]' % (
+            domain, len(account_ids)))
+
+        for invoice in invoice_pool.browse(
+                cr, uid, account_ids, context=context):
+            for line in invoice.invoice_line:
+                # Check FSC or PEFC
+                product = line.product_id
+                fsc = product.fsc_certified_id
+                pefc = product.pefc_certified_id
+                if not fsc and not pefc:
+                    continue
+                    
+                data = [
+                    invoice.partner_id.name,
+                    '',
+                    '',
+                    invoice.number,
+                    invoice.date_invoice, 
+                    '', # 5. fsc / pefc
+                    'Robina Pseudoacacia', # XXX change?!? 
+                    '09012 Garden Furnitures',
+                    '', # HW
+                    product.default_code,
+                    product.name,
+                    line.quantity,
+                    'pezzi',
+                    ]
+                if fsc:
+                    i_fsc += 1
+                    data[5] = product.fsc_certified_id.name
+                    excel_pool.write_xls_line(
+                        WS_name_fsc, i_fsc, data, format_text)
+                else: # pefc
+                    i_pefc += 1
+                    data[5] = product.pefc_certified_id.name
+                    excel_pool.write_xls_line(
+                        WS_name_pefc, i_pefc, data, format_text)
+
+        _logger.info('Totals: PEFC %s  FSC %s' % (i_pefc, i_fsc))
+        return excel_pool.return_attachment(
+            cr, uid, 'registry.xlsx', context=context)
+
     def action_print(self, cr, uid, ids, context=None):
         ''' Event for button done
         '''

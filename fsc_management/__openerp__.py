@@ -33,6 +33,7 @@
         'sale',
         'mrp',
         'product',
+        'excel_export',
         ],
     'init_xml': [],
     'demo': [],
