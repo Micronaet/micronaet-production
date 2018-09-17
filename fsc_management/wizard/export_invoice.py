@@ -67,6 +67,21 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
     def action_print_registry(self, cr, uid, ids, context=None):
         ''' Event for button registry
         '''
+        def get_extra_data(report, text):
+            ''' Extra text depend in report mode
+            ''' 
+            if report == 'fsc':
+                if text == 'material':
+                    return u'' # TODO 
+                elif text == 'type':
+                    return u'' # TODO 
+            else: # pefc
+                if text == 'material':
+                    return u'Robina Pseudoacacia'
+                elif text == 'type':
+                    return u'09012 Garden Furnitures'
+            return 'ERR'
+
 
         if context is None: 
             context = {}
@@ -197,13 +212,22 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
         _logger.info('Domain for search: %s [Tot: %s]' % (
             domain, len(account_ids)))
 
-        bom_db = {}
+        bom = {}
+        total = {
+            'fsc': {},
+            'pefc': {},                        
+            }
         for invoice in invoice_pool.browse(
                 cr, uid, account_ids, context=context):
             for line in invoice.invoice_line:
                 # Check FSC or PEFC
                 product = line.product_id
-                if product not in bom_db:                
+                fsc = product.fsc_certified_id
+                pefc = product.pefc_certified_id
+                if not fsc and not pefc:
+                    continue
+
+                if product not in bom: 
                     bom[product] = {
                         'fsc': [],
                         'pefc': [],
@@ -211,15 +235,11 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     for component in product.dynamic_bom_line_ids:
                         cmpt_product = component.product_id
                         if cmpt_product.fsc_certified_id:
-                            bom[product]['fsc'].append(cmpt_product)
+                            bom[product]['fsc'].append(component)
+                            _logger.info('FSC: %s' % component.product_id.default_code)# XXX
                         if cmpt_product.pefc_certified_id:
-                            bom[product]['pefc'].append(cmpt_product)
-                            
-                bom = bom_db[product]                            
-                fsc = product.fsc_certified_id
-                pefc = product.pefc_certified_id
-                if not fsc and not pefc:
-                    continue
+                            bom[product]['pefc'].append(component)
+                            _logger.info('PEFC: %s' % component.product_id.default_code)# XXX
 
                 data = [
                     invoice.partner_id.name,
@@ -228,8 +248,8 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     invoice.number,
                     invoice.date_invoice, 
                     '', # 5. fsc / pefc
-                    'Robina Pseudoacacia', # XXX change?!? 
-                    '09012 Garden Furnitures',
+                    '', # Material 
+                    '', # Type
                     product.default_code, # TODO HW change if component
                     product.default_code,
                     product.name,
@@ -239,24 +259,52 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
 
                 # Cert dependent data:
                 if fsc:
-                    cert_mode = 'fsc'
+                    report = 'fsc'
                     data[5] = product.fsc_certified_id.name
                 else: # PEFC
-                    cert_mode = 'pefc'
+                    report = 'pefc'
                     data[5] = product.pefc_certified_id.name
 
-                if bom[cert_mode]: # With BOM:
-                    for component in bom[cert_mode]:
-                        row[cert_mode] += 1
-                        data[8] = component.default_code
-                        excel_pool.write_xls_line(
-                            WS_name[cert_mode], row[cert_mode], data, format_text)
-                else: # WIthout BOM:
-                    row[cert_mode] += 1
-                    excel_pool.write_xls_line(
-                        WS_name[cert_mode], row[cert_mode], data, format_text)
+                # Extra text:
+                data[6] = get_extra_data(report, 'material')
+                data[7] = get_extra_data(report, 'type')
+                # TODO need in the loop for FSC depent on product? 
 
-        _logger.info('Totals: PEFC %s  FSC %s' % (i_pefc, i_fsc))
+                if bom[product][report]: # With BOM:
+                    for component in bom[product][report]:
+                        row[report] += 1
+                        data[8] = component.product_id.default_code
+                        data[11] = line.quantity * component.product_qty
+                        excel_pool.write_xls_line(
+                            WS_name[report], row[report], data, 
+                            format_text)
+                        if component.product_id in total[report]:
+                             total[report][component.product_id] += data[11]
+                        else:    
+                            total[report][component.product_id] = data[11]
+                            
+                else: # Without BOM (direct sale):
+                    row[report] += 1
+                    excel_pool.write_xls_line(
+                        WS_name[report], row[report], data, format_text)
+                    if product in total[report]: 
+                         total[report][product] += data[11]
+                    else:    
+                         total[report][product] = data[11]
+        _logger.info('Totals: PEFC %s  FSC %s' % (row['pefc'], row['fsc']))
+
+        # ---------------------------------------------------------------------
+        # Total block:
+        # ---------------------------------------------------------------------
+        row['pefc'] += 2
+        row['fsc'] += 2
+        for report in total:
+            for item in sorted(total[page], key=lambda p: p.default_code):            
+                row[report] += 1
+                excel_pool.write_xls_line(
+                    WS_name[report], row[report], data, format_text)
+            
+            
         return excel_pool.return_attachment(
             cr, uid, 'registry.xlsx', context=context)
 
