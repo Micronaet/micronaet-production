@@ -293,14 +293,43 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                          total[report][product] = data[11]
         _logger.info('Totals: PEFC %s  FSC %s' % (row['pefc'], row['fsc']))
 
+
         # ---------------------------------------------------------------------
         # Total block:
         # ---------------------------------------------------------------------
         row['pefc'] += 2
         row['fsc'] += 2
+        header = [
+            _(u'Gruppo di Prodotto'),
+            _(u'Dichiarazione FSC'),
+            _(u'Specie vegetali'),            
+            _(u'Codice Articolo Semilavorato da cui deriva'),
+            _(u'Descrizione'),
+            _(u'Quantità venduta'),            
+            _(u'Giacenza magazzino'),
+            _(u'Un. di Mis.'),            
+           ]           
+        # Write data:
+        excel_pool.write_xls_line(
+            WS_name['fsc'], row['fsc'], header, format_header)        
+        header[1] = _(u'Dichiarazione PEFC')
+        excel_pool.write_xls_line(
+            WS_name['pefc'], row['pefc'], header, format_header)        
+        
+        # col = 4
         for report in total:
-            for item in sorted(total[page], key=lambda p: p.default_code):            
+            for component in sorted(total[report], key=lambda p: p.default_code):            
                 row[report] += 1
+                data = [
+                    '',
+                    '',
+                    '',                    
+                    component.default_code,
+                    component.name,
+                    total[report][component],
+                    ''
+                    'PZ',
+                    ]
                 excel_pool.write_xls_line(
                     WS_name[report], row[report], data, format_text)
             
