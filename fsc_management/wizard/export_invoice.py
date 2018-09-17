@@ -323,16 +323,19 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
             for component in sorted(
                     total[report], key=lambda p: p.default_code):            
                 row[report] += 1
+                
                 data = [
-                    '',
-                    '',
-                    '',                    
+                    get_extra_data(report, 'type'),                    
+                    component.product_id.__getattribute__(
+                        '%s_certified_id' % report).name,
+                    get_extra_data(report, 'material'),
                     component.default_code,
                     component.name,
                     (total[report][component], format_number),
                     '',
                     'PZ',
                     ]
+
                 excel_pool.write_xls_line(
                     WS_name[report], row[report], data, format_text, col=col)
             
