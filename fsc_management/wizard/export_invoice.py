@@ -67,22 +67,6 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
     def action_print_registry(self, cr, uid, ids, context=None):
         ''' Event for button registry
         '''
-        def get_extra_data(report, text):
-            ''' Extra text depend in report mode
-            ''' 
-            if report == 'fsc':
-                if text == 'material':
-                    return u'' # TODO 
-                elif text == 'type':
-                    return u'' # TODO 
-            else: # pefc
-                if text == 'material':
-                    return u'Robina Pseudoacacia'
-                elif text == 'type':
-                    return u'09012 Garden Furnitures'
-            return 'ERR'
-
-
         if context is None: 
             context = {}
         
@@ -331,10 +315,10 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                 row[report] += 1
 
                 data = [
-                    get_extra_data(report, 'type'),                    
+                    component.wood_group_text_id.name or '',
                     component.__getattribute__(
                         '%s_certified_id' % report).name,
-                    get_extra_data(report, 'material'),
+                    component.wood_material_text_id.name or '',
                     component.default_code,
                     component.name,
                     (total[report][component], format_number),
