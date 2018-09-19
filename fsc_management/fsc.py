@@ -47,7 +47,7 @@ class ProductProductWoodText(orm.Model):
     _order = 'mode,name'
     
     _columns = {        
-        'name': fields.char('Name', size=64, required=True),
+        'name': fields.char('Name', size=80, required=True),
         'mode': fields.selection([
             ('material', 'Material'),
             ('group', 'Group'),

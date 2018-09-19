@@ -766,5 +766,3 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
         'to_date': fields.date('To date'),    
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-
-
