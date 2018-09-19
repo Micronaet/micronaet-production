@@ -124,7 +124,6 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         #                               Export Header:
         # ---------------------------------------------------------------------
-
         # ---------------------------------------------------------------------
         # Row 1
         # ---------------------------------------------------------------------
@@ -133,12 +132,16 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
             'pefc': 0,
             }
         header = [u'PRODUZIONE / VENDITE', '', '', '', '', '', '', '', '',
-            '', '', '', '']        
-        excel_pool.write_xls_line(WS_name['fsc'], row['fsc'], header, format_header)        
-        excel_pool.write_xls_line(WS_name['pefc'], row['pefc'], header, format_header)
+            '', '', '', '']
+        excel_pool.write_xls_line(
+            WS_name['fsc'], row['fsc'], header, format_header)        
+        excel_pool.write_xls_line(
+            WS_name['pefc'], row['pefc'], header, format_header)
         # Merge cells:
-        excel_pool.merge_cell(WS_name['fsc'], [row['fsc'], 0, row['fsc'], 12])
-        excel_pool.merge_cell(WS_name['pefc'], [row['pefc'], 0, row['pefc'], 12])
+        excel_pool.merge_cell(
+            WS_name['fsc'], [row['fsc'], 0, row['fsc'], 12])
+        excel_pool.merge_cell(
+            WS_name['pefc'], [row['pefc'], 0, row['pefc'], 12])
 
         # ---------------------------------------------------------------------
         # Row 2
@@ -237,10 +240,12 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                         cmpt_product = component.product_id
                         if cmpt_product.fsc_certified_id:
                             bom[product]['fsc'].append(component)
-                            _logger.info('FSC: %s' % component.product_id.default_code)# XXX
+                            _logger.info(
+                                'FSC: %s' % component.product_id.default_code)# XXX
                         if cmpt_product.pefc_certified_id:
                             bom[product]['pefc'].append(component)
-                            _logger.info('PEFC: %s' % component.product_id.default_code)# XXX
+                            _logger.info(
+                                'PEFC: %s' % component.product_id.default_code)# XXX
 
                 data = [
                     invoice.partner_id.name,
@@ -294,7 +299,6 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                          total[report][product] = data[11][0]
         _logger.info('Totals: PEFC %s  FSC %s' % (row['pefc'], row['fsc']))
 
-
         # ---------------------------------------------------------------------
         # Total block:
         # ---------------------------------------------------------------------
@@ -323,7 +327,7 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
             for component in sorted(
                     total[report], key=lambda p: p.default_code):            
                 row[report] += 1
-                
+
                 data = [
                     get_extra_data(report, 'type'),                    
                     component.__getattribute__(
@@ -338,8 +342,7 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
 
                 excel_pool.write_xls_line(
                     WS_name[report], row[report], data, format_text, col=col)
-            
-            
+
         return excel_pool.return_attachment(
             cr, uid, 'registry.xlsx', context=context)
 
@@ -484,7 +487,7 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
             'res_model': 'res.partner',
             'res_id': 1,
             }, context=context)
-        
+
         return {
             'type' : 'ir.actions.act_url',
             'url': '/web/binary/saveas?model=ir.attachment&field=datas&'

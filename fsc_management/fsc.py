@@ -38,6 +38,26 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+class ProductProductWoodText(orm.Model):
+    """ Model name: Product Product FSC Text
+    """
+    
+    _name = 'product.product.wood.text'
+    _description = 'Wood text'
+    _order = 'mode,name'
+    
+    _columns = {        
+        'name': fields.char('Name', size=64, required=True),
+        'mode': fields.selection([
+            ('material', 'Material'),
+            ('group', 'Group'),
+            ], 'Mode', required=True),
+        }
+
+    _defaults = {
+        'mode': lambda *x: 'material',
+        }    
+
 class ProductProductWood(orm.Model):
     """ Model name: ProductProductFSC
     """
@@ -213,5 +233,11 @@ class ProductProduct(orm.Model):
             'product.product.wood', 'FSC text'),
         'pefc_certified_id': fields.many2one(
             'product.product.wood', 'PEFC text'),
+            
+        # Description for registry:
+        'wood_material_text_id': fields.many2one(
+            'product.product.wood.text', 'Material (registry)'),
+        'wood_group_text_id': fields.many2one(
+            'product.product.wood.text', 'Group (registry)'),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

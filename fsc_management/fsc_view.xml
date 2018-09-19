@@ -143,6 +143,12 @@
                 <xpath expr="//filter[1]" position="after">
                     <filter name="fsc_certified_on" string="FSC Certified" domain="[('fsc_certified_id','!=',False)]"/>
                     <filter name="pefc_certified_on" string="PEFC Certified" domain="[('pefc_certified_id','!=',False)]"/>
+
+                    <group colspan="2" col="4" attrs="{'invisible': [('fsc_certified_on','=',False),('pefc_certified_on','=',False)]}">
+                        <separator string="Colonne registro" colspan="4" />
+                        <field name="wood_material_text_id" domain="[('mode', '=', 'material')]" context="{'default_mode': 'material'}"/>
+                        <field name="wood_group_text_id" domain="[('mode', '=', 'group')]" context="{'default_mode': 'group'}" />
+                    </group>
                 </xpath>
             </field>
         </record>
@@ -155,6 +161,9 @@
                 <tree string="PEFC PFC Product" colors="blue:fsc_certified_id!=False or pefc_certified_id!=False" editable="bottom">
                     <field name="fsc_certified_id" domain="[('mode', '=', 'fsc')]" />
                     <field name="pefc_certified_id" domain="[('mode', '=', 'pefc')]" />
+
+                    <field name="wood_material_text_id" domain="[('mode', '=', 'material')]" context="{'default_mode': 'material'}"/>
+                    <field name="wood_group_text_id" domain="[('mode', '=', 'group')]" context="{'default_mode': 'group'}" />
                     
 	                <field name="default_code" readonly="1"/>
 	                <field name="name" readonly="1"/>
