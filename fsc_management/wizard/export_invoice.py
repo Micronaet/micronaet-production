@@ -47,9 +47,9 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
     '''
     _name = 'export.xlsx.fsc.report.wizard'
 
-    # ---------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Utility:
-    # ---------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     def xls_write_row(self, WS, row, row_data, format_cell):
         ''' Print line in XLS file            
         '''
@@ -238,8 +238,8 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     invoice.number,
                     invoice.date_invoice, 
                     '', # 5. fsc / pefc
-                    '', # Material 
-                    '', # Type
+                    product.wood_material_text_id.name or '', # Material 
+                    product.wood_group_text_id.name or '', # Type
                     product.default_code, # TODO HW change if component
                     product.default_code,
                     product.name,
@@ -256,15 +256,13 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     data[5] = product.pefc_certified_id.name
 
                 # Extra text:
-                data[6] = product.wood_material_text_id.name \
-                    if product.wood_material_text_id else ''
-                data[7] = product.wood_group_text_id.name \
-                    if product.wood_group_text_id else ''
                 # TODO need in the loop for FSC depent on product?
 
                 if bom[product][report]: # With BOM:
                     for component in bom[product][report]:
                         row[report] += 1
+                        data[6] = component.wood_material_text_id.name or ''
+                        data[7] = component.wood_group_text_id.name or ''
                         data[8] = component.product_id.default_code
                         data[11][0] = line.quantity * component.product_qty
                         excel_pool.write_xls_line(
