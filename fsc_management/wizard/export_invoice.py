@@ -272,9 +272,11 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     data[5] = product.pefc_certified_id.name
 
                 # Extra text:
-                data[6] = get_extra_data(report, 'material')
-                data[7] = get_extra_data(report, 'type')
-                # TODO need in the loop for FSC depent on product? 
+                data[6] = product.wood_material_text_id.name \
+                    if product.wood_material_text_id else ''
+                data[7] = product.wood_group_text_id.name \
+                    if product.wood_group_text_id else ''
+                # TODO need in the loop for FSC depent on product?
 
                 if bom[product][report]: # With BOM:
                     for component in bom[product][report]:
@@ -560,7 +562,7 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
         for WS in (WS_fsc, WS_pefc):
             WS.set_column(0, 0, 40)
             WS.set_column(1, 1, 12)
-            WS.set_column(2, 2, 8)
+            WS.set_column(2, 2, 8) 
             WS.set_column(3, 3, 11)
             WS.set_column(4, 4, 35)
             WS.set_column(6, 6, 10)

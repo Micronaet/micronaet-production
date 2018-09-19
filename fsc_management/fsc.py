@@ -236,8 +236,8 @@ class ProductProduct(orm.Model):
             
         # Description for registry:
         'wood_material_text_id': fields.many2one(
-            'product.product.wood.text', 'Material (registry)'),
+            'product.product.wood.text', 'Materiale (registro)'),
         'wood_group_text_id': fields.many2one(
-            'product.product.wood.text', 'Group (registry)'),
+            'product.product.wood.text', 'Gruppo (registro)'),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
