@@ -261,8 +261,12 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                 if bom[product][report]: # With BOM:
                     for component in bom[product][report]:
                         row[report] += 1
-                        data[6] = component.wood_material_text_id.name or ''
-                        data[7] = component.wood_group_text_id.name or ''
+                        data[6] = \
+                            component.product_id.wood_material_text_id.name \
+                                or ''
+                        data[7] = \
+                            component.product_id.wood_group_text_id.name \
+                                or ''
                         data[8] = component.product_id.default_code
                         data[11][0] = line.quantity * component.product_qty
                         excel_pool.write_xls_line(
