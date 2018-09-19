@@ -132,24 +132,30 @@
                 <field name="active" position="before">
                      <field name="fsc_certified_id" domain="[('mode', '=', 'fsc')]" />
                      <field name="pefc_certified_id" domain="[('mode', '=', 'pefc')]" />
+                     <group colspan="2" col="4" attrs="{'invisible': [('fsc_certified_on','=',False),('pefc_certified_on','=',False)]}">
+                         <separator string="Colonne registro" colspan="4" />
+                         <field name="wood_material_text_id" domain="[('mode', '=', 'material')]" context="{'default_mode': 'material'}"/>
+                         <field name="wood_group_text_id" domain="[('mode', '=', 'group')]" context="{'default_mode': 'group'}" />
+                     </group>
                 </field>
             </field>
         </record>
-        <record model="ir.ui.view" id="view_product_product_fsc_search">
+        <record model="ir.ui.view" id="view_product_product_fsc_pefc_search">
             <field name="name">product.product.search</field>
             <field name="model">product.product</field>
-            <field name="inherit_id" ref="product.product_search_form_view"/>
-            <field name="arch" type="xml">            
-                <xpath expr="//filter[1]" position="after">
+            <field name="arch" type="xml">
+                <search string="FSC PEFC" version="7.0">        
+                    <field name="name" />
+                    <field name="default_code" />
+
                     <filter name="fsc_certified_on" string="FSC Certified" domain="[('fsc_certified_id','!=',False)]"/>
                     <filter name="pefc_certified_on" string="PEFC Certified" domain="[('pefc_certified_id','!=',False)]"/>
 
-                    <group colspan="2" col="4" attrs="{'invisible': [('fsc_certified_on','=',False),('pefc_certified_on','=',False)]}">
-                        <separator string="Colonne registro" colspan="4" />
-                        <field name="wood_material_text_id" domain="[('mode', '=', 'material')]" context="{'default_mode': 'material'}"/>
-                        <field name="wood_group_text_id" domain="[('mode', '=', 'group')]" context="{'default_mode': 'group'}" />
-                    </group>
-                </xpath>
+                    <group expand="0" string="Group By...">
+                        <filter name="group_fsc" string="FSC" context="{'group_by': 'fsc_certified_id'}"/>
+                        <filter name="group_pefc" string="PEFC" context="{'group_by': 'pefc_certified_id'}"/>
+                    </group>                
+                </search>
             </field>
         </record>
         
@@ -182,6 +188,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_pfc_product_tree"/>
+            <field name="search_view_id" ref="view_product_product_fsc_pefc_search"/>            
             <field name="context">{}</field>
             <field name="domain">[]</field>
         </record>
