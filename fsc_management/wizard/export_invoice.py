@@ -102,7 +102,7 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         # Column dimension:
         # ---------------------------------------------------------------------
-        col_width = (40, 12, 8, 11, 35, 10, 10, 10, 10, 10)
+        col_width = (20, 45, 13, 13, 13, 16, 26, 26, 26, 14, 30, 12, 12)
         excel_pool.column_width(WS_name['fsc'], col_width)
         excel_pool.column_width(WS_name['pefc'], col_width)
 
@@ -144,14 +144,14 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
             
         # Merge cells:
         excel_pool.merge_cell(
-            WS_name['fsc'], [row['fsc'], 0, row['fsc'] + 1, 6])
+            WS_name['fsc'], [row['fsc'], 0, row['fsc'], 6])
         excel_pool.merge_cell(
-            WS_name['fsc'], [row['fsc'], 6, row['fsc'] + 1, 12])
+            WS_name['fsc'], [row['fsc'], 7, row['fsc'], 12])
             
         excel_pool.merge_cell(
-            WS_name['pefc'], [row['pefc'], 0, row['pefc'] + 1, 6])
+            WS_name['pefc'], [row['pefc'], 0, row['pefc'], 6])
         excel_pool.merge_cell(
-            WS_name['pefc'], [row['pefc'], 6, row['pefc'] + 1, 12])
+            WS_name['pefc'], [row['pefc'], 7, row['pefc'], 12])
             
         # Write data:
         excel_pool.write_xls_line(
@@ -159,15 +159,14 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
         excel_pool.write_xls_line(
             WS_name['pefc'], row['pefc'], header, format_header)       
         
-        self.xls_write_row(WS_fsc, 0, header, format_title)        
-        self.xls_write_row(WS_pefc, 0, header, format_title)        
-
         # ---------------------------------------------------------------------
         # Row 3
         # ---------------------------------------------------------------------
         row['fsc'] += 1
         row['pefc'] += 1
         header = [
+            _('CODICE COC FORNITORE'),
+            _('FORNITORE'),        
             _('N. DDT ACQ./LOTTO'),
             _('N. FT ACQ.'),
             _('PROT. RIF.'),
@@ -184,8 +183,8 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
         # Write data:
         excel_pool.write_xls_line(
             WS_name['fsc'], row['fsc'], header, format_header)        
-        header[5] = _('DICHIARAZIONE PEFC'),
-        header[6] = _('GRUPPO DI PRODOTTO PEFC'),
+        header[5] = _('DICHIARAZIONE PEFC')
+        header[6] = _('GRUPPO DI PRODOTTO PEFC')
         excel_pool.write_xls_line(
             WS_name['pefc'], row['pefc'], header, format_header)        
 
@@ -224,46 +223,50 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                 pefc = product.pefc_certified_id
                 if not fsc and not pefc:
                     continue
-                    
+                group_name = product.wood_group_text_id.name or ''   
+                material_name = product.wood_material_text_id.name or ''
                 data = [
+                    '',
                     pick.partner_id.name,
-                    pick.bf_number,#pick.name,
+                    pick.bf_number.upper(),
+                    '',
+                    '', # cert type
                     pick.date, 
+                    '',
+                    group_name, 
+                    material_name, 
                     product.default_code,
                     product.name,
-                    False,
-                    line.product_uom_qty,
-                    '', # line.price_unit,
-                    '', # line.multi_discount_rates or '',
-                    '', # line.price_subtotal,
+                    line.product_qty,
+                    product.uom_id.name,
                     ]
                 if fsc:
-                    i_fsc += 1
-                    data[5] = product.fsc_certified_id.name
-                    self.xls_write_row(WS_fsc, i_fsc, data, format_text)
+                    report = 'fsc'
+                    cert_name = product.fsc_certified_id.name
                 else: # pefc
-                    i_pefc += 1
-                    data[5] = product.pefc_certified_id.name
-                    self.xls_write_row(WS_pefc, i_pefc, data, format_text)
-                    
+                    report = 'pefc'
+                    cert_name = product.pefc_certified_id.name                    
+
+                row[report] += 1
+                data[6] = cert_name
+                excel_pool.write_xls_line(
+                    WS_name[report], row[report], data, format_text)
+                
+                # -------------------------------------------------------------    
                 # Total operation:    
-                #if product in total[report]: 
-                #     total[report][product] += data[11][0]
-                #else:    
-                #     total[report][product] = data[11][0]
+                # -------------------------------------------------------------    
+                key = (group_name, cert_name, material_name)
+                if key in total[report]: 
+                     total[report][key] += data[11]
+                else:
+                     total[report][key] = data[11]
                 
         _logger.info('Totals: PEFC %s  FSC %s' % (row['pefc'], row['fsc']))
-                    
-        _logger.info('Totals: PEFC %s  FSC %s' % (i_pefc, i_fsc))
-        _logger.info('End FIDO BF export on %s' % xls_filename)
-
-
-
 
         # ---------------------------------------------------------------------
         # Total block:
         # ---------------------------------------------------------------------
-        col = 5 # move 4 col right
+        col = 0 # move 1 col right
         row['pefc'] += 3
         row['fsc'] += 3
         header = [
@@ -279,21 +282,19 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
         excel_pool.write_xls_line(
             WS_name['pefc'], row['pefc'], header, format_header, col=col)
         
-        #for report in total:
-        #    for component in sorted(
-        #            total[report], key=lambda p: p.default_code):            
-        #        row[report] += 1
+        for report in total:
+            for key in sorted(total[report]):
+                row[report] += 1
+                group_name, cert_name, material_name = key
+                data = [
+                    group_name,
+                    cert_name,
+                    material_name,
+                    (total[report][key], format_number),
+                    ]
 
-        #        data = [
-        #            component.wood_group_text_id.name or '',
-        #            component.__getattribute__(
-        #                '%s_certified_id' % report).name,
-        #            component.wood_material_text_id.name or '',
-        #            (total[report][component], format_number),
-        #            ]
-
-        #        excel_pool.write_xls_line(
-        #            WS_name[report], row[report], data, format_text, col=col)
+                excel_pool.write_xls_line(
+                    WS_name[report], row[report], data, format_text, col=col)
 
         return excel_pool.return_attachment(
             cr, uid, 'buy_registry.xlsx', context=context)
