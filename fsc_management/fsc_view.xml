@@ -132,7 +132,7 @@
                 <field name="active" position="before">
                      <field name="fsc_certified_id" domain="[('mode', '=', 'fsc')]" />
                      <field name="pefc_certified_id" domain="[('mode', '=', 'pefc')]" />
-                     <group colspan="2" col="4" attrs="{'invisible': [('fsc_certified_on','=',False),('pefc_certified_on','=',False)]}">
+                     <group colspan="2" col="4" attrs="{'invisible': [('fsc_certified_id','=',False),('pefc_certified_id','=',False)]}">
                          <separator string="Colonne registro" colspan="4" />
                          <field name="wood_material_text_id" domain="[('mode', '=', 'material')]" context="{'default_mode': 'material'}"/>
                          <field name="wood_group_text_id" domain="[('mode', '=', 'group')]" context="{'default_mode': 'group'}" />
