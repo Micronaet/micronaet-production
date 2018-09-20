@@ -64,6 +64,240 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
     # -------------------------------------------------------------------------
     # Wizard button event:
     # -------------------------------------------------------------------------    
+    def action_print_registry_buy(self, cr, uid, ids, context=None):
+        ''' Event for button done Buy registry report
+        '''
+        if context is None: 
+            context = {}
+        
+        # Pool used:
+        excel_pool = self.pool.get('excel.writer')
+        pick_pool = self.pool.get('stock.picking')
+        
+        # Read parameters:
+        wiz_browse = self.browse(cr, uid, ids, context=context)[0]
+        partner_id = wiz_browse.partner_id.id
+        from_date = wiz_browse.from_date
+        to_date = wiz_browse.to_date
+
+        # ---------------------------------------------------------------------
+        # Export XLSX file:
+        # ---------------------------------------------------------------------
+        WS_name = {
+            'fsc': 'FSC',
+            'pefc': 'PEFC',            
+            }
+        excel_pool.create_worksheet(WS_name['fsc'])
+        excel_pool.create_worksheet(WS_name['pefc'])
+        #WS_fsc WS_pefc
+
+        # ---------------------------------------------------------------------
+        # Format:
+        # ---------------------------------------------------------------------
+        format_title = excel_pool.get_format('title')
+        format_header = excel_pool.get_format('header')
+        format_text = excel_pool.get_format('text')
+        format_number = excel_pool.get_format('number')
+        
+        # ---------------------------------------------------------------------
+        # Column dimension:
+        # ---------------------------------------------------------------------
+        col_width = (40, 12, 8, 11, 35, 10, 10, 10, 10, 10)
+        excel_pool.column_width(WS_name['fsc'], col_width)
+        excel_pool.column_width(WS_name['pefc'], col_width)
+
+        # ---------------------------------------------------------------------
+        #                               Export Header:
+        # ---------------------------------------------------------------------
+
+        # ---------------------------------------------------------------------
+        # Row 1
+        # ---------------------------------------------------------------------
+        row = {
+            'fsc': 0,
+            'pefc': 0,
+            }
+        header = [u'ACQUISTI', '', '', '', '', '', '', '', '',
+            'CODICE COC AZIENDA', '', '', 'INDIRIZZO']
+        excel_pool.write_xls_line(
+            WS_name['fsc'], row['fsc'], header, format_header)        
+        excel_pool.write_xls_line(
+            WS_name['pefc'], row['pefc'], header, format_header)
+        # Merge cells:
+        excel_pool.merge_cell(
+            WS_name['fsc'], [row['fsc'], 0, row['fsc'], 8])
+        excel_pool.merge_cell(
+            WS_name['fsc'], [row['fsc'], 9, row['fsc'], 11])
+        excel_pool.merge_cell(
+            WS_name['pefc'], [row['pefc'], 0, row['pefc'], 8])
+        excel_pool.merge_cell(
+            WS_name['pefc'], [row['pefc'], 9, row['pefc'], 11])
+
+        # ---------------------------------------------------------------------
+        # Row 2
+        # ---------------------------------------------------------------------
+        row['fsc'] += 1
+        row['pefc'] += 1
+        header = [
+            'DETTAGLI FATTURE ACQUISTI', '', '', '', '', '', '',
+            '', '', '', '', '', '']
+            
+        # Merge cells:
+        excel_pool.merge_cell(
+            WS_name['fsc'], [row['fsc'], 0, row['fsc'] + 1, 6])
+        excel_pool.merge_cell(
+            WS_name['fsc'], [row['fsc'], 6, row['fsc'] + 1, 12])
+            
+        excel_pool.merge_cell(
+            WS_name['pefc'], [row['pefc'], 0, row['pefc'] + 1, 6])
+        excel_pool.merge_cell(
+            WS_name['pefc'], [row['pefc'], 6, row['pefc'] + 1, 12])
+            
+        # Write data:
+        excel_pool.write_xls_line(
+            WS_name['fsc'], row['fsc'], header, format_header)        
+        excel_pool.write_xls_line(
+            WS_name['pefc'], row['pefc'], header, format_header)       
+        
+        self.xls_write_row(WS_fsc, 0, header, format_title)        
+        self.xls_write_row(WS_pefc, 0, header, format_title)        
+
+        # ---------------------------------------------------------------------
+        # Row 3
+        # ---------------------------------------------------------------------
+        row['fsc'] += 1
+        row['pefc'] += 1
+        header = [
+            _('N. DDT ACQ./LOTTO'),
+            _('N. FT ACQ.'),
+            _('PROT. RIF.'),
+            _('DATA'),
+            _('DICHIARAZIONE FSC'), # XXX
+            _('GRUPPO DI PRODOTTO FSC'), # XXX
+            _('SPECIE VEGETALE'),
+            _('GRUPPO DI PRODOTTO'),
+            _('DESCRIZIONE'),            
+            _('Q.'),
+            _('UM'),
+           ]
+
+        # Write data:
+        excel_pool.write_xls_line(
+            WS_name['fsc'], row['fsc'], header, format_header)        
+        header[5] = _('DICHIARAZIONE PEFC'),
+        header[6] = _('GRUPPO DI PRODOTTO PEFC'),
+        excel_pool.write_xls_line(
+            WS_name['pefc'], row['pefc'], header, format_header)        
+
+        
+        # ---------------------------------------------------------------------
+        # Export data:
+        # ---------------------------------------------------------------------
+        order = 'date'
+        domain = [
+            ('bf_number', 'ilike', 'BF'),
+            ('state', 'in', ('done', )),
+            ]
+        if partner_id:
+            domain.append(('partner_id', '=', partner_id))
+        if from_date:
+            domain.append(('date', '>=', from_date))
+        if to_date:     
+            domain.append(('date', '<=', to_date))
+        pick_ids = pick_pool.search(
+            cr, uid, domain, order=order, context=context)        
+        _logger.info('Domain for search: %s [Tot: %s]' % (
+            domain, len(pick_ids)))
+        i_fsc = 0
+        i_pefc = 0
+
+        total = {
+            'fsc': {},
+            'pefc': {},                        
+            }
+        for pick in pick_pool.browse(
+                cr, uid, pick_ids, context=context):
+            for line in pick.move_lines:
+                # Check FSC or PEFC
+                product = line.product_id
+                fsc = product.fsc_certified_id
+                pefc = product.pefc_certified_id
+                if not fsc and not pefc:
+                    continue
+                    
+                data = [
+                    pick.partner_id.name,
+                    pick.bf_number,#pick.name,
+                    pick.date, 
+                    product.default_code,
+                    product.name,
+                    False,
+                    line.product_uom_qty,
+                    '', # line.price_unit,
+                    '', # line.multi_discount_rates or '',
+                    '', # line.price_subtotal,
+                    ]
+                if fsc:
+                    i_fsc += 1
+                    data[5] = product.fsc_certified_id.name
+                    self.xls_write_row(WS_fsc, i_fsc, data, format_text)
+                else: # pefc
+                    i_pefc += 1
+                    data[5] = product.pefc_certified_id.name
+                    self.xls_write_row(WS_pefc, i_pefc, data, format_text)
+                    
+                # Total operation:    
+                #if product in total[report]: 
+                #     total[report][product] += data[11][0]
+                #else:    
+                #     total[report][product] = data[11][0]
+                
+        _logger.info('Totals: PEFC %s  FSC %s' % (row['pefc'], row['fsc']))
+                    
+        _logger.info('Totals: PEFC %s  FSC %s' % (i_pefc, i_fsc))
+        _logger.info('End FIDO BF export on %s' % xls_filename)
+
+
+
+
+        # ---------------------------------------------------------------------
+        # Total block:
+        # ---------------------------------------------------------------------
+        col = 5 # move 4 col right
+        row['pefc'] += 3
+        row['fsc'] += 3
+        header = [
+            _(u'GRUPPO DI PRODOTTO'),
+            _(u'CATEGORIA FSC'),
+            _(u'ACQUISTATO'),              
+            _(u'ESSENZA'),            
+           ]           
+        # Write data:
+        excel_pool.write_xls_line(
+            WS_name['fsc'], row['fsc'], header, format_header, col=col)
+        header[1] = _(u'CATEGORIA PEFC')
+        excel_pool.write_xls_line(
+            WS_name['pefc'], row['pefc'], header, format_header, col=col)
+        
+        #for report in total:
+        #    for component in sorted(
+        #            total[report], key=lambda p: p.default_code):            
+        #        row[report] += 1
+
+        #        data = [
+        #            component.wood_group_text_id.name or '',
+        #            component.__getattribute__(
+        #                '%s_certified_id' % report).name,
+        #            component.wood_material_text_id.name or '',
+        #            (total[report][component], format_number),
+        #            ]
+
+        #        excel_pool.write_xls_line(
+        #            WS_name[report], row[report], data, format_text, col=col)
+
+        return excel_pool.return_attachment(
+            cr, uid, 'buy_registry.xlsx', context=context)
+
     def action_print_registry(self, cr, uid, ids, context=None):
         ''' Event for button registry
         '''

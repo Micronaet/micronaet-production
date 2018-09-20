@@ -9,7 +9,8 @@
                 <form string="Wizard" version="7.0">
                    <header>
                        <button string="Cancel" special="cancel" />
-                       <button name="action_print_registry" string="Stampa registro" type="object" icon="gtk-print" class="oe_highlight" />
+                       <button name="action_print_registry" string="Registro Vendite" type="object" icon="gtk-print" class="oe_highlight" />
+                       <button name="action_print_registry_buy" string="Registro Acquisti" type="object" icon="gtk-print" class="oe_highlight" />
                        <button name="action_print" string="Print invoice" type="object" icon="gtk-print" class="oe_highlight" />
                        <button name="action_print_bf" string="Print BF" type="object" icon="gtk-print" class="oe_highlight" />
                        <button name="action_print_inventory" string="Print inventory" type="object" icon="gtk-print" class="oe_highlight" />
