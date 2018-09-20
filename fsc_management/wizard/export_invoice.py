@@ -237,7 +237,7 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                     material_name, 
                     product.default_code,
                     product.name,
-                    line.product_qty,
+                    (line.product_qty, format_number),
                     product.uom_id.name,
                     ]
                 if fsc:
@@ -257,9 +257,9 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                 # -------------------------------------------------------------    
                 key = (group_name, cert_name, material_name)
                 if key in total[report]: 
-                     total[report][key] += data[11]
+                     total[report][key] += data[11][0]
                 else:
-                     total[report][key] = data[11]
+                     total[report][key] = data[11][0]
                 
         _logger.info('Totals: PEFC %s  FSC %s' % (row['pefc'], row['fsc']))
 
@@ -289,8 +289,8 @@ class ExportXlsxFscReportWizard(orm.TransientModel):
                 data = [
                     group_name,
                     cert_name,
-                    material_name,
                     (total[report][key], format_number),
+                    material_name,
                     ]
 
                 excel_pool.write_xls_line(
