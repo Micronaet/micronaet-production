@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_mrp_paint_form">
+            <field name="name">mrp.paint.form</field>
+            <field name="model">mrp.paint</field>
+            <field name="arch" type="xml">
+                <form string="Paint form" version="7.0">        
+                    <sheet>
+                        <group col="4" colspan="4">
+                            <field name="date" />
+                            <newline/>
+                            
+                            <notebook colspan="4">
+                                <page string="Product">
+                                    <group col="4" colspan="4">
+                                        <separator string="Product list:" colspan="4"/>
+                                        <field name="product_ids" colspan="4" nolabel="1">
+                                            <tree string="Product:" editable="bottom">
+                                                <field name="product_code" />
+                                                <field name="color_code" />                                                
+                                                <field name="cpv_cost" />
+                                                <field name="product_qty" />
+                                            </tree>                                            
+                                        </field>
+                                    </group>
+                                </page>
+                                <page string="Unit cost">
+                                    <group col="4" colspan="4">
+                                        <separator string="Gas:" colspan="4"/>
+                                        <field name="gas_id" />  
+                                        <field name="gas_unit" />
+                                        <field name="gas_start" />
+                                        <field name="gas_stop" />
+                                        <field name="gas_total" />
+                                        <field name="gas_total_cost" />
+
+                                        <separator string="Work:" colspan="4"/>
+                                        <field name="work_id" />
+                                        <field name="work_unit" />
+                                        
+                                        <separator string="Cost list:" colspan="3"/>
+                                        <button name="reload_cost_list" string="Reload from product" type="object" colspan="1" icon="gtk-refresh"/>
+                                        <field name="cost_ids" colspan="4" nolabel="1">
+                                            <tree string="Cost" editable="bottom"> 
+                                                <field name="product_code" />
+                                                <field name="color_code" />
+                                                
+                                                <field name="work_hour" />
+                                                
+                                                <field name="dust_weight" />
+                                                <field name="dust_id" />
+                                                <field name="dust_unit" />
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </page>
+                                <page string="Total">
+                                    <group col="4" colspan="4">
+                                        <separator string="Total list:" colspan="3"/>
+                                        <button name="reload_total_list" string="Reload" type="object" colspan="1" icon="gtk-refresh"/>
+                                        
+                                        <field name="total_ids" colspan="4" nolabel="1">
+                                            <tree string="Total:" editable="bottom"> 
+                                                <field name="product_code" />
+                                                <field name="product_total" />
+                                                <field name="cost_total" />
+                                            </tree>                                            
+                                        </field>
+                                    </group>
+                                </page>
+                                <page string="Note">
+                                    <group col="4" colspan="4">
+                                        <separator string="Note:" colspan="4" nolabel="1"/>
+                                        <field name="note" colspan="4" nolabel="1"/>
+                                    </group>
+                                </page>
+                            </notebook>
+                        </group>
+                    </sheet>        
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_mrp_paint_tree">
+            <field name="name">mrp.paint.tree</field>
+            <field name="model">mrp.paint</field>
+            <field name="arch" type="xml">
+                <tree string="Paint work">
+                    <field name="date" />
+                    <field name="gas_id" />
+                    <field name="gas_total" />
+                    <field name="gas_total_cost" />
+                    <field name="work_id" />
+                    <field name="work_unit" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_mrp_paint_tree">
+            <field name="name">Paint manage</field>
+            <field name="res_model">mrp.paint</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_mrp_paint_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+        <menuitem 
+            parent="base.menu_mrp_root" 
+            id="menu_paint_manage_root" 
+            name="Paint Manage"
+            sequence="10"
+            groups="group_mrp_paint_manager"
+            />        
+            <menuitem 
+                parent="menu_paint_manage_root" 
+                id="menu_view_mrp_paint_daily" 
+                action="action_mrp_paint_tree"
+                sequence="10"
+                />
+        
+    </data>
+</openerp>
+

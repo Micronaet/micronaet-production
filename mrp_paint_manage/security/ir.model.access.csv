@@ -1,0 +1,6 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_mrp_paint_user,mrp.paint,model_mrp_paint,mrp_paint_manage.group_mrp_paint_manager,1,1,1,1
+access_mrp_paint_product_user,mrp.paint.product,model_mrp_paint_product,mrp_paint_manage.group_mrp_paint_manager,1,1,1,1
+access_mrp_paint_cost_user,mrp.paint.cost,model_mrp_paint_cost,mrp_paint_manage.group_mrp_paint_manager,1,1,1,1
+access_mrp_paint_total_user,mrp.paint.total,model_mrp_paint_total,mrp_paint_manage.group_mrp_paint_manager,1,1,1,1
+

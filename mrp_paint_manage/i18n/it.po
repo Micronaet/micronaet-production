@@ -1,0 +1,282 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* mrp_paint_manage
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-02-13 08:32+0000\n"
+"PO-Revision-Date: 2019-02-13 09:36+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint.product,cpv_cost:0
+msgid "CPV"
+msgstr "CPV"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint.cost,color_code:0 field:mrp.paint.product,color_code:0
+msgid "Color code"
+msgstr "Codice colore"
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+#: field:mrp.paint,cost_ids:0
+msgid "Cost"
+msgstr "Costo"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint.total,cost_total:0
+msgid "Cost Total"
+msgstr "Costo totale"
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+msgid "Cost list:"
+msgstr "Lista costi:"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint,create_uid:0 field:mrp.paint.cost,create_uid:0
+#: field:mrp.paint.product,create_uid:0 field:mrp.paint.total,create_uid:0
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint,create_date:0 field:mrp.paint.cost,create_date:0
+#: field:mrp.paint.product,create_date:0 field:mrp.paint.total,create_date:0
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint,date:0
+msgid "Date"
+msgstr "Data"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint.cost,dust_id:0
+msgid "Dust"
+msgstr "Polvere"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint.cost,dust_unit:0
+msgid "Dust unit"
+msgstr "Polvere unit."
+
+#. module: mrp_paint_manage
+#: field:mrp.paint.cost,dust_weight:0
+msgid "Dust weight"
+msgstr "Peso polvere"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint,gas_id:0
+msgid "Gas product"
+msgstr "Prodotto Gas"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint,gas_start:0
+msgid "Gas start"
+msgstr "Lettura iniziale gas"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint,gas_stop:0
+msgid "Gas stop"
+msgstr "Lettura finale gas"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint,gas_total:0
+msgid "Gas total M³"
+msgstr "Gas totale M³"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint,gas_total_cost:0
+msgid "Gas total cost"
+msgstr "Costo totale gas"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint,gas_unit:0
+msgid "Gas unit"
+msgstr "Gas unit."
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+msgid "Gas:"
+msgstr "Gas:"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint,id:0 field:mrp.paint.cost,id:0 field:mrp.paint.product,id:0
+#: field:mrp.paint.total,id:0
+msgid "ID"
+msgstr "ID"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint,write_uid:0 field:mrp.paint.cost,write_uid:0
+#: field:mrp.paint.product,write_uid:0 field:mrp.paint.total,write_uid:0
+msgid "Last Updated by"
+msgstr "Aggiornato da"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint,write_date:0 field:mrp.paint.cost,write_date:0
+#: field:mrp.paint.product,write_date:0 field:mrp.paint.total,write_date:0
+msgid "Last Updated on"
+msgstr "Aggiornato il"
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form field:mrp.paint,note:0
+msgid "Note"
+msgstr "Note"
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+msgid "Note:"
+msgstr "Note:"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint.cost,paint_id:0 field:mrp.paint.product,paint_id:0
+#: field:mrp.paint.total,paint_id:0
+msgid "Paint"
+msgstr "Verniciatura"
+
+#. module: mrp_paint_manage
+#: model:ir.ui.menu,name:mrp_paint_manage.menu_paint_manage_root
+msgid "Paint Manage"
+msgstr "Gestione verniciatura"
+
+#. module: mrp_paint_manage
+#: model:res.groups,name:mrp_paint_manage.group_mrp_paint_manager
+msgid "Paint Manager"
+msgstr "Gestione verniciatura"
+
+#. module: mrp_paint_manage
+#: model:ir.model,name:mrp_paint_manage.model_mrp_paint_cost
+msgid "Paint cost"
+msgstr "Costi verniciatura"
+
+#. module: mrp_paint_manage
+#: model:ir.model,name:mrp_paint_manage.model_mrp_paint
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+msgid "Paint form"
+msgstr "Scheda verniciatura"
+
+#. module: mrp_paint_manage
+#: model:ir.actions.act_window,name:mrp_paint_manage.action_mrp_paint_tree
+#: model:ir.ui.menu,name:mrp_paint_manage.menu_view_mrp_paint_daily
+msgid "Paint manage"
+msgstr "Gestione verniciatura"
+
+#. module: mrp_paint_manage
+#: model:ir.model,name:mrp_paint_manage.model_mrp_paint_product
+msgid "Paint product"
+msgstr "Prodotto verniciatura"
+
+#. module: mrp_paint_manage
+#: model:ir.model,name:mrp_paint_manage.model_mrp_paint_total
+msgid "Paint total"
+msgstr "Totale verniciatura"
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_tree
+msgid "Paint work"
+msgstr "Lavoro verniciatura"
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+#: field:mrp.paint,product_ids:0
+msgid "Product"
+msgstr "Prodotto"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint.cost,product_code:0 field:mrp.paint.product,product_code:0
+#: field:mrp.paint.total,product_code:0
+msgid "Product code"
+msgstr "Codice prodotto"
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+msgid "Product list:"
+msgstr "Lista prodotti:"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint.total,product_total:0
+msgid "Product total"
+msgstr "Totale prodotti"
+
+#. module: mrp_paint_manage
+#: help:mrp.paint,gas_id:0
+msgid "Product used to manage unit cost for Gas"
+msgstr "Prodotto utilizzato per valorizzare il costo unitario del Gas"
+
+#. module: mrp_paint_manage
+#: help:mrp.paint,work_id:0
+msgid "Product used to manage unit cost for work"
+msgstr ""
+"Prodotto utilizzato per valorizzare il costo unitario del lavoro di "
+"verniciatura"
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+msgid "Product:"
+msgstr "Prodotto:"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint.product,product_qty:0
+msgid "Qty"
+msgstr "Q."
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+msgid "Reload"
+msgstr "Ricarica"
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+msgid "Reload from product"
+msgstr "Ricarica da prodotti"
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+#: field:mrp.paint,total_ids:0
+msgid "Total"
+msgstr "Totale"
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+msgid "Total list:"
+msgstr "Lista totali:"
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+msgid "Total:"
+msgstr "Totale:"
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+msgid "Unit cost"
+msgstr "Costo unitario"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint,work_id:0
+msgid "Word product"
+msgstr "Prodotto lavorazione"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint.cost,work_hour:0
+msgid "Work hour"
+msgstr "Ore lavoro"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint,work_unit:0
+msgid "Work unit"
+msgstr "Lavoro unit."
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+msgid "Work:"
+msgstr "Lavorazione:"
