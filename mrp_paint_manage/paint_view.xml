@@ -67,8 +67,6 @@
                                                 <field name="cost_total" sum="Total"/>                                                
                                             </tree>                                            
                                         </field>
-                                        <field name="total_calculated" />
-                                        <field name="total_real" />
                                     </group>
                                 </page>
                                 <page string="Note">
@@ -78,6 +76,8 @@
                                     </group>
                                 </page>
                             </notebook>
+                            <field name="total_calculated" />
+                            <field name="total_real" />
                         </group>
                     </sheet>        
                 </form>
