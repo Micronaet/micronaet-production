@@ -64,41 +64,41 @@ class MrpPaint(orm.Model):
         paint_cost = {}
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
         for product in current_proxy.product_ids:
-            color_code = product.color_code
-            if color_code in paint_cost:
-                paint_cost[color_code] += product.product_qty
+            color_id = product.color_id.id
+            if color_id in paint_cost:
+                paint_cost[color_id] += product.product_qty
             else: # not necessary:
-                paint_cost[color_code] = product.product_qty
+                paint_cost[color_id] = product.product_qty
 
         # ---------------------------------------------------------------------
         # Check current list for create / delete operation:
         # ---------------------------------------------------------------------
         current_cost = {}
-        for current in current_proxy.cost_ids:
-            current_cost[current.color_code] = current.id
+        for cost in current_proxy.cost_ids:
+            current_cost[cost.color_id.id] = cost.id
             
         # ---------------------------------------------------------------------
         # Add extra data not present:
         # ---------------------------------------------------------------------
-        for color_code in paint_cost:
-            if color_code in current_cost:
-                cost_pool.write(cr, uid, current_cost[color_code], {
-                    'product_qty': paint_cost[color_code],
+        for color_id in paint_cost:
+            if color_id in current_cost:
+                cost_pool.write(cr, uid, current_cost[color_id], {
+                    'product_qty': paint_cost[color_id],
                     }, context=context)
             else:
                 cost_pool.create(cr, uid, {
                     'paint_id': current_proxy.id,
-                    'color_code': color_code,
-                    'product_qty': paint_cost[color_code],
+                    'color_id': color_id,
+                    'product_qty': paint_cost[color_id],
                     }, context=context)
                     
         # ---------------------------------------------------------------------
         # Delete not present:
         # ---------------------------------------------------------------------
-        for color_code in current_cost:
-            if color_code not in paint_cost:
+        for color_id in current_cost:
+            if color_id not in paint_cost:
                 cost_pool.unlink(
-                    cr, uid, current_cost[color_code], context=context)
+                    cr, uid, current_cost[color_id], context=context)
         return True
 
     def reload_total_list(self, cr, uid, ids, context=None):
@@ -217,6 +217,19 @@ class MrpPaint(orm.Model):
                         
         }
 
+class MrpPaintProductColor(orm.Model):
+    """ Model name: Mrp paint product
+    """
+    
+    _name = 'mrp.paint.product.color'
+    _description = 'Paint product color'
+    _rec_name = 'name'
+    _order = 'name'
+    
+    _columns = {
+        'name': fields.char('Color', size=64, required=True),
+        }
+
 class MrpPaintProduct(orm.Model):
     """ Model name: Mrp paint product
     """
@@ -229,7 +242,8 @@ class MrpPaintProduct(orm.Model):
     _columns = {
         'paint_id': fields.many2one('mrp.paint', 'Paint', ondelete='cascade'),
         'product_code': fields.char('Product code', size=10, required=True),
-        'color_code': fields.char('Color code', size=10, required=True),
+        'color_id': fields.many2one('mrp.paint.product.color', 'Color', 
+            required=True),
         'product_qty': fields.integer('Qty', required=True),
         }
     
@@ -239,14 +253,15 @@ class MrpPaintCost(orm.Model):
     
     _name = 'mrp.paint.cost'
     _description = 'Paint cost'
-    _rec_name = 'color_code'
-    _order = 'color_code'
+    _rec_name = 'color_id'
+    _order = 'color_id'
     
     _columns = {
         'paint_id': fields.many2one('mrp.paint', 'Paint', ondelete='cascade'),
         
         # Summary:
-        'color_code': fields.char('Color code', size=10, required=True),
+        'color_id': fields.many2one('mrp.paint.product.color', 'Color', 
+            required=True),
         'product_qty': fields.integer('Qty', required=True),
         
         # Work:
