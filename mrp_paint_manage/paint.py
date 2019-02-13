@@ -227,7 +227,7 @@ class MrpPaintProduct(orm.Model):
     _order = 'product_code'
     
     _columns = {
-        'paint_id': fields.many2one('mrp.paint', 'Paint'),
+        'paint_id': fields.many2one('mrp.paint', 'Paint', ondelete='cascade'),
         'product_code': fields.char('Product code', size=10, required=True),
         'color_code': fields.char('Color code', size=10, required=True),
         'product_qty': fields.integer('Qty', required=True),
@@ -243,7 +243,7 @@ class MrpPaintCost(orm.Model):
     _order = 'color_code'
     
     _columns = {
-        'paint_id': fields.many2one('mrp.paint', 'Paint'),
+        'paint_id': fields.many2one('mrp.paint', 'Paint', ondelete='cascade'),
         
         # Summary:
         'color_code': fields.char('Color code', size=10, required=True),
@@ -281,7 +281,7 @@ class MrpPaintCost(orm.Model):
             }}
         
     _columns = {
-        'paint_id': fields.many2one('mrp.paint', 'Paint'),
+        'paint_id': fields.many2one('mrp.paint', 'Paint', ondelete='cascade'),
 
         'product_code': fields.char('Product code', size=10, required=True),
         'product_total': fields.integer('Product total'),
