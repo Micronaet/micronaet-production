@@ -19,8 +19,7 @@
                                             <tree string="Product:" editable="bottom">
                                                 <field name="product_code" />
                                                 <field name="color_code" />                                                
-                                                <field name="cpv_cost" />
-                                                <field name="product_qty" />
+                                                <field name="product_qty" sum="Total"/>
                                             </tree>                                            
                                         </field>
                                     </group>
@@ -43,8 +42,8 @@
                                         <button name="reload_cost_list" string="Reload from product" type="object" colspan="1" icon="gtk-refresh"/>
                                         <field name="cost_ids" colspan="4" nolabel="1">
                                             <tree string="Cost" editable="bottom"> 
-                                                <field name="product_code" />
-                                                <field name="color_code" />
+                                                <field name="color_code" readonly="1" />
+                                                <field name="product_qty" readonly="1" />
                                                 
                                                 <field name="work_hour" />
                                                 
@@ -62,8 +61,9 @@
                                         
                                         <field name="total_ids" colspan="4" nolabel="1">
                                             <tree string="Total:" editable="bottom"> 
-                                                <field name="product_code" />
-                                                <field name="product_total" />
+                                                <field name="product_code" readonly="1"/>
+                                                <field name="product_total" readonly="1" />
+                                                <field name="cpv_cost" on_change="onchange_cpv_cost(product_total, cpv_cost)"/>
                                                 <field name="cost_total" />
                                             </tree>                                            
                                         </field>

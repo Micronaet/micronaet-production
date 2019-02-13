@@ -54,11 +54,104 @@ class MrpPaint(orm.Model):
     def reload_cost_list(self, cr, uid, ids, context=None):
         ''' Reload cost list from product list
         '''
+        assert len(ids) == 1, 'Works only with one record a time'
+        
+        cost_pool = self.pool.get('mrp.paint.cost')
+        
+        # ---------------------------------------------------------------------
+        # Load list of product:
+        # ---------------------------------------------------------------------
+        paint_cost = {}
+        current_proxy = self.browse(cr, uid, ids, context=context)[0]
+        for product in current_proxy.product_ids:
+            color_code = product.color_code
+            if color_code in paint_cost:
+                paint_cost[color_code] += product.product_qty
+            else: # not necessary:
+                paint_cost[color_code] = product.product_qty
+
+        # ---------------------------------------------------------------------
+        # Check current list for create / delete operation:
+        # ---------------------------------------------------------------------
+        current_cost = {}
+        for current in current_proxy.cost_ids:
+            current_cost[current.color_code] = current.id
+            
+        # ---------------------------------------------------------------------
+        # Add extra data not present:
+        # ---------------------------------------------------------------------
+        for color_code in paint_cost:
+            if color_code in current_cost:
+                cost_pool.write(cr, uid, current_cost[color_code], {
+                    'product_qty': paint_cost[color_code],
+                    }, context=context)
+            else:
+                cost_pool.create(cr, uid, {
+                    'paint_id': current_proxy.id,
+                    'color_code': color_code,
+                    'product_qty': paint_cost[color_code],
+                    }, context=context)
+                    
+        # ---------------------------------------------------------------------
+        # Delete not present:
+        # ---------------------------------------------------------------------
+        for color_code in current_cost:
+            if color_code not in paint_cost:
+                cost_pool.unlink(
+                    cr, uid, current_cost[color_code], context=context)
         return True
 
     def reload_total_list(self, cr, uid, ids, context=None):
         ''' Reload total list from product list
         '''
+        assert len(ids) == 1, 'Works only with one record a time'
+        
+        total_pool = self.pool.get('mrp.paint.total')
+        
+        # ---------------------------------------------------------------------
+        # Load list of product:
+        # ---------------------------------------------------------------------
+        paint_total = {}
+        current_proxy = self.browse(cr, uid, ids, context=context)[0]
+        for product in current_proxy.product_ids:
+            product_code = product.product_code
+            if product_code in paint_total:
+                paint_total[product_code] += product.product_qty
+            else: # not necessary:
+                paint_total[product_code] = product.product_qty
+
+        # ---------------------------------------------------------------------
+        # Check current list for create / delete operation:
+        # ---------------------------------------------------------------------
+        total_cost = {}
+        for total in current_proxy.total_ids:
+            total_cost[total.product_code] = (total.id, total.cpv_cost)
+            
+        # ---------------------------------------------------------------------
+        # Add extra data not present:
+        # ---------------------------------------------------------------------
+        for product_code in paint_total:
+            if product_code in total_cost:
+                total_id, cpv_cost = total_cost[product_code]
+                total_pool.write(cr, uid, total_id, {
+                    'product_total': paint_total[product_code],
+                    'cost_total': paint_total[product_code] * cpv_cost,
+                    }, context=context)
+            else:
+                total_pool.create(cr, uid, {
+                    'paint_id': current_proxy.id,
+                    'product_code': product_code,
+                    'product_total': paint_total[product_code],
+                    # cost_total = 0
+                    }, context=context)
+                    
+        # ---------------------------------------------------------------------
+        # Delete not present:
+        # ---------------------------------------------------------------------
+        for product_code in total_cost:
+            if product_code not in paint_total:
+                total_pool.unlink(
+                    cr, uid, total_cost[product_code][0], context=context)
         return True
 
     # -------------------------------------------------------------------------       
@@ -118,7 +211,6 @@ class MrpPaintProduct(orm.Model):
         'product_code': fields.char('Product code', size=10, required=True),
         'color_code': fields.char('Color code', size=10, required=True),
         'product_qty': fields.integer('Qty', required=True),
-        'cpv_cost': fields.float('CPV', digits=(16, 2)),
         }
     
 class MrpPaintCost(orm.Model):
@@ -127,22 +219,32 @@ class MrpPaintCost(orm.Model):
     
     _name = 'mrp.paint.cost'
     _description = 'Paint cost'
-    _rec_name = 'product_code'
-    _order = 'product_code'
+    _rec_name = 'color_code'
+    _order = 'color_code'
     
+    # Onchange:
+    def onchange_cpv_cost(self, cr, uid, ids, product_total, cpv_cost, 
+            context=None):
+        ''' Update total
+        '''    
+        return {'value': {
+            'cost_total': product_total * cpv_cost,
+            }}
+        
+        
     _columns = {
         'paint_id': fields.many2one('mrp.paint', 'Paint'),
         
         # Summary:
-        'product_code': fields.char('Product code', size=10, required=True),
         'color_code': fields.char('Color code', size=10, required=True),
+        'product_qty': fields.integer('Qty', required=True),
         
         # Work:
-        'work_hour': fields.float('Work hour', required=True),
+        'work_hour': fields.float('Work hour'),
 
         # Dust:
-        'dust_id': fields.many2one('product.product', 'Dust', required=True),
-        'dust_weight': fields.float('Dust weight', required=True),
+        'dust_id': fields.many2one('product.product', 'Dust'),
+        'dust_weight': fields.float('Dust weight'),
         'dust_unit': fields.related(
             'dust_id', 'standard_price', 
             type='float', string='Dust unit', store=True),
@@ -162,6 +264,7 @@ class MrpPaintCost(orm.Model):
 
         'product_code': fields.char('Product code', size=10, required=True),
         'product_total': fields.integer('Product total'),
+        'cpv_cost': fields.float('CPV', digits=(16, 2)),
         'cost_total': fields.integer('Cost Total'),
         }
     
