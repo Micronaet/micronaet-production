@@ -227,6 +227,7 @@ class MrpPaintProductColor(orm.Model):
     _order = 'name'
     
     _columns = {
+        'code': fields.char('Code', size=10),
         'name': fields.char('Color', size=64, required=True),
         }
 

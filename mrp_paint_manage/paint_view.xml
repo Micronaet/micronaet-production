@@ -1,6 +1,26 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <!--mrp.paint.product.color-->
+        <record model="ir.ui.view" id="view_mrp_paint_product_color_tree">
+            <field name="name">mrp.paint.product.color.tree</field>
+            <field name="model">mrp.paint.product.color</field>
+            <field name="arch" type="xml">
+                <tree string="Color" editable="bottom" > 
+                    <field name="code" />
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_mrp_paing_product_color">
+            <field name="name">Color</field>
+            <field name="res_model">mrp.paint.product.color</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_mrp_paint_product_color_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
         <record model="ir.ui.view" id="view_mrp_paint_form">
             <field name="name">mrp.paint.form</field>
             <field name="model">mrp.paint</field>
@@ -121,6 +141,13 @@
                 action="action_mrp_paint_tree"
                 sequence="10"
                 />
+            <menuitem 
+                parent="menu_paint_manage_root" 
+                id="menu_view_mrp_paint_product_color" 
+                action="action_mrp_paing_product_color"
+                sequence="20"
+                />
+            
         
     </data>
 </openerp>
