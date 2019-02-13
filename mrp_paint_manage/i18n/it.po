@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-13 08:32+0000\n"
-"PO-Revision-Date: 2019-02-13 09:36+0100\n"
+"POT-Creation-Date: 2019-02-13 17:37+0000\n"
+"PO-Revision-Date: 2019-02-13 18:38+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,14 +18,23 @@ msgstr ""
 "X-Generator: Poedit 1.6.10\n"
 
 #. module: mrp_paint_manage
-#: field:mrp.paint.product,cpv_cost:0
+#: field:mrp.paint.total,cpv_cost:0
 msgid "CPV"
 msgstr "CPV"
 
 #. module: mrp_paint_manage
-#: field:mrp.paint.cost,color_code:0 field:mrp.paint.product,color_code:0
-msgid "Color code"
-msgstr "Codice colore"
+#: field:mrp.paint.product.color,code:0
+msgid "Code"
+msgstr "Codice"
+
+#. module: mrp_paint_manage
+#: model:ir.actions.act_window,name:mrp_paint_manage.action_mrp_paing_product_color
+#: model:ir.ui.menu,name:mrp_paint_manage.menu_view_mrp_paint_product_color
+#: field:mrp.paint.cost,color_id:0 field:mrp.paint.product,color_id:0
+#: view:mrp.paint.product.color:mrp_paint_manage.view_mrp_paint_product_color_tree
+#: field:mrp.paint.product.color,name:0
+msgid "Color"
+msgstr "Colore"
 
 #. module: mrp_paint_manage
 #: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
@@ -45,13 +54,17 @@ msgstr "Lista costi:"
 
 #. module: mrp_paint_manage
 #: field:mrp.paint,create_uid:0 field:mrp.paint.cost,create_uid:0
-#: field:mrp.paint.product,create_uid:0 field:mrp.paint.total,create_uid:0
+#: field:mrp.paint.product,create_uid:0
+#: field:mrp.paint.product.color,create_uid:0
+#: field:mrp.paint.total,create_uid:0
 msgid "Created by"
 msgstr "Creato da"
 
 #. module: mrp_paint_manage
 #: field:mrp.paint,create_date:0 field:mrp.paint.cost,create_date:0
-#: field:mrp.paint.product,create_date:0 field:mrp.paint.total,create_date:0
+#: field:mrp.paint.product,create_date:0
+#: field:mrp.paint.product.color,create_date:0
+#: field:mrp.paint.total,create_date:0
 msgid "Created on"
 msgstr "Creato il"
 
@@ -112,19 +125,22 @@ msgstr "Gas:"
 
 #. module: mrp_paint_manage
 #: field:mrp.paint,id:0 field:mrp.paint.cost,id:0 field:mrp.paint.product,id:0
-#: field:mrp.paint.total,id:0
+#: field:mrp.paint.product.color,id:0 field:mrp.paint.total,id:0
 msgid "ID"
 msgstr "ID"
 
 #. module: mrp_paint_manage
 #: field:mrp.paint,write_uid:0 field:mrp.paint.cost,write_uid:0
-#: field:mrp.paint.product,write_uid:0 field:mrp.paint.total,write_uid:0
+#: field:mrp.paint.product,write_uid:0
+#: field:mrp.paint.product.color,write_uid:0 field:mrp.paint.total,write_uid:0
 msgid "Last Updated by"
 msgstr "Aggiornato da"
 
 #. module: mrp_paint_manage
 #: field:mrp.paint,write_date:0 field:mrp.paint.cost,write_date:0
-#: field:mrp.paint.product,write_date:0 field:mrp.paint.total,write_date:0
+#: field:mrp.paint.product,write_date:0
+#: field:mrp.paint.product.color,write_date:0
+#: field:mrp.paint.total,write_date:0
 msgid "Last Updated on"
 msgstr "Aggiornato il"
 
@@ -177,6 +193,11 @@ msgid "Paint product"
 msgstr "Prodotto verniciatura"
 
 #. module: mrp_paint_manage
+#: model:ir.model,name:mrp_paint_manage.model_mrp_paint_product_color
+msgid "Paint product color"
+msgstr "Colore"
+
+#. module: mrp_paint_manage
 #: model:ir.model,name:mrp_paint_manage.model_mrp_paint_total
 msgid "Paint total"
 msgstr "Totale verniciatura"
@@ -193,8 +214,7 @@ msgid "Product"
 msgstr "Prodotto"
 
 #. module: mrp_paint_manage
-#: field:mrp.paint.cost,product_code:0 field:mrp.paint.product,product_code:0
-#: field:mrp.paint.total,product_code:0
+#: field:mrp.paint.product,product_code:0 field:mrp.paint.total,product_code:0
 msgid "Product code"
 msgstr "Codice prodotto"
 
@@ -226,7 +246,7 @@ msgid "Product:"
 msgstr "Prodotto:"
 
 #. module: mrp_paint_manage
-#: field:mrp.paint.product,product_qty:0
+#: field:mrp.paint.cost,product_qty:0 field:mrp.paint.product,product_qty:0
 msgid "Qty"
 msgstr "Q."
 
@@ -242,14 +262,25 @@ msgstr "Ricarica da prodotti"
 
 #. module: mrp_paint_manage
 #: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_tree
 #: field:mrp.paint,total_ids:0
 msgid "Total"
 msgstr "Totale"
 
 #. module: mrp_paint_manage
+#: field:mrp.paint,total_calculated:0
+msgid "Total calculated"
+msgstr "Totale calcolato"
+
+#. module: mrp_paint_manage
 #: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
 msgid "Total list:"
 msgstr "Lista totali:"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint,total_real:0
+msgid "Total real"
+msgstr "Total reale"
 
 #. module: mrp_paint_manage
 #: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
