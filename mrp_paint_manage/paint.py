@@ -168,6 +168,19 @@ class MrpPaint(orm.Model):
                 'gas_total_cost': gap * paint.gas_unit,
                 }                
         return res
+
+    def _get_total_paint(self, cr, uid, ids, fields, args, context=None):
+        ''' Fields function for calculate 
+        '''
+        res = {}
+        for paint in self.browse(cr, uid, ids, context=context):
+            # Total of product
+            partial = 0.0
+            for total in paint.total_ids:
+                partial += total.cost_total
+                
+            res[paint.id] = partial     
+        return res
         
     # -------------------------------------------------------------------------       
     # Table:
@@ -195,6 +208,13 @@ class MrpPaint(orm.Model):
             type='float', string='Work unit', store=True),
         
         'note': fields.text('Note'),
+        
+        'total_real': fields.float('Total real', digits=(16, 2)),
+        'total_calculated': fields.function(
+            _get_total_paint, method=True, 
+            type='float', string='Total calculated', 
+            store=False), 
+                        
         }
 
 class MrpPaintProduct(orm.Model):
@@ -222,16 +242,6 @@ class MrpPaintCost(orm.Model):
     _rec_name = 'color_code'
     _order = 'color_code'
     
-    # Onchange:
-    def onchange_cpv_cost(self, cr, uid, ids, product_total, cpv_cost, 
-            context=None):
-        ''' Update total
-        '''    
-        return {'value': {
-            'cost_total': product_total * cpv_cost,
-            }}
-        
-        
     _columns = {
         'paint_id': fields.many2one('mrp.paint', 'Paint'),
         
@@ -258,7 +268,18 @@ class MrpPaintCost(orm.Model):
     _description = 'Paint total'
     _rec_name = 'product_code'
     _order = 'product_code'
-    
+
+    # -------------------------------------------------------------------------    
+    # Onchange:
+    # -------------------------------------------------------------------------    
+    def onchange_cpv_cost(self, cr, uid, ids, product_total, cpv_cost, 
+            context=None):
+        ''' Update total
+        '''    
+        return {'value': {
+            'cost_total': product_total * cpv_cost,
+            }}
+        
     _columns = {
         'paint_id': fields.many2one('mrp.paint', 'Paint'),
 

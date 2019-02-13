@@ -19,7 +19,7 @@
                                             <tree string="Product:" editable="bottom">
                                                 <field name="product_code" />
                                                 <field name="color_code" />                                                
-                                                <field name="product_qty" sum="Total"/>
+                                                <field name="product_qty" sum="Product"/>
                                             </tree>                                            
                                         </field>
                                     </group>
@@ -64,9 +64,11 @@
                                                 <field name="product_code" readonly="1"/>
                                                 <field name="product_total" readonly="1" />
                                                 <field name="cpv_cost" on_change="onchange_cpv_cost(product_total, cpv_cost)"/>
-                                                <field name="cost_total" />
+                                                <field name="cost_total" sum="Total"/>                                                
                                             </tree>                                            
                                         </field>
+                                        <field name="total_calculated" />
+                                        <field name="total_real" />
                                     </group>
                                 </page>
                                 <page string="Note">
@@ -92,6 +94,8 @@
                     <field name="gas_total_cost" />
                     <field name="work_id" />
                     <field name="work_unit" />
+                    <field name="total_calculated" />
+                    <field name="total_real" sum="Total"/>
                 </tree>
             </field>
         </record>
