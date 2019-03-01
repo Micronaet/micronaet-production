@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-13 17:37+0000\n"
-"PO-Revision-Date: 2019-02-13 18:38+0100\n"
+"POT-Creation-Date: 2019-03-01 15:44+0000\n"
+"PO-Revision-Date: 2019-03-01 16:46+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -23,6 +23,16 @@ msgid "CPV"
 msgstr "CPV"
 
 #. module: mrp_paint_manage
+#: field:mrp.paint,calc:0
+msgid "Calc"
+msgstr "Dettaglio calcolo"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint,calc_confirmed:0
+msgid "Calc detail"
+msgstr "Dettaglio calcolo"
+
+#. module: mrp_paint_manage
 #: field:mrp.paint.product.color,code:0
 msgid "Code"
 msgstr "Codice"
@@ -35,6 +45,12 @@ msgstr "Codice"
 #: field:mrp.paint.product.color,name:0
 msgid "Color"
 msgstr "Colore"
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+#: selection:mrp.paint,state:0
+msgid "Confirmed"
+msgstr "Confermato"
 
 #. module: mrp_paint_manage
 #: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
@@ -72,6 +88,21 @@ msgstr "Creato il"
 #: field:mrp.paint,date:0
 msgid "Date"
 msgstr "Data"
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+msgid "Detail"
+msgstr "Dettaglio"
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+msgid "Dettaglio calcolo:"
+msgstr "Dettaglio calcolo:"
+
+#. module: mrp_paint_manage
+#: selection:mrp.paint,state:0
+msgid "Draft"
+msgstr "Bozza"
 
 #. module: mrp_paint_manage
 #: field:mrp.paint.cost,dust_id:0
@@ -124,6 +155,11 @@ msgid "Gas:"
 msgstr "Gas:"
 
 #. module: mrp_paint_manage
+#: field:mrp.paint,error:0
+msgid "Has error"
+msgstr "Errore"
+
+#. module: mrp_paint_manage
 #: field:mrp.paint,id:0 field:mrp.paint.cost,id:0 field:mrp.paint.product,id:0
 #: field:mrp.paint.product.color,id:0 field:mrp.paint.total,id:0
 msgid "ID"
@@ -143,6 +179,16 @@ msgstr "Aggiornato da"
 #: field:mrp.paint.total,write_date:0
 msgid "Last Updated on"
 msgstr "Aggiornato il"
+
+#. module: mrp_paint_manage
+#: field:stock.picking,dust:0
+msgid "Month dust unload"
+msgstr "Scarico polvere del mese"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint.cost,move_id:0
+msgid "Move linked"
+msgstr "Movimento collegato"
 
 #. module: mrp_paint_manage
 #: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form field:mrp.paint,note:0
@@ -208,6 +254,21 @@ msgid "Paint work"
 msgstr "Lavoro verniciatura"
 
 #. module: mrp_paint_manage
+#: field:mrp.paint,picking_id:0
+msgid "Picking"
+msgstr "Documento di scarico"
+
+#. module: mrp_paint_manage
+#: model:ir.model,name:mrp_paint_manage.model_stock_picking
+msgid "Picking List"
+msgstr "Lista prelievo"
+
+#. module: mrp_paint_manage
+#: help:mrp.paint,picking_id:0
+msgid "Picking linked for unload documents (SL type)"
+msgstr "Documenti di scarico collegato (tipo SL)"
+
+#. module: mrp_paint_manage
 #: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
 #: field:mrp.paint,product_ids:0
 msgid "Product"
@@ -261,16 +322,16 @@ msgid "Reload from product"
 msgstr "Ricarica da prodotti"
 
 #. module: mrp_paint_manage
+#: field:mrp.paint,state:0
+msgid "State"
+msgstr "Stato"
+
+#. module: mrp_paint_manage
 #: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
 #: view:mrp.paint:mrp_paint_manage.view_mrp_paint_tree
 #: field:mrp.paint,total_ids:0
 msgid "Total"
 msgstr "Totale"
-
-#. module: mrp_paint_manage
-#: field:mrp.paint,total_calculated:0
-msgid "Total calculated"
-msgstr "Totale calcolato"
 
 #. module: mrp_paint_manage
 #: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
@@ -283,6 +344,21 @@ msgid "Total real"
 msgstr "Total reale"
 
 #. module: mrp_paint_manage
+#: field:mrp.paint,total_real_confirmed:0
+msgid "Total real confirmed"
+msgstr "Totale reale confermato"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint,total_calculated:0
+msgid "Total teorical"
+msgstr "Totale teorico"
+
+#. module: mrp_paint_manage
+#: field:mrp.paint,total_calculated_confirmed:0
+msgid "Total teorical confirmed"
+msgstr "Totale teorico confermato"
+
+#. module: mrp_paint_manage
 #: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
 msgid "Total:"
 msgstr "Totale:"
@@ -291,6 +367,11 @@ msgstr "Totale:"
 #: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
 msgid "Unit cost"
 msgstr "Costo unitario"
+
+#. module: mrp_paint_manage
+#: view:mrp.paint:mrp_paint_manage.view_mrp_paint_form
+msgid "Unlock"
+msgstr "Sblocca"
 
 #. module: mrp_paint_manage
 #: field:mrp.paint,work_id:0
