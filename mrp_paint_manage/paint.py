@@ -184,6 +184,7 @@ class MrpPaint(orm.Model):
             'state': 'confirmed',
             'total_real_confirmed': paint.total_real,
             'total_calculated_confirmed': paint.total_calculated,
+            'calc_confirmed': paint.calc,
             }, context=context)
     
     def reload_cost_list(self, cr, uid, ids, context=None):
@@ -300,8 +301,8 @@ class MrpPaint(orm.Model):
             gap = paint.gas_stop - paint.gas_start
             res[paint.id] = {
                 'gas_total': gap,
-                'gas_total_cost': gap * paint.gas_unit,
-                }                
+                'gas_total_cost': paint.gas_id.standard_price * gap, # XXX
+                }
         return res
 
     def _get_total_paint(self, cr, uid, ids, fields, args, context=None):
@@ -311,56 +312,98 @@ class MrpPaint(orm.Model):
 
         for paint in self.browse(cr, uid, ids, context=context):
             res[paint.id] = {}
-                #'total_real': 0.0,
-                #'total_calculated': 0.0, # CPV
-                #'error': '',
-                #}
+            error = False
+            calc = ''
 
             # -----------------------------------------------------------------
             # Total real with all cost and error
             # -----------------------------------------------------------------
-            error = ''
-
             # Gas:
             partial = paint.gas_id.standard_price * (
                 paint.gas_stop - paint.gas_start)
-            work_unit = paint.work_id.standard_price
-
-            # Error check:
+            calc += u'''<b>Gas:</b> Lettura (%s - %s)M³ x 
+                %s €/m³ = <b>%s €</b>%s<br/>''' % (
+                    paint.gas_stop,
+                    paint.gas_start,
+                    paint.gas_id.standard_price, 
+                    partial,
+                    '' if partial else ' *ERRORE',
+                    )
             if not partial:
-                error += 'Manca la valorizzazione del gas<br/>'                
+                error = True
+                    
+            work_unit = paint.work_id.standard_price
+            calc += u'''<b>Costo lavoratore: %s €</b><br/>%s''' % (
+                work_unit,
+                '' if work_unit else ' *ERRORE',
+                )
             if not work_unit:
-                error += 'Manca la valorizzazione del costo orario<br/>'
+                error = True
                 
             i = 0
-            for line in paint.cost_ids:            
+            calc += u'<br/><b>Costi reali:</b><br/>'
+            for line in paint.cost_ids:
                 i += 1
+
+                # -------------------------------------------------------------
                 # Dust:
-                subtotal = line.dust_weight * line.dust_unit                
+                # -------------------------------------------------------------
+                subtotal = line.dust_weight * line.dust_id.standard_price
                 partial += subtotal
+                calc += u'''
+                    <b>Colore %s:</b> 
+                        [<b>Polvere: </b>%s Kg x %s = <b>%s €</b>%s] + 
+                    ''' % (
+                        line.color_id.name or '',
+                        line.dust_weight,
+                        line.dust_id.standard_price,
+                        subtotal,
+                        '' if subtotal else ' *ERRORE',     
+                        )                    
                 if not subtotal:
-                    error += 'Riga costi: %s. Manca costo polvere<br/>' % i
+                    error = True
                                 
+                # -------------------------------------------------------------
                 # Lavoration:
+                # -------------------------------------------------------------
                 subtotal = work_unit * line.work_hour 
                 partial += subtotal
+                calc += u'''[<b>Lavorazione: </b>%s x %s H = <b>%s €</b>%s]
+                    <br/>''' % (
+                        work_unit,
+                        line.work_hour,
+                        subtotal,
+                        '' if subtotal else ' *ERRORE',                    
+                        )
                 if not subtotal:
-                    error += 'Riga costi: %s. Manca costo lavoro<br/>' % i
+                    error = True
             res[paint.id]['total_real'] = partial
+            calc += u'''<b>Totale reale: %s €</b><br/><br/>''' % partial
 
             # -----------------------------------------------------------------
             # Total calculated with CPV rate:
             # -----------------------------------------------------------------
             partial = 0.0
+            calc += u'''<b>Totale teorici:</b><br/>'''
             for line in paint.total_ids:
                 subtotal = line.product_total * line.cpv_cost
                 partial += subtotal
+                calc += u'''<b>Codice %s:</b> %s PZ x %s € = <b>%s €</b>%s
+                <br/>''' % (
+                    line.product_code,
+                    line.product_total,
+                    line.cpv_cost,                    
+                    subtotal,
+                    '' if subtotal else ' *ERRORE',                    
+                    )
                 if not subtotal:
-                    error += 'Riga CPV: %s. Manca parziale calcolato<br/>' % i               
+                    error = True
+
             res[paint.id]['total_calculated'] = partial                
-            if error:
-                error = '<b>ERRORE DATI MANCANTI:</b><br/>' + error
+            calc += u'''<b>Totale teorico: %s €</b>''' % partial
+
             res[paint.id]['error'] = error
+            res[paint.id]['calc'] = calc
         return res
         
     # -------------------------------------------------------------------------       
@@ -368,25 +411,30 @@ class MrpPaint(orm.Model):
     # -------------------------------------------------------------------------       
     _columns = {
         'date': fields.date('Date', required=True),
+
+        # ---------------------------------------------------------------------
+        # GAS:
+        # ---------------------------------------------------------------------
+        'gas_id': fields.many2one('product.product', 'Gas product', 
+            help='Product used to manage unit cost for Gas'),
+        'gas_unit': fields.related(
+            'gas_id', 'standard_price', 
+            type='float', string='Gas unit', store=False),
         'gas_start': fields.integer('Gas start'),        
         'gas_stop': fields.integer('Gas stop'),        
         'gas_total': fields.function(_get_gas_total, method=True, 
-            type='integer', string=u'Gas total M³', multi=True), 
+            type='integer', string=u'Gas total M³', multi='gas_sum'), 
         'gas_total_cost': fields.function(_get_gas_total, method=True, 
-            type='float', string='Gas total cost', multi=True), 
+            type='float', string='Gas total cost', multi='gas_sum'), 
 
-        'gas_id': fields.many2one('product.product', 'Gas product', 
-            help='Product used to manage unit cost for Gas'),
+        # ---------------------------------------------------------------------
+        # WORK:
+        # ---------------------------------------------------------------------
         'work_id': fields.many2one('product.product', 'Word product', 
             help='Product used to manage unit cost for work'),
-
-        # Saved in daily form:
-        'gas_unit': fields.related(
-            'gas_id', 'standard_price', 
-            type='float', string='Gas unit', store=True),
         'work_unit': fields.related(
             'work_id', 'standard_price', 
-            type='float', string='Work unit', store=True),
+            type='float', string='Work unit', store=False),
         
         'note': fields.text('Note'),
 
@@ -397,18 +445,23 @@ class MrpPaint(orm.Model):
             store=False, multi=True), 
         'total_calculated': fields.function(
             _get_total_paint, method=True, 
-            type='float', string='Total CPV', 
+            type='float', string='Total teorical', 
+            store=False, multi=True), 
+        'calc': fields.function(
+            _get_total_paint, method=True, 
+            type='text', string='Calc', 
             store=False, multi=True), 
         'error': fields.function(
             _get_total_paint, method=True, 
-            type='text', string='Error', 
+            type='boolean', string='Has error', 
             store=False, multi=True), 
 
         # Saved total:    
         'total_real_confirmed': fields.float('Total real confirmed', 
             digits=(16, 2)),
-        'total_calculated_confirmed': fields.float('Total CPV confirmed', 
+        'total_calculated_confirmed': fields.float('Total teorical confirmed', 
             digits=(16, 2)),
+        'calc_confirmed': fields.text('Calc detail'),    
         
         # Linked document:
         'picking_id': fields.many2one('stock.picking', 'Picking', 

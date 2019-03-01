@@ -37,6 +37,15 @@
                             <newline/>
                             
                             <notebook colspan="4">
+                                <page string="Detail" attrs="{'invisible':[('state','=','draft')]}">
+                                    <group col="4" colspan="4">
+                                        <separator string="Dettaglio calcolo:" colspan="4"/>
+                                        <field name="calc" nolabel="1" colspan="4" readonly="1" widget="html" />
+
+                                        <field name="total_calculated_confirmed" readonly="1" />
+                                        <field name="total_real_confirmed" readonly="1" />
+                                    </group>
+                                </page>
                                 <page string="Product">
                                     <group col="4" colspan="4">
                                         <separator string="Product list:" colspan="4"/>
@@ -103,13 +112,9 @@
                                     </group>
                                 </page>
                             </notebook>                            
-                            <field name="error" attrs="{'invisible':[('error','=',False)]}" nolabel="1" colspan="4" readonly="1" widget="html"/>
 
                             <field name="total_calculated" readonly="1" attrs="{'invisible':[('state','=','confirmed')]}"/>
                             <field name="total_real" readonly="1" attrs="{'invisible':[('state','=','confirmed')]}"/>
-
-                            <field name="total_calculated_confirmed" readonly="1" attrs="{'invisible':[('state','=','draft')]}"/>
-                            <field name="total_real_confirmed" readonly="1" attrs="{'invisible':[('state','=','draft')]}"/>
                         </group>
                     </sheet>        
                 </form>
@@ -119,7 +124,8 @@
             <field name="name">mrp.paint.tree</field>
             <field name="model">mrp.paint</field>
             <field name="arch" type="xml">
-                <tree string="Paint work">
+                <tree string="Paint work" colors="red:error==True">
+                    <field name="error" invisible="1" />
                     <field name="date" />
                     <field name="gas_id" />
                     <field name="gas_total" />
