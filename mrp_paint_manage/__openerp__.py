@@ -35,6 +35,7 @@
         'base',
         #'mrp',
         'product',
+        'stock',
         ],
     'init_xml': [],
     'demo': [],

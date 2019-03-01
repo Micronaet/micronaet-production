@@ -42,6 +42,16 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+class StockPicking(orm.Model):
+    """ Model name: StockPicking
+    """
+    
+    _inherit = 'stock.picking'
+    
+    _columns = {
+        'dust': fields.boolean('Month dust unload'),
+    }
+
 class MrpPaint(orm.Model):
     """ Model name: MrpPaint
     """
@@ -50,6 +60,131 @@ class MrpPaint(orm.Model):
     _description = 'Paint form'
     _rec_name = 'date'
     _order = 'date'
+
+    # -------------------------------------------------------------------------
+    # Button or procedure:
+    # -------------------------------------------------------------------------
+    # Fast Workflow:
+    def wf_reopen_paint(self, cr, uid, ids, context=None):
+        ''' Reopen painting form
+        '''
+        move_pool = self.pool.get('stock.move')
+        
+        # ---------------------------------------------------------------------
+        # Remove stock movement:
+        # ---------------------------------------------------------------------
+        move_ids = [
+            cost.move_id.id for cost in self.browse(
+                cr, uid, ids, context=context)[0].cost_ids if cost.move_id]
+        if move_ids:
+            move_pool.write(cr, uid, move_ids, {
+                'state': 'draft',
+                }, context=context)
+            move_pool.unlink(cr, uid, move_ids, context=context)        
+            
+        return self.write(cr, uid, ids, {
+            'state': 'draft',
+            }, context=context)
+        
+    def wf_close_paint(self, cr, uid, ids, context=None):
+        ''' Create stock move to unload dust product
+        '''
+        picking_pool = self.pool.get('stock.picking')
+        move_pool = self.pool.get('stock.move')
+        type_pool = self.pool.get('stock.picking.type')
+        cost_pool = self.pool.get('mrp.paint.cost')
+
+        # ---------------------------------------------------------------------
+        # A) Picking:        
+        # ---------------------------------------------------------------------
+        # Check if picking is present:
+        paint = self.browse(cr, uid, ids, context=context)[0]
+                
+        if not paint.picking_id: #  Search this month painting picking:
+            # Picking date every first day of the month:
+            date = paint.date
+            picking_date = '%s-01 08:00:00' % date[:7] 
+            
+            picking_ids = picking_pool.search(cr, uid, [
+                ('min_date', '=', picking_date),
+                ('dust', '=', True),
+                ], context=context)
+            if picking_ids:
+                picking_id = picking_ids[0]
+            else:   
+                type_ids = type_pool.search(cr, uid, [
+                    ('code', '=', 'internal'),
+                    ('name', 'ilike', 'SL '),
+                    ], context=context)
+                if not type_ids:
+                    raise osv.except_osv(
+                        _('Error'), 
+                        _('SL stocking move type not found, create before!'),
+                        )
+                picking_type = type_pool.browse(
+                    cr, uid, type_ids, context=context)[0]
+                    
+                picking_id = picking_pool.create(cr, uid, { 
+                    'partner_id': paint.create_uid.company_id.partner_id.id,
+                    'min_date': picking_date,                    
+                    'origin': 'Verniciatura mese: %s' % date[:7],
+                    'picking_type_id': picking_type.id,                    
+                    'dust': True,
+                    }, context=context)
+                    
+                # Save for next time:    
+                self.write(cr, uid, paint.id, {
+                    'picking_id': picking_id,
+                    }, context=context)    
+
+                # Reload data:    
+                paint = self.browse(cr, uid, ids, context=context)[0]
+
+        picking = paint.picking_id
+
+        # ---------------------------------------------------------------------
+        # Stock movement:
+        # ---------------------------------------------------------------------
+        link_move = []
+        picking_type = picking.picking_type_id
+        location_id = picking_type.default_location_src_id.id
+        location_dest_id = picking_type.default_location_dest_id.id
+        origin = picking.origin
+        
+        for cost in self.browse(
+                cr, uid, ids, context=context)[0].cost_ids:
+            product = cost.dust_id
+            if not product:
+                continue    
+            move_id = move_pool.create(cr, uid, {
+                'product_id': product.id,
+                'product_uom_qty': cost.dust_weight,
+
+                'name': product.name,
+                'product_uom': product.uom_id.id,
+                'picking_id': picking.id,
+                'picking_type_id': picking_type.id,
+                'origin': origin,
+                'product_id': product.id,
+                'date': paint.create_date,
+                'location_id': location_id,
+                'location_dest_id': location_dest_id,
+                'state': 'done',
+                }, context=context)
+
+            link_move.append((cost.id, move_id))    
+            
+        # Update cost linked to move:
+        for cost_id, move_id in link_move:
+            cost_pool.write(cr, uid, [cost_id], {
+                'move_id': move_id,
+                }, context=context)
+
+        return self.write(cr, uid, ids, {
+            'state': 'confirmed',
+            'total_real_confirmed': paint.total_real,
+            'total_calculated_confirmed': paint.total_calculated,
+            }, context=context)
     
     def reload_cost_list(self, cr, uid, ids, context=None):
         ''' Reload cost list from product list
@@ -173,13 +308,59 @@ class MrpPaint(orm.Model):
         ''' Fields function for calculate 
         '''
         res = {}
+
         for paint in self.browse(cr, uid, ids, context=context):
-            # Total of product
-            partial = 0.0
-            for total in paint.total_ids:
-                partial += total.cost_total
+            res[paint.id] = {}
+                #'total_real': 0.0,
+                #'total_calculated': 0.0, # CPV
+                #'error': '',
+                #}
+
+            # -----------------------------------------------------------------
+            # Total real with all cost and error
+            # -----------------------------------------------------------------
+            error = ''
+
+            # Gas:
+            partial = paint.gas_id.standard_price * (
+                paint.gas_stop - paint.gas_start)
+            work_unit = paint.work_id.standard_price
+
+            # Error check:
+            if not partial:
+                error += 'Manca la valorizzazione del gas<br/>'                
+            if not work_unit:
+                error += 'Manca la valorizzazione del costo orario<br/>'
                 
-            res[paint.id] = partial     
+            i = 0
+            for line in paint.cost_ids:            
+                i += 1
+                # Dust:
+                subtotal = line.dust_weight * line.dust_unit                
+                partial += subtotal
+                if not subtotal:
+                    error += 'Riga costi: %s. Manca costo polvere<br/>' % i
+                                
+                # Lavoration:
+                subtotal = work_unit * line.work_hour 
+                partial += subtotal
+                if not subtotal:
+                    error += 'Riga costi: %s. Manca costo lavoro<br/>' % i
+            res[paint.id]['total_real'] = partial
+
+            # -----------------------------------------------------------------
+            # Total calculated with CPV rate:
+            # -----------------------------------------------------------------
+            partial = 0.0
+            for line in paint.total_ids:
+                subtotal = line.product_total * line.cpv_cost
+                partial += subtotal
+                if not subtotal:
+                    error += 'Riga CPV: %s. Manca parziale calcolato<br/>' % i               
+            res[paint.id]['total_calculated'] = partial                
+            if error:
+                error = '<b>ERRORE DATI MANCANTI:</b><br/>' + error
+            res[paint.id]['error'] = error
         return res
         
     # -------------------------------------------------------------------------       
@@ -208,15 +389,42 @@ class MrpPaint(orm.Model):
             type='float', string='Work unit', store=True),
         
         'note': fields.text('Note'),
-        
-        'total_real': fields.float('Total real', digits=(16, 2)),
+
+        # Dynamic total:        
+        'total_real': fields.function(
+            _get_total_paint, method=True, 
+            type='float', string='Total real', 
+            store=False, multi=True), 
         'total_calculated': fields.function(
             _get_total_paint, method=True, 
-            type='float', string='Total calculated', 
-            store=False), 
-                        
+            type='float', string='Total CPV', 
+            store=False, multi=True), 
+        'error': fields.function(
+            _get_total_paint, method=True, 
+            type='text', string='Error', 
+            store=False, multi=True), 
+
+        # Saved total:    
+        'total_real_confirmed': fields.float('Total real confirmed', 
+            digits=(16, 2)),
+        'total_calculated_confirmed': fields.float('Total CPV confirmed', 
+            digits=(16, 2)),
+        
+        # Linked document:
+        'picking_id': fields.many2one('stock.picking', 'Picking', 
+            help='Picking linked for unload documents (SL type)'),
+        
+        # Fast workflow:
+        'state': fields.selection([
+            ('draft', 'Draft'),
+            ('confirmed', 'Confirmed'),
+            ], 'State', readonly=True),
         }
 
+    _defaults = {
+        # Default value:
+        'state': lambda *x: 'draft',
+        }
 class MrpPaintProductColor(orm.Model):
     """ Model name: Mrp paint product
     """
@@ -257,6 +465,9 @@ class MrpPaintCost(orm.Model):
     _rec_name = 'color_id'
     _order = 'color_id'
     
+    # TODO delete linked move if present:
+    # TODO update linked move when change data or create
+
     _columns = {
         'paint_id': fields.many2one('mrp.paint', 'Paint', ondelete='cascade'),
         
@@ -274,6 +485,7 @@ class MrpPaintCost(orm.Model):
         'dust_unit': fields.related(
             'dust_id', 'standard_price', 
             type='float', string='Dust unit', store=True),
+        'move_id': fields.many2one('stock.move', 'Move linked'),
         }
 
 class MrpPaintCost(orm.Model):

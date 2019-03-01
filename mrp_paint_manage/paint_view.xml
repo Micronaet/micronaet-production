@@ -26,16 +26,21 @@
             <field name="model">mrp.paint</field>
             <field name="arch" type="xml">
                 <form string="Paint form" version="7.0">        
+                    <header>
+                        <button name="wf_close_paint" string="Confirmed" type="object" states="draft" class="oe_highlight"/>
+                        <button name="wf_reopen_paint" string="Unlock" type="object" states="confirmed" class="oe_highlight" />
+                        <field name="state" widget="statusbar" />
+                    </header>
                     <sheet>
                         <group col="4" colspan="4">
-                            <field name="date" />
+                            <field name="date" attrs="{'readonly':[('state','=','confirmed')]}"/>
                             <newline/>
                             
                             <notebook colspan="4">
                                 <page string="Product">
                                     <group col="4" colspan="4">
                                         <separator string="Product list:" colspan="4"/>
-                                        <field name="product_ids" colspan="4" nolabel="1">
+                                        <field name="product_ids" colspan="4" nolabel="1" attrs="{'readonly':[('state','=','confirmed')]}">
                                             <tree string="Product:" editable="bottom">
                                                 <field name="product_code" />
                                                 <field name="color_id" />                                                
@@ -46,21 +51,23 @@
                                 </page>
                                 <page string="Unit cost">
                                     <group col="4" colspan="4">
-                                        <separator string="Gas:" colspan="4"/>
-                                        <field name="gas_id" />  
-                                        <field name="gas_unit" />
-                                        <field name="gas_start" />
-                                        <field name="gas_stop" />
-                                        <field name="gas_total" />
-                                        <field name="gas_total_cost" />
+                                        <separator string="Gas:" colspan="4"/>                                        
+                                        <field name="gas_id"  attrs="{'readonly':[('state','=','confirmed')]}"/>  
+                                        <field name="gas_unit"  attrs="{'readonly':[('state','=','confirmed')]}"/>
+                                        <field name="gas_start"  attrs="{'readonly':[('state','=','confirmed')]}"/>
+                                        <field name="gas_stop"  attrs="{'readonly':[('state','=','confirmed')]}"/>
+                                        <field name="gas_total" readonly="1"/>
+                                        <field name="gas_total_cost" readonly="1"/>
 
                                         <separator string="Work:" colspan="4"/>
-                                        <field name="work_id" />
-                                        <field name="work_unit" />
+                                        <field name="work_id"  attrs="{'readonly':[('state','=','confirmed')]}"/>
+                                        <field name="work_unit" readonly="1"/>
                                         
                                         <separator string="Cost list:" colspan="3"/>
-                                        <button name="reload_cost_list" string="Reload from product" type="object" colspan="1" icon="gtk-refresh"/>
-                                        <field name="cost_ids" colspan="4" nolabel="1">
+                                        <button name="reload_cost_list" string="Reload from product" type="object" colspan="1" icon="gtk-refresh"  attrs="{'invisible':[('state','=','confirmed')]}"/>
+                                        <field name="picking_id" readonly="1" />
+                                        <newline/>
+                                        <field name="cost_ids" colspan="4" nolabel="1" attrs="{'readonly':[('state','=','confirmed')]}">
                                             <tree string="Cost" editable="bottom"> 
                                                 <field name="color_id" readonly="1" />
                                                 <field name="product_qty" readonly="1" />
@@ -77,9 +84,9 @@
                                 <page string="Total">
                                     <group col="4" colspan="4">
                                         <separator string="Total list:" colspan="3"/>
-                                        <button name="reload_total_list" string="Reload" type="object" colspan="1" icon="gtk-refresh"/>
+                                        <button name="reload_total_list" string="Reload" type="object" colspan="1" icon="gtk-refresh" attrs="{'invisible':[('state','=','confirmed')]}"/>
                                         
-                                        <field name="total_ids" colspan="4" nolabel="1">
+                                        <field name="total_ids" colspan="4" nolabel="1" attrs="{'readonly':[('state','=','confirmed')]}">
                                             <tree string="Total:" editable="bottom"> 
                                                 <field name="product_code" readonly="1"/>
                                                 <field name="product_total" readonly="1" />
@@ -92,12 +99,17 @@
                                 <page string="Note">
                                     <group col="4" colspan="4">
                                         <separator string="Note:" colspan="4" nolabel="1"/>
-                                        <field name="note" colspan="4" nolabel="1"/>
+                                        <field name="note" colspan="4" nolabel="1" attrs="{'readonly':[('state','=','confirmed')]}"/>
                                     </group>
                                 </page>
-                            </notebook>
-                            <field name="total_calculated" />
-                            <field name="total_real" />
+                            </notebook>                            
+                            <field name="error" attrs="{'invisible':[('error','=',False)]}" nolabel="1" colspan="4" readonly="1" widget="html"/>
+
+                            <field name="total_calculated" readonly="1" attrs="{'invisible':[('state','=','confirmed')]}"/>
+                            <field name="total_real" readonly="1" attrs="{'invisible':[('state','=','confirmed')]}"/>
+
+                            <field name="total_calculated_confirmed" readonly="1" attrs="{'invisible':[('state','=','draft')]}"/>
+                            <field name="total_real_confirmed" readonly="1" attrs="{'invisible':[('state','=','draft')]}"/>
                         </group>
                     </sheet>        
                 </form>
