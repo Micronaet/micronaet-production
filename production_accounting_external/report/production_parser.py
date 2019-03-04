@@ -427,11 +427,15 @@ class Parser(report_sxw.rml_parse):
         self.material_db = {} # Database for next report
         for line in lines: # sale order line
             default_code = line.default_code
-               
+
             # Variable:
             product_uom_qty = line.product_uom_qty # OC
             product_uom_maked_sync_qty = line.product_uom_maked_sync_qty # B
             delivered_qty = line.delivered_qty # Del.
+
+            # Consider OC as OC - assigned = net production:
+            mx_assigned_qty = line.mx_assigned_qty
+            product_uom_qty -= mx_assigned_qty
 
             if mode == 'clean': # remove delivered qty (OC and Maked)
                 product_uom_qty -= delivered_qty
@@ -562,11 +566,11 @@ class Parser(report_sxw.rml_parse):
         for line in lines:
             # Variable:
             product_uom_qty = line.product_uom_qty
-            mx_assigned_qty = line.mx_assigned_qty
             product_uom_maked_sync_qty = line.product_uom_maked_sync_qty            
             default_code = line.default_code
             
             # Consider OC as OC - assigned = net production:
+            mx_assigned_qty = line.mx_assigned_qty
             product_uom_qty -= mx_assigned_qty
             
             if mode == 'clean': # remove delivered qty (OC and Maked)
