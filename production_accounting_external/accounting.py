@@ -189,6 +189,12 @@ class SaleOrderLine(orm.Model):
         return self.pool.get('mrp.production').recompute_total_from_sol(
             cr, uid, [mrp_id], context=context)
 
+    def remove_mx_assigned_qty(self, cr, uid, ids, context=None):
+        ''' Remove assigned from production
+        '''
+        return self.write(cr, uid, ids, {
+            'mx_assigned_qty': 0.0,
+            }, context=context)
     def close_production(self, cr, uid, ids, context=None):
         ''' Close production
         '''

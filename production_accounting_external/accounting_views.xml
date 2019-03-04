@@ -169,6 +169,7 @@
                 <field name="product_uom_maked_qty" invisible="1" /> <!--TODO remove-->
                 <field name="product_uom_maked_sync_qty" string="Maked (B)" attrs="{'readonly':[('sync_state','in',('sync'))]}" sum="total"/><!--TODO onchange event-->
                 <field name="mx_assigned_qty" readonly="1" sum="Assigned"/>
+                <button name="remove_mx_assigned_qty" string="Rimuovi assegnazione da magazzino" type="object" icon="gtk-cancel"/>
                 <!--<field name="product_uom_assigned_qty" />-->
                 <field name="product_uom_delivered_qty" readonly="1" invisible="1"/>                
                 <!--<button name="%(action_assign_mrp_production_partial_wizard_form)d" string="Partial production" type="action" icon="gtk-add" attrs="{'invisible': [('sync_state','in',('closed','sync'))]}"/>-->
