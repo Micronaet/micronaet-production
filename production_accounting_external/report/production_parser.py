@@ -562,8 +562,12 @@ class Parser(report_sxw.rml_parse):
         for line in lines:
             # Variable:
             product_uom_qty = line.product_uom_qty
+            mx_assigned_qty = line.mx_assigned_qty
             product_uom_maked_sync_qty = line.product_uom_maked_sync_qty            
             default_code = line.default_code
+            
+            # Consider OC as OC - assigned = net production:
+            product_uom_qty -= mx_assigned_qty
             
             if mode == 'clean': # remove delivered qty (OC and Maked)
                 delivered_qty = line.delivered_qty
