@@ -193,9 +193,11 @@ class MrpProduction(orm.Model):
             default_code = line.product_id.default_code            
             parent = self.get_sort_code(sequence_mode, default_code)
             if parent not in parents:
-                parents[parent] = line.product_uom_qty or 1
+                parents[parent] = (
+                    line.product_uom_qty - line.mx_assigned_qty) or 1
             else:
-                parents[parent] += line.product_uom_qty or 1
+                parents[parent] += (
+                    line.product_uom_qty - line.mx_assigned_qty) or 1
 
         i = 0
         for parent in sorted(parents):

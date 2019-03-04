@@ -334,7 +334,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         if wiz_proxy.operation == 'append':
             # Append extra parameter:
             context['mrp_data'].update({
-                'append_production_id':wiz_proxy.production_id.id,
+                'append_production_id': wiz_proxy.production_id.id,
                 'append_product_qty': wiz_proxy.production_id.product_qty,
                 })
         else:        
@@ -525,7 +525,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 if item.__getattribute__(ref_field).id != old_product_id:
                     return True
             elif field in ("total"): #"oc_total", 
-                res += item.product_uom_qty or 0.0
+                res += (item.product_uom_qty - item.mx_assigned_qty)
             elif field in ("from_deadline", "to_deadline"):
                 if not res:
                     res = item.date_deadline

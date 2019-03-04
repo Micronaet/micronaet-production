@@ -186,12 +186,16 @@ class bom_production(orm.Model):
         '''
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
         product_qty = sum(
-            [item.product_uom_qty for item in mrp_proxy.order_line_ids])
-        
+            [(item.product_uom_qty - item.mx_assigned_qty) \
+                for item in mrp_proxy.order_line_ids])
+
         self.write_sequence_order_line(cr, uid, ids, context=context)    
-        return self.write(cr, uid, ids, {
-            'product_qty': product_qty,
-            }, context=context)
+        if product_qty:
+            return self.write(cr, uid, ids, {
+                'product_qty': product_qty,
+                }, context=context)
+        else:
+            _logger.error('Cannot setup <= 0 production quantity')        
         
     def open_view(self, cr, uid, ids, open_mode, context=None):
         ''' Open in calendar all lavorations for this production:
