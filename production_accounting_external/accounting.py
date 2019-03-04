@@ -287,6 +287,8 @@ class SaleOrderLine(orm.Model):
                     item.order_id.mx_closed:
                 # Only working state and closed:
                 res[item.id] = False                  
+            elif item.mx_assigned_qty >= item.product_uom_qty:
+                res[item.id] = False                  
             else:
                 res[item.id] = True
         return res        
@@ -302,8 +304,9 @@ class SaleOrderLine(orm.Model):
     def _refresh_line_in_production(self, cr, uid, ids, context=None):
         ''' Get state of production from state of order
         '''
-        _logger.warning('Go in production change sol mrp or order: %s' % (
-            ids, ))
+        _logger.warning(
+            'Go in production change sol mrp, order, OC or assign: %s' % (
+                ids, ))
         return ids
 
     """# sale.order.line:
@@ -349,7 +352,10 @@ class SaleOrderLine(orm.Model):
                 'sale.order': (
                     _refresh_in_production, ['mx_closed', 'state'], 10),
                 'sale.order.line': (
-                    _refresh_line_in_production, ['mrp_id', 'order_id'], 10),
+                    _refresh_line_in_production, [
+                        'mrp_id', 'order_id', 
+                        'mx_assigned_qty', 'product_uom_qty',
+                        ], 10),
                 }),
                  
         # Delivered:    
