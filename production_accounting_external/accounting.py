@@ -193,10 +193,15 @@ class SaleOrderLine(orm.Model):
         ''' Close production
         '''
         line_proxy = self.browse(cr, uid, ids, context=context)[0]
+        produced_qty = line_proxy.product_uom_qty - line_proxy.mx_assigned_qty
+        if produced_qty < 0.0:
+            raise osv.except_osv(
+                _('Errore'), 
+                _('Prodotto e assegnato maggiore di ordinato'),
+                )
         
         return self.write(cr, uid, ids, {
-            'product_uom_maked_sync_qty': 
-                line_proxy.product_uom_qty,
+            'product_uom_maked_sync_qty': produced_qty,
             'sync_state': 'sync',
             }, context=context)                
 
