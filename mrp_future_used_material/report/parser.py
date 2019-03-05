@@ -104,11 +104,11 @@ class Parser(report_sxw.rml_parse):
             net = product.mx_net_mrp_qty
             locked = product.mx_mrp_b_locked # assigned to order (rare!)
             future = product.mx_mrp_future_qty
-            difference = net - future - assigned
+            difference = net - future - locked
 
             # All records also difference negative
             if difference > 0.0:
-                res.append((product, net, future, difference))
+                res.append((product, locked, net, future, difference))
 
         # Restore status no_inventory_status:
         user_pool.set_no_inventory_status(
