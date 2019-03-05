@@ -444,6 +444,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 <tr class='table_bf'>
                     <th>OC</th>
                     <th>Q.</th>
+                    <th>Da mag.</th>
                     <th>Deadline</th>
                 </tr>"""), 
             "is_error": False, 
@@ -511,10 +512,12 @@ class CreateMrpProductionWizard(orm.TransientModel):
                         <td>%s [%s] </td>
                         <td>%s</td>
                         <td>%s</td>
+                        <td>%s</td>
                     </tr>""" % (
                         item.order_id.name,
                         item.sequence,
                         item.product_uom_qty,
+                        item.mx_assigned_qty,
                         "%s/%s/%s" % (
                             item.date_deadline[8:10],
                             item.date_deadline[5:7],
