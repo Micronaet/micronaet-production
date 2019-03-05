@@ -180,8 +180,9 @@ class MrpProduction(orm.Model):
                 i += 1
                 _logger.info(u'SOL analysed: %s of %s' % (i, i_tot))
                 
-                # Qty used:
-                oc_qty = sol.product_uom_qty
+                # XXX Qty used (clean assigned that will not be produced):
+                oc_qty = sol.product_uom_qty - sol.mx_assigned_qty
+                
                 delivered_qty = sol.delivered_qty
                 b_qty = sol.product_uom_maked_sync_qty
                 
@@ -197,11 +198,11 @@ class MrpProduction(orm.Model):
                 data = {
                     # MRP data:
                     'mrp_id': mrp.id,
-                    'date': mrp.date_planned,                    
+                    'date': mrp.date_planned,
                     # SOL data:
                     'sol_id': sol.id,
                     'product_id': product.id,
-                    'remain': remain,                
+                    'remain': remain,
                     }
                 
                 # Speed up loading now elements:    
