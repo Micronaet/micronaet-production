@@ -102,8 +102,10 @@ class Parser(report_sxw.rml_parse):
         for product in product_pool.browse(
                 cr, uid, product_ids, context=context):
             net = product.mx_net_mrp_qty
+            locked = product.mx_mrp_b_locked # assigned to order (rare!)
             future = product.mx_mrp_future_qty
-            difference = net - future
+            difference = net - future - assigned
+
             # All records also difference negative
             if difference > 0.0:
                 res.append((product, net, future, difference))
