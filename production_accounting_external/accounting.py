@@ -98,8 +98,8 @@ class SaleOrder(orm.Model):
         res = {}
         for order in self.browse(cr, uid, ids, context=context):            
             is_line_produced = [
-                item.product_uom_qty == item.product_uom_maked_sync_qty 
-                    for item in order.order_line]
+                item.product_uom_qty <= (item.product_uom_maked_sync_qty + \
+                        item.mx_assigned_qty) for item in order.order_line]
             res[order.id] = all(is_line_produced)
         return res
         
@@ -119,7 +119,8 @@ class SaleOrder(orm.Model):
             string='All produced', store={
                 'sale.order.line': (
                     _check_line_produced, [
-                        'mrp_id', 'product_uom_maked_sync_qty'], 10),
+                        'mrp_id', 'product_uom_maked_sync_qty', 
+                        'mx_assigned_qty'], 10),
                     })}
 
 class SaleOrderLine(orm.Model):
@@ -159,12 +160,9 @@ class SaleOrderLine(orm.Model):
         mrp_pool = self.pool.get('mrp.production')
         sol_proxy = self.browse(cr, uid, ids, context=context)[0]
 
-        mrp_id = context.get('production_order_id', False)
-        if not mrp_id: # odd case
-            return False
-
+        mrp_id = sol_proxy.mrp_id.id
         if sol_proxy.order_id.forecasted_production_id:
-            # Forecast order delete line:   
+            # Forecast order delete line:
             self.unlink(cr, uid, ids, context=context)            
         else:    
             # TODO test if maked qty!!!
@@ -175,7 +173,11 @@ class SaleOrderLine(orm.Model):
                 date_planned = mrp_proxy.date_planned
             else:
                 date_planned = False
-            # Generate a container MRP order
+                
+            # -----------------------------------------------------------------    
+            # Generate a container MRP order:
+            # -----------------------------------------------------------------    
+            # Link to unlinked production to keep unload materials:
             unlinked_mrp_id = mrp_pool.generate_mrp_unlinked_container(
                 cr, uid, date_planned, context=context)
             
@@ -427,11 +429,11 @@ class SaleOrderLinePrevisional(orm.Model):
         
     _columns = {
         'partner_id':fields.many2one(
-            'res.partner', 'Customer', required=False),
+            'res.partner', 'Customer'),
         'product_id': fields.many2one(
-            'product.product', 'Product', required=False),
+            'product.product', 'Product'),
         'product_tmpl_id': fields.many2one(
-            'product.template', 'Product', required=False),
+            'product.template', 'Product'),
         'deadline': fields.date('Deadline'), 
         'note': fields.text('Note'),        
         'product_uom_qty': fields.float('Quantity', digits=(16, 2), 
@@ -440,7 +442,7 @@ class SaleOrderLinePrevisional(orm.Model):
         'updated': fields.boolean('Updated', 
             help='Manually updated on accounting program'),
         'mrp_id': fields.many2one(
-            'mrp.production', 'Production', ondelete='cascade', ),
+            'mrp.production', 'Production', ondelete='cascade'),
         }        
 
 class MrpProduction(orm.Model):
@@ -623,10 +625,11 @@ class MrpProduction(orm.Model):
             total = 0.0
             
             for line in order.order_line_ids:
-                total += line.product_uom_qty
+                total += (line.product_uom_qty - line.mx_assigned_qty)
                 if line.order_id.forecasted_production_id:
                     # TODO check UM?
-                    res[order.id]['forecast_qty'] += line.product_uom_qty 
+                    res[order.id]['forecast_qty'] += ( # Not necessary:
+                        line.product_uom_qty - line.mx_assigned_qty)
 
             if order.product_qty == total:
                 res[order.id]['error_total'] = False

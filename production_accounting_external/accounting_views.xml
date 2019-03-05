@@ -171,7 +171,7 @@
                 <field name="mx_assigned_qty" readonly="1" sum="Assigned"/>
                 <button name="remove_mx_assigned_qty" string="Rimuovi assegnazione da magazzino" type="object" attrs="{'invisible': [('mx_assigned_qty','&lt;=',0)]}" icon="gtk-cancel" confirm="Attenzione, rimuovendo l'assegnazione si potrà creare la produzione completa scaricando anche le materie da magazzino, confermi?"/>
                 <!--<field name="product_uom_assigned_qty" />-->
-                <field name="product_uom_delivered_qty" readonly="1" invisible="1"/>                
+                <field name="product_uom_delivered_qty" readonly="1" invisible="1"/>
                 <!--<button name="%(action_assign_mrp_production_partial_wizard_form)d" string="Partial production" type="action" icon="gtk-add" attrs="{'invisible': [('sync_state','in',('closed','sync'))]}"/>-->
                 <field name="production_note" readonly="1" />                                
                 <field name="state" invisible="1" />

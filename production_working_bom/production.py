@@ -190,12 +190,13 @@ class bom_production(orm.Model):
                 for item in mrp_proxy.order_line_ids])
 
         self.write_sequence_order_line(cr, uid, ids, context=context)    
-        if product_qty:
-            return self.write(cr, uid, ids, {
-                'product_qty': product_qty,
-                }, context=context)
-        else:
+        if product_qty <= 0.0:
+            product_qty = 1 # default value that not raise error
             _logger.error('Cannot setup <= 0 production quantity')        
+
+        return self.write(cr, uid, ids, {
+            'product_qty': product_qty,
+            }, context=context)
         
     def open_view(self, cr, uid, ids, open_mode, context=None):
         ''' Open in calendar all lavorations for this production:
