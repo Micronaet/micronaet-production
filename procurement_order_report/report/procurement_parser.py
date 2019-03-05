@@ -218,7 +218,8 @@ class SaleOrder(orm.Model):
                 continue # jump if no item or all produced
 
             product_uom_qty = line.product_uom_qty
-            product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
+            product_uom_maked_sync_qty = line.mx_assigned_qty + \
+                line.product_uom_maked_sync_qty
             delivered_qty = line.delivered_qty
 
             TOT = product_uom_qty - delivered_qty            
@@ -280,7 +281,8 @@ class SaleOrder(orm.Model):
 
                 # Quantity used:
                 product_uom_qty = line.product_uom_qty
-                product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
+                product_uom_maked_sync_qty = line.mx_assigned_qty + \
+                    line.product_uom_maked_sync_qty
                 delivered_qty = line.delivered_qty
 
                 TOT = product_uom_qty - delivered_qty                
@@ -468,7 +470,8 @@ class Parser(report_sxw.rml_parse):
                         line.product_id.name))
 
             product_uom_qty = line.product_uom_qty
-            product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
+            product_uom_maked_sync_qty = line.mx_assigned_qty + \
+                line.product_uom_maked_sync_qty
             delivered_qty = line.delivered_qty
             to_delivery_qty = product_uom_qty - delivered_qty
             
@@ -517,7 +520,8 @@ class Parser(report_sxw.rml_parse):
 
                 # Quantity used:
                 product_uom_qty = line.product_uom_qty
-                product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
+                product_uom_maked_sync_qty = line.mx_assigned_qty + \
+                    line.product_uom_maked_sync_qty
                 delivered_qty = line.delivered_qty
                 if delivered_qty > product_uom_maked_sync_qty:
                     remain = product_uom_qty - delivered_qty
@@ -598,7 +602,8 @@ class Parser(report_sxw.rml_parse):
                         line.product_id.name))                        
                 
             product_uom_qty = line.product_uom_qty
-            product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
+            product_uom_maked_sync_qty = line.mx_assigned_qty + \
+                line.product_uom_maked_sync_qty
             delivered_qty = line.delivered_qty
             
             TOT = product_uom_qty - delivered_qty            
@@ -652,7 +657,8 @@ class Parser(report_sxw.rml_parse):
 
                 # Quantity used:
                 product_uom_qty = line.product_uom_qty
-                product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
+                product_uom_maked_sync_qty = line.mx_assigned_qty + \
+                    line.product_uom_maked_sync_qty
                 delivered_qty = line.delivered_qty
 
                 TOT = product_uom_qty - delivered_qty                
