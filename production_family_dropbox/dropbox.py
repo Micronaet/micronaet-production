@@ -46,6 +46,7 @@ class ProductTemplate(orm.Model):
     _columns = {
         'dropbox': fields.char('Dropbox', size=80, 
             help='Sovrascrive il nome cartella in dropbox'),
+        'no_dropbox': fields.boolean('No Dropbox Recent'),
         }
-    
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

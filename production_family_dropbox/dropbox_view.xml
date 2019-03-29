@@ -9,6 +9,7 @@
                 <button name="update_family" position="after">
                     <newline/>
                     <field name="dropbox" />
+                    <field name="no_dropbox" />
                 </button>
             </field>
         </record>
@@ -19,6 +20,7 @@
             <field name="arch" type="xml">
                  <field name="no_stock_operation" position="after">
                      <field name="dropbox" />
+                    <field name="no_dropbox" />
                  </field>
             </field>
         </record>
