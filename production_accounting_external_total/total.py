@@ -80,12 +80,11 @@ class MrpProduction(orm.Model):
             store=False, multi=True), 
         'total_line_done': fields.function(
             _get_total_line, method=True, 
-            type='float', string='Todo', 
+            type='float', string='Done', 
             store=False, multi=True), 
         'total_line_ok': fields.function(
             _get_total_line, method=True, 
             type='boolean', string='Completed', 
-            store=False, multi=True),
-                        
+            store=False, multi=True),                        
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

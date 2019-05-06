@@ -35,12 +35,27 @@
             <field name="view_id" ref="view_mrp_production_for_close_tree"/>
             <field name="context">{}</field>
             <field name="domain">[]</field>
+        </record>        
+        <record model="ir.actions.act_window" id="action_mrp_production_current">
+            <field name="name">Dettaglio produzioni aperte</field>
+            <field name="res_model">mrp.production</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_mrp_production_for_close_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[('state','not in', ('cancel', 'done'))]</field>
         </record>
         
         <menuitem 
             parent="mrp.menu_mrp_production_action" 
             id="menu_action_openerp_model_tree" 
             action="action_mrp_production_close"/>
+        <menuitem 
+            parent="mrp.menu_mrp_production_current_action" 
+            id="menu_action_openerp_model_tree" 
+            action="action_mrp_production_current"
+            sequence="1"
+            />
     </data>
 </openerp>
 
