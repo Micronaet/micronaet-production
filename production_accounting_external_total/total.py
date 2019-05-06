@@ -54,6 +54,7 @@ class MrpProduction(orm.Model):
                  mrp_id,
                  sum(product_uom_qty) as todo, 
                  sum(product_uom_maked_sync_qty) as done, 
+                 sum(product_uom_qty) - sum(product_uom_maked_sync_qty) as remain,
                  sum(product_uom_qty) = sum(product_uom_maked_sync_qty) as ok
              FROM 
                  sale_order_line 
@@ -69,7 +70,8 @@ class MrpProduction(orm.Model):
             res[item[0]] = {}
             res[item[0]]['total_line_todo'] = item[1]
             res[item[0]]['total_line_done'] = item[2]
-            res[item[0]]['total_line_ok'] = item[3]
+            res[item[0]]['total_line_remain'] = item[3]
+            res[item[0]]['total_line_ok'] = item[4]
         _logger.warning('End query')    
         return res        
     
@@ -81,6 +83,10 @@ class MrpProduction(orm.Model):
         'total_line_done': fields.function(
             _get_total_line, method=True, 
             type='float', string='Done', 
+            store=False, multi=True), 
+        'total_line_remain': fields.function(
+            _get_total_line, method=True, 
+            type='float', string='Residui', 
             store=False, multi=True), 
         'total_line_ok': fields.function(
             _get_total_line, method=True, 

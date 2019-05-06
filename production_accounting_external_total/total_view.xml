@@ -11,18 +11,19 @@
 	                <field name="name" />
 	                <field name="date_planned" />
 	                <field name="product_id" />
-	                <field name="product_qty" />
-	                <field name="total_line_todo" />
-	                <field name="total_line_done" />
+	                <!--<field name="product_qty" />-->
+	                <field name="total_line_todo" string="Da fare" />
+	                <field name="total_line_done" string="Fatti"/>
+	                <field name="total_line_remain" string="Rimanenti"/>
 	                <field name="total_line_ok" />
-	                <field name="product_uom" />
+	                <!--<field name="product_uom" />-->
 	                <field name="hour_total" />
 	                <field name="routing_id" invisible="1" />
 	                <field name="cycle_total" invisible="1" />
 	                <field name="origin" invisible="1" />
 	                <field name="state" invisible="1" />	                
-            	    <button name="button_confirm_forced" class="oe_highlight" string="Completed" type="object" states="draft,confirmed,ready,in_production" icon="gtk-u"/><!--no in cancel and done-->
-            	    <button name="button_redraft_forced" string="Reactivate" type="object" states="done" icon="gtk-undo"/>
+            	    <!--<button name="button_confirm_forced" class="oe_highlight" string="Completed" type="object" states="draft,confirmed,ready,in_production" icon="gtk-u"/>
+            	    <button name="button_redraft_forced" string="Reactivate" type="object" states="done" icon="gtk-undo"/>-->
                 </tree>        
             </field>
         </record>
@@ -51,8 +52,8 @@
             id="menu_action_openerp_model_tree" 
             action="action_mrp_production_close"/>
         <menuitem 
-            parent="mrp.menu_mrp_production_current_action" 
-            id="menu_action_openerp_model_tree" 
+            parent="mrp.menu_mrp_production_action" 
+            id="menu_action_openerp_model_current_tree" 
             action="action_mrp_production_current"
             sequence="1"
             />
