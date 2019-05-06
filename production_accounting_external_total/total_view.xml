@@ -7,7 +7,7 @@
             <field name="type">tree</field>
             <field name="priority" eval="40" />
             <field name="arch" type="xml">
-                <tree colors="green:total_line_ok==True" string="Production order to close">
+                <tree colors="blue:total_line_done==0;green:total_line_ok==True" string="Production order to close">
 	                <field name="name" />
 	                <field name="date_planned" />
 	                <field name="product_id" />
