@@ -445,6 +445,16 @@ class SaleOrderLinePrevisional(orm.Model):
             'mrp.production', 'Production', ondelete='cascade'),
         }        
 
+class ResPartner(orm.Model):
+    ''' Partner extra fields
+    '''    
+    _inherit = 'res.partner'
+    
+    _columns = {
+        'pallet_eur': fields.boolean('Pallet EUR'),
+        }
+    
+
 class MrpProduction(orm.Model):
     ''' Add extra field to manage connection with accounting
     '''    

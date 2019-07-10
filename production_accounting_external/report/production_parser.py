@@ -560,7 +560,14 @@ class Parser(report_sxw.rml_parse):
         total1 = total2 = 0.0
         records = []
 
+        # ---------------------------------------------------------------------
+        # Database for table summary:
+        # ---------------------------------------------------------------------
         self.frames = {}
+        self.parent_frame = {}
+        self.fabric_color = {}
+        self.package = {}
+        
         self.mrp_sol = []
         old_line = False
         for line in lines:
@@ -617,6 +624,7 @@ class Parser(report_sxw.rml_parse):
                 records.append(('T1', old_line, total1))
                 total1 = product_uom_qty
 
+            # XXX is T2 used?
             # Code general total:
             if code2 == False: # XXX first loop
                 total2 = 0.0
