@@ -128,6 +128,7 @@ class MrpProduction(orm.Model):
         '''
         # Pool used:
         line_pool = self.pool.get('sale.order.line')        
+        sequence_pool = self.pool.get('mrp.production.sequence')        
         
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
 
@@ -160,6 +161,15 @@ class MrpProduction(orm.Model):
                 line_pool.write(cr, uid, item_id, {
                     'mrp_sequence': i,
                     }, context=context)
+
+        # ---------------------------------------------------------------------
+        # Reset sequence:
+        # ---------------------------------------------------------------------
+        # XXX Put in a button?
+        #for sequence in mrp_proxy.sequence_ids:
+        #    sequence_pool.write(cr, uid, [sequence.id], {
+        #        'sequence': 10,
+        #        }, context=context)
         return True
 
     # ----------------
