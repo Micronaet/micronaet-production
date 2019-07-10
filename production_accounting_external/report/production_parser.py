@@ -598,13 +598,17 @@ class Parser(report_sxw.rml_parse):
             # Total operations:
             self.report_extra_data['total_qty'] += product_uom_qty
             self.report_extra_data['done_qty'] += product_uom_maked_sync_qty
-            
+
             # -----------------------------------------------------------------
-            # Check Frames:
+            #                     COLLECT SUMMARY DATA:
             # -----------------------------------------------------------------
-            # Frames total:
-            frame = default_code.replace(' ', '.')[6:8]
+            # 0. Code part:
+            parent = default_code[:3]
+            fabric = default_code[3:6].rstrip()
+            frame = default_code[6:8].rstrip().replace(' ', '.')
+            color = default_code[8:12].rstrip()
             
+            # 1. Frames total:            
             if frame not in self.frames:
                 self.frames[frame] = 0.0
             self.frames[frame] += product_uom_qty
@@ -613,15 +617,14 @@ class Parser(report_sxw.rml_parse):
             # Check for totals:
             # -----------------------------------------------------------------
             # Color total:
-            color = default_code[8:12].rstrip()
             if code1 == False: # XXX first loop
                 total1 = 0.0
-                code1 = color
+                code1 = parent #color
                 
-            if code1 == color:
+            if code1 == parent: #color:
                 total1 += product_uom_qty
             else:
-                code1 = color
+                code1 = parent #color
                 records.append(('T1', old_line, total1))
                 total1 = product_uom_qty
 
