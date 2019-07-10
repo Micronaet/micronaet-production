@@ -57,7 +57,9 @@ class Parser(report_sxw.rml_parse):
             'setup_data_cut': self.setup_data_cut,
             'get_pre_production': self.get_pre_production,
             'get_frames': self.get_frames,
+            'get_table': self.get_table,
             'get_materials': self.get_materials,
+            'clean_note': self.clean_note,
             
             # remain report:
             'get_object_remain': self.get_object_remain,
@@ -69,6 +71,23 @@ class Parser(report_sxw.rml_parse):
             'get_note_reference': self.get_note_reference,
         })
 
+    def clean_note(self, note):
+        ''' Remove if present ex production
+            Bloc: "Ex.: MO02610"
+        '''
+        if not note:
+            return ''
+        remove = 'Ex.: MO'
+        code_len = 5
+
+        if remove in note:
+            note_list = note.split('Ex.: MO')
+            res = '%s%s' % (
+                note_list[0],
+                note_list[-1][code_len:] # remove code
+                )
+            return res.strip()    
+        
     def get_note_reference(self, note):
         ''' Linked obj for note
         '''
@@ -338,6 +357,12 @@ class Parser(report_sxw.rml_parse):
         '''
         return datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
+    def get_table(self, table):    
+        ''' Return frames object:
+        '''
+        return eval('self.%s' % table)
+
+    # TODO remove when removed from all report (use get_table)
     def get_frames(self, ):    
         ''' Return frames object:
         '''
@@ -358,7 +383,7 @@ class Parser(report_sxw.rml_parse):
             #if not current:
             #    cut = 0
             #elif available:
-            #    cut = available#XXX WAS: current - available
+            #    cut = available #XXX WAS: current - available
             #    # in negative no cut:
             #    if cut < 0:
             #        cut = 0
@@ -563,14 +588,20 @@ class Parser(report_sxw.rml_parse):
         # ---------------------------------------------------------------------
         # Database for table summary:
         # ---------------------------------------------------------------------
+        # Simple dictionary:
+        self.parents = {}
         self.frames = {}
         self.parent_frame = {}
         self.fabric_color = {}
-        self.package = {}
+        self.packages = {}
+        
+        # Table dictionary:
+        self.parent_frame_table = {}
         
         self.mrp_sol = []
         old_line = False
         for line in lines:
+        
             # Variable:
             product_uom_qty = line.product_uom_qty
             product_uom_maked_sync_qty = line.product_uom_maked_sync_qty            
@@ -604,14 +635,49 @@ class Parser(report_sxw.rml_parse):
             # -----------------------------------------------------------------
             # 0. Code part:
             parent = default_code[:3]
-            fabric = default_code[3:6].rstrip()
-            frame = default_code[6:8].rstrip().replace(' ', '.')
+            fabric = default_code[3:6].replace(' ', '.')
+            frame = default_code[6:8].replace(' ', '.')
             color = default_code[8:12].rstrip()
+            fabric_color = '%s -- %s' % (fabric, color)
+            package = default_code[12:13].upper()            
             
-            # 1. Frames total:            
+            q_x_pack = int(line.product_id.q_x_pack)
+
+            if package == 'S':
+                package = '(S)INGOLO'
+            else:
+                package = False
+            #    package_qty = product_uom_qty
+            #else:
+            #    package = 'MULTIPLO'
+            #    package_qty = product_uom_qty / q_x_pack
+            
+            # 1. Parent total:            
+            if parent not in self.parents:
+                self.parents[parent] = 0.0
+            self.parents[parent] += product_uom_qty
+
+            # 2. Fabric - Color Total:
+            if fabric_color not in self.fabric_color:
+                self.fabric_color[fabric_color] = 0.0
+            self.fabric_color[fabric_color] += product_uom_qty
+
+            # 3. Frames total:            
             if frame not in self.frames:
                 self.frames[frame] = 0.0
             self.frames[frame] += product_uom_qty
+
+            # 4. Package:
+            if package:
+                if package not in self.packages:
+                    self.packages[package] = 0.0
+                self.packages[package] += product_uom_qty
+            
+            # 5. Table: Parent + Frame
+            key = (parent, frame)
+            if key not in self.parent_frame_table:
+                self.parent_frame_table[key] = 0.0
+            self.parent_frame_table[key] += product_uom_qty
             
             # -----------------------------------------------------------------
             # Check for totals:
@@ -659,6 +725,21 @@ class Parser(report_sxw.rml_parse):
             #records.append(('T2', old_line, total2))
         
         self.report_extra_data['records'] = records
+
+        # ---------------------------------------------------------------------
+        # Prepare table for parent frame calls:        
+        # ---------------------------------------------------------------------
+        self.parent_frame_clean = []
+        for parent in sorted(self.parents):
+            record = [parent, ]
+            for frame in sorted(self.frames):            
+                key = (parent, frame)
+                if key in self.parent_frame_table:
+                    record.append(self.parent_frame_table[key])
+                else:
+                    record.append('')
+            self.parent_frame_clean.append(record)
+
         return records # TODO remove?
         
     def get_object_remain(self, ):
