@@ -1,6 +1,17 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+    <!--res.partner-->
+    <record model="ir.ui.view" id="view_res_partner_pallet_eur_form">
+        <field name="name">res.partner.pallet.eur</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <field name="active" position="after">
+               <field name="pallet_eur" />
+            </field>
+        </field>
+    </record>
 
     <!--mrp.production.workcenter.line-->
     <record model="ir.ui.view" id="mrp_workcenter_work_form_view">
