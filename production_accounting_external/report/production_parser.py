@@ -556,8 +556,8 @@ class Parser(report_sxw.rml_parse):
             lines.append(line)
 
         # Total for code break:
-        code1 = code2 = False
-        total1 = total2 = 0.0
+        code1 = False #code2 = 
+        total1 = 0.0 # total2 =
         records = []
 
         # ---------------------------------------------------------------------
@@ -599,18 +599,19 @@ class Parser(report_sxw.rml_parse):
             self.report_extra_data['total_qty'] += product_uom_qty
             self.report_extra_data['done_qty'] += product_uom_maked_sync_qty
             
-            # -------------
+            # -----------------------------------------------------------------
             # Check Frames:
-            # -------------
+            # -----------------------------------------------------------------
             # Frames total:
             frame = default_code.replace(' ', '.')[6:8]
+            
             if frame not in self.frames:
                 self.frames[frame] = 0.0
             self.frames[frame] += product_uom_qty
             
-            # -----------------
+            # -----------------------------------------------------------------
             # Check for totals:
-            # -----------------
+            # -----------------------------------------------------------------
             # Color total:
             color = default_code[8:12].rstrip()
             if code1 == False: # XXX first loop
@@ -624,18 +625,20 @@ class Parser(report_sxw.rml_parse):
                 records.append(('T1', old_line, total1))
                 total1 = product_uom_qty
 
-            # XXX is T2 used?
+            # -----------------------------------------------------------------
             # Code general total:
-            if code2 == False: # XXX first loop
-                total2 = 0.0
-                code2 = default_code
+            # -----------------------------------------------------------------
+            # XXX is T2 used?
+            #if code2 == False: # XXX first loop
+            #    total2 = 0.0
+            #    code2 = default_code
                 
-            if code2 == default_code:
-                total2 += product_uom_qty
-            else: 
-                code2 = default_code
-                records.append(('T2', old_line, total2))
-                total2 = product_uom_qty
+            #if code2 == default_code:
+            #    total2 += product_uom_qty
+            #else: 
+            #    code2 = default_code
+            #    records.append(('T2', old_line, total2))
+            #    total2 = product_uom_qty
 
             # -------------------
             # Append record line:
@@ -650,7 +653,7 @@ class Parser(report_sxw.rml_parse):
         # Append last totals if there's records:
         if records:                
             records.append(('T1', old_line, total1))
-            records.append(('T2', old_line, total2))
+            #records.append(('T2', old_line, total2))
         
         self.report_extra_data['records'] = records
         return records # TODO remove?
