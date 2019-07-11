@@ -726,7 +726,7 @@ class Parser(report_sxw.rml_parse):
         # ---------------------------------------------------------------------
         self.parent_frame_clean = []
         for parent in sorted(self.parents):
-            record = [parent, ]
+            record = [parent, int(self.parents[parent])]
             for frame in sorted(self.frames):            
                 key = (parent, frame)
                 if key in self.parent_frame_table:
