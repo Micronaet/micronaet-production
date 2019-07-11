@@ -642,15 +642,10 @@ class Parser(report_sxw.rml_parse):
             package = default_code[12:13].upper()            
             
             q_x_pack = int(line.product_id.q_x_pack)
-
             if package == 'S':
                 package = '(S)INGOLO'
             else:
                 package = False
-            #    package_qty = product_uom_qty
-            #else:
-            #    package = 'MULTIPLO'
-            #    package_qty = product_uom_qty / q_x_pack
             
             # 1. Parent total:            
             if parent not in self.parents:
@@ -685,12 +680,12 @@ class Parser(report_sxw.rml_parse):
             # Color total:
             if code1 == False: # XXX first loop
                 total1 = 0.0
-                code1 = parent #color
+                code1 = default_code#parent #color
                 
-            if code1 == parent: #color:
+            if code1 == default_code:#parent: #color:
                 total1 += product_uom_qty
             else:
-                code1 = parent #color
+                code1 = default_code#parent #color
                 records.append(('T1', old_line, total1))
                 total1 = product_uom_qty
 
