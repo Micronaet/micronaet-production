@@ -295,11 +295,11 @@ class MrpProductionStatsMixed(orm.Model):
             #('date_planned', '<=', now_0),            
             ], context=context)
         for line in self.browse(cr, uid, line_ids, context=context):
-            if line.workcenter_id not in res:
-                res[line.workcenter_id] = {}
-            if line.date_planned not in res[line.workcenter_id]:
-                res[line.workcenter_id][line.date_planned] = []
-            res[line.workcenter_id][line.date_planned].append(line)
+            if line.date_planned not in res:
+                res[line.date_planned] = {}
+            if line.workcenter_id not in res[line.date_planned]:
+                res[line.date_planned][line.workcenter_id] = []
+            res[line.date_planned][line.workcenter_id].append(line)
 
         WS = WB.add_worksheet('Settimanali')
         WS.set_column('A:A', 12)
@@ -316,8 +316,8 @@ class MrpProductionStatsMixed(orm.Model):
 
         # Header line:
         row += 1
-        WS.write(row, 0, _('Linea'), xls_format['header'])
-        WS.write(row, 1, _('Data'), xls_format['header'])
+        WS.write(row, 0, _('Data'), xls_format['header'])
+        WS.write(row, 1, _('Linea'), xls_format['header'])
         WS.write(row, 2, _('Num. prod.'), xls_format['header']) # MRP
         WS.write(row, 3, _('Famiglia'), xls_format['header']) 
         WS.write(row, 4, _('Lavoratori'), xls_format['header'])
@@ -329,11 +329,11 @@ class MrpProductionStatsMixed(orm.Model):
         # Write data:
         cell_format = xls_format['text']
         cell_number_format = xls_format['text_number_today']
-        for wc in sorted(res, key=lambda x: x.name):
-            wc_start = row
-            for date_planned in sorted(res[wc], reverse=True):
-                dp_start = row
-                for line in res[wc][date_planned]:
+        for date_planned in sorted(res, reverse=TRue):
+            planned_start = row
+            for wc in sorted(res[date_planned], key=lambda x: x.name):
+                wc_start = row
+                for line in res[date_planned][wc]:
                     row += 1     
                     # Total depend:                        
                     if line.is_total:
@@ -375,13 +375,15 @@ class MrpProductionStatsMixed(orm.Model):
                         cell_number_format)
                     WS.write(row, 7, format_hour(line.hour), 
                         cell_number_format)
-                dp_end = row
-                WS.merge_range(dp_start + 1, 1, dp_end, 1, 
-                    format_date(date_planned), 
+                wc_end = row
+                WS.merge_range(wc_start + 1, 1, wc_end, 1, 
+                    wc.name, 
                     xls_format['merge'])
                     
-            wc_end = row
-            WS.merge_range(wc_start + 1, 0, wc_end, 0, wc.name, 
+            planned_end = row
+            WS.merge_range(
+                planned_start + 1, 0, planned_end, 0, 
+                format_date(date_planned),  
                 xls_format['merge'])
         
 
@@ -432,6 +434,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 7, _('Tempo'), xls_format['header'])
         WS.write(row, 8, _('Pz / H'), xls_format['header'])
         WS.write(row, 9, _('Dettaglio'), xls_format['header'])
+        WS.autofilter(row, 0, row, 5) # Till columns 6
 
         # Setup again:
         cell_format = xls_format['text']
