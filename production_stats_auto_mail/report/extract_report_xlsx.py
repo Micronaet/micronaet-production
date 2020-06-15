@@ -329,7 +329,7 @@ class MrpProductionStatsMixed(orm.Model):
         # Write data:
         cell_format = xls_format['text']
         cell_number_format = xls_format['text_number_today']
-        for date_planned in sorted(res, reverse=TRue):
+        for date_planned in sorted(res, reverse=True):
             planned_start = row
             for wc in sorted(res[date_planned], key=lambda x: x.name):
                 wc_start = row
