@@ -96,6 +96,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             _('Pz / H'),
             ]
         excel_pool.write_xls_line(ws_name, row, header, f_header)
+        excel_pool.autofilter(ws_name, row, 0, row, 1)
 
         # Setup columns:
         excel_pool.column_width(ws_name, [
@@ -103,6 +104,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             ])
 
         fixed_cols = len(header)
+        excel_pool.freeze_panes(ws_name, row + 1, len(header))
 
         data = {}
         workers_list = []
