@@ -60,6 +60,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         #                           CREATE EXCEL FILE:
         # ---------------------------------------------------------------------
+        code_limit = 5  # Max code char
         ws_name = _('Statistica pezzi')
         excel_pool.create_worksheet(ws_name)
         excel_pool.set_format()
@@ -87,7 +88,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             _('Famiglia'),
             _('Prodotto'),
             _('Tot. pezzi'),
-            _('Tempo'),
+            _('Tempo (h.)'),
             _('Pz / H'),
             ]
         excel_pool.write_xls_line(ws_name, row, header, f_header)
@@ -102,6 +103,15 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         data = {}
         workers_list = []
         for record in line_pool.browse(cr, uid, line_ids, context=context):
+            mrp = record.mrp_id
+            if mrp.state != 'done':
+                _logger.warning('Production %s not in done state' % mrp.name)
+                continue
+
+            if not record.line_ids:
+                _logger.warning('Production stats %s with no data' % mrp.name)
+                continue
+
             family = record.mrp_id.bom_id.product_tmpl_id.name
             workers = int(record.workers)
             total = record.total
@@ -111,12 +121,18 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             # mrp = record.mrp_id.name
             # startup = record.startup
 
-            rate = total / hour if hour else 0  # Rate in tot pz / hours
+            if not hour:
+                # Not time so no medium data
+                _logger.warning('Prod. stats %s without duration' % mrp.name)
+                continue
+
+            rate = total / hour  # pz / hour
             if workers not in workers_list:
                 workers_list.append(workers)
 
             for product_line in record.line_ids:
-                default_code = product_line.default_code
+                default_code = product_line.default_code[:code_limit].strip()
+
                 qty = product_line.qty
                 key = (family, default_code)
 
@@ -131,13 +147,13 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                         0.0,  # total pz.
                         0.0,  # total time
                     ]
-                product_hour = qty * rate
+                product_time = qty / rate
                 # Workers:
                 data[key][0][workers][0] += qty
-                data[key][0][workers][1] += product_hour
+                data[key][0][workers][1] += product_time
                 # Product:
                 data[key][1] += qty
-                data[key][2] += product_hour
+                data[key][2] += product_time
         workers_list.sort()
 
         # Extend header:
