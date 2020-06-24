@@ -60,7 +60,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         #                           CREATE EXCEL FILE:
         # ---------------------------------------------------------------------
-        ws_name = 'Statistica pezzi'
+        ws_name = _('Statistica pezzi')
         excel_pool.create_worksheet(ws_name)
         excel_pool.set_format()
 
