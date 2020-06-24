@@ -69,6 +69,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         f_title = excel_pool.get_format('title')
         f_header = excel_pool.get_format('header')
         f_text = excel_pool.get_format('text')
+        f_text_right = excel_pool.get_format('text_right')
         f_number = excel_pool.get_format('number')
 
         # ---------------------------------------------------------------------
@@ -177,9 +178,9 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             excel_pool.write_xls_line(ws_name, row, [
                 family,
                 default_code,
-                (int(product_total), f_number),
+                (int(product_total), f_text_right),
                 (product_hour, f_number),
-                (int(round(product_rate, 0)), f_number),
+                (int(round(product_rate, 0)), f_text_right),
                 ], f_text)
 
             for workers in workers_data:
@@ -188,7 +189,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 rate = total / hour if hour else 0  # Rate in tot pz / hour
 
                 excel_pool.write_xls_line(ws_name, row, [
-                    (int(round(rate, 0)), f_number),  # Total rate
+                    (int(round(rate, 0)), f_text_right),  # Total rate
                     ], f_text, col=col)
 
         return excel_pool.return_attachment(
