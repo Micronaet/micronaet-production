@@ -67,7 +67,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 x.mrp_id.bom_id.product_tmpl_id.name,  # Family
                 x.mrp_id.name,  # Data
                 )
-        else: # family
+        else:  # family
             sort_key = lambda x: (
                 x.mrp_id.bom_id.product_tmpl_id.name,  # Family
                 x.workcenter_id.name,  # Line
@@ -155,7 +155,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             row += 1
 
             # Key data:
-            data = { # last key, last row
+            data = {  # last key, last row
                 'line': line.workcenter_id.name,
                 'date': excel_pool.format_date(line.date),
                 'family': line.mrp_id.bom_id.product_tmpl_id.name,
