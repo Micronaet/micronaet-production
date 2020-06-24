@@ -186,7 +186,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 rate = total / hour if hour else 0  # Rate in tot pz / hour
 
                 excel_pool.write_xls_line(ws_name, row, [
-                    (rate, f_number),  # Total rate
+                    (int(rount(rate, 0)), f_number),  # Total rate
                     ], f_text, col=col)
 
         return excel_pool.return_attachment(
