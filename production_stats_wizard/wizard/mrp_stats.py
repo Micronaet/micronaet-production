@@ -71,6 +71,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         f_text = excel_pool.get_format('text')
         f_text_right = excel_pool.get_format('text_right')
         f_text_right_green = excel_pool.get_format('text_right_green')
+        f_text_right_red = excel_pool.get_format('text_right_red')
         f_number = excel_pool.get_format('number')
 
         # ---------------------------------------------------------------------
@@ -186,17 +187,22 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 (int(round(product_rate, 0)), f_text_right),
                 ], f_text)
 
-            max_yield = int(round(max(
-                [workers_data[k][0] / workers_data[k][1]
-                 for k in workers_data
-                 if workers_data[k][1]]), 0))
+            rate_list = [
+                workers_data[k][0] / workers_data[k][1]
+                for k in workers_data
+                if workers_data[k][1]]
+            max_rate = int(round(max(rate_list), 0))
+            min_rate = int(round(min(rate_list), 0))
             for workers in workers_data:
                 col = fixed_cols + workers_list.index(workers)
                 total, hour = workers_data[workers]
+
                 # Rate in tot pz / hour
                 rate = int(round(total / hour if hour else 0))
-                if rate >= max_yield:
+                if rate >= max_rate:
                     f_color = f_text_right_green
+                elif rate <= min_rate:
+                    f_color = f_text_right_red
                 else:
                     f_color = f_text_right
                 excel_pool.write_xls_line(ws_name, row, [
