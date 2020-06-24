@@ -52,13 +52,6 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         """
         if context is None:
             context = {}
-        """            
-        wiz_browse = self.browse(cr, uid, ids, context=context)[0]
-
-        # Parameters:
-        from_date = wiz_browse.from_date
-        to_date = wiz_browse.to_date
-        """
 
         # Pool used:
         excel_pool = self.pool.get('excel.writer')
@@ -67,7 +60,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         #                           CREATE EXCEL FILE:
         # ---------------------------------------------------------------------
-        ws_name = 'Statistica'
+        ws_name = 'Statistica pezzi'
         excel_pool.create_worksheet(ws_name)
         excel_pool.set_format()
 
@@ -79,7 +72,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
 
         # Setup columns:
         excel_pool.column_width(ws_name, [
-            20, 20, 10, 8, 8,
+            30, 30, 10, 8, 8,
             ])
 
         # ---------------------------------------------------------------------
@@ -110,7 +103,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         workers_list = []
         for record in line_pool.browse(cr, uid, line_ids, context=context):
             family = record.mrp_id.bom_id.product_tmpl_id.name
-            workers = record.workers,
+            workers = int(record.workers)
             total = record.total
             hour = record.hour
             # workline = record.workcenter_id.name  # TODO maybe used?
@@ -125,20 +118,31 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             for product_line in record.line_ids:
                 default_code = product_line.default_code
                 qty = product_line.qty
-                key = (family, default_code, workers)
+                key = (family, default_code)
 
                 if key not in data:
                     data[key] = [
+                        {},  # Workers data
+                        0.0,  # Total pz (all)
+                        0.0,  # Total hours (all)
+                    ]
+                if workers not in data[key][0]:
+                    data[key][0][workers] = [
                         0.0,  # total pz.
                         0.0,  # total time
                     ]
-                data[key][0] += qty
-                data[key][1] += qty * rate
+                product_hour = qty * rate
+                # Workers:
+                data[key][0][workers][0] += qty
+                data[key][0][workers][1] += product_hour
+                # Product:
+                data[key][1] += qty
+                data[key][2] += product_hour
         workers_list.sort()
 
         # Extend header:
         excel_pool.write_xls_line(
-            ws_name, row, [(w, f_number) for w in workers_list], f_header,
+            ws_name, row, workers_list, f_header,
             col=fixed_cols)
         # Setup extra cols width:
         excel_pool.column_width(ws_name, [
@@ -148,22 +152,26 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # Write data line:
         for key in data:
             row += 1
-            family, default_code, workers = key
-            total, hour = data[key]
-            rate = total / hour if hour else 0  # Rate in tot pz / hours
+            family, default_code = key
+            workers_data, product_total, product_hour = data[key]
+            product_rate = total / hour if hour else 0  # Rate in tot pz / hour
 
             excel_pool.write_xls_line(ws_name, row, [
                 family,
                 default_code,
-                (total, f_number),
-                (hour, f_number),  # TODO
-                (rate, f_number),  # Total rate
+                (product_total, f_number),
+                (product_hour, f_number),
+                (product_rate, f_number),
                 ], f_text)
 
-            col = fixed_cols + workers_list.index(workers)
-            excel_pool.write_xls_line(ws_name, row, [
-                (rate, f_number),  # Total rate
-                ], f_text, col=col)
+            for workers in workers_data:
+                col = fixed_cols + workers_list.index(workers)
+                total, hour = workers_data[workers]
+                rate = total / hour if hour else 0  # Rate in tot pz / hour
+
+                excel_pool.write_xls_line(ws_name, row, [
+                    (rate, f_number),  # Total rate
+                    ], f_text, col=col)
 
         return excel_pool.return_attachment(
             cr, uid, 'Statistiche e medie', context=context)
