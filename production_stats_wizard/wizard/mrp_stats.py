@@ -118,7 +118,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # Title row:
         row = 0
         excel_pool.write_xls_line(ws_name, row, [
-            'Statistiche di produzione',
+            _('Statistiche di produzione'),
             ], f_title)
 
         row += 1
@@ -166,8 +166,8 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             #        break_code[key][0] = data[key]
             #        break_code[key][1] = row # Save start row
             #        # TODO merge previous
-            #    else: # not writed:
-            #        data[key] = '' # Not writed
+            #    else: # not wrote:
+            #        data[key] = '' # Not wrote
 
             excel_pool.write_xls_line(ws_name, row, [
                 data['line'],

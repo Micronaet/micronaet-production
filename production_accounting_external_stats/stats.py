@@ -24,7 +24,7 @@ import logging
 from openerp.osv import osv, orm, fields
 from datetime import datetime, timedelta
 from openerp.tools.sql import drop_view_if_exists
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare)
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
@@ -32,51 +32,53 @@ from openerp.tools.translate import _
 
 _logger = logging.getLogger(__name__)
 
+
 class MrpProductionStat(orm.Model):
-    ''' Statistic data
-    '''
+    """ Statistic data
+    """
     _name = 'mrp.production.stats'
     _description = 'MRP stats'
     _order = 'date'
     _rec_name = 'date'
 
-    def _function_start_total_text(self, cr, uid, ids, fields, args, 
+    def _function_start_total_text(
+            self, cr, uid, ids, fields, args,
             context=None):
-        ''' Fields function for calculate detail in text mode
-        '''
+        """ Fields function for calculate detail in text mode
+        """
         res = {}
         for stat in self.browse(cr, uid, ids, context=context):
             res[stat.id] = ''
             for line in stat.line_ids:
                 res[stat.id] += '[\'%s\' >> %s] ' % (
                     line.default_code, line.qty)
-        return res            
+        return res
 
     _columns = {
         'workcenter_id': fields.many2one(
-            'mrp.workcenter', 'Line', required=True), 
+            'mrp.workcenter', 'Line', required=True),
         'date': fields.date('Date', required=True),
         'total': fields.integer('Total'),# Removed for line:, required=True),
         'workers': fields.integer('Workers'),
         'hour': fields.float('Tot. H'),
-        'startup': fields.float('Start up time', digits=(16, 3)),     
+        'startup': fields.float('Start up time', digits=(16, 3)),
         'mrp_id': fields.many2one(
             'mrp.production', 'Production', ondelete='cascade'),
-        'stat_start_total': fields.text('Ref. Total', 
-            help='Blocked per code[:6] totals'),    
+        'stat_start_total': fields.text('Ref. Total',
+            help='Blocked per code[:6] totals'),
 
         'total_text_detail': fields.function(
-            _function_start_total_text, method=True, 
+            _function_start_total_text, method=True,
             type='text', string='Dettaglio', store=False),
         }
 
     _defaults = {
-        'date': lambda *x: datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT),    
+        'date': lambda *x: datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT),
         }
 
 class MrpProductionStatLine(orm.Model):
-    ''' Statistic data
-    '''
+    """ Statistic data
+    """
     _name = 'mrp.production.stats.line'
     _description = 'MRP stats line'
 
@@ -88,28 +90,28 @@ class MrpProductionStatLine(orm.Model):
         }
 
 class MrpProductionStat(orm.Model):
-    ''' Statistic data
-    '''
+    """ Statistic data
+    """
     _inherit = 'mrp.production.stats'
-    
+
     _columns = {
         'line_ids': fields.one2many(
             'mrp.production.stats.line', 'stat_id', 'Righe'),
         }
 
 class MrpProductionStatMixed(osv.osv):
-    ''' Create view object
-    '''
+    """ Create view object
+    """
     _name = 'mrp.production.stats.mixed'
     _description = 'MRP stats mixed'
     _order = 'date_planned desc,workcenter_id,is_total'
     _rec_name = 'date_planned'
     _auto = False
-    
+
     # Button event:
     def nothing(self, cr, uid, ids, context=None):
-        ''' Dummy button
-        '''
+        """ Dummy button
+        """
         return True
 
     _columns = {
@@ -119,22 +121,22 @@ class MrpProductionStatMixed(osv.osv):
         'is_total': fields.boolean('Day total', readonly=True),
         'date_planned': fields.date('Date planned', readonly=True),
         'product_id': fields.many2one(
-            'product.product', 'Family', readonly=True), 
+            'product.product', 'Family', readonly=True),
         'production_id': fields.many2one(
-            'mrp.production', 'Production', readonly=True), 
+            'mrp.production', 'Production', readonly=True),
         'workcenter_id': fields.many2one(
-            'mrp.workcenter', 'Line', readonly=True), 
+            'mrp.workcenter', 'Line', readonly=True),
         'lavoration_qty': fields.float('Lavoration q.', readonly=True),
         'hour': fields.float('Tot. H.', readonly=True),
         'workers': fields.integer('Workers', readonly=True),
         'startup': fields.float('Startup', readonly=True),
-        
+
         # sale.order.line:
         'todo_qty': fields.float('Total q.', readonly=True),
         'maked_qty': fields.integer('Done q.', readonly=True),
         'remain_qty': fields.float('Remain q.', readonly=True),
         }
-        
+
     def init(self, cr):
         drop_view_if_exists(cr, 'mrp_production_stats_mixed')
         cr.execute("""
@@ -204,29 +206,29 @@ class MrpProductionStatMixed(osv.osv):
 
 
 class MrpProduction(orm.Model):
-    ''' Statistic data
-    '''
+    """ Statistic data
+    """
     _inherit = 'mrp.production'
-    
+
     # Utility:
-    def get_current_locked_status(self, cr, uid, ids, code_pos=6, 
+    def get_current_locked_status(self, cr, uid, ids, code_pos=6,
             context=None):
-        ''' Dict for locked with code 6 char
-        '''
+        """ Dict for locked with code 6 char
+        """
         locked = {}
         for item in self.browse(
                 cr, uid, ids, context=context)[0].order_line_ids:
             default_code = item.product_id.default_code[:code_pos]
             if default_code in locked:
                 locked[default_code] += item.product_uom_maked_sync_qty
-            else:    
+            else:
                 locked[default_code] = item.product_uom_maked_sync_qty
-        return locked        
+        return locked
 
     # Button events:
     def start_blocking_stats(self, cr, uid, ids, context=None):
-        ''' Save current production to check difference
-        '''
+        """ Save current production to check difference
+        """
         return self.write(cr, uid, ids, {
             'stat_start_total': '%s' % (
                 self.get_current_locked_status(cr, uid, ids, context=context),
@@ -234,8 +236,8 @@ class MrpProduction(orm.Model):
             }, context=context)
 
     def stop_blocking_stats(self, cr, uid, ids, context=None):
-        ''' Get default and open wizard
-        '''
+        """ Get default and open wizard
+        """
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
 
         # Check difference:
@@ -247,11 +249,11 @@ class MrpProduction(orm.Model):
         default_res = []
         for default_code, current_tot in current.iteritems():
             last_tot = previous.get(default_code, 0)
-            if last_tot != current_tot: # TODO negative?                
+            if last_tot != current_tot: # TODO negative?
                 partial = current_tot - last_tot # difference
                 total += partial
                 default_res.append({
-                    'default_code': default_code, 
+                    'default_code': default_code,
                     'qty': partial,
                     })
 
@@ -259,7 +261,7 @@ class MrpProduction(orm.Model):
         try:
             workcenter_id = mrp_proxy.lavoration_ids[0].workcenter_id.id
         except:
-            workcenter_id = False    
+            workcenter_id = False
         try:
             workers = mrp_proxy.lavoration_ids[0].workers
         except:
@@ -268,9 +270,9 @@ class MrpProduction(orm.Model):
             hour = mrp_proxy.lavoration_ids[0].duration
         except:
             hour = 0
-        
+
         ctx.update({
-            #'default_workcenter_id': 
+            #'default_workcenter_id':
             'default_total': total,
             'default_mrp_id': mrp_proxy.id,
             'default_workcenter_id': workcenter_id,
@@ -289,11 +291,11 @@ class MrpProduction(orm.Model):
             'target': 'new',
             'nodestroy': False,
         }
-        
-    def _function_start_readable_text(self, cr, uid, ids, fields, args, 
+
+    def _function_start_readable_text(self, cr, uid, ids, fields, args,
             context=None):
-        ''' Fields function for calculate 
-        '''
+        """ Fields function for calculate
+        """
         res = {}
         for mrp in self.browse(cr, uid, ids, context=context):
             res[mrp.id] = ''
@@ -301,16 +303,16 @@ class MrpProduction(orm.Model):
                 for default_code, total in eval(
                         mrp.stat_start_total).iteritems():
                     res[mrp.id] += '[\'%s\': %s] ' % (default_code, total)
-        return res            
-    
+        return res
+
     _columns = {
         'stat_start_total': fields.text('Ref. Total',
             help='Total current item when start blocking operation'),
-            
+
         'stats_ids': fields.one2many(
-            'mrp.production.stats', 'mrp_id', 'Stats'), 
+            'mrp.production.stats', 'mrp_id', 'Stats'),
         'stat_start_total_text': fields.function(
-            _function_start_readable_text, method=True, 
+            _function_start_readable_text, method=True,
             type='char', size=200, string='Totale rif.', store=False),
         }
 
