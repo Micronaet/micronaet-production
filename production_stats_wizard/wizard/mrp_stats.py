@@ -84,7 +84,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # Title row:
         row = 0
         excel_pool.write_xls_line(ws_name, row, [
-            _('Statistiche di produzione (medie sui prodotti a padre 5 cifre'),
+            _('Statistiche di produzione, medie su prodotti a codice a 5 car.'),
             ], f_title)
 
         # Write Header line:
