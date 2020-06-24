@@ -77,7 +77,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # Collect data:
         # ---------------------------------------------------------------------
         line_ids = line_pool.search(cr, uid, [
-            ('mrp_id.state', '!=', 'done'),
+            # ('mrp_id.state', '!=', 'done'),
         ], context=context)
 
         # Title row:
