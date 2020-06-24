@@ -74,7 +74,9 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         # Collect data:
         # ---------------------------------------------------------------------
-        line_ids = line_pool.search(cr, uid, [], context=context)
+        line_ids = line_pool.search(cr, uid, [
+            ('mrp_id.state', '!=', 'done'),
+        ], context=context)
 
         # Title row:
         row = 0
@@ -104,10 +106,6 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         workers_list = []
         for record in line_pool.browse(cr, uid, line_ids, context=context):
             mrp = record.mrp_id
-            if mrp.state != 'done':
-                _logger.warning('Production %s not in done state' % mrp.name)
-                continue
-
             if not record.line_ids:
                 _logger.warning('Production stats %s with no data' % mrp.name)
                 continue
@@ -126,7 +124,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 _logger.warning('Prod. stats %s without duration' % mrp.name)
                 continue
 
-            rate = total / hour  # pz / hour
+            rate = total / hour  # pz x hour
             if workers not in workers_list:
                 workers_list.append(workers)
 
@@ -148,9 +146,11 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                         0.0,  # total time
                     ]
                 product_time = qty / rate
+
                 # Workers:
                 data[key][0][workers][0] += qty
                 data[key][0][workers][1] += product_time
+
                 # Product:
                 data[key][1] += qty
                 data[key][2] += product_time
@@ -166,11 +166,12 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             ])
 
         # Write data line:
+        import pdb; pdb.set_trace()
         for key in data:
             row += 1
             family, default_code = key
             workers_data, product_total, product_hour = data[key]
-            product_rate = total / hour if hour else 0  # Rate in tot pz / hour
+            product_rate = product_total / hour if product_hourhour else 0
 
             excel_pool.write_xls_line(ws_name, row, [
                 family,
@@ -186,7 +187,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 rate = total / hour if hour else 0  # Rate in tot pz / hour
 
                 excel_pool.write_xls_line(ws_name, row, [
-                    (int(rount(rate, 0)), f_number),  # Total rate
+                    (int(round(rate, 0)), f_number),  # Total rate
                     ], f_text, col=col)
 
         return excel_pool.return_attachment(
