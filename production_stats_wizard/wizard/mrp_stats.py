@@ -47,6 +47,140 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
     # --------------------
     # Wizard button event:
     # --------------------
+    def action_stats_print(self, cr, uid, ids, context=None):
+        """ Event stats print
+        """
+        if context is None:
+            context = {}
+        """            
+        wiz_browse = self.browse(cr, uid, ids, context=context)[0]
+
+        # Parameters:
+        from_date = wiz_browse.from_date
+        to_date = wiz_browse.to_date
+        """
+
+        # Pool used:
+        excel_pool = self.pool.get('excel.writer')
+        line_pool = self.pool.get('mrp.production.stats')
+
+        # ---------------------------------------------------------------------
+        #                           CREATE EXCEL FILE:
+        # ---------------------------------------------------------------------
+        ws_name = 'Statistica'
+        excel_pool.create_worksheet(ws_name)
+        excel_pool.set_format()
+
+        # Format type:
+        f_title = excel_pool.get_format('title')
+        f_header = excel_pool.get_format('header')
+        f_text = excel_pool.get_format('text')
+        f_number = excel_pool.get_format('number')
+
+        # Setup columns:
+        excel_pool.column_width(ws_name, [
+            20, 20, 10, 8, 8,
+            ])
+
+        # ---------------------------------------------------------------------
+        # Collect data:
+        # ---------------------------------------------------------------------
+        line_ids = line_pool.search(cr, uid, [], context=context)
+
+        # Title row:
+        row = 0
+        excel_pool.write_xls_line(ws_name, row, [
+            _('Statistiche di produzione (medie sui prodotti a padre 5 cifre'),
+            ], f_title)
+
+        # Write Header line:
+        row += 2
+        header = [
+            _('Famiglia'),
+            _('Prodotto'),
+            _('Lavoratori'),
+            _('Tot. pezzi'),
+            _('Tempo'),
+            _('Pz / H'),
+            ]
+        excel_pool.write_xls_line(ws_name, row, header, f_header)
+        fixed_cols = len(header)
+
+        data = {}
+        workers_list = []
+        for record in line_pool.browse(cr, uid, line_ids, context=context):
+            family = record.mrp_id.bom_id.product_tmpl_id.name
+            workers = record.workers,
+            total = record.total
+            hour = excel_pool.format_hour(record.hour)
+            # workline = record.workcenter_id.name  # TODO maybe used?
+            # date = excel_pool.format_date(record.date)
+            # mrp = record.mrp_id.name
+            # startup = excel_pool.format_hour(record.startup)
+
+            rate = total / hour if hour else 0  # Rate in tot pz / hours
+            if workers not in workers_list:
+                workers_list.append(workers)
+
+            for product_line in record.line_ids:
+                default_code = product_line.default_code
+                qty = product_line.qty
+                key = (family, default_code, workers)
+
+                if key not in data:
+                    data[key] = [
+                        0.0,  # total pz.
+                        0.0,  # total time
+                    ]
+                data[key][0] += qty
+                data[key][1] += qty * rate
+        workers_list.sort()
+
+        # Extend header:
+        excel_pool.write_xls_line(
+            ws_name, row, [(w, f_number) for w in workers_list], f_header,
+            col=fixed_cols)
+        # Setup extra cols width:
+        excel_pool.column_width(ws_name, [
+            6 for i in range(fixed_cols)
+            ])
+
+        # Write data line:
+        for key in data:
+            row += 1
+            family, default_code, workers = key
+            total, hour = data[key]
+            rate = total / hour if hour else 0  # Rate in tot pz / hours
+
+            excel_pool.write_xls_line(ws_name, row, [
+                family,
+                default_code,
+                (total, f_number),
+                (hour, f_number),  # TODO
+                (rate, f_number),  # Total rate
+                ], f_text)
+
+            col = fixed_cols + workers_list.index(workers)
+            excel_pool.write_xls_line(ws_name, row, [
+                (rate, f_number),  # Total rate
+                ], f_text, col=col)
+
+        return excel_pool.return_attachment(
+            cr, uid, 'Statistiche e medie', context=context)
+
+    _columns = {
+        'from_date': fields.date('From date >='),
+        'to_date': fields.date('To date <'),
+        'sort': fields.selection([
+            ('line', 'Line-Family-Date'),
+            ('family', 'Family-Line-Date'),
+            ], 'sort', required=True)
+        # 'workcenter_id': fields.many2one('mrp.workcenter', 'Workcenter'),
+        # TODO family
+        # TODO line
+        # Product?
+        }
+
     def action_print(self, cr, uid, ids, context=None):
         """ Event for button done
         """

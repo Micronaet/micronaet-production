@@ -2,6 +2,7 @@
   <dictionary name="thebrush">
     <words>
       <w>workcenter</w>
+      <w>workline</w>
     </words>
   </dictionary>
 </component>
