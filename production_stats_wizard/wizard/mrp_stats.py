@@ -163,7 +163,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # Setup extra cols width:
         excel_pool.column_width(ws_name, [
             6 for i in range(fixed_cols)
-            ])
+            ], col=fixed_cols)
 
         # ---------------------------------------------------------------------
         # Write data line:
