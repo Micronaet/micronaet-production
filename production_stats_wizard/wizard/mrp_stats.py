@@ -172,7 +172,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             row += 1
             family, default_code = key
             workers_data, product_total, product_hour = data[key]
-            product_rate = product_total / hour if product_hour else 0
+            product_rate = product_total / product_hour if product_hour else 0
 
             excel_pool.write_xls_line(ws_name, row, [
                 family,
