@@ -112,11 +112,11 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             family = record.mrp_id.bom_id.product_tmpl_id.name
             workers = record.workers,
             total = record.total
-            hour = excel_pool.format_hour(record.hour)
+            hour = record.hour
             # workline = record.workcenter_id.name  # TODO maybe used?
             # date = excel_pool.format_date(record.date)
             # mrp = record.mrp_id.name
-            # startup = excel_pool.format_hour(record.startup)
+            # startup = record.startup
 
             rate = total / hour if hour else 0  # Rate in tot pz / hours
             if workers not in workers_list:
