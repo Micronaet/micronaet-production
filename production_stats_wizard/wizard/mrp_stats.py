@@ -70,11 +70,6 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         f_text = excel_pool.get_format('text')
         f_number = excel_pool.get_format('number')
 
-        # Setup columns:
-        excel_pool.column_width(ws_name, [
-            30, 30, 10, 8, 8,
-            ])
-
         # ---------------------------------------------------------------------
         # Collect data:
         # ---------------------------------------------------------------------
@@ -91,12 +86,17 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         header = [
             _('Famiglia'),
             _('Prodotto'),
-            _('Lavoratori'),
             _('Tot. pezzi'),
             _('Tempo'),
             _('Pz / H'),
             ]
         excel_pool.write_xls_line(ws_name, row, header, f_header)
+
+        # Setup columns:
+        excel_pool.column_width(ws_name, [
+            30, 30, 10, 8, 8,
+            ])
+
         fixed_cols = len(header)
 
         data = {}
