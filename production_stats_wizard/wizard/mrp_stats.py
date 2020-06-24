@@ -177,9 +177,9 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             excel_pool.write_xls_line(ws_name, row, [
                 family,
                 default_code,
-                (product_total, f_number),
+                (int(product_total), f_number),
                 (product_hour, f_number),
-                (product_rate, f_number),
+                (int(round(product_rate, 0)), f_number),
                 ], f_text)
 
             for workers in workers_data:
