@@ -450,6 +450,7 @@ class Parser(report_sxw.rml_parse):
         self.mrp_sol = [] # Note management
         self.frames = {}
         self.material_db = {} # Database for next report
+        self.product_components = {}  # Database for product component
         for line in lines: # sale order line
             default_code = line.default_code
 
