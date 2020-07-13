@@ -79,10 +79,11 @@ class Parser(report_sxw.rml_parse):
         components = self.product_components.get(product, {})
         for component in components:
             qty = components[component]
-            res = ' >> %s (%s)\n' % (
+            res = '\n >> %s (%s)' % (
                 component.default_code or '?',
                 qty,
             )
+        return res
 
     def clean_note(self, note):
         """ Remove if present ex production
