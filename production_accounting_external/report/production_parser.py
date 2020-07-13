@@ -70,14 +70,19 @@ class Parser(report_sxw.rml_parse):
             'get_note_reference': self.get_note_reference,
         })
 
-    def get_product_components(self, product):
+    def get_product_components(self, line, mode='key'):
         """ Product component return data
+            mode: key, value
         """
-        components = self.product_components.get(product, [])
-        if not components:
-            return ''
-        return '\n  >> ' + ', '.join([(c.default_code or '?')
-                                      for c in components])
+        product = line.product_id
+        res = ''
+        components = self.product_components.get(product, {})
+        for component in components:
+            qty = components[component]
+            res = ' >> %s (%s)\n' % (
+                component.default_code or '?',
+                qty,
+            )
 
     def clean_note(self, note):
         """ Remove if present ex production
@@ -436,9 +441,10 @@ class Parser(report_sxw.rml_parse):
                 # Product component management
                 # -------------------------------------------------------------
                 if product not in product_components:
-                    product_components[product] = []
+                    product_components[product] = {}
                 if component not in product_components[product]:
-                    product_components[product].append(component)
+                    product_components[product][component] = 0.0
+                product_components[product][component] += bom.product_qty
 
                 todo_q = todo * bom.product_qty  # Remain total
                 if component in material_db:
