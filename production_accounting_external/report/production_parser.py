@@ -252,7 +252,7 @@ class Parser(report_sxw.rml_parse):
             order_id = note.order_id.id
             line_id = note.line_id.id
 
-            if line_id in line_ids: #  or order_id in order_ids:
+            if line_id in line_ids:  # or order_id in order_ids:
                 note_selected.append(note)
             elif not line_id and order_id in order_ids:
                 note_selected.append(note)
