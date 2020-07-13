@@ -70,7 +70,7 @@ class Parser(report_sxw.rml_parse):
             'get_note_reference': self.get_note_reference,
         })
 
-    def get_product_components(self, line, mode='key'):
+    def get_product_components(self, line, remain):
         """ Product component return data
             mode: key, value
         """
@@ -81,7 +81,7 @@ class Parser(report_sxw.rml_parse):
             qty = components[component]
             res = '\n > %s q.%s' % (
                 component.default_code or '?',
-                qty,
+                qty * remain,
             )
         return res
 
@@ -492,7 +492,7 @@ class Parser(report_sxw.rml_parse):
                 product_uom_qty -= delivered_qty
                 product_uom_maked_sync_qty -= delivered_qty
                 if not product_uom_qty:
-                    continue # jump empty line
+                    continue  # jump empty line
 
                 if product_uom_maked_sync_qty < 0:  # remain 0 if negative
                     product_uom_maked_sync_qty = 0.0
