@@ -79,8 +79,9 @@ class Parser(report_sxw.rml_parse):
         components = self.product_components.get(product, {})
         for component in components:
             qty = components[component]
-            res = '\n > %s q. %s' % (
+            res = '\n >%s q.%s r.%s' % (
                 component.default_code or '?',
+                qty,
                 qty * remain if qty else '/',
             )
         return res
