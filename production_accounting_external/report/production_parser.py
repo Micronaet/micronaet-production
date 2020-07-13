@@ -78,12 +78,12 @@ class Parser(report_sxw.rml_parse):
         res = []
         components = self.product_components.get(product, {})
         for component in components:
-            qty = components[component]
-            res.append((component, qty * remain))
-            #    = '\n >%s res. %s' % (
-            #    component.default_code or '?',
-            #    qty * remain if qty else '/',
-
+            record = [component, []]
+            for fabric in components[component]:
+                record[1].append((
+                    fabric, components[component][fabric] * remain,
+                ))
+            res.append(record)
         return res
 
     def clean_note(self, note):
@@ -448,17 +448,18 @@ class Parser(report_sxw.rml_parse):
 
                 if product not in product_components:
                     product_components[product] = {}
+
                 if component not in product_components[product]:
-                    fabric_qty = 0.0
+                    component_qty = bom.product_qty
+                    product_components[product][component] = {}
                     for fabric in component.half_bom_ids:
-                        fabric_code = fabric.default_code or ''
+                        fabric_code = fabric.product_id.default_code or ''
                         if fabric_code[:1].upper() == 'T':
-                            fabric_qty += fabric.product_qty
+                            product_components[product][component][
+                                fabric_code] = (fabric.product_qty *
+                                                component_qty)
                         else:
                             _logger.warning('Jumped %s' % fabric_code)
-
-                    product_components[product][component] = \
-                        bom.product_qty * fabric_qty
 
                 todo_q = todo * bom.product_qty  # Remain total
                 if component in material_db:
