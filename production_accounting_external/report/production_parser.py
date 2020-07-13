@@ -449,8 +449,16 @@ class Parser(report_sxw.rml_parse):
                 if product not in product_components:
                     product_components[product] = {}
                 if component not in product_components[product]:
+                    fabric_qty = 0.0
+                    for fabric in component.half_bom_ids:
+                        fabric_code = fabric.default_code or ''
+                        if fabric_code[:1].upper() == 'T':
+                            fabric_qty += fabric.product_qty
+                        else:
+                            _logger.warning('Jumped %s' % fabric_code)
+
                     product_components[product][component] = \
-                        bom.product_qty
+                        bom.product_qty * fabric_qty
 
                 todo_q = todo * bom.product_qty  # Remain total
                 if component in material_db:
