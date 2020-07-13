@@ -9,6 +9,7 @@
         <field name="arch" type="xml">
             <field name="active" position="after">
                <field name="pallet_eur" />
+               <field name="print_in_cut" />
             </field>
         </field>
     </record>
@@ -42,8 +43,8 @@
         <field name="inherit_id" ref="production_working_bom.mrp_production_workcenter_line_calendar_default_view" />
         <field name="arch" type="xml">
             <field name="product" position="after">
-                <field name="has_mandatory_delivery" />                
-                <field name="mandatory_delivery" />                
+                <field name="has_mandatory_delivery" />
+                <field name="mandatory_delivery" />
             </field>
         </field>
     </record>
@@ -53,8 +54,8 @@
         <field name="inherit_id" ref="production_working_bom.mrp_production_workcenter_line_calendar_lavoration_view" />
         <field name="arch" type="xml">
             <field name="product" position="after">
-                <field name="has_mandatory_delivery" />                
-                <field name="mandatory_delivery" />                
+                <field name="has_mandatory_delivery" />
+                <field name="mandatory_delivery" />
             </field>
         </field>
     </record>
@@ -69,7 +70,7 @@
             </field>
             <filter string="Work Center" position="after">
                  <filter string="Product" icon="terp-go-home" domain="[]" context="{'group_by':'product_id'}"/>
-            </filter>    
+            </filter>
         </field>
     </record>-->
 
@@ -81,7 +82,7 @@
         <field name="arch" type="xml">
             <tree string="OC lines" editable="bottom">
                     <field name="partner_id" readonly="1"/>
-                    <field name="order_id" readonly="1" />  
+                    <field name="order_id" readonly="1" />
                     <field name="family_id" readonly="1" />
                     <field name="product_id" invisible="1" />
                     <field name="name" readonly="1"/>
@@ -97,12 +98,12 @@
                     <field name="production_note" />
                     <!--<button name="force_fast_creation" icon="gtk-connect" string="Fast force" type="object" />-->
                     <button name="%(action_window_mrp_production_create_wizard_view)d" icon="gtk-save" string="Wizard force" type="action" context="{'return':True}" attrs="{'invisible':[('mrp_id','!=',False)]}"/>
-                    <field name="is_manufactured" /> <!--TODO invisible="1"-->                                        
+                    <field name="is_manufactured" /> <!--TODO invisible="1"-->
                     <field name="state" invisible="1"/>
             </tree>
         </field>
     </record>
-        
+
     <record model="ir.ui.view" id="default_mrp_production_tree_view">
         <field name="name">Production custom tree</field>
         <field name="model">mrp.production</field>
@@ -133,7 +134,7 @@
                <attribute name="invisible">1</attribute>
             </field>-->
         </field>
-    </record>   
+    </record>
 
     <record model="ir.ui.view" id="production_sale_order_line_form_view">
         <field name="name">Production sale order line</field>
@@ -143,7 +144,7 @@
             <form string="OC line">
                 <group colspan="4" col="4">
                     <field name="order_id" readonly="1" />
-                    <field name="date_deadline" readonly="1"/>                    
+                    <field name="date_deadline" readonly="1"/>
                     <field name="has_mandatory_delivery" readonly="1" />
                     <field name="name" readonly="1"/>
                     <!--<field name="partner_id" readonly="1"/>-->
@@ -151,11 +152,11 @@
                     <field name="product_uom" readonly="1"/>
                     <field name="state" invisible="1" />
                     <field name="sync_state" invisible="1" />
-                    <field name="production_note" />                                
+                    <field name="production_note" />
                     <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': [('sync_state','!=','draft')]}"/>
                     <button name="close_production" type="object" string="Produced" icon="gtk-ok" attrs="{'invisible': [('sync_state','!=','draft')]}"/>
-                </group>    
-            </form>            
+                </group>
+            </form>
         </field>
     </record>
 
@@ -173,10 +174,10 @@
                 <field name="name" invisible="1"/>
                 <!--<field name="mrp_default_code" readonly="1" />XXX ex default_code-->
                 <field name="default_code" />
-                <field name="date_deadline" readonly="1" />                    
+                <field name="date_deadline" readonly="1" />
                 <field name="has_mandatory_delivery" invisible="1" string="Mand."/>
                 <field name="product_uom" string="UOM" invisible="1"/>
-                <field name="product_uom_qty" sum="Total" readonly="1" />                                
+                <field name="product_uom_qty" sum="Total" readonly="1" />
                 <field name="product_uom_maked_qty" invisible="1" /> <!--TODO remove-->
                 <field name="product_uom_maked_sync_qty" string="Maked (B)" attrs="{'readonly':[('sync_state','in',('sync'))]}" sum="total"/><!--TODO onchange event-->
                 <field name="mx_assigned_qty" readonly="1" sum="Assigned"/>
@@ -184,14 +185,14 @@
                 <!--<field name="product_uom_assigned_qty" />-->
                 <field name="product_uom_delivered_qty" readonly="1" invisible="1"/>
                 <!--<button name="%(action_assign_mrp_production_partial_wizard_form)d" string="Partial production" type="action" icon="gtk-add" attrs="{'invisible': [('sync_state','in',('closed','sync'))]}"/>-->
-                <field name="production_note" readonly="1" />                                
+                <field name="production_note" readonly="1" />
                 <field name="state" invisible="1" />
                 <field name="sync_state" invisible="1" />
                 <button name="close_production" type="object" string="Produced" icon="STOCK_SAVE" attrs="{'invisible': ['|',('mrp_id','=',False),('sync_state','!=','draft')]}"/>
                 <button name="undo_close_production" type="object" string="Undo produced" icon="STOCK_REVERT_TO_SAVED" attrs="{'invisible': ['|',('mrp_id','=',False),('sync_state','in',('draft'))]}"/>
                 <field name="is_manufactured" invisible="1"/>
                 <!--<field name="mrp_similar_info" />-->
-            </tree>        
+            </tree>
         </field>
     </record>
     <record model="ir.ui.view" id="view_sale_order_line_b_qty_tree">
@@ -202,7 +203,7 @@
             <field name="product_uom" position="after">
                 <field name="product_uom_maked_sync_qty" string="(B)" sum="B" />
                 <field name="mx_assigned_qty" sum="Assigned"/>
-            </field>   
+            </field>
         </field>
     </record>
 
@@ -226,18 +227,18 @@
 	        <field name="state" position="attributes">
 	            <attribute name="statusbar_visible">draft,cancel,done</attribute>
 	        </field>
-		
+
             <!-- New header -->
             <xpath expr="/form/header/field[@name='state']" position="after">
                 <div style="background-color: red;text-align: center;font-weight:bold;color:white;">
                     <field name="error_total" nolabel="1" attrs="{'invisible': [('error_total', '=', False)]}" class="oe_color_red" />
                 </div>
             </xpath>
-            
+
             <field name="date_planned" position="before">
                 <field name="forecast_qty" />
             </field>
-            
+
             <!--Hide notebook page-->
             <xpath expr="/form/sheet/notebook/page[@string='Consumed Products']" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -251,7 +252,7 @@
             <xpath expr="/form/sheet/notebook/page[@string='Extra Information']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            
+
             <!--New notebook -->
             <xpath expr="/form/sheet/notebook/page[@string='Consumed Products']" position="before">
                 <page string="Sale order">
@@ -268,9 +269,9 @@
                             }" options="{'reload_on_button': false}"/> <!--ALSO: options="{'always_reload': true}"-->
                     </group>
                 </page>
-            </xpath>            
+            </xpath>
         </field>
-    </record>        
+    </record>
 
     <!--sale.order.line.previsional-->
     <record model="ir.ui.view" id="sale_order_line_previsional_search_view">
@@ -282,9 +283,9 @@
                 <field name="product_tmpl_id" filter_domain="[('product_tmpl_id','=',self)]"/>
                 <filter name="yes_updated" string="Updated" domain="[('updated','=',True)]"/>
                 <filter name="not_updated" string="Not updated" domain="[('updated','=',True)]"/>
-                <filter name="group_partner" string="Customer" context="{'group_by': 'partner_id'}"/>            
-                <filter name="group_deadline" string="Deadline" context="{'group_by': 'deadline'}"/>            
-                <filter name="group_updated" string="Updated" context="{'group_by': 'updated'}"/>            
+                <filter name="group_partner" string="Customer" context="{'group_by': 'partner_id'}"/>
+                <filter name="group_deadline" string="Deadline" context="{'group_by': 'deadline'}"/>
+                <filter name="group_updated" string="Updated" context="{'group_by': 'updated'}"/>
            </search>
         </field>
     </record>
@@ -317,11 +318,11 @@
                 <field name="product_tmpl_id" /><!--TODO domain="[('family_id','=',parent.product_id)]"/> Attivare il filtro dopo avere risolto prolbema product.product in mrp -->
                 <field name="deadline" />
                 <field name="product_uom_qty" />
-                <field name="note" />                
+                <field name="note" />
            </form>
         </field>
     </record>
-    
+
     <!--sale.order.line-->
     <record model="ir.ui.view" id="sale_order_line_family_search_view">
         <field name="name">sale.order.line.search.family</field>
@@ -330,13 +331,13 @@
         <field name="arch" type="xml">
             <field name="product_id" position="after">
                 <field name="family_id" string="Family" filter_domain="[('family_id','=',self)]"/>
-            </field>    
+            </field>
             <filter name="group_order" position="after">
-                <filter name="group_family" string="Family" context="{'group_by':'family_id'}"/>            
-            </filter>    
+                <filter name="group_family" string="Family" context="{'group_by':'family_id'}"/>
+            </filter>
         </field>
     </record>
-    
+
     <record model="ir.ui.view" id="sale_order_line_family_tree_view">
         <field name="name">sale.order.line.tree.family</field>
         <field name="model">sale.order.line</field>
@@ -361,16 +362,16 @@
         <field name="inherit_id" ref="sql_sale_order.view_sale_order_line_form"/>
         <field name="arch" type="xml">
             <field name="sequence" position="after">
-                <field name="family_id" />                
+                <field name="family_id" />
             </field>
         </field>
     </record>
-    
+
     <!--product.product-->
     <record model="ir.ui.view" id="product_accouting_external_form_view">
         <field name="name">product.product.accounting</field>
         <field name="model">product.product</field>
-        <field name="inherit_id" ref="product.product_normal_form_view"/>        
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//page/group[@name='inventory']" position="after">
                 <group name="acounting" string="Accounting" colspan="2">
@@ -382,7 +383,7 @@
         </field>
     </record>
 
-    <!--sale.order.line-->    
+    <!--sale.order.line-->
     <record model="ir.ui.view" id="view_sale_order_production_test_tree_view">
         <field name="name">sale.order.production.test.form</field>
         <field name="model">sale.order</field>
@@ -394,7 +395,7 @@
             <field name='state' position="after">
                <!--<field name="is_manufactured" invisible="1" />-->
                 <field name="all_produced" invisible="1" />
-                <button name="nothing" string="" type="object" icon="gtk-yes" attrs="{'invisible':[('all_produced','=',False)]}"/>                
+                <button name="nothing" string="" type="object" icon="gtk-yes" attrs="{'invisible':[('all_produced','=',False)]}"/>
             </field>
         </field>
     </record>
@@ -406,7 +407,7 @@
         <field name="arch" type="xml">
             <!--sale.order.line LINE:-->
             <xpath expr="/form/sheet//field[@name='name']" position="after">
-                <button name="nothing" string="" type="object" icon="gtk-yes" attrs="{'invisible': [('all_produced','=',False)]}"/>                
+                <button name="nothing" string="" type="object" icon="gtk-yes" attrs="{'invisible': [('all_produced','=',False)]}"/>
             </xpath>
             <xpath expr="//page/field[@name='order_line']" position="before">
                 <field name="all_produced" invisible="1" />
@@ -417,7 +418,7 @@
             </xpath>
             <xpath expr="//page/field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
                 <field name="is_manufactured" invisible="1"/>
-                <button name="nothing" string="Is manufactured" type="object" icon="terp-product" attrs="{'invisible': [('is_manufactured', '=', False)]}" />            
+                <button name="nothing" string="Is manufactured" type="object" icon="terp-product" attrs="{'invisible': [('is_manufactured', '=', False)]}" />
                 <field name="mrp_id"  /><!--TODO invisible="1"-->
                 <button name="open_production_form" string="Open production" type="object" icon="gtk-yes" attrs="{'invisible': [('mrp_id','=',False)]}"/>
             </xpath>
@@ -431,7 +432,7 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,graph</field>
         <field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>
-        <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>        
+        <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>
         <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form','search_default_group_family':True}</field>
         <field name="domain">['|',('mrp_unlinked','=',True),('mrp_id','=',False),('pricelist_order','=',False),('go_in_production','=',True),('is_manufactured','=',True),('mx_closed','=',False)]</field>
         <!--TODO remove filter for accounting when accounting will not be present! -->
@@ -442,7 +443,7 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,graph</field>
         <field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>
-        <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>        
+        <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>
         <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form','search_default_group_family':True}</field>
         <field name="domain">[('pricelist_order','=',False),('go_in_production','=',True),('is_manufactured','=',True),('mx_closed','=',False)]</field>
     </record>
@@ -452,7 +453,7 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,graph</field>
         <field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>
-        <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>        
+        <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>
         <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form','search_default_group_product':True}</field>
         <field name="domain">['|',('mrp_unlinked','=',True),('mrp_id','=',False),('pricelist_order','=',False),('go_in_production','=',True),('family_id','=',False),('mx_closed','=',False)]</field>
         <!--TODO remove filter for accounting when accounting will not be present! -->
@@ -464,7 +465,7 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,graph</field>
         <field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>
-        <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>        
+        <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>
         <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form'}</field>
     </record>
 
@@ -474,7 +475,7 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,graph</field>
         <field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>
-        <field name="view_id" ref="view_sale_order_line_tree_force_mrp"/>        
+        <field name="view_id" ref="view_sale_order_line_tree_force_mrp"/>
         <field name="domain">[('has_mandatory_delivery','=',True),('mrp_id','=',False)]</field>
         <field name="context">{'form_view_ref':'sql_sale_order.view_sale_order_line_form'}</field>
     </record>
@@ -504,7 +505,7 @@
           </p>
         </field>
     </record>
-    
+
     <!--<record id="action_orders" model="ir.actions.act_window">
         <field name="name">Sales Orders</field>
         <field name="type">ir.actions.act_window</field>
@@ -539,7 +540,7 @@
             </graph>
         </field>
     </record>
-    
+
     <record id="action_production_orders" model="ir.actions.act_window">
         <field name="name">Order for production</field>
         <field name="type">ir.actions.act_window</field>
@@ -573,91 +574,91 @@
         <field name="view_mode">tree,form,calendar,graph</field>
         <field name="domain">[('state','in',('done','cancel'))]</field>
     </record>
-   
+
     <menuitem name="Cancel"
-        parent="mrp.menu_mrp_production_action" 
-        id="menu_mrp_production_cancel" 
-        action="action_mrp_production_cancel" 
-        sequence="10" />        
+        parent="mrp.menu_mrp_production_action"
+        id="menu_mrp_production_cancel"
+        action="action_mrp_production_cancel"
+        sequence="10" />
 
     <menuitem name="Work hour"
-        parent="mrp.menu_mrp_configuration" 
-        id="menu_configuration_workhour" 
-        action="hr_workhour.action_hr_workhour" 
-        sequence="40" />        
+        parent="mrp.menu_mrp_configuration"
+        id="menu_configuration_workhour"
+        action="hr_workhour.action_hr_workhour"
+        sequence="40" />
 
     <!--MENUITEM:-->
     <!--Overrided:-->
-    <!--<menuitem 
-        action="action_orders" 
-        id="sale.menu_sale_order" 
-        parent="base.menu_sales" 
-        sequence="6" 
+    <!--<menuitem
+        action="action_orders"
+        id="sale.menu_sale_order"
+        parent="base.menu_sales"
+        sequence="6"
         groups="base.group_sale_salesman,base.group_sale_manager"
         />-->
 
     <menuitem
-        parent="sale.menu_sale_order" 
-        id="sql_sale_order.quotation_from_accounting_menu" 
+        parent="sale.menu_sale_order"
+        id="sql_sale_order.quotation_from_accounting_menu"
         action="sql_sale_order.action_quotations_accounting"
         name="Production order"/>
 
     <!-- MENUITEM: -->
    <!-- PRODUCTION -->
-   <menuitem name="Sale order" 
-       parent="mrp.menu_mrp_manufacturing" 
-       id="menu_base_sale_order_root" 
-       sequence="0" />   
-       
+   <menuitem name="Sale order"
+       parent="mrp.menu_mrp_manufacturing"
+       id="menu_base_sale_order_root"
+       sequence="0" />
+
       <menuitem name="OC line production"
-          parent="menu_base_sale_order_root" 
-          id="menu_sale_order_line_m1" 
-          action="action_view_sale_order_production_line" 
+          parent="menu_base_sale_order_root"
+          id="menu_sale_order_line_m1"
+          action="action_view_sale_order_production_line"
           sequence="10" />
           <menuitem name="Without family"
-              parent="menu_sale_order_line_m1" 
-              id="menu_sale_order_line_m1_no_family" 
-              action="action_view_sale_order_production_line_no_family" 
+              parent="menu_sale_order_line_m1"
+              id="menu_sale_order_line_m1_no_family"
+              action="action_view_sale_order_production_line_no_family"
               sequence="10" />
 
       <menuitem name="Righe produzione OC (tutte)"
-          parent="menu_base_sale_order_root" 
-          id="menu_sale_order_line_all_oc_m1" 
-          action="action_view_sale_order_production_all_line" 
-          sequence="20" />          
-          
+          parent="menu_base_sale_order_root"
+          id="menu_sale_order_line_all_oc_m1"
+          action="action_view_sale_order_production_all_line"
+          sequence="20" />
+
       <menuitem name="OC line"
-          parent="menu_base_sale_order_root" 
-          id="menu_sale_order_line_m0" 
-          action="action_view_sale_order_line" 
+          parent="menu_base_sale_order_root"
+          id="menu_sale_order_line_m0"
+          action="action_view_sale_order_line"
           sequence="30" />
-          
+
       <menuitem name="OC mandatory"
-          parent="menu_base_sale_order_root" 
-          id="menu_sale_order_line_m1_mandatory" 
-          action="action_view_sale_order_line_mandatory" 
+          parent="menu_base_sale_order_root"
+          id="menu_sale_order_line_m1_mandatory"
+          action="action_view_sale_order_line_mandatory"
           sequence="40" />
 
      <!-- SALES -->
-     <!--<menuitem 
-         action="action_production_orders" 
-         id="menu_sale_production_order" 
-         parent="sale.menu_sale_order" 
-         sequence="20" 
+     <!--<menuitem
+         action="action_production_orders"
+         id="menu_sale_production_order"
+         parent="sale.menu_sale_order"
+         sequence="20"
          groups="base.group_sale_salesman,base.group_sale_manager"
          />-->
-     <!--<menuitem 
-         parent="sale.menu_sale_order" 
-         id="menu_sale_order_for_production" 
+     <!--<menuitem
+         parent="sale.menu_sale_order"
+         id="menu_sale_order_for_production"
          action="sql_sale_order.action_quotations_accounting"
-         sequence="20" 
+         sequence="20"
          groups="base.group_sale_salesman,base.group_sale_manager"
          />-->
 
      <!-- CONFIGURATION -->
-    <menuitem action="mrp.mrp_workcenter_action" 
-        id="menu_view_resource_search_mrp" 
-        parent="mrp.menu_mrp_configuration" 
+    <menuitem action="mrp.mrp_workcenter_action"
+        id="menu_view_resource_search_mrp"
+        parent="mrp.menu_mrp_configuration"
         sequence="25"/>
 
     </data>
