@@ -32,12 +32,10 @@ from dateutil.relativedelta import relativedelta
 from openerp import SUPERUSER_ID, api
 from openerp import tools
 from openerp.tools.translate import _
-from openerp.tools.float_utils import float_round as round
 from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT,
     DATETIME_FORMATS_MAP,
     float_compare)
-
 
 _logger = logging.getLogger(__name__)
 
@@ -85,7 +83,7 @@ class Parser(report_sxw.rml_parse):
             note_list = note.split('Ex.: MO')
             res = '%s%s' % (
                 note_list[0],
-                note_list[-1][code_len:] # remove code
+                note_list[-1][code_len:]  # remove code
                 )
             return res.strip()
 
@@ -181,8 +179,8 @@ class Parser(report_sxw.rml_parse):
         # Get type ID:
         type_ids = type_pool.search(cr, uid, [], context=context)
         selected_type_ids = []
-        for item in type_pool.browse(cr, uid, type_ids,
-                context=context):
+        for item in type_pool.browse(
+                cr, uid, type_ids, context=context):
             if dept_id in [c.id for c in item.department_ids]:
                 selected_type_ids.append(item.id)
         if not selected_type_ids:
@@ -200,7 +198,7 @@ class Parser(report_sxw.rml_parse):
         line_ids = []
         product_partic = []
 
-        for sol in self.mrp_sol: # order line (collected data during print)
+        for sol in self.mrp_sol:  # order line (collected data during print)
             # Get check fields:
             partner_id = sol.order_id.partner_id.id
             address_id = sol.order_id.destination_partner_id.id
@@ -452,13 +450,13 @@ class Parser(report_sxw.rml_parse):
         self.frames = {}
         self.material_db = {}  # Database for next report
         self.product_components = {}  # Database for product component
-        for line in lines: # sale order line
+        for line in lines:  # sale order line
             default_code = line.default_code
 
             # Variable:
-            product_uom_qty = line.product_uom_qty # OC
+            product_uom_qty = line.product_uom_qty  # OC
             product_uom_maked_sync_qty = line.product_uom_maked_sync_qty  # B
-            delivered_qty = line.delivered_qty # Del.
+            delivered_qty = line.delivered_qty  # Del.
 
             # Consider OC as OC - assigned = net production:
             mx_assigned_qty = line.mx_assigned_qty
