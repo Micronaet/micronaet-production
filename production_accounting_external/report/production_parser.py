@@ -75,14 +75,15 @@ class Parser(report_sxw.rml_parse):
             mode: key, value
         """
         product = line.product_id
-        res = ''
+        res = []
         components = self.product_components.get(product, {})
         for component in components:
             qty = components[component]
-            res = '\n >%s res. %s' % (
-                component.default_code or '?',
-                qty * remain if qty else '/',
-            )
+            res.append((component, qty * remain))
+            #    = '\n >%s res. %s' % (
+            #    component.default_code or '?',
+            #    qty * remain if qty else '/',
+
         return res
 
     def clean_note(self, note):
@@ -441,11 +442,13 @@ class Parser(report_sxw.rml_parse):
                 # -------------------------------------------------------------
                 # Product component management
                 # -------------------------------------------------------------
-                if product not in product_components:
-                    product_components[product] = {}
-                if component not in product_components[product]:
-                    product_components[product][component] = 0.0
-                product_components[product][component] += bom.product_qty
+                if (not component.bom_placeholder and
+                        not component.bom_alternative):
+                    if product not in product_components:
+                        product_components[product] = {}
+                    if component not in product_components[product]:
+                        product_components[product][component] = \
+                            bom.product_qty
 
                 todo_q = todo * bom.product_qty  # Remain total
                 if component in material_db:
