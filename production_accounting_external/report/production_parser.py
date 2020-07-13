@@ -442,13 +442,15 @@ class Parser(report_sxw.rml_parse):
                 # -------------------------------------------------------------
                 # Product component management
                 # -------------------------------------------------------------
-                if (not component.bom_placeholder and
-                        not component.bom_alternative):
-                    if product not in product_components:
-                        product_components[product] = {}
-                    if component not in product_components[product]:
-                        product_components[product][component] = \
-                            bom.product_qty
+                if component.bom_placeholder or component.bom_alternative:
+                    # Not used placeholder
+                    continue
+
+                if product not in product_components:
+                    product_components[product] = {}
+                if component not in product_components[product]:
+                    product_components[product][component] = \
+                        bom.product_qty
 
                 todo_q = todo * bom.product_qty  # Remain total
                 if component in material_db:
