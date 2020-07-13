@@ -59,7 +59,7 @@ class Parser(report_sxw.rml_parse):
             'get_table': self.get_table,
             'get_materials': self.get_materials,
             'clean_note': self.clean_note,
-
+            'get_product_components': self.get_product_components,
             # remain report:
             'get_object_remain': self.get_object_remain,
             'previous_record': self.previous_record,
@@ -69,6 +69,15 @@ class Parser(report_sxw.rml_parse):
             'get_note_system': self.get_note_system,
             'get_note_reference': self.get_note_reference,
         })
+
+    def get_product_components(self, product):
+        """ Product component return data
+        """
+        components = self.product_components.get(product, [])
+        if not components:
+            return ''
+        return '\n  >> ' + ', '.join([(c.default_code or '?')
+                                      for c in components])
 
     def clean_note(self, note):
         """ Remove if present ex production
@@ -411,16 +420,26 @@ class Parser(report_sxw.rml_parse):
             Sort for [4:6]-[9:12]
             Break on 2 block for total
         """
-        def add_material_cut(product, material_db, todo):
+        def add_material_cut(product, material_db, todo, product_components):
             """ Add product in database for add on report
                 line: mrp.bom.line element
                 material_db: database for report
+                product_components: for save component in product
             """
             for bom in product.dynamic_bom_line_ids:
                 if bom.category_id.department != 'cut':
                     continue  # only category element with department cut
 
                 component = bom.product_id
+
+                # -------------------------------------------------------------
+                # Product component management
+                # -------------------------------------------------------------
+                if product not in product_components:
+                    product_components[product] = []
+                if component not in product_components[product]:
+                    product_components[product].append(component)
+
                 todo_q = todo * bom.product_qty  # Remain total
                 if component in material_db:
                     material_db[component] += todo_q
@@ -487,7 +506,9 @@ class Parser(report_sxw.rml_parse):
             self.report_extra_data['total_qty'] += product_uom_qty
             self.report_extra_data['done_qty'] += product_uom_maked_sync_qty
 
-            add_material_cut(line.product_id, self.material_db, todo)
+            add_material_cut(
+                line.product_id, self.material_db, todo,
+                self.product_components)
 
             # -------------
             # Check Frames:
