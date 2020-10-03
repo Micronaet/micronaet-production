@@ -67,24 +67,24 @@ class MrpProduction(orm.Model):
 
         mrp = self.browse(cr, uid, ids, context=context)[0]
 
-        self.start_blocking_stats(self, cr, uid, ids, context=context)
+        self.start_blocking_stats(cr, uid, ids, context=context)
 
-        tree_view_id = model_pool.get_object_reference(
+        form_view_id = model_pool.get_object_reference(
             cr, uid,
-            'mrp_online_label', 'online_label_mrp_view_tree')[1]
+            'mrp_online_label', 'sale_order_label_online_view_form')[1]
 
         # TODO item_id change here:
         line_id = mrp.order_line_ids[0].id
 
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Detail'),
+            'name': _('Production Detail'),
             'view_type': 'form',
-            'view_mode': 'form,tree',
+            'view_mode': 'form',
             'res_id': line_id,
-            'res_model': 'mrp.production',
-            'view_id': tree_view_id,
-            'views': [(tree_view_id, 'tree')],
+            'res_model': 'sale.order.line',
+            'view_id': form_view_id,
+            'views': [(form_view_id, 'form')],
             'domain': [],
             'context': context,
             'target': 'current',
@@ -111,7 +111,10 @@ class MrpProduction(orm.Model):
             'res_model': 'mrp.production',
             'view_id': tree_view_id,
             'views': [(tree_view_id, 'tree')],
-            'domain': [('label_workcenter_id', '=', label_workcenter_id)],
+            'domain': [
+                ('label_workcenter_id', '=', label_workcenter_id),
+                ('state', 'not in', ('cancel', 'done'))
+            ],
             'context': context,
             'target': 'current',
             'nodestroy': False,

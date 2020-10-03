@@ -66,7 +66,7 @@
                     <field name="cycle_total" invisible="1" />
                     <field name="origin" invisible="1" readonly="1"/>
                     <field name="date_planned" />
-                    <field name="label_workcenter_id" required="True"/>
+                    <field name="label_workcenter_id" required="True" groups="mrp_online_label.group_mrp_label_manager"/>
                     <field name="state" invisible="1" />
                     <button name="start_block_start_label" type="object" string="Start" icon="gtk-gtk-yes"
                             groups="mrp_online_label.group_mrp_label_user"/>
@@ -96,9 +96,10 @@
             <field name="arch" type="xml">
                 <form string="Sale order online">
                     <header>
-                        <button name="button_next_line" type="object" string="Next line"/>
+                        <!--<button name="button_back_line" type="object" string="Back line" icon="gtk-go-back"/>-->
+                        <button name="button_next_line" type="object" string="Next line" icon="gtk-go-forward"/>
 
-                        <button name="stop_block_start_label" type="object" string="Stop production" icon="gtk-gtk-no"
+                        <button name="stop_block_start_label" type="object" string="Stop production" icon="gtk-no"
                                 confirm="Stop production will end MRP process and ask some jop extra statistic info, confirm?"
                                 groups="mrp_online_label.group_mrp_label_user"
                         />
@@ -111,27 +112,28 @@
                             <field name="product_id" readonly="1"/>
                             <field name="default_code" readonly="1"/>
 
+                            <!--<field name="q_x_pack" readonly="1"/>-->
                             <field name="date_deadline" readonly="1"/>
-                            <field name="production_note" readonly="1"/>
+                            <field name="production_note" readonly="1" colspan="4"/>
                         </group>
                         <group col="10">
                             <field name="product_uom_qty" readonly="1"/>
                             <field name="mx_assigned_qty" readonly="1"/>
                             <field name="delivered_qty" readonly="1"/>
-                            <field name="product_uom_maked_qty"/>
+                            <field name="product_uom_maked_sync_qty"/>
 
-                            <button name="close_production" type="object" string="Produced" icon="STOCK_SAVE" attrs="{'invisible': ['|',('mrp_id','=',False),('sync_state','!=','draft')]}" colspan="1"/>
-                            <button name="undo_close_production" type="object" string="Undo produced" icon="STOCK_REVERT_TO_SAVED" attrs="{'invisible': ['|',('mrp_id','=',False),('sync_state','in',('draft'))]}" colspan="1"/>
+                            <button name="close_production" type="object" string="All done" icon="STOCK_SAVE" attrs="{'invisible': ['|',('mrp_id','=',False),('sync_state','!=','draft')]}" colspan="1"/>
+                            <button name="undo_close_production" type="object" string="Undo" icon="STOCK_REVERT_TO_SAVED" attrs="{'invisible': ['|',('mrp_id','=',False),('sync_state','in',('draft'))]}" colspan="1"/>
                             <field name="is_manufactured" invisible="1"/>
                             <field name="mrp_id" invisible="1"/>
                             <field name="sync_state" invisible="1"/>
 
                         </group>
                         <group col="4">
-                            <button name="print_all_internal_label" type="object" string="Print all internal" icno="gtk-print" colspan="1"/>
-                            <button name="print_one_internal_label" type="object" string="Print one internal" icno="gtk-print" colspan="1"/>
-                            <button name="print_all_external_label" type="object" string="Print all external" icno="gtk-print" colspan="1"/>
-                            <button name="print_one_external_label" type="object" string="Print one external" icno="gtk-print" colspan="1"/>
+                            <button name="print_all_internal_label" type="object" string="Print all internal" icno="gtk-dnd-multiple" colspan="1"/>
+                            <button name="print_one_internal_label" type="object" string="Print one internal" icno="gtk-dnd" colspan="1"/>
+                            <button name="print_all_external_label" type="object" string="Print all external" icno="gtk-dnd-multiple" colspan="1"/>
+                            <button name="print_one_external_label" type="object" string="Print one external" icno="gtk-dnd" colspan="1"/>
                         </group>
                     </sheet>
                 </form>
@@ -158,7 +160,7 @@
          </record>
 
         <menuitem id="menu_mrp_label_root" name="MRP Line" sequence="40" groups="mrp_online_label.group_mrp_label_manager,mrp_online_label.group_mrp_label_user"/>
-            <menuitem parent="menu_mrp_label_root" id="menu_line_production" name="Line production" sequence="10"/>
+            <menuitem parent="menu_mrp_label_root" id="menu_line_production" name="Line production" sequence="10" groups="mrp_online_label.group_mrp_label_user"/>
                 <menuitem parent="menu_line_production" id="menu_online_my_label_mrp_view" name="My MRP" sequence="10" action="my_line_action_online_label_mrp_view"/>
 
             <menuitem parent="menu_mrp_label_root" id="menu_line_management" name="Line management" sequence="90" groups="mrp_online_label.group_mrp_label_manager"/>
