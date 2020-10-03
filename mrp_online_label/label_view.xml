@@ -48,6 +48,7 @@
                 </tree>
             </field>
         </record>
+
         <!--mrp.production-->
         <record id="online_label_mrp_view_tree" model="ir.ui.view">
             <field name="name">mrp.production.schedule.label</field>
@@ -67,6 +68,8 @@
                     <field name="date_planned" />
                     <field name="label_workcenter_id" required="True"/>
                     <field name="state" invisible="1" />
+                    <button name="start_block_start_label" type="object" string="Start" icon="gtk-file"
+                            groups="mrp_online_label.group_mrp_label_production"/>
 
                     <button name="generate_label_job" type="object" string="Generate label jobs" icon="gtk-execute"
                             confirm="(Re)generate print job from production order? all jobs present will be regenerated, confirm?"
@@ -82,6 +85,26 @@
                     <button name="open_production_detail" type="object" string="Detail" icon="gtk-file"
                             groups="mrp_online_label.group_mrp_label_manager"/>
                 </tree>
+            </field>
+        </record>
+
+        <!--sale.order.line-->
+        <record id="sale_order_label_online_view_form" model="ir.ui.view">
+            <field name="name">sale.order.line.label.online</field>
+            <field name="model">sale.order.line</field>
+            <field name="priority" eval="40">
+            <field name="arch" type="xml">
+                <form string="Sale order online">
+                    <header>
+
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="product_id"/>
+
+                        </group>
+                    </sheet>
+                </form>
             </field>
         </record>
 

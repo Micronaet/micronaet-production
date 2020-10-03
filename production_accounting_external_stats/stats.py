@@ -235,7 +235,10 @@ class MrpProduction(orm.Model):
         return self.write(cr, uid, ids, {
             'stat_start_total': '%s' % (
                 self.get_current_locked_status(cr, uid, ids, context=context),
-                )
+                ),
+            # Save for online calc datetime start:
+            'stat_start_datetime': datetime.now().strftime(
+                DEFAULT_SERVER_DATETIME_FORMAT),
             }, context=context)
 
     def stop_blocking_stats(self, cr, uid, ids, context=None):
@@ -252,7 +255,7 @@ class MrpProduction(orm.Model):
         default_res = []
         for default_code, current_tot in current.iteritems():
             last_tot = previous.get(default_code, 0)
-            if last_tot != current_tot: # TODO negative?
+            if last_tot != current_tot:  # TODO negative?
                 partial = current_tot - last_tot # difference
                 total += partial
                 default_res.append({
@@ -309,6 +312,7 @@ class MrpProduction(orm.Model):
         return res
 
     _columns = {
+        'stat_start_datetime': fields.datetime('Start stats datetime'),
         'stat_start_total': fields.text('Ref. Total',
             help='Total current item when start blocking operation'),
 

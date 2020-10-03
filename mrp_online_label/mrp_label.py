@@ -59,6 +59,39 @@ class MrpProduction(orm.Model):
     """
     _inherit = 'mrp.production'
 
+    def start_block_start_label(self, cr, uid, ids, context=None):
+        """ Launch stats start action and open view for production start
+        """
+        model_pool = self.pool.get('ir.model.data')
+        line_pool = self.pool.get('sale.order.line')
+
+        mrp = self.browse(cr, uid, ids, context=context)[0]
+
+        self.start_blocking_stats(self, cr, uid, ids, context=context)
+
+        form_view_id = model_pool.get_object_reference(
+             'mrp_online_label', 'sale_order_label_online_view_form')[1]
+
+        # TODO item_id change here:
+        line_id = mrp.order_line_ids[0].id
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Detail'),
+            'view_type': 'form',
+            'view_mode': 'form,tree',
+            'res_id': line_id,
+            'res_model': 'mrp.production',
+            'view_id': form_view_id,
+            'views': [(form_view_id, 'form')],
+            'domain': [],
+            'context': context,
+            'target': 'current',
+            'nodestroy': False,
+            }
+
+
+
     def my_production_for_label_server_action(
             self, cr, uid, ids, context=None):
         """ My production list
