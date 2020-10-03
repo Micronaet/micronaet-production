@@ -96,7 +96,12 @@
             <field name="arch" type="xml">
                 <form string="Sale order online">
                     <header>
+                        <button name="button_next_line" type="object" string="Next line"/>
 
+                        <button name="stop_block_start_label" type="object" string="Stop production" icon="gtk-gtk-no"
+                                confirm="Stop production will end MRP process and ask some jop extra statistic info, confirm?"
+                                groups="mrp_online_label.group_mrp_label_user"
+                        />
                     </header>
                     <sheet>
                         <group col="4">
@@ -109,11 +114,24 @@
                             <field name="date_deadline" readonly="1"/>
                             <field name="production_note" readonly="1"/>
                         </group>
-                        <group col="8">
+                        <group col="10">
                             <field name="product_uom_qty" readonly="1"/>
                             <field name="mx_assigned_qty" readonly="1"/>
                             <field name="delivered_qty" readonly="1"/>
                             <field name="product_uom_maked_qty"/>
+
+                            <button name="close_production" type="object" string="Produced" icon="STOCK_SAVE" attrs="{'invisible': ['|',('mrp_id','=',False),('sync_state','!=','draft')]}" colspan="1"/>
+                            <button name="undo_close_production" type="object" string="Undo produced" icon="STOCK_REVERT_TO_SAVED" attrs="{'invisible': ['|',('mrp_id','=',False),('sync_state','in',('draft'))]}" colspan="1"/>
+                            <field name="is_manufactured" invisible="1"/>
+                            <field name="mrp_id" invisible="1"/>
+                            <field name="sync_state" invisible="1"/>
+
+                        </group>
+                        <group col="4">
+                            <button name="print_all_internal_label" type="object" string="Print all internal" icno="gtk-print" colspan="1"/>
+                            <button name="print_one_internal_label" type="object" string="Print one internal" icno="gtk-print" colspan="1"/>
+                            <button name="print_all_external_label" type="object" string="Print all external" icno="gtk-print" colspan="1"/>
+                            <button name="print_one_external_label" type="object" string="Print one external" icno="gtk-print" colspan="1"/>
                         </group>
                     </sheet>
                 </form>
