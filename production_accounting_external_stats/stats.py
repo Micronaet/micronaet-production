@@ -101,6 +101,7 @@ class MrpProductionStat(orm.Model):
             'mrp.production.stats.line', 'stat_id', 'Righe'),
         }
 
+
 class MrpProductionStatMixed(osv.osv):
     """ Create view object
     """
@@ -118,7 +119,7 @@ class MrpProductionStatMixed(osv.osv):
 
     _columns = {
         # mrp.production.workcenter.line:
-        #'name': fields.char('MRP name', readonly=True),
+        # 'name': fields.char('MRP name', readonly=True),
         'is_today': fields.boolean('Is today', readonly=True),
         'is_total': fields.boolean('Day total', readonly=True),
         'date_planned': fields.date('Date planned', readonly=True),
@@ -204,7 +205,7 @@ class MrpProductionStatMixed(osv.osv):
                     st.workcenter_id
                 HAVING 
                     DATE(st.date) + INTERVAL '8 days' >= DATE(now())
-                )""") # HAVING mrp.state != 'cancel' mrp.workcenter_id
+                )""")  # HAVING mrp.state != 'cancel' mrp.workcenter_id
 
 
 class MrpProduction(orm.Model):
@@ -213,8 +214,8 @@ class MrpProduction(orm.Model):
     _inherit = 'mrp.production'
 
     # Utility:
-    def get_current_locked_status(self, cr, uid, ids, code_pos=6,
-            context=None):
+    def get_current_locked_status(
+            self, cr, uid, ids, code_pos=6, context=None):
         """ Dict for locked with code 6 char
         """
         locked = {}
@@ -274,7 +275,7 @@ class MrpProduction(orm.Model):
             hour = 0
 
         ctx.update({
-            #'default_workcenter_id':
+            # 'default_workcenter_id':
             'default_total': total,
             'default_mrp_id': mrp_proxy.id,
             'default_workcenter_id': workcenter_id,
@@ -294,8 +295,8 @@ class MrpProduction(orm.Model):
             'nodestroy': False,
         }
 
-    def _function_start_readable_text(self, cr, uid, ids, fields, args,
-            context=None):
+    def _function_start_readable_text(
+            self, cr, uid, ids, fields, args, context=None):
         """ Fields function for calculate
         """
         res = {}
@@ -317,5 +318,3 @@ class MrpProduction(orm.Model):
             _function_start_readable_text, method=True,
             type='char', size=200, string='Totale rif.', store=False),
         }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
