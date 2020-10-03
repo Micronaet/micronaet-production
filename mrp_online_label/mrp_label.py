@@ -45,12 +45,23 @@ _logger = logging.getLogger(__name__)
 class ResUsers(orm.Model):
     """ Model name: Res Users
     """
-
     _inherit = 'res.users'
 
     _columns = {
         'label_workcenter_id': fields.many2one(
             'mrp.workcenter', 'Default Line',
+        )
+    }
+
+
+class MrpProduction(orm.Model):
+    """ Model name: MRP Production
+    """
+    _inherit = 'mrp.production'
+
+    _columns = {
+        'label_workcenter_id': fields.many2one(
+            'mrp.workcenter', 'Linea di lavorazione',
         )
     }
 

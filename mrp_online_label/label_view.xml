@@ -1,11 +1,67 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <!--Line management:-->
+        <record id="res_user_line_view_tree" model="ir.ui.view">
+            <field name="name">res.user.line.view.tree</field>
+            <field name="model">res.users</field>
+            <field name="arch" type="xml">
+                <tree string="res_user_line_tree" version="7.0" editable="bottom">
+                    <field name="name" readonly="1"/>
+                    <field name="label_workcenter_id"/>
+                </tree>
+            </field>
+        </record>
+        <record id="res_user_line_action" model="ir.actions.act_window">
+            <field name="name">User line</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.users</field>
+            <field name="view_mode">tree</field>
+        </record>
 
-        <menuitem id="menu_mrp_label_root" name="MRP Line" sequence="40"/>
+        <!--mrp.production-->
+        <record id="online_label_mrp_view_tree" model="ir.ui.view">
+            <field name="name">mrp.production.schedule.label</field>
+            <field name="model">mrp.production</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <tree fonts="bold:message_unread==True" colors="green:state in ('done');grey:state in ('cancel')" string="Ordini di produzione" editable="bottom">
+                    <field name="message_unread" invisible="1" modifiers="{'readonly': true, 'tree_invisible': true}" readonly="1"/>
+                    <field name="name" readonly="1"/>
+                    <field name="product_id"  readonly="1"/>
+                    <field name="product_qty" sum="Qtà totale"  readonly="1"/>
+                    <field name="product_uom"  readonly="1"/>
+                    <field name="routing_id" invisible="1" />
+                    <field name="hour_total" sum="Ore Totali"  readonly="1"/>
+                    <field name="cycle_total" invisible="1" />
+                    <field name="origin" invisible="1" readonly="1"/>
+                    <field name="date_planned" />
+                    <field name="label_workcenter_id" />
+                    <field name="state" invisible="1" />
+
+                    <button name="generate_label_job" type="object" string="Generate label jobs" icon="gtk-execute" confirm="(Re)generate print job from production order? all jobs present will be regenerated, confirm?" />
+                    <button name="generate_remain_label_job" type="object" string="Genera residuo etichette" icon="gtk-execute" confirm="Rigenero le rimanenti etichette non presenti, confermi?" />
+                    <button name="label_check_report" type="object" string="Check label error" icon="gtk-print" />
+                    <button name="label_form_report" type="object" string="Label list" icon="gtk-print" />
+                </tree>
+            </field>
+        </record>
+        <record id="action_online_label_mrp_view" model="ir.actions.act_window">
+            <field name="name">Production management</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">mrp.production</field>
+            <field name="view_mode">tree,calendar</field>
+            <field name="view_id" ref="online_label_mrp_view_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[('state','not in', ('cancel', 'done'))]</field>
+        </record>
+
+        <menuitem id="menu_mrp_label_root" name="MRP Line" sequence="40" groups="mrp_online_label.group_mrp_label_manager,mrp_online_label.group_mrp_label_user"/>
             <menuitem parent="menu_mrp_label_root" id="menu_line_production" name="Line production" sequence="10"/>
 
-            <menuitem parent="menu_mrp_label_root" id="menu_line_management" name="Line management" sequence="90"/>
+            <menuitem parent="menu_mrp_label_root" id="menu_line_management" name="Line management" sequence="90" groups="mrp_online_label.group_mrp_label_manager"/>
+                <menuitem parent="menu_line_management" id="menu_online_label_mrp_view" name="Schedule MRP" sequence="10" action="action_online_label_mrp_view"/>
+                <menuitem parent="menu_line_management" id="menu_line_management_user" name="User line" sequence="20" action="res_user_line_action"/>
     </data>
 </openerp>
 
