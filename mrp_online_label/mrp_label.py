@@ -59,6 +59,52 @@ class MrpProduction(orm.Model):
     """
     _inherit = 'mrp.production'
 
+    def my_production_for_label_server_action(
+            self, cr, uid, ids, context=None):
+        """ My production list
+        """
+        user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
+        label_workcenter_id = user.label_workcenter_id.id
+        view_id = False
+        item_id = ids[0]
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Detail'),
+            'view_type': 'form',
+            'view_mode': 'form,tree',
+            'res_id': item_id,
+            'res_model': 'mrp.production',
+            'view_id': view_id,
+            'views': [(view_id, 'form'), (False, 'tree')],
+            'domain': [('label_workcenter_id', '=', label_workcenter_id)],
+            'context': context,
+            'target': 'current',
+            'nodestroy': False,
+            }
+
+    def open_production_detail(self, cr, uid, ids, context=None):
+        """ Open form
+        """
+        # model_pool = self.pool.get('ir.model.data')
+        # view_id = model_pool.get_object_reference(
+        #     'module_name', 'view_name')[1]
+        view_id = False
+        item_id = ids[0]
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Detail'),
+            'view_type': 'form',
+            'view_mode': 'form,tree',
+            'res_id': item_id,
+            'res_model': 'mrp.production',
+            'view_id': view_id,
+            'views': [(view_id, 'form'), (False, 'tree')],
+            'domain': [],
+            'context': context,
+            'target': 'current',
+            'nodestroy': False,
+            }
+
     _columns = {
         'label_workcenter_id': fields.many2one(
             'mrp.workcenter', 'Linea di lavorazione',

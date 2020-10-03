@@ -36,16 +36,56 @@
                     <field name="cycle_total" invisible="1" />
                     <field name="origin" invisible="1" readonly="1"/>
                     <field name="date_planned" />
-                    <field name="label_workcenter_id" />
+                    <field name="label_workcenter_id" required="True"/>
                     <field name="state" invisible="1" />
 
                     <button name="generate_label_job" type="object" string="Generate label jobs" icon="gtk-execute" confirm="(Re)generate print job from production order? all jobs present will be regenerated, confirm?" />
                     <button name="generate_remain_label_job" type="object" string="Genera residuo etichette" icon="gtk-execute" confirm="Rigenero le rimanenti etichette non presenti, confermi?" />
                     <button name="label_check_report" type="object" string="Check label error" icon="gtk-print" />
                     <button name="label_form_report" type="object" string="Label list" icon="gtk-print" />
+
+                    <button name="open_production_detail" type="object" string="Detail" icon="gtk-file" />
                 </tree>
             </field>
         </record>
+        <!--mrp.production-->
+        <record id="online_label_mrp_view_tree" model="ir.ui.view">
+            <field name="name">mrp.production.schedule.label</field>
+            <field name="model">mrp.production</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <tree fonts="bold:message_unread==True" colors="green:state in ('done');grey:state in ('cancel')" string="Ordini di produzione" editable="bottom">
+                    <field name="message_unread" invisible="1" modifiers="{'readonly': true, 'tree_invisible': true}" readonly="1"/>
+                    <field name="name" readonly="1"/>
+                    <field name="product_id"  readonly="1"/>
+                    <field name="product_qty" sum="Qtà totale"  readonly="1"/>
+                    <field name="product_uom"  readonly="1"/>
+                    <field name="routing_id" invisible="1" />
+                    <field name="hour_total" sum="Ore Totali"  readonly="1"/>
+                    <field name="cycle_total" invisible="1" />
+                    <field name="origin" invisible="1" readonly="1"/>
+                    <field name="date_planned" />
+                    <field name="label_workcenter_id" required="True"/>
+                    <field name="state" invisible="1" />
+
+                    <button name="generate_label_job" type="object" string="Generate label jobs" icon="gtk-execute"
+                            confirm="(Re)generate print job from production order? all jobs present will be regenerated, confirm?"
+                            groups="mrp_online_label.group_mrp_label_manager"/>
+                    <button name="generate_remain_label_job" type="object" string="Genera residuo etichette" icon="gtk-execute"
+                            confirm="Rigenero le rimanenti etichette non presenti, confermi?"
+                            groups="mrp_online_label.group_mrp_label_manager"/>
+                    <button name="label_check_report" type="object" string="Check label error" icon="gtk-print"
+                            groups="mrp_online_label.group_mrp_label_manager"/>
+                    <button name="label_form_report" type="object" string="Label list" icon="gtk-print"
+                            groups="mrp_online_label.group_mrp_label_manager"/>
+
+                    <button name="open_production_detail" type="object" string="Detail" icon="gtk-file"
+                            groups="mrp_online_label.group_mrp_label_manager"/>
+                </tree>
+            </field>
+        </record>
+
+
         <record id="action_online_label_mrp_view" model="ir.actions.act_window">
             <field name="name">Production management</field>
             <field name="type">ir.actions.act_window</field>
@@ -55,9 +95,19 @@
             <field name="context">{}</field>
             <field name="domain">[('state','not in', ('cancel', 'done'))]</field>
         </record>
+         <!-- Server Action:-->
+         <record id="my_line_action_online_label_mrp_view" model="ir.actions.server">
+             <field name="name">My production</field>
+             <field name="type">ir.actions.server</field>
+             <field name="model_id" ref="online_label_mrp_view_tree" />
+             <field name="binding_model_id" ref="model_mrp_production" />
+             <field name="state">code</field>
+             <field name="code">action = env['mrp.production'].my_production_for_label_server_action()</field>
+         </record>
 
         <menuitem id="menu_mrp_label_root" name="MRP Line" sequence="40" groups="mrp_online_label.group_mrp_label_manager,mrp_online_label.group_mrp_label_user"/>
             <menuitem parent="menu_mrp_label_root" id="menu_line_production" name="Line production" sequence="10"/>
+                <menuitem parent="menu_line_production" id="menu_online_my_label_mrp_view" name="My MRP" sequence="10" action="my_line_action_online_label_mrp_view"/>
 
             <menuitem parent="menu_mrp_label_root" id="menu_line_management" name="Line management" sequence="90" groups="mrp_online_label.group_mrp_label_manager"/>
                 <menuitem parent="menu_line_management" id="menu_online_label_mrp_view" name="Schedule MRP" sequence="10" action="action_online_label_mrp_view"/>
