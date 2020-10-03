@@ -105,18 +105,24 @@
                         />
                     </header>
                     <sheet>
-                        <group col="4">
+                        <group col="6">
+                            <separator string="Order details:" colspan="4"/>
                             <field name="order_id" readonly="1"/>
                             <field name="partner_id" readonly="1"/>
+                            <newline/>
 
                             <field name="product_id" readonly="1"/>
                             <field name="default_code" readonly="1"/>
+                            <button name="open_product_bom" type="object" string="DB" icon="STOCK_PROPERTIES" colspan="1"/>
+                            <button name="open_product_schema" type="object" string="Product detail" icon="stock_gantt" colspan="1"/>
 
                             <!--<field name="q_x_pack" readonly="1"/>-->
                             <field name="date_deadline" readonly="1"/>
                             <field name="production_note" readonly="1" colspan="4"/>
+                            <newline/>
                         </group>
                         <group col="10">
+                            <separator string="Production details:" colspan="10"/>
                             <field name="product_uom_qty" readonly="1"/>
                             <field name="mx_assigned_qty" readonly="1"/>
                             <field name="delivered_qty" readonly="1"/>
@@ -127,13 +133,14 @@
                             <field name="is_manufactured" invisible="1"/>
                             <field name="mrp_id" invisible="1"/>
                             <field name="sync_state" invisible="1"/>
-
                         </group>
                         <group col="4">
-                            <button name="print_all_internal_label" type="object" string="Print all internal" icno="gtk-dnd-multiple" colspan="1"/>
-                            <button name="print_one_internal_label" type="object" string="Print one internal" icno="gtk-dnd" colspan="1"/>
-                            <button name="print_all_external_label" type="object" string="Print all external" icno="gtk-dnd-multiple" colspan="1"/>
-                            <button name="print_one_external_label" type="object" string="Print one external" icno="gtk-dnd" colspan="1"/>
+                            <separator string="Label print (internal)" colspan="2"/>
+                            <separator string="Label print (external)" colspan="2"/>
+                            <button name="print_all_internal_label" type="object" string="Print all internal" icon="gtk-dnd-multiple" colspan="1"/>
+                            <button name="print_one_internal_label" type="object" string="Print one internal" icon="gtk-dnd" colspan="1"/>
+                            <button name="print_all_external_label" type="object" string="Print all external" icon="gtk-dnd-multiple" colspan="1"/>
+                            <button name="print_one_external_label" type="object" string="Print one external" icon="gtk-dnd" colspan="1"/>
                         </group>
                     </sheet>
                 </form>
