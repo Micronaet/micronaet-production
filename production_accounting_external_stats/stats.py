@@ -76,6 +76,7 @@ class MrpProductionStat(orm.Model):
         'date': lambda *x: datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT),
         }
 
+
 class MrpProductionStatLine(orm.Model):
     """ Statistic data
     """
@@ -88,6 +89,7 @@ class MrpProductionStatLine(orm.Model):
         'default_code': fields.char('Codice rif.', size=18),
         'qty': fields.integer('Q.'),
         }
+
 
 class MrpProductionStat(orm.Model):
     """ Statistic data

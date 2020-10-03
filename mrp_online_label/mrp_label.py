@@ -66,16 +66,15 @@ class MrpProduction(orm.Model):
         user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
         label_workcenter_id = user.label_workcenter_id.id
         view_id = False
-        item_id = ids[0]
         return {
             'type': 'ir.actions.act_window',
             'name': _('Detail'),
             'view_type': 'form',
             'view_mode': 'form,tree',
-            'res_id': item_id,
+            # 'res_id': ,
             'res_model': 'mrp.production',
             'view_id': view_id,
-            'views': [(view_id, 'form'), (False, 'tree')],
+            'views': [(False, 'tree')],
             'domain': [('label_workcenter_id', '=', label_workcenter_id)],
             'context': context,
             'target': 'current',
