@@ -70,7 +70,8 @@ class MrpProduction(orm.Model):
         self.start_blocking_stats(self, cr, uid, ids, context=context)
 
         form_view_id = model_pool.get_object_reference(
-             'mrp_online_label', 'sale_order_label_online_view_form')[1]
+            cr, uid,
+            'mrp_online_label', 'sale_order_label_online_view_form')[1]
 
         # TODO item_id change here:
         line_id = mrp.order_line_ids[0].id
@@ -83,22 +84,24 @@ class MrpProduction(orm.Model):
             'res_id': line_id,
             'res_model': 'mrp.production',
             'view_id': form_view_id,
-            'views': [(form_view_id, 'form')],
+            'views': [(form_view_id, 'tree')],
             'domain': [],
             'context': context,
             'target': 'current',
             'nodestroy': False,
             }
 
-
-
     def my_production_for_label_server_action(
             self, cr, uid, ids, context=None):
         """ My production list
         """
+        model_pool = self.pool.get('ir.model.data')
+        form_view_id = model_pool.get_object_reference(
+            cr, uid,
+            'mrp_online_label', 'online_label_mrp_view_tree')[1]
+
         user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
         label_workcenter_id = user.label_workcenter_id.id
-        view_id = False
         return {
             'type': 'ir.actions.act_window',
             'name': _('Detail'),
@@ -106,7 +109,7 @@ class MrpProduction(orm.Model):
             'view_mode': 'form,tree',
             # 'res_id': ,
             'res_model': 'mrp.production',
-            'view_id': view_id,
+            'view_id': form_view_id,
             'views': [(False, 'tree')],
             'domain': [('label_workcenter_id', '=', label_workcenter_id)],
             'context': context,

@@ -68,8 +68,8 @@
                     <field name="date_planned" />
                     <field name="label_workcenter_id" required="True"/>
                     <field name="state" invisible="1" />
-                    <button name="start_block_start_label" type="object" string="Start" icon="gtk-file"
-                            groups="mrp_online_label.group_mrp_label_production"/>
+                    <button name="start_block_start_label" type="object" string="Start" icon="gtk-gtk-yes"
+                            groups="mrp_online_label.group_mrp_label_user"/>
 
                     <button name="generate_label_job" type="object" string="Generate label jobs" icon="gtk-execute"
                             confirm="(Re)generate print job from production order? all jobs present will be regenerated, confirm?"
@@ -92,16 +92,28 @@
         <record id="sale_order_label_online_view_form" model="ir.ui.view">
             <field name="name">sale.order.line.label.online</field>
             <field name="model">sale.order.line</field>
-            <field name="priority" eval="40">
+            <field name="priority" eval="40"/>
             <field name="arch" type="xml">
                 <form string="Sale order online">
                     <header>
 
                     </header>
                     <sheet>
-                        <group>
-                            <field name="product_id"/>
+                        <group col="4">
+                            <field name="order_id" readonly="1"/>
+                            <field name="partner_id" readonly="1"/>
 
+                            <field name="product_id" readonly="1"/>
+                            <field name="default_code" readonly="1"/>
+
+                            <field name="date_deadline" readonly="1"/>
+                            <field name="production_note" readonly="1"/>
+                        </group>
+                        <group col="8">
+                            <field name="product_uom_qty" readonly="1"/>
+                            <field name="mx_assigned_qty" readonly="1"/>
+                            <field name="delivered_qty" readonly="1"/>
+                            <field name="product_uom_maked_qty"/>
                         </group>
                     </sheet>
                 </form>
