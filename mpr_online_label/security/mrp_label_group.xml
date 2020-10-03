@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+   <data>
+        <record id="group_mrp_label_manager" model="res.groups">
+            <field name="name">MRP Label Manager</field>
+        </record>
+        <record id="group_mrp_label_user" model="res.groups">
+            <field name="name">MRP Label user</field>
+        </record>
+   </data>
+</openerp>

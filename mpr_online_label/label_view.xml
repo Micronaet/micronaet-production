@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <menuitem id="menu_mrp_label_root" name="MRP Line" sequence="40"/>
+            <menuitem parent="menu_mrp_label_root" id="menu_line_production" name="Line production" sequence="10"/>
+
+            <menuitem parent="menu_mrp_label_root" id="menu_line_management" name="Line management" sequence="90"/>
+    </data>
+</openerp>
+
