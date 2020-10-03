@@ -69,9 +69,9 @@ class MrpProduction(orm.Model):
 
         self.start_blocking_stats(self, cr, uid, ids, context=context)
 
-        form_view_id = model_pool.get_object_reference(
+        tree_view_id = model_pool.get_object_reference(
             cr, uid,
-            'mrp_online_label', 'sale_order_label_online_view_form')[1]
+            'mrp_online_label', 'online_label_mrp_view_tree')[1]
 
         # TODO item_id change here:
         line_id = mrp.order_line_ids[0].id
@@ -83,8 +83,8 @@ class MrpProduction(orm.Model):
             'view_mode': 'form,tree',
             'res_id': line_id,
             'res_model': 'mrp.production',
-            'view_id': form_view_id,
-            'views': [(form_view_id, 'tree')],
+            'view_id': tree_view_id,
+            'views': [(tree_view_id, 'tree')],
             'domain': [],
             'context': context,
             'target': 'current',
@@ -96,7 +96,7 @@ class MrpProduction(orm.Model):
         """ My production list
         """
         model_pool = self.pool.get('ir.model.data')
-        form_view_id = model_pool.get_object_reference(
+        tree_view_id = model_pool.get_object_reference(
             cr, uid,
             'mrp_online_label', 'online_label_mrp_view_tree')[1]
 
@@ -106,11 +106,11 @@ class MrpProduction(orm.Model):
             'type': 'ir.actions.act_window',
             'name': _('Detail'),
             'view_type': 'form',
-            'view_mode': 'form,tree',
+            'view_mode': 'form',
             # 'res_id': ,
             'res_model': 'mrp.production',
-            'view_id': form_view_id,
-            'views': [(False, 'tree')],
+            'view_id': tree_view_id,
+            'views': [(tree_view_id, 'tree')],
             'domain': [('label_workcenter_id', '=', label_workcenter_id)],
             'context': context,
             'target': 'current',
