@@ -102,6 +102,14 @@ class SaleOrderLine(orm.Model):
         )
         return res
 
+    def _get_note_system_online(
+            self, cr, uid, ids, field_names, arg=None, context=None):
+        """ MRP statistic ensure one
+        """
+        res = {}
+        res[uid[0]] = ''
+        return res
+
     _columns = {
         'future_line_ids': fields.function(
             _get_future_line, method=True, readonly=True,
@@ -110,7 +118,10 @@ class SaleOrderLine(orm.Model):
             string='Future line'),
         'production_status_online': fields.function(
             _get_mrp_stats_online, method=True, readonly=True,
-            type='char', size=100, string='Production status',
+            type='char', size=100, string='Production status'),
+        'note_system_online': fields.function(
+            _get_note_system_online, method=True, readonly=True,
+            type='text', string='Note system',
         )
     }
 
