@@ -59,15 +59,12 @@ class MrpProduction(orm.Model):
     """
     _inherit = 'mrp.production'
 
-    def start_block_start_label(self, cr, uid, ids, context=None):
-        """ Launch stats start action and open view for production start
+    def button_next_line(self, cr, uid, ids, context=None):
+        """ Next line operation
         """
         model_pool = self.pool.get('ir.model.data')
 
         mrp = self.browse(cr, uid, ids, context=context)[0]
-
-        self.start_blocking_stats(cr, uid, ids, context=context)
-
         form_view_id = model_pool.get_object_reference(
             cr, uid,
             'mrp_online_label', 'sale_order_label_online_view_form')[1]
@@ -99,6 +96,12 @@ class MrpProduction(orm.Model):
             'target': 'current',
             'nodestroy': False,
             }
+
+    def start_block_start_label(self, cr, uid, ids, context=None):
+        """ Launch stats start action and open view for production start
+        """
+        self.start_blocking_stats(cr, uid, ids, context=context)
+        return self.button_next_line(cr, uid, ids, context=context)
 
     def my_production_for_label_server_action(
             self, cr, uid, ids, context=None):
