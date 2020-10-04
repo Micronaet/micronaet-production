@@ -36,6 +36,7 @@
         'mrp',
         'production_accounting_external',  # MRP Management
         'production_accounting_external_stats',  # Statistics
+        'production_accounting_external_total', # Total
         'production_product_sequence',  # Sorting procedure
         'bom_dynamic_structured',  # BOM management
         'label_system_mrp',

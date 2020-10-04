@@ -30,31 +30,33 @@ from openerp import SUPERUSER_ID, api
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    DATETIME_FORMATS_MAP,
     float_compare)
 
 
 _logger = logging.getLogger(__name__)
 
+
 class MrpProduction(orm.Model):
     """ Model name: MrpProduction
     """
-    
+
     _inherit = 'mrp.production'
 
     def _get_total_line(self, cr, uid, ids, fields, args, context=None):
-        ''' Fields function for calculate 
-        '''
-        res = {}        
-    
+        """ Fields function for calculate
+        """
+        res = {}
+
         query = '''
             SELECT 
                  mrp_id,
                  sum(product_uom_qty) as todo, 
                  sum(product_uom_maked_sync_qty) as done, 
-                 sum(product_uom_qty) - sum(product_uom_maked_sync_qty) as remain,
+                 sum(product_uom_qty) - sum(product_uom_maked_sync_qty) as 
+                     remain,
                  sum(product_uom_qty) = sum(product_uom_maked_sync_qty) as ok
              FROM 
                  sale_order_line 
@@ -63,7 +65,7 @@ class MrpProduction(orm.Model):
              HAVING 
                  mrp_id in (%s);
              ''' % (','.join(map(lambda x: str(x), ids)))
-        
+
         cr.execute(query)
         _logger.warning('Start query:\n\t:%s' % query)
         for item in cr.fetchall():
@@ -72,25 +74,24 @@ class MrpProduction(orm.Model):
             res[item[0]]['total_line_done'] = item[2]
             res[item[0]]['total_line_remain'] = item[3]
             res[item[0]]['total_line_ok'] = item[4]
-        _logger.warning('End query')    
-        return res        
-    
+        _logger.warning('End query')
+        return res
+
     _columns = {
         'total_line_todo': fields.function(
-            _get_total_line, method=True, 
-            type='float', string='Todo', 
-            store=False, multi=True), 
+            _get_total_line, method=True,
+            type='float', string='Todo',
+            store=False, multi=True),
         'total_line_done': fields.function(
-            _get_total_line, method=True, 
-            type='float', string='Done', 
-            store=False, multi=True), 
+            _get_total_line, method=True,
+            type='float', string='Done',
+            store=False, multi=True),
         'total_line_remain': fields.function(
-            _get_total_line, method=True, 
-            type='float', string='Residui', 
-            store=False, multi=True), 
+            _get_total_line, method=True,
+            type='float', string='Residui',
+            store=False, multi=True),
         'total_line_ok': fields.function(
-            _get_total_line, method=True, 
-            type='boolean', string='Completed', 
-            store=False, multi=True),                        
+            _get_total_line, method=True,
+            type='boolean', string='Completed',
+            store=False, multi=True),
         }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

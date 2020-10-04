@@ -89,10 +89,11 @@ class SaleOrderLine(orm.Model):
         res = {}
         line = self.browse(cr, uid, ids, context=context)[0]
         mrp = line.mrp_id
-        res[ids[0]] = _('Totale: %s - Fatti: %s - Residui: %s') % (
+        res[ids[0]] = _('[MRP %s] Totale: %s - Fatti: %s - Residui: %s') % (
+            mrp.name,
+            mrp.total_line_todo,
             mrp.total_line_done,
             mrp.total_line_remain,
-            mrp.total_line_ok,
         )
         return res
 
