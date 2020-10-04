@@ -287,12 +287,6 @@ class MrpProduction(orm.Model):
             'default_detail_ids': default_res,
             })
 
-        # Clean start parameters:
-        self.write(cr, uid, ids, {
-            'stat_start_total': False,
-            'stat_start_datetime': False,
-            }, context=context)
-
         return {
             'type': 'ir.actions.act_window',
             'name': _('Update Stats'),

@@ -92,6 +92,7 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
         # Reset old total
         mrp_pool.write(cr, uid, mrp_id, {
             'stat_start_total': '',
+            'stat_start_datetime': False,
             }, context=context)
         return True
 
