@@ -82,12 +82,28 @@ class SaleOrderLine(orm.Model):
             cr, uid, [line.mrp_id.id], context=context_next)
         return res
 
+    def _get_mrp_stats_online(self, cr, uid, ids, context=None):
+        """ MRP statistic ensure one
+        """
+        res = {}
+        line = self.browse(cr, uid, ids, context=context)[0]
+        mrp = line.mrp_id
+        res[ids[0]] = _('Totale: %s - Fatti: %s - Residui: %s') % (
+            mrp.total_line_done,
+            mrp.total_line_remain,
+            mrp.total_line_ok,
+        )
+
     _columns = {
         'future_line_ids': fields.function(
             _get_future_line, method=True, readonly=True,
             type='one2many',
             relation='sale.order.line',
             string='Future line'),
+        'production_status_online': fields.function(
+            _get_mrp_stats_online, method=True, readonly=True,
+            type='char', size=100, string='Production status',
+        )
     }
 
 
