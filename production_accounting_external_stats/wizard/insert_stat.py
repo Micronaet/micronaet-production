@@ -81,7 +81,6 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
                 'workcenter_id': wiz_proxy.workcenter_id.id,
                 }, context=context)
 
-
         # Create details:
         for line in wiz_proxy.detail_ids:
             line_pool.create(cr, uid, {
@@ -112,6 +111,7 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
         'date': datetime.now().strftime( DEFAULT_SERVER_DATE_FORMAT),
         }
 
+
 class CreateMrpProductionStatsWizard(orm.TransientModel):
     """ Create statistic for production
     """
@@ -124,6 +124,7 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
         'qty': fields.integer('Q.'),
         }
 
+
 class CreateMrpProductionStatsWizard(orm.TransientModel):
     """ Create statistic for production
     """
@@ -134,5 +135,3 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
             'mrp.production.create.stats.detail.wizard',
             'wizard_id', 'Dettagli'),
         }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
