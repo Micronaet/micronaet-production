@@ -63,7 +63,6 @@ class MrpProduction(orm.Model):
         """ Launch stats start action and open view for production start
         """
         model_pool = self.pool.get('ir.model.data')
-        line_pool = self.pool.get('sale.order.line')
 
         mrp = self.browse(cr, uid, ids, context=context)[0]
 
@@ -73,8 +72,18 @@ class MrpProduction(orm.Model):
             cr, uid,
             'mrp_online_label', 'sale_order_label_online_view_form')[1]
 
-        # TODO item_id change here:
-        line_id = mrp.order_line_ids[0].id
+        this_line = False
+        for line in sorted(mrp.order_line_ids, key=lambda x: x.sequence):
+            if line.product_uom_maked_sync_qty >= (
+                    line.product_uom_qty + line.mx_assigned_qty):
+                continue  # All done
+            this_line = line
+        if not this_line:
+            raise osv.except_osv(
+                _('Error'),
+                _('End of production, please close and confirm statistic!'),
+                )
+        line_id = this_line.id
 
         return {
             'type': 'ir.actions.act_window',

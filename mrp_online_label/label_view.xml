@@ -106,7 +106,7 @@
                     </header>
                     <sheet>
                         <group col="6">
-                            <separator string="Order details:" colspan="4"/>
+                            <separator string="Order details:" colspan="6"/>
                             <field name="order_id" readonly="1"/>
                             <field name="partner_id" readonly="1"/>
                             <newline/>
