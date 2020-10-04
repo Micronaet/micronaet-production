@@ -42,6 +42,20 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 _logger = logging.getLogger(__name__)
 
 
+class SaleOrderLine(orm.Model):
+    """ Model name: Sale line
+    """
+    _inherit = 'sale.order.line'
+
+    def button_next_line(self, cr, uid, ids, context=None):
+        """ Call next from sale line
+        """
+        mrp_pool = self.pool.get('mrp.production')
+        line = self.browse(cr, uid, ids, context=context)
+        return mrp_pool.button_next_line(
+            cr, uid, [line.mrp_id.id], context=context)
+
+
 class ResUsers(orm.Model):
     """ Model name: Res Users
     """
