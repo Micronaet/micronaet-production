@@ -139,6 +139,7 @@ class MrpProduction(orm.Model):
 
                     next_line_ids.append(future.id)
                     extra_line_item -= 1  # Back counter
+                    i += 1
                 return next_line_ids
 
         # A. Default run

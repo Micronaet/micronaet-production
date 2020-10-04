@@ -69,7 +69,7 @@
                     <field name="label_workcenter_id" required="True" groups="mrp_online_label.group_mrp_label_manager"/>
                     <field name="state" invisible="1" />
                     <field name="stat_start_datetime" readonly="1" />
-                    <button name="start_block_start_label" type="object" string="Start" icon="gtk-gtk-yes"
+                    <button name="start_block_start_label" type="object" string="Start" icon="gtk-yes"
                             groups="mrp_online_label.group_mrp_label_user"/>
 
                     <button name="generate_label_job" type="object" string="Generate label jobs" icon="gtk-execute"
