@@ -73,28 +73,54 @@ class MrpProduction(orm.Model):
     """
     _inherit = 'mrp.production'
 
-    def button_next_line(self, cr, uid, ids, context=None):
-        """ Next line operation
+    def get_first_line_undone(self, cr, uid, ids, context=None):
+        """ Return first undone line to be produced,
+            context: extra_line_item = extra line ID returned
         """
-        model_pool = self.pool.get('ir.model.data')
+        if context is None:
+            context = {}
+        # Extra line management (for next line preview)
+        extra_line_item = context.get('extra_line_item')
+        if extra_line_item < 0:
+            extra_line_item = False
 
+        # Extract uncomplete line (and extra line):
         mrp = self.browse(cr, uid, ids, context=context)[0]
-        form_view_id = model_pool.get_object_reference(
-            cr, uid,
-            'mrp_online_label', 'sale_order_label_online_view_form')[1]
-
-        this_line = False
-        for line in sorted(mrp.order_line_ids, key=lambda x: x.sequence):
+        this_line_id = False
+        sorted_line = sorted(mrp.order_line_ids, key=lambda x: x.sequence)
+        i = 0
+        for line in sorted_line:
             if line.product_uom_maked_sync_qty >= (
                     line.product_uom_qty + line.mx_assigned_qty):
                 continue  # All done
-            this_line = line
-        if not this_line:
+
+            # A. Default run:
+            this_line_id = line.id
+
+            # B. Extra line run mode:
+            if extra_line_item:
+                return [
+                    item.id for item in sorted_line[i, i + extra_line_item]]
+            i += 1
+
+        # A. Default run
+        if not this_line_id:
             raise osv.except_osv(
                 _('Error'),
                 _('End of production, please close and confirm statistic!'),
                 )
-        line_id = this_line.id
+        return this_line_id
+
+    def button_next_line(self, cr, uid, ids, context=None):
+        """ Next line operation
+        """
+        model_pool = self.pool.get('ir.model.data')
+        line_id = self.get_first_line_undone(
+            cr, uid, ids, context=context)
+
+        form_view_id = model_pool.get_object_reference(
+            cr, uid,
+            'mrp_online_label', 'sale_order_label_online_view_form')[1]
 
         return {
             'type': 'ir.actions.act_window',
