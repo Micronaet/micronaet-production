@@ -69,8 +69,7 @@ class SaleOrderLine(orm.Model):
         # Launch from MRP finding in line:
         mrp_pool = self.pool.get('mrp.production')
         line = self.browse(cr, uid, ids, context=context)
-        pdb.set_trace()
-        res[ids[0]] = mrp_pool.button_next_line(
+        res[ids[0]] = mrp_pool.line_id = self.get_first_line_undone(
             cr, uid, [line.mrp_id.id], context=context_next)
         return res
 
