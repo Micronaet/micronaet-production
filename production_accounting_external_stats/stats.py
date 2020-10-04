@@ -256,7 +256,7 @@ class MrpProduction(orm.Model):
         for default_code, current_tot in current.iteritems():
             last_tot = previous.get(default_code, 0)
             if last_tot != current_tot:  # TODO negative?
-                partial = current_tot - last_tot # difference
+                partial = current_tot - last_tot  # difference
                 total += partial
                 default_res.append({
                     'default_code': default_code,
@@ -286,6 +286,13 @@ class MrpProduction(orm.Model):
             'default_hour': hour,
             'default_detail_ids': default_res,
             })
+
+        # Clean start parameters:
+        self.write(cr, uid, ids, {
+            'stat_start_total': False,
+            'stat_start_datetime': False,
+            }, context=context)
+
         return {
             'type': 'ir.actions.act_window',
             'name': _('Update Stats'),
