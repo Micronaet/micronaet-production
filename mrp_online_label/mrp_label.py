@@ -82,7 +82,8 @@ class SaleOrderLine(orm.Model):
             cr, uid, [line.mrp_id.id], context=context_next)
         return res
 
-    def _get_mrp_stats_online(self, cr, uid, ids, context=None):
+    def _get_mrp_stats_online(self, cr, uid, ids, field_names, arg=None,
+                              context=None):
         """ MRP statistic ensure one
         """
         res = {}
@@ -93,6 +94,7 @@ class SaleOrderLine(orm.Model):
             mrp.total_line_remain,
             mrp.total_line_ok,
         )
+        return res
 
     _columns = {
         'future_line_ids': fields.function(
