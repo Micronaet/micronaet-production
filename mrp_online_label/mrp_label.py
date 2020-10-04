@@ -43,6 +43,14 @@ class SaleOrderLine(orm.Model):
     """
     _inherit = 'sale.order.line'
 
+    def stop_blocking_stats(self, cr, uid, ids, context=None):
+        """ Close stats block
+        """
+        mrp_pool = self.pool.get('mrp.production')
+        line = self.browse(cr, uid, ids, context=context)
+        return mrp_pool.stop_blocking_stats(
+            cr, uid, [line.mrp_id.id], context=context)
+
     def close_production_online(self, cr, uid, ids, context=None):
         """ Close and go next
         """
@@ -107,7 +115,7 @@ class SaleOrderLine(orm.Model):
         """ MRP statistic ensure one
         """
         res = {}
-        res[uid[0]] = ''
+        res[ids[0]] = ''
         return res
 
     _columns = {
