@@ -43,8 +43,8 @@ class SaleOrderLine(orm.Model):
     """
     _inherit = 'sale.order.line'
 
-    def stop_blocking_stats(self, cr, uid, ids, context=None):
-        """ Close stats block
+    def stop_block_start_label(self, cr, uid, ids, context=None):
+        """ Close stats block button event
         """
         mrp_pool = self.pool.get('mrp.production')
         line = self.browse(cr, uid, ids, context=context)
