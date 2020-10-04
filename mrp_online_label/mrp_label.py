@@ -43,6 +43,15 @@ class SaleOrderLine(orm.Model):
     """
     _inherit = 'sale.order.line'
 
+    def close_production_online(self, cr, uid, ids, context=None):
+        """ Close and go next
+        """
+        # Close remain to produce:
+        self.close_production(cr, uid, ids, context=context)
+
+        # Go next:
+        return self.button_next_line(cr, uid, ids, context=context)
+
     def button_next_line(self, cr, uid, ids, context=None):
         """ Call next from sale line
         """

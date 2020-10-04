@@ -136,7 +136,7 @@
                             <field name="delivered_qty" readonly="1"/>
                             <field name="product_uom_maked_sync_qty"/>
 
-                            <button name="close_production" type="object" string="All done" icon="STOCK_SAVE" attrs="{'invisible': ['|',('mrp_id','=',False),('sync_state','!=','draft')]}" colspan="1"/>
+                            <button name="close_production_online" type="object" string="All done" icon="STOCK_SAVE" attrs="{'invisible': ['|',('mrp_id','=',False),('sync_state','!=','draft')]}" colspan="1"/>
                             <button name="undo_close_production" type="object" string="Undo" icon="STOCK_REVERT_TO_SAVED" attrs="{'invisible': ['|',('mrp_id','=',False),('sync_state','in',('draft'))]}" colspan="1"/>
                             <field name="is_manufactured" invisible="1"/>
                             <field name="mrp_id" invisible="1"/>
