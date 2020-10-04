@@ -32,27 +32,28 @@ from openerp import SUPERUSER_ID, api
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    DATETIME_FORMATS_MAP,
     float_compare)
 
 
 _logger = logging.getLogger(__name__)
 
+
 class CreateMrpProductionStatsWizard(orm.TransientModel):
-    ''' Create statistic for production
-    '''    
+    """ Create statistic for production
+    """
     _name = 'mrp.production.create.stats.wizard'
-    
+
     # --------------
     # Wizard button:
     # --------------
     def action_create_mrp_production_stats(self, cr, uid, ids, context=None):
-        ''' Add statistic record
-        '''
+        """ Add statistic record
+        """
         if context is None:
-           context = {}
+            context = {}
 
         # Pool used:
         stats_pool = self.pool.get('mrp.production.stats')
@@ -61,15 +62,15 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
 
         # Wizard proxy:
         wiz_proxy = self.browse(cr, uid, ids, context=context)[0]
-        
+
         mrp_id = wiz_proxy.mrp_id.id
-        if not mrp_id: 
+        if not mrp_id:
             raise osv.except_osv(
                 _('Error'),
                 _('No parent production!'))
 
         # Create header:
-        stat_id = stats_pool.create(     
+        stat_id = stats_pool.create(
             cr, uid, {
                 'date': wiz_proxy.date,
                 'total': wiz_proxy.total,
@@ -80,7 +81,7 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
                 'workcenter_id': wiz_proxy.workcenter_id.id,
                 }, context=context)
 
-        
+
         # Create details:
         for line in wiz_proxy.detail_ids:
             line_pool.create(cr, uid, {
@@ -88,50 +89,50 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
                 'default_code': line.default_code,
                 'qty': line.qty,
                 }, context=context)
-                
-        # Reset old total        
+
+        # Reset old total
         mrp_pool.write(cr, uid, mrp_id, {
             'stat_start_total': '',
-            }, context=context)        
+            }, context=context)
         return True
 
     _columns = {
         'workcenter_id': fields.many2one(
-            'mrp.workcenter', 'Line', required=True), 
+            'mrp.workcenter', 'Line', required=True),
         'date': fields.date('Date', required=True),
-        'total': fields.integer('Total', required=True), 
+        'total': fields.integer('Total', required=True),
         'workers': fields.integer('Workers'),
         'hour': fields.float('Tot. H'),
-        'startup': fields.float('Start up time', digits=(16, 3)),     
+        'startup': fields.float('Start up time', digits=(16, 3)),
         'mrp_id': fields.many2one(
-            'mrp.production', 'Production', ondelete='cascade'),    
+            'mrp.production', 'Production', ondelete='cascade'),
         }
-        
+
     _defaults = {
         'date': datetime.now().strftime( DEFAULT_SERVER_DATE_FORMAT),
         }
-        
+
 class CreateMrpProductionStatsWizard(orm.TransientModel):
-    ''' Create statistic for production
-    '''    
+    """ Create statistic for production
+    """
     _name = 'mrp.production.create.stats.detail.wizard'
-    
+
     _columns = {
         'wizard_id': fields.many2one(
             'mrp.production.create.stats.wizard', 'Wizard'),
         'default_code': fields.char('Codice rif.', size=18),
         'qty': fields.integer('Q.'),
         }
-         
+
 class CreateMrpProductionStatsWizard(orm.TransientModel):
-    ''' Create statistic for production
-    '''    
+    """ Create statistic for production
+    """
     _inherit = 'mrp.production.create.stats.wizard'
-    
+
     _columns = {
         'detail_ids': fields.one2many(
-            'mrp.production.create.stats.detail.wizard', 
+            'mrp.production.create.stats.detail.wizard',
             'wizard_id', 'Dettagli'),
         }
-        
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
