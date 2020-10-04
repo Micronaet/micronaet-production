@@ -23,18 +23,14 @@
 
 import os
 import sys
+import pdb
 import logging
-import openerp
-import openerp.netsvc as netsvc
-import openerp.addons.decimal_precision as dp
 from openerp.osv import fields, osv, expression, orm
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-from openerp import SUPERUSER_ID, api
-from openerp import tools
 from openerp.tools.translate import _
-from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+from openerp.tools import (
+    DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT,
     DATETIME_FORMATS_MAP,
     float_compare)
@@ -73,6 +69,7 @@ class SaleOrderLine(orm.Model):
         # Launch from MRP finding in line:
         mrp_pool = self.pool.get('mrp.production')
         line = self.browse(cr, uid, ids, context=context)
+        pdb.set_trace()
         res[ids[0]] = mrp_pool.button_next_line(
             cr, uid, [line.mrp_id.id], context=context_next)
         return res
@@ -114,7 +111,7 @@ class MrpProduction(orm.Model):
         if extra_line_item < 0:
             extra_line_item = False
 
-        # Extract uncomplete line (and extra line):
+        # Extract not complete line (and extra line):
         mrp = self.browse(cr, uid, ids, context=context)[0]
         this_line_id = False
         sorted_line = sorted(mrp.order_line_ids, key=lambda x: x.sequence)
@@ -132,9 +129,10 @@ class MrpProduction(orm.Model):
             if extra_line_item:
                 next_line_ids = []
                 while extra_line_item:
-                    future = sorted_line[i:i+1]
-                    if not future:
-                        break
+                    try:
+                        future = sorted_line[i]
+                    except:
+                        break  # List finished!
 
                     if future.product_uom_maked_sync_qty >= (
                             future.product_uom_qty + future.mx_assigned_qty):

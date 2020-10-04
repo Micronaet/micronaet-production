@@ -68,6 +68,7 @@
                     <field name="date_planned" />
                     <field name="label_workcenter_id" required="True" groups="mrp_online_label.group_mrp_label_manager"/>
                     <field name="state" invisible="1" />
+                    <field name="stat_start_datetime" readonly="1" />
                     <button name="start_block_start_label" type="object" string="Start" icon="gtk-gtk-yes"
                             groups="mrp_online_label.group_mrp_label_user"/>
 
@@ -147,6 +148,7 @@
                             <field name="future_line_ids" colspan="4">
                                 <tree string="Future lines:" editable="bottom">
                                     <field name="order_id" />
+                                    <field name="date_deadline" />
                                     <field name="partner_id" />
                                     <field name="product_id" />
                                     <field name="product_uom_qty" />
