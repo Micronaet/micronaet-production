@@ -104,6 +104,13 @@
                                 confirm="Stop production will end MRP process and ask some jop extra statistic info, confirm?"
                                 groups="mrp_online_label.group_mrp_label_user"
                         />
+
+                        <button name="print_all_internal_label" type="object" string="Print all internal" icon="gtk-dnd-multiple" colspan="1"/>
+                        <button name="print_one_internal_label" type="object" string="Print one internal" icon="gtk-dnd" colspan="1"/>
+
+                        <button name="print_all_external_label" type="object" string="Print all external" icon="gtk-dnd-multiple" colspan="1"/>
+                        <button name="print_one_external_label" type="object" string="Print one external" icon="gtk-dnd" colspan="1"/>
+
                     </header>
                     <sheet>
                         <group col="6">
@@ -134,14 +141,6 @@
                             <field name="is_manufactured" invisible="1"/>
                             <field name="mrp_id" invisible="1"/>
                             <field name="sync_state" invisible="1"/>
-                        </group>
-                        <group col="4">
-                            <separator string="Label print (internal)" colspan="2"/>
-                            <separator string="Label print (external)" colspan="2"/>
-                            <button name="print_all_internal_label" type="object" string="Print all internal" icon="gtk-dnd-multiple" colspan="1"/>
-                            <button name="print_one_internal_label" type="object" string="Print one internal" icon="gtk-dnd" colspan="1"/>
-                            <button name="print_all_external_label" type="object" string="Print all external" icon="gtk-dnd-multiple" colspan="1"/>
-                            <button name="print_one_external_label" type="object" string="Print one external" icon="gtk-dnd" colspan="1"/>
                         </group>
                         <group col="4">
                             <separator string="Next lines" colspan="4"/>
