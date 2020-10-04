@@ -107,9 +107,9 @@
                     <sheet>
                         <group col="6">
                             <separator string="Order details:" colspan="6"/>
+                            <field name="sequence" readonly="1"/>
                             <field name="order_id" readonly="1"/>
                             <field name="partner_id" readonly="1"/>
-                            <newline/>
 
                             <field name="product_id" readonly="1"/>
                             <field name="default_code" readonly="1"/>
@@ -141,6 +141,18 @@
                             <button name="print_one_internal_label" type="object" string="Print one internal" icon="gtk-dnd" colspan="1"/>
                             <button name="print_all_external_label" type="object" string="Print all external" icon="gtk-dnd-multiple" colspan="1"/>
                             <button name="print_one_external_label" type="object" string="Print one external" icon="gtk-dnd" colspan="1"/>
+                        </group>
+                        <group col="4">
+                            <separator string="Next lines" colspan="4"/>
+                            <field name="future_line_ids" colspan="4">
+                                <tree string="Future lines:" editable="bottom">
+                                    <field name="order_id" />
+                                    <field name="partner_id" />
+                                    <field name="product_id" />
+                                    <field name="product_uom_qty" />
+                                    <field name="state" invisible="1"/>
+                                </tree>
+                            </field>
                         </group>
                     </sheet>
                 </form>

@@ -55,6 +55,36 @@ class SaleOrderLine(orm.Model):
         return mrp_pool.button_next_line(
             cr, uid, [line.mrp_id.id], context=context)
 
+    # Fields function:
+    def _get_future_line(self, cr, uid, ids, field_names, arg=None,
+                         context=None):
+        """ Next lines
+            > ensure one!
+        """
+        # Parameter:
+        preview_total = 3  # TODO put in params?
+
+        res = {}
+
+        # Context setup:
+        context_next = context.copy()
+        context_next['extra_line_item'] = preview_total
+
+        # Launch from MRP finding in line:
+        mrp_pool = self.pool.get('mrp.production')
+        line = self.browse(cr, uid, ids, context=context)
+        res[ids[0]] = mrp_pool.button_next_line(
+            cr, uid, [line.mrp_id.id], context=context_next)
+        return res
+
+    _columns = {
+        'future_line_ids': fields.function(
+            _get_future_line, method=True, readonly=True,
+            type='one2many',
+            relation='sale.order.line',
+            string='Future line'),
+    }
+
 
 class ResUsers(orm.Model):
     """ Model name: Res Users
@@ -96,12 +126,23 @@ class MrpProduction(orm.Model):
 
             # A. Default run:
             this_line_id = line.id
+            i += 1  # TODO check
 
             # B. Extra line run mode:
             if extra_line_item:
-                return [
-                    item.id for item in sorted_line[i, i + extra_line_item]]
-            i += 1
+                next_line_ids = []
+                while extra_line_item:
+                    future = sorted_line[i:i+1]
+                    if not future:
+                        break
+
+                    if future.product_uom_maked_sync_qty >= (
+                            future.product_uom_qty + future.mx_assigned_qty):
+                        continue  # All done
+
+                    next_line_ids.append(future.id)
+                    extra_line_item -= 1  # Back counter
+                return next_line_ids
 
         # A. Default run
         if not this_line_id:
