@@ -161,8 +161,6 @@ class MrpProduction(orm.Model):
         extra_line_item = context.get('extra_line_item')
         if extra_line_item < 0:
             extra_line_item = 0
-        if extra_line_item:
-            pdb.set_trace()
 
         # Extract not complete line (and extra line):
         mrp = self.browse(cr, uid, ids, context=context)[0]
