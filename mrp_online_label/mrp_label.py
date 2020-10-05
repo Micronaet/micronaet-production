@@ -160,7 +160,7 @@ class MrpProduction(orm.Model):
         # Extra line management (for next line preview)
         extra_line_item = context.get('extra_line_item')
         if extra_line_item < 0:
-            extra_line_item = False
+            extra_line_item = 0
 
         # Extract not complete line (and extra line):
         mrp = self.browse(cr, uid, ids, context=context)[0]
@@ -234,7 +234,9 @@ class MrpProduction(orm.Model):
     def start_block_start_label(self, cr, uid, ids, context=None):
         """ Launch stats start action and open view for production start
         """
-        self.start_blocking_stats(cr, uid, ids, context=context)
+        mrp = self.browse(cr, uid, ids, context=context)[0]
+        if not mrp.stat_start_datetime:  # Yet started, datetime present!
+            self.start_blocking_stats(cr, uid, ids, context=context)
         return self.button_next_line(cr, uid, ids, context=context)
 
     def my_production_for_label_server_action(
