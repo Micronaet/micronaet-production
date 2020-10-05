@@ -76,7 +76,6 @@ class SaleOrderLine(orm.Model):
         """
         # Parameter:
         preview_total = 3  # TODO put in params?
-
         res = {}
 
         # Context setup:
@@ -157,10 +156,13 @@ class MrpProduction(orm.Model):
         """
         if context is None:
             context = {}
+
         # Extra line management (for next line preview)
         extra_line_item = context.get('extra_line_item')
         if extra_line_item < 0:
             extra_line_item = 0
+        if extra_line_item:
+            pdb.set_trace()
 
         # Extract not complete line (and extra line):
         mrp = self.browse(cr, uid, ids, context=context)[0]
@@ -182,18 +184,19 @@ class MrpProduction(orm.Model):
                 while extra_line_item:
                     try:
                         future = sorted_line[i]
+                        i += 1
                     except:
                         break  # List finished!
                     if not future:
                         break
-
+                    if future.id == this_line_id:
+                        continue
                     if future.product_uom_maked_sync_qty >= (
                             future.product_uom_qty + future.mx_assigned_qty):
                         continue  # All done
 
                     next_line_ids.append(future.id)
                     extra_line_item -= 1  # Back counter
-                    i += 1
                 return next_line_ids
             break
 
