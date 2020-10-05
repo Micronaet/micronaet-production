@@ -43,6 +43,94 @@ class SaleOrderLine(orm.Model):
     """
     _inherit = 'sale.order.line'
 
+    # -------------------------------------------------------------------------
+    # UTILITY:
+    # -------------------------------------------------------------------------
+    # TODO move in note system (taken from old mrp_direct_line):
+    def get_notesystem_for_line(self, cr, uid, ids, context=None):
+        """ Note system for line
+        """
+        def add_domain_note(self, cr, uid, line, block='pr', context=None):
+            """ Add domain note after search
+            """
+            label_image = '''
+                <img src="/images/label.jpg" 
+                alt="Etichetta personalizzata" 
+                style="width:16px;height:16px;"
+                title="Etichetta personalizzata"/> 
+                '''
+
+            # Pool used:
+            product_pool = self.pool.get('product.product')
+            note_pool = self.pool.get('note.note')
+
+            domain = product_pool.get_domain_note_event_filter(
+                cr, uid, line, block=block, context=context)
+            if domain == False:  # no domain
+                return ''
+            note_ids = note_pool.search(
+                cr, uid, domain, context=context)
+
+            note_text = ''
+            for note in note_pool.browse(
+                    cr, uid, note_ids, context=context):
+                note_text += \
+                    '<div class="p_note %s">%s<b>%s</b> %s</div>' % (
+                        '"fg_red"' if note.print_label else '',
+                        label_image if note.print_label else '',
+                        note.name or '',
+                        note.description or '',
+                    )
+            return note_text
+
+        line = self.browse(cr, uid, ids, context=context)[0]
+        note_text = ''
+        # TODO add only category for production in filter!
+
+        # Product note:
+        mask = '<b class="category_note">NOTE %s: </b><br/>%s'
+        res = add_domain_note(
+            self, cr, uid, line, block='pr', context=context)
+        if res:
+            note_text += mask % ('PRODOTTO', res)
+        # Partner note:
+        res = add_domain_note(
+            self, cr, uid, line, block='pa', context=context)
+        if res:
+            note_text += mask % ('PARTNER', res)
+        # Address note:
+        res = add_domain_note(
+            self, cr, uid, line, block='ad', context=context)
+        if res:
+            note_text += mask % ('INDIRIZZO', res)
+        # Order note:
+        res = add_domain_note(
+            self, cr, uid, line, block='or', context=context)
+        if res:
+            note_text += mask % ('ORDINE', res)
+        # Detail note:
+        res = add_domain_note(
+            self, cr, uid, line, block='pr-de', context=context)
+        if res:
+            note_text += mask % ('DETTAGLIO', res)
+
+        # Partner product note:
+        res = add_domain_note(
+            self, cr, uid, line, block='pr-pa', context=context)
+        if res:
+            note_text += mask % ('PRODOTTO-CLIENTE', res)
+        # Address product note:
+        res = add_domain_note(
+            self, cr, uid, line, block='pr-ad', context=context)
+        if res:
+            note_text += mask % ('PRODOTTO-INDIRIZZO', res)
+        # Address product order note:
+        res = add_domain_note(
+            self, cr, uid, line, block='pr-or', context=context)
+        if res:
+            note_text += mask % ('PRODOTTO-ORDINE', res)
+        return note_text
+
     def stop_block_start_label(self, cr, uid, ids, context=None):
         """ Close stats block button event
         """
@@ -114,7 +202,8 @@ class SaleOrderLine(orm.Model):
         """ MRP statistic ensure one
         """
         res = {}
-        res[ids[0]] = ''
+        res[ids[0]] = self.get_notesystem_for_line(
+            cr, uid, ids, context=context)
         return res
 
     _columns = {
