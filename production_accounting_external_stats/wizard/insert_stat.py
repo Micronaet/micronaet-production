@@ -109,7 +109,7 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
         }
 
     _defaults = {
-        'date': datetime.now().strftime( DEFAULT_SERVER_DATE_FORMAT),
+        'date': datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT),
         }
 
 

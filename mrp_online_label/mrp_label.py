@@ -165,7 +165,7 @@ class MrpProduction(orm.Model):
         # Extract not complete line (and extra line):
         mrp = self.browse(cr, uid, ids, context=context)[0]
         this_line_id = False
-        sorted_line = sorted(mrp.order_line_ids, key=lambda x: x.sequence)
+        sorted_line = sorted(mrp.order_line_ids, key=lambda x: x.mrp_sequence)
         i = 0
         for line in sorted_line:
             if line.product_uom_maked_sync_qty >= (
@@ -174,7 +174,7 @@ class MrpProduction(orm.Model):
 
             # A. Default run:
             this_line_id = line.id
-            i += 1  # TODO check
+            i += 1
 
             # B. Extra line run mode:
             if extra_line_item:
@@ -184,6 +184,8 @@ class MrpProduction(orm.Model):
                         future = sorted_line[i]
                     except:
                         break  # List finished!
+                    if not future:
+                        break
 
                     if future.product_uom_maked_sync_qty >= (
                             future.product_uom_qty + future.mx_assigned_qty):
@@ -193,6 +195,7 @@ class MrpProduction(orm.Model):
                     extra_line_item -= 1  # Back counter
                     i += 1
                 return next_line_ids
+            break
 
         # A. Default run
         if not this_line_id:

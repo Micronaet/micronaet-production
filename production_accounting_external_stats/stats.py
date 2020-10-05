@@ -232,6 +232,7 @@ class MrpProduction(orm.Model):
     def start_blocking_stats(self, cr, uid, ids, context=None):
         """ Save current production to check difference
         """
+
         return self.write(cr, uid, ids, {
             'stat_start_total': '%s' % (
                 self.get_current_locked_status(cr, uid, ids, context=context),
