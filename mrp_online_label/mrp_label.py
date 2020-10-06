@@ -43,9 +43,152 @@ class SaleOrderLine(orm.Model):
     """
     _inherit = 'sale.order.line'
 
+    # Button:
+    def bom_for_product_view_form(self, cr, uid, ids, context=None):
+        """ Open product BOM:
+        """
+        model_pool = self.pool.get('ir.model.data')
+        form_view_id = model_pool.get_object_reference(
+            'mrp_online_label', 'bom_for_product_view_form')[1]
+
+        line = self.browse(cr, uid, ids, context=context)[0]
+        product_id = line.product_id.id
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('BOM Exploded'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_id': product_id,
+            'res_model': 'sale.order.line',
+            'view_id': form_view_id,
+            'views': [(form_view_id, 'form')],
+            'domain': [],
+            'context': context,
+            'target': 'new',
+            'nodestroy': False,
+            }
+
     # -------------------------------------------------------------------------
     # UTILITY:
     # -------------------------------------------------------------------------
+    def get_bom_html(self, cr, uid, product_id, context=None):
+        """ PHP call for get BOM
+            context parameters:
+                > 'noheader': hide header
+                > 'show_ready': show only show ready category
+                > 'expand': expand halfwork
+                > 'qty': calculate total for qty producey
+        """
+        # Read parameters:
+        if context is None:
+            context = {}
+
+        noheader = context.get('noheader', False)
+        show_ready = context.get('show_ready', False)
+        expand = context.get('expand', True)
+        qty = context.get('qty', 1.0)
+
+        bom = ''
+        product_pool = self.pool.get('product.product')
+        product_proxy = product_pool.browse(
+            cr, uid, product_id, context=context)
+
+        # ---------------------------------------------------------------------
+        # BOM Lines:
+        # ---------------------------------------------------------------------
+        for item in sorted(product_proxy.dynamic_bom_line_ids,
+                           key=lambda x: (
+                               not x.product_id.half_bom_id,
+                               x.product_id.default_code,
+                               )):
+            category = item.category_id
+            product = item.product_id
+
+            if show_ready and not category.show_ready:
+                continue # jump category not in show ready status
+
+            # if item.relative_type == 'half'\
+            if product.bom_placeholder:
+                tag_class = 'placeholder'
+            elif product.half_bom_id:
+                tag_class = 'halfworked'
+            else:
+                tag_class = 'component'
+
+            bom += '''
+                <tr class="%s">
+                    <td colspan="2">%s</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>%s %s</td>
+                </tr>
+                ''' % (
+                    tag_class,
+                    product.default_code,
+                    product.name,
+                    item.category_id.name,
+                    int(item.product_qty * qty),
+                    item.product_uom.name.lower(),
+                    )
+
+            # Add sub elements (for halfworked)
+            if expand:
+                for cmpt in product.half_bom_id.bom_line_ids:
+                    bom += '''
+                    <tr class="material">
+                        <td>>>></td>
+                        <td>%s</td>
+                        <td>%s</td>
+                        <td>&nbsp;</td>
+                        <td>%s %s</td>
+                    </tr>
+                    ''' % (
+                        cmpt.product_id.default_code,
+                        cmpt.product_id.name,
+                        cmpt.product_qty,
+                        cmpt.product_uom.name.lower(),
+                        )
+
+        # ---------------------------------------------------------------------
+        # Add header:
+        # ---------------------------------------------------------------------
+        if noheader:
+            header_title = '''
+                <tr>
+                    <th colspan="9">Componenti da approntare:</th>
+                </tr>
+                '''
+        else:
+            header_title = '''
+                <tr>
+                    <th colspan="2">%s</th>
+                    <th colspan="3">%s [%s]</th>
+                </tr>
+                ''' % (
+                    self._php_button_bar,
+                    product_proxy.default_code,
+                    product_proxy.name,
+                    )
+
+        res = _('''
+            <tr colspan="9">
+            <table class="bom">
+                %s
+                <tr>
+                    <th colspan="2">Codice</th>
+                    <th>Descrizione</th>
+                    <th>Categoria</th>
+                    <th>Q.</th>
+                </tr>
+                %s
+            </table>            
+            </tr>
+            ''') % (
+                header_title,
+                bom,
+                )
+        return res
+
     # TODO move in note system (taken from old mrp_direct_line):
     def get_notesystem_for_line(self, cr, uid, ids, context=None):
         """ Note system for line
@@ -206,6 +349,17 @@ class SaleOrderLine(orm.Model):
             cr, uid, ids, context=context)
         return res
 
+    def _get_bom_exploded_online(
+            self, cr, uid, ids, field_names, arg=None, context=None):
+        """ MRP statistic ensure one
+        """
+        res = {}
+        line = self.browse(cr, uid, ids, context=context)[0]
+        product_id = line.product_id.id
+        res[ids[0]] = self.get_bom_html(
+            cr, uid, product_id, context=context)
+        return res
+
     _columns = {
         'future_line_ids': fields.function(
             _get_future_line, method=True, readonly=True,
@@ -217,8 +371,12 @@ class SaleOrderLine(orm.Model):
             type='char', size=100, string='Production status'),
         'note_system_online': fields.function(
             _get_note_system_online, method=True, readonly=True,
-            type='text', string='Note system',
+            type='text', string='Note system'),
+        'bom_exploded_online': fields.function(
+            _get_bom_exploded_online, method=True, readonly=True,
+            type='text', string='BOM',
         )
+
     }
 
 

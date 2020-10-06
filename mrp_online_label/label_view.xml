@@ -1,6 +1,22 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <!--product.product-->
+        <record id="bom_for_product_view_form" model="ir.ui.view">
+            <field name="name">sale.order.line.bom.product</field>
+            <field name="model">sale.order.line</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <form string="bom_for_product_form">
+                    <sheet>
+                        <group>
+                            <separator string="BOM exploded:" colspan="4"/>
+                            <field name="bom_exploded_online" colspan="4" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
         <!--Line management:-->
         <record id="res_user_line_view_tree" model="ir.ui.view">
             <field name="name">res.user.line.view.tree</field>
@@ -144,7 +160,7 @@
                         </group>
                         <group col="4">
                             <separator string="Note system:" colspan="4"/>
-                            <field name="note_system_online" colspan="4" nolabel="1"/>
+                            <field name="note_system_online" colspan="4" nolabel="1" widget="html"/>
 
                             <separator string="Next lines" colspan="2"/>
                             <field name="production_status_online" colspan="2" nolabel="1"/>
