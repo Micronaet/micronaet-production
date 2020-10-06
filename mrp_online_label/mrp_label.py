@@ -158,7 +158,7 @@ class SaleOrderLine(orm.Model):
                     item.product_uom.name.lower(),
                     )
 
-            # Add sub elements (for halfworked)
+            # Add sub elements (for semi worked)
             if expand:
                 for cmpt in product.half_bom_id.bom_line_ids:
                     bom += '''
@@ -203,6 +203,7 @@ class SaleOrderLine(orm.Model):
         def add_domain_note(self, cr, uid, line, block='pr', context=None):
             """ Add domain note after search
             """
+            # TODO show when custom label!
             label_image = '''
                 <img src="/images/label.jpg" 
                 alt="Etichetta personalizzata" 
@@ -216,6 +217,7 @@ class SaleOrderLine(orm.Model):
 
             domain = product_pool.get_domain_note_event_filter(
                 cr, uid, line, block=block, context=context)
+
             if domain == False:  # no domain
                 return ''
             note_ids = note_pool.search(
@@ -225,8 +227,8 @@ class SaleOrderLine(orm.Model):
             for note in note_pool.browse(
                     cr, uid, note_ids, context=context):
                 note_text += \
-                    '<div class="p_note %s">%s<b>%s</b> %s</div>' % (
-                        '"fg_red"' if note.print_label else '',
+                    '<div style="%s">%s<b>%s</b> %s</div>' % (
+                        'color: red' if note.print_label else '',
                         label_image if note.print_label else '',
                         note.name or '',
                         note.description or '',
@@ -238,7 +240,7 @@ class SaleOrderLine(orm.Model):
         # TODO add only category for production in filter!
 
         # Product note:
-        mask = '<b class="category_note">NOTE %s: </b><br/>%s'
+        mask = '<b style="color: red">NOTE %s: </b><br/>%s'
         res = add_domain_note(
             self, cr, uid, line, block='pr', context=context)
         if res:
@@ -452,10 +454,8 @@ class MrpProduction(orm.Model):
 
         # A. Default run
         if not this_line_id:
-            raise osv.except_osv(
-                _('Error'),
-                _('End of production, please close and confirm statistic!'),
-                )
+            _logger.warning(
+                _('End of production, please close and confirm statistic!'))
         return this_line_id
 
     def button_next_line(self, cr, uid, ids, context=None):
@@ -464,7 +464,8 @@ class MrpProduction(orm.Model):
         model_pool = self.pool.get('ir.model.data')
         line_id = self.get_first_line_undone(
             cr, uid, ids, context=context)
-
+        if not line_id:
+            return True
         form_view_id = model_pool.get_object_reference(
             cr, uid,
             'mrp_online_label', 'sale_order_label_online_view_form')[1]
