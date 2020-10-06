@@ -44,21 +44,46 @@ class SaleOrderLine(orm.Model):
     _inherit = 'sale.order.line'
 
     # Button:
-    def bom_for_product_view_form(self, cr, uid, ids, context=None):
-        """ Open product BOM:
+    def open_product_schema(self, cr, uid, ids, context=None):
+        """ Open product schema:
+        """
+        # TODO
         """
         model_pool = self.pool.get('ir.model.data')
         form_view_id = model_pool.get_object_reference(
+            cr, uid,
             'mrp_online_label', 'bom_for_product_view_form')[1]
 
-        line = self.browse(cr, uid, ids, context=context)[0]
-        product_id = line.product_id.id
         return {
             'type': 'ir.actions.act_window',
             'name': _('BOM Exploded'),
             'view_type': 'form',
             'view_mode': 'form',
-            'res_id': product_id,
+            'res_id': ids[0],
+            'res_model': 'sale.order.line',
+            'view_id': form_view_id,
+            'views': [(form_view_id, 'form')],
+            'domain': [],
+            'context': context,
+            'target': 'new',
+            'nodestroy': False,
+            }"""
+        return True
+
+    def open_product_bom_html(self, cr, uid, ids, context=None):
+        """ Open product BOM:
+        """
+        model_pool = self.pool.get('ir.model.data')
+        form_view_id = model_pool.get_object_reference(
+            cr, uid,
+            'mrp_online_label', 'bom_for_product_view_form')[1]
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('BOM Exploded'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_id': ids[0],
             'res_model': 'sale.order.line',
             'view_id': form_view_id,
             'views': [(form_view_id, 'form')],
@@ -71,27 +96,20 @@ class SaleOrderLine(orm.Model):
     # -------------------------------------------------------------------------
     # UTILITY:
     # -------------------------------------------------------------------------
-    def get_bom_html(self, cr, uid, product_id, context=None):
-        """ PHP call for get BOM
-            context parameters:
-                > 'noheader': hide header
-                > 'show_ready': show only show ready category
-                > 'expand': expand halfwork
-                > 'qty': calculate total for qty producey
+    def get_bom_html(self, cr, uid, ids, context=None):
+        """ HTML Field call
         """
         # Read parameters:
         if context is None:
             context = {}
 
-        noheader = context.get('noheader', False)
-        show_ready = context.get('show_ready', False)
-        expand = context.get('expand', True)
-        qty = context.get('qty', 1.0)
+        show_ready = False
+        expand = True
+        qty = 1.0
 
         bom = ''
-        product_pool = self.pool.get('product.product')
-        product_proxy = product_pool.browse(
-            cr, uid, product_id, context=context)
+        line = self.browse(cr, uid, ids, context=context)[0]
+        product_proxy = line.product_id
 
         # ---------------------------------------------------------------------
         # BOM Lines:
@@ -105,25 +123,34 @@ class SaleOrderLine(orm.Model):
             product = item.product_id
 
             if show_ready and not category.show_ready:
-                continue # jump category not in show ready status
+                continue  # jump category not in show ready status
 
             # if item.relative_type == 'half'\
+            tag_table = 'border: 0px solid black; width: 950px;' \
+                        'font-size: 11px; margin: 5px; border-spacing: 0px;' \
+                        'text-align: left;'
+
             if product.bom_placeholder:
-                tag_class = 'placeholder'
+                tag_style = 'font-size: 12px; background-color: #ffcccc;' \
+                            'text-align: left;'
             elif product.half_bom_id:
-                tag_class = 'halfworked'
+                tag_style = 'font-size: 12px; background-color: #0099e6;' \
+                            'text-align: left;'
             else:
-                tag_class = 'component'
+                tag_style = 'font-size: 12px; background-color: #ffffcc;' \
+                            'text-align: left;'
+            tag_material = 'font-size: 12px; background-color: #cceeff;' \
+                           'text-align: left;'
 
             bom += '''
-                <tr class="%s">
+                <tr style="%s">
                     <td colspan="2">%s</td>
                     <td>%s</td>
                     <td>%s</td>
                     <td>%s %s</td>
                 </tr>
                 ''' % (
-                    tag_class,
+                    tag_style,
                     product.default_code,
                     product.name,
                     item.category_id.name,
@@ -135,14 +162,15 @@ class SaleOrderLine(orm.Model):
             if expand:
                 for cmpt in product.half_bom_id.bom_line_ids:
                     bom += '''
-                    <tr class="material">
-                        <td>>>></td>
+                    <tr style="%s">
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                         <td>%s</td>
                         <td>%s</td>
                         <td>&nbsp;</td>
                         <td>%s %s</td>
                     </tr>
                     ''' % (
+                        tag_material,
                         cmpt.product_id.default_code,
                         cmpt.product_id.name,
                         cmpt.product_qty,
@@ -152,28 +180,8 @@ class SaleOrderLine(orm.Model):
         # ---------------------------------------------------------------------
         # Add header:
         # ---------------------------------------------------------------------
-        if noheader:
-            header_title = '''
-                <tr>
-                    <th colspan="9">Componenti da approntare:</th>
-                </tr>
-                '''
-        else:
-            header_title = '''
-                <tr>
-                    <th colspan="2">%s</th>
-                    <th colspan="3">%s [%s]</th>
-                </tr>
-                ''' % (
-                    self._php_button_bar,
-                    product_proxy.default_code,
-                    product_proxy.name,
-                    )
-
         res = _('''
-            <tr colspan="9">
-            <table class="bom">
-                %s
+            <div><table style="%s">
                 <tr>
                     <th colspan="2">Codice</th>
                     <th>Descrizione</th>
@@ -181,10 +189,9 @@ class SaleOrderLine(orm.Model):
                     <th>Q.</th>
                 </tr>
                 %s
-            </table>            
-            </tr>
+            </table></div>            
             ''') % (
-                header_title,
+                tag_table,
                 bom,
                 )
         return res
@@ -354,10 +361,8 @@ class SaleOrderLine(orm.Model):
         """ MRP statistic ensure one
         """
         res = {}
-        line = self.browse(cr, uid, ids, context=context)[0]
-        product_id = line.product_id.id
         res[ids[0]] = self.get_bom_html(
-            cr, uid, product_id, context=context)
+            cr, uid, ids, context=context)
         return res
 
     _columns = {

@@ -8,10 +8,13 @@
             <field name="priority" eval="40"/>
             <field name="arch" type="xml">
                 <form string="bom_for_product_form">
+                    <header>
+                        <button string="Close" special="cancel" />
+                    </header>
                     <sheet>
                         <group>
                             <separator string="BOM exploded:" colspan="4"/>
-                            <field name="bom_exploded_online" colspan="4" nolabel="1"/>
+                            <field name="bom_exploded_online" colspan="4" nolabel="1" widget="html"/>
                         </group>
                     </sheet>
                 </form>
@@ -137,7 +140,7 @@
 
                             <field name="product_id" readonly="1"/>
                             <field name="default_code" readonly="1"/>
-                            <button name="open_product_bom" type="object" string="DB" icon="STOCK_PROPERTIES" colspan="1"/>
+                            <button name="open_product_bom_html" type="object" string="DB" icon="STOCK_PROPERTIES" colspan="1"/>
                             <button name="open_product_schema" type="object" string="Sheet" icon="stock_gantt" colspan="1"/>
 
                             <!--<field name="q_x_pack" readonly="1"/>-->
