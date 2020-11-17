@@ -34,7 +34,8 @@
     'depends': [
         'base',
         'production_accounting_external',
-        'delivery_todo_report',  # For suspended field        
+        'delivery_todo_report',  # For suspended field    
+        'sql_sale_order',   
         ],
     'init_xml': [],
     'demo': [],
