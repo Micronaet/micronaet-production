@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.actions.act_window" id="action_view_sale_order_production_all_line_todo">
+            <field name="name">Righe OC produzione (tutte)</field>
+            <field name="res_model">sale.order.line</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,graph</field>
+            <field name="search_view_id" ref="sql_sale_order.view_sale_order_line_search"/>
+            <field name="view_id" ref="sql_sale_order.view_sale_order_line_tree"/>
+            <field name="context">{'graph_view_ref':'planning_production_suspended.view_sale_order_line_suspended_graph','form_view_ref':'sql_sale_order.view_sale_order_line_form','search_default_group_family':True}</field>
+            <field name="domain">[('pricelist_order','=',False),('go_in_production','=',True),('is_manufactured','=',True),('mx_closed','=',False)]</field>
+        </record>
+        <record model="ir.ui.view" id="view_sale_order_line_suspended_graph">
+            <field name="name">sale.order.line.suspended.graph</field>
+            <field name="model">sale.order.line</field>
+            <field name="type">graph</field>
+            <field name="arch" type="xml">
+                <graph string="Sale order for production" type="pivot">
+                    <field name="family_id" type="row" />
+                    <field name="date_deadline" type="col" interval="month"/>
+                    <field name="delivery_s" type="measure"/>
+                </graph>
+            </field>
+        </record>
+        <menuitem name="Righe produzione OC (da fare)"
+            parent="production_accounting_external.menu_base_sale_order_root"
+            id="menu_sale_order_line_all_oc_m1_todo"
+            action="action_view_sale_order_production_all_line_todo"
+            sequence="25" />
+        
+    </data>
+</openerp>
+
