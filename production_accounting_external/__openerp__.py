@@ -46,6 +46,7 @@
         'production_order_mandatory',
         'pricelist_order',
         'note_system_management', # for note in report
+        # 'delivery_todo_report',  # TODO For suspended field?
         
         #'production_workhour', # Replaced with:
         'hr_workhour',
