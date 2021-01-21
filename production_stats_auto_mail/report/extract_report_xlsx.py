@@ -99,7 +99,8 @@ class MrpProductionStatsMixed(orm.Model):
                     medium_time += (total / time) * pieces  # m(x) t. x code
                 except:
                     return False
-
+            if not medium_time:
+                return False
             return real - medium_time  # Delta(t)
 
         def clean_extra_detail(value):
