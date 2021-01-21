@@ -86,7 +86,7 @@ class MrpProductionStatsMixed(orm.Model):
             res_ids = {}
             for v in value_ids:
                 if not v:
-                    continue # jump last row
+                    continue  # jump last row
                 v2 = v.split('>>')
                 v2[0] = v2[0].strip()
                 if v2[0] not in res_ids:
@@ -96,7 +96,6 @@ class MrpProductionStatsMixed(orm.Model):
             for code in sorted(res_ids):
                 res += '[%s >> %s] ' % (code, res_ids[code])
             return res
-
 
         def format_date(value):
             """ Format hour DD:MM:YYYY
@@ -134,7 +133,7 @@ class MrpProductionStatsMixed(orm.Model):
         # Add extra period for not get empty data in extra info
         now_11 = (datetime.now() - timedelta(days=11)).strftime(
             DEFAULT_SERVER_DATE_FORMAT)
-        # Statitic 20 days page:
+        # Statistic 20 days page:
         now_20 = (datetime.now() - timedelta(days=20)).strftime(
             DEFAULT_SERVER_DATE_FORMAT)
 
@@ -151,7 +150,7 @@ class MrpProductionStatsMixed(orm.Model):
         xls_format = {
             'title' : WB.add_format({
                 'bold': True,
-                'font_name': 'Courier 10 pitch', # 'Arial'
+                'font_name': 'Courier 10 pitch',  # 'Arial'
                 'font_size': 10,
                 'align': 'left',
                 }),
@@ -164,7 +163,7 @@ class MrpProductionStatsMixed(orm.Model):
                 'valign': 'vcenter',
                 'bg_color': '#cfcfcf', # gray
                 'border': 1,
-                #'text_wrap': True,
+                # 'text_wrap': True,
                 }),
             'merge': WB.add_format({
                 'bold': True,
@@ -172,16 +171,16 @@ class MrpProductionStatsMixed(orm.Model):
                 'font_name': 'Courier 10 pitch', # 'Arial'
                 'font_size': 10,
                 'align': 'center',
-                #'vertical_align': 'center',
+                # 'vertical_align': 'center',
                 'valign': 'vcenter',
-                #'bg_color': '#cfcfcf', # gray
+                # 'bg_color': '#cfcfcf', # gray
                 'border': 1,
                 }),
             'text': WB.add_format({
                 'font_color': 'black',
                 'font_name': 'Courier 10 pitch',
                 'font_size': 9,
-                #'align': 'left',
+                # 'align': 'left',
                 'border': 1,
                 }),
             'text_number': WB.add_format({
@@ -195,7 +194,7 @@ class MrpProductionStatsMixed(orm.Model):
                 'font_color': 'black',
                 'font_name': 'Courier 10 pitch',
                 'font_size': 9,
-                #'align': 'right',
+                # 'align': 'right',
                 'border': 1,
                 'bg_color': '#e6ffe6',
                 }),
@@ -213,7 +212,7 @@ class MrpProductionStatsMixed(orm.Model):
                 'font_size': 9,
                 'align': 'right',
                 'border': 1,
-                #'bg_color': '#e6ffe6',
+                # 'bg_color': '#e6ffe6',
                 }),
             'text_total': WB.add_format({
                 'font_color': 'blue',
@@ -292,8 +291,8 @@ class MrpProductionStatsMixed(orm.Model):
 
         # Collect data for stats mixed:
         line_ids = self.search(cr, uid, [ # Filter yet present in query
-            #('date_planned', '>=', now_9),
-            #('date_planned', '<=', now_0),
+            # ('date_planned', '>=', now_9),
+            # ('date_planned', '<=', now_0),
             ], context=context)
         for line in self.browse(cr, uid, line_ids, context=context):
             if line.date_planned not in res:
@@ -310,7 +309,8 @@ class MrpProductionStatsMixed(orm.Model):
 
         # Write title row:
         row = 0
-        WS.write(row, 0,
+        WS.write(
+            row, 0,
             'Produzioni settimana passata, data rif.: %s' % now,
             xls_format['title'],
             )
@@ -319,7 +319,7 @@ class MrpProductionStatsMixed(orm.Model):
         row += 1
         WS.write(row, 0, _('Data'), xls_format['header'])
         WS.write(row, 1, _('Linea'), xls_format['header'])
-        WS.write(row, 2, _('Num. prod.'), xls_format['header']) # MRP
+        WS.write(row, 2, _('Num. prod.'), xls_format['header'])  # MRP
         WS.write(row, 3, _('Famiglia'), xls_format['header'])
         WS.write(row, 4, _('Lavoratori'), xls_format['header'])
         WS.write(row, 5, _('Appront.'), xls_format['header'])
@@ -342,12 +342,12 @@ class MrpProductionStatsMixed(orm.Model):
                             cell_format = xls_format['text_total_today']
                         else:
                             cell_format = xls_format['text_total']
-                        cell_number_format = cell_format # same of text
+                        cell_number_format = cell_format  # same of text
 
                         WS.merge_range(
                             row, 2, row, 4, _('TOTALE'), cell_format)
-                        WS.write(row, 4, '', cell_format) # No total workers
-                        WS.write(row, 8, '', cell_format) # Empty detail
+                        WS.write(row, 4, '', cell_format)  # No total workers
+                        WS.write(row, 8, '', cell_format)  # Empty detail
                     else:
                         if line.is_today:
                             cell_format = xls_format['text_today']
