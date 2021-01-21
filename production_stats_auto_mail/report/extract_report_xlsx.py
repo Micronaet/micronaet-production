@@ -79,7 +79,6 @@ class MrpProductionStatsMixed(orm.Model):
         def extract_delta(workers, clean_data, detail, real):
             """ Extract delta t. from medium
             """
-            pdb.set_trace()
             medium_time = 0.0
             for item in detail.replace('[ ', '').replace('[', '').split(']'):
                 part = item.split(' >> ')
