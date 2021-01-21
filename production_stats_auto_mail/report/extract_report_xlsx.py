@@ -440,7 +440,8 @@ class MrpProductionStatsMixed(orm.Model):
 
         # Title row:
         row = 0
-        WS.write(row, 0,
+        WS.write(
+            row, 0,
             'Dettaglio statistiche (ultimi 20 gg.)',
             xls_format['title'],
             )
@@ -456,8 +457,8 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 6, _('Tot. pezzi'), xls_format['header'])
         WS.write(row, 7, _('Tempo'), xls_format['header'])
         WS.write(row, 8, _('Pz / H'), xls_format['header'])
-        WS.write(row, 9, _('Dettaglio'), xls_format['header'])
-        WS.autofilter(row, 0, row, 5) # Till columns 6
+        WS.write(row, 10, _('Dettaglio'), xls_format['header'])
+        WS.autofilter(row, 0, row, 5)  # Till columns 6
 
         # Setup again:
         cell_format = xls_format['text']
@@ -468,7 +469,7 @@ class MrpProductionStatsMixed(orm.Model):
             row += 1
 
             # Key data:
-            data = { # last key, last row
+            data = {  # last key, last row
                 'line': line.workcenter_id.name,
                 'date': format_date(line.date),
                 'family': line.mrp_id.bom_id.product_tmpl_id.name,
@@ -482,7 +483,8 @@ class MrpProductionStatsMixed(orm.Model):
             WS.write(row, 5, format_hour(line.startup), cell_format)
             WS.write(row, 6, line.total, cell_number_format)
             WS.write(row, 7, format_hour(line.hour), cell_format)
-            WS.write(row, 8, line.total / line.hour if line.hour else '#ERR',
+            WS.write(
+                row, 8, line.total / line.hour if line.hour else '#ERR',
                 cell_number_format)
             WS.write(row, 9, line.total_text_detail, cell_format)
 
@@ -502,7 +504,8 @@ class MrpProductionStatsMixed(orm.Model):
 
         # Write title row:
         row = 0
-        WS.write(row, 0,
+        WS.write(
+            row, 0,
             'Produzione di ieri, data rif.: %s' % now_1,
             xls_format['title'],
             )
@@ -532,7 +535,8 @@ class MrpProductionStatsMixed(orm.Model):
             WS.write(row, 0, line.workcenter_id.name, cell_format)
             WS.write(row, 1, format_date(line.date), cell_format)
             WS.write(row, 2, line.mrp_id.name, cell_format)
-            WS.write(row, 3, line.mrp_id.bom_id.product_tmpl_id.name,
+            WS.write(
+                row, 3, line.mrp_id.bom_id.product_tmpl_id.name,
                 cell_format)
             WS.write(row, 4, line.workers, cell_format)
             WS.write(row, 5, format_hour(line.startup), cell_format)
@@ -550,7 +554,7 @@ class MrpProductionStatsMixed(orm.Model):
         # Send report:
         # ---------------------------------------------------------------------
         now = now.replace('-', '_').replace(':', '.')
-        result = open(filename, 'rb').read() #xlsx raw
+        result = open(filename, 'rb').read()  # xlsx raw
         attachments = [('Statistiche_Produzioni_%s.xlsx' % now, result)]
 
         # Send mail with attachment:
@@ -581,5 +585,3 @@ class MrpProductionStatsMixed(orm.Model):
             context=context,
             )
         return True
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
