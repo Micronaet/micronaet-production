@@ -91,7 +91,7 @@ class MrpProductionStatsMixed(orm.Model):
                 pieces = eval(part[1])  # x hour
 
                 if code not in clean_data:
-                    medium_detail += '%s non ha media' % code
+                    medium_detail += '[%s non ha media] ' % code
                     error = True
                     continue
 
@@ -105,10 +105,11 @@ class MrpProductionStatsMixed(orm.Model):
                 if time and total:
                     piece_x_hour = total / time
                     medium_time += pieces / piece_x_hour  # m(x) t. x code
-                    medium_detail += '%s media: %s%s' % (
+                    medium_detail += '[%s media: %s%s] ' % (
                         code, piece_x_hour, comment)
                 else:
-                    medium_detail += '%s dati per la media non presenti' % code
+                    medium_detail += '[%s dati per la media non presenti] ' % \
+                                     code
                     error = True
                     continue
 
