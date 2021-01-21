@@ -84,7 +84,6 @@ class MrpProductionStatsMixed(orm.Model):
             for item in detail.replace('[ ', '').replace('[', '').split(']'):
                 part = item.split(' >> ')
                 if len(part) != 2:
-                    pdb.set_trace()
                     # _logger.warning('Not part: %s' % item)
                     continue
                 code = part[0].strip()[1:-1].strip()
@@ -141,10 +140,12 @@ class MrpProductionStatsMixed(orm.Model):
             """
             if not value:
                 return '00:00'
+            negative = value < 0
 
+            value = abs(value)
             hour = int(value)
             minute = int((value - hour) * 60)
-            return '%02d:%02d' % (hour, minute)
+            return '%s%02d:%02d' % ('-' if negative else '', hour, minute)
 
         # ---------------------------------------------------------------------
         #                  Collect stats data in database:
@@ -347,8 +348,8 @@ class MrpProductionStatsMixed(orm.Model):
         WS = WB.add_worksheet('Settimanali')
         WS.set_column('A:A', 12)
         WS.set_column('B:D', 15)
-        WS.set_column('E:J', 8)
-        WS.set_column('K:K', 60)
+        WS.set_column('E:I', 8)
+        WS.set_column('J:J', 60)
 
         # Write title row:
         row = 0
