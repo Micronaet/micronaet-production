@@ -423,12 +423,11 @@ class MrpProductionStatsMixed(orm.Model):
                             line.workers, clean_data, detail,
                             line.hour)
                         delta = '/' if delta == False else format_hour(delta)
-                        WS.write(row, 8, delta, cell_format)
+                        WS.write(row, 8, delta, cell_number_format)
                         WS.write(row, 9, delta_comment, cell_format)
 
                         WS.write(
                             row, 10, clean_extra_detail(detail), cell_format)
-
 
                     # Common part:
                     WS.write(
