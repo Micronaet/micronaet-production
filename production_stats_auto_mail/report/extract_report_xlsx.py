@@ -83,6 +83,10 @@ class MrpProductionStatsMixed(orm.Model):
             medium_time = 0.0
             for item in detail.replace('[ ', '').replace('[', '').split(']'):
                 part = item.split(' >> ')
+                if len(part) != 2:
+                    pdb.set_trace()
+                    # _logger.warning('Not part: %s' % item)
+                    continue
                 code = part[0].strip()[1:-1].strip()
                 pieces = eval(part[1])  # x hour
 
