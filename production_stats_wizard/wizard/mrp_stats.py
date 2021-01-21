@@ -211,11 +211,12 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                     (rate, f_color),  # Total rate
                     ], f_text, col=col)
 
+        attachment = excel_pool.return_attachment(
+                cr, uid, 'Statistiche e medie', context=context)
         if collect_data:
             return data
         else:
-            return excel_pool.return_attachment(
-                cr, uid, 'Statistiche e medie', context=context)
+            return attachment
 
     _columns = {
         'from_date': fields.date('From date >='),
