@@ -81,6 +81,7 @@ class MrpProductionStatsMixed(orm.Model):
             """
             medium_time = 0.0
             medium_detail = ''
+            error = False
             for item in detail.replace('[ ', '').replace('[', '').split(']'):
                 part = item.split(' >> ')
                 if len(part) != 2:
@@ -90,7 +91,10 @@ class MrpProductionStatsMixed(orm.Model):
                 pieces = eval(part[1])  # x hour
 
                 if code not in clean_data:
-                    return '', False
+                    medium_detail += '%s non ha media' % code
+                    error = True
+                    continue
+
                 if workers in clean_data[code][0]:
                     total, time = clean_data[code][0][workers]
                     comment = ''
@@ -104,11 +108,14 @@ class MrpProductionStatsMixed(orm.Model):
                     medium_detail += '%s media: %s%s' % (
                         code, piece_x_hour, comment)
                 else:
-                    return '', False  # end here!! (not best solution)
+                    medium_detail += '%s dati per la media non presenti' % code
+                    error = True
+                    continue
 
-            if not medium_time:
-                return '', False
-            return medium_detail, real - medium_time  # Delta(t)
+            if error or not medium_time:
+                return medium_detail, False
+            else:
+                return medium_detail, real - medium_time  # Delta(t)
 
         def clean_extra_detail(value):
             """ Add extra detail total common
