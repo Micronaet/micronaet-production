@@ -101,7 +101,7 @@ class MrpProductionStatsMixed(orm.Model):
                 if time and total:
                     piece_x_hour = total / time
                     medium_time += pieces / piece_x_hour  # m(x) t. x code
-                    medium_detail += '%s media: %s (%s)' % (
+                    medium_detail += '%s media: %s%s' % (
                         code, piece_x_hour, comment)
                 else:
                     return '', False  # end here!! (not best solution)
