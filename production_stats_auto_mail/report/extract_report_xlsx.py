@@ -89,15 +89,16 @@ class MrpProductionStatsMixed(orm.Model):
                 code = part[0].strip()[1:-1].strip()
                 pieces = eval(part[1])  # x hour
 
-                try:
-                    total, time = clean_data[code][0].get(
-                        workers,
-                        # Use all data instead:
-                        (clean_data[code][1], clean_data[code][2]),
-                    )
-                    medium_time += (total / time) * pieces  # m(x) t. x code
-                except:
-                    return False
+                if workers in clean_data[code][0]:
+                    total, time = clean_data[code][0][workers]
+                else:
+                    total, time = clean_data[code][1], clean_data[code][2]
+                if time and total:
+                    piece_x_hour = total / time
+                    medium_time += pieces / piece_x_hour  # m(x) t. x code
+                else:
+                    return False  # end here!! (not best solution)
+
             if not medium_time:
                 return False
             return real - medium_time  # Delta(t)
@@ -412,7 +413,7 @@ class MrpProductionStatsMixed(orm.Model):
                             (wc.id, date_planned, line.production_id.id), '')
                         delta = extract_delta(
                             line.workers, clean_data, detail,
-                            line.hour * 60.0)
+                            line.hour)
                         delta = '/' if delta == False else format_hour(delta)
                         WS.write(row, 8, delta, cell_format)
 
