@@ -459,8 +459,8 @@ class MrpProductionStatsMixed(orm.Model):
         WS = WB.add_worksheet('Dettaglio 20 gg.')
         WS.set_column('A:C', 10)
         WS.set_column('D:D', 20)
-        WS.set_column('E:H', 10)
-        WS.set_column('I:I', 60)
+        WS.set_column('E:I', 10)
+        WS.set_column('J:J', 60)
 
         # ---------------------------------------------------------------------
         # Collect data:
@@ -488,7 +488,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 6, _('Tot. pezzi'), xls_format['header'])
         WS.write(row, 7, _('Tempo'), xls_format['header'])
         WS.write(row, 8, _('Pz / H'), xls_format['header'])
-        WS.write(row, 10, _('Dettaglio'), xls_format['header'])
+        WS.write(row, 9, _('Dettaglio'), xls_format['header'])
         WS.autofilter(row, 0, row, 5)  # Till columns 6
 
         # Setup again:
