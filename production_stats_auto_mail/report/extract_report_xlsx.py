@@ -80,6 +80,7 @@ class MrpProductionStatsMixed(orm.Model):
             """ Extract delta t. from medium
             """
             medium_time = 0.0
+            medium_detail = ''
             for item in detail.replace('[ ', '').replace('[', '').split(']'):
                 part = item.split(' >> ')
                 if len(part) != 2:
@@ -90,17 +91,22 @@ class MrpProductionStatsMixed(orm.Model):
 
                 if workers in clean_data[code][0]:
                     total, time = clean_data[code][0][workers]
+                    comment = ''
                 else:
                     total, time = clean_data[code][1], clean_data[code][2]
+                    comment = '*'
+
                 if time and total:
                     piece_x_hour = total / time
                     medium_time += pieces / piece_x_hour  # m(x) t. x code
+                    medium_detail += '%s media: %s (%s)' % (
+                        code, piece_x_hour, comment)
                 else:
-                    return False  # end here!! (not best solution)
+                    return '', False  # end here!! (not best solution)
 
             if not medium_time:
-                return False
-            return real - medium_time  # Delta(t)
+                return '', False
+            return medium_detail, real - medium_time  # Delta(t)
 
         def clean_extra_detail(value):
             """ Add extra detail total common
@@ -349,7 +355,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.set_column('A:A', 12)
         WS.set_column('B:D', 15)
         WS.set_column('E:I', 8)
-        WS.set_column('J:J', 60)
+        WS.set_column('J:K', 60)
 
         # Write title row:
         row = 0
@@ -370,7 +376,8 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 6, _('Tot. pezzi'), xls_format['header'])
         WS.write(row, 7, _('Tempo'), xls_format['header'])
         WS.write(row, 8, _('Delta t.'), xls_format['header'])
-        WS.write(row, 9, _('Dettaglio'), xls_format['header'])
+        WS.write(row, 9, _('Dettaglio medie'), xls_format['header'])
+        WS.write(row, 10, _('Dettaglio'), xls_format['header'])
 
         # Write data:
         cell_format = xls_format['text']
@@ -410,14 +417,16 @@ class MrpProductionStatsMixed(orm.Model):
                         # TODO Medium delta difference:
                         detail = extra_detail.get(
                             (wc.id, date_planned, line.production_id.id), '')
-                        delta = extract_delta(
+                        delta_comment, delta = extract_delta(
                             line.workers, clean_data, detail,
                             line.hour)
                         delta = '/' if delta == False else format_hour(delta)
                         WS.write(row, 8, delta, cell_format)
+                        WS.write(row, 9, delta_comment, cell_format)
 
                         WS.write(
-                            row, 9, clean_extra_detail(detail), cell_format)
+                            row, 10, clean_extra_detail(detail), cell_format)
+
 
                     # Common part:
                     WS.write(
