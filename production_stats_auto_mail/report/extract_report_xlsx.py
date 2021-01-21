@@ -66,18 +66,18 @@ class MrpProductionStatsMixed(orm.Model):
     # Scheduled actions:
     # -------------------------------------------------------------------------
     def scheduled_send_stats_report(self, cr, uid, context=None):
-        ''' Send report to partner in group with dashboard statistics
+        """ Send report to partner in group with dashboard statistics
             In scheduled report reload data from stats because need extra
             field not present in mixed query information
-        '''
+        """
         _logger.info('Start sending MRP report')
 
         # ---------------------------------------------------------------------
         #                               UTILITY:
         # ---------------------------------------------------------------------
         def clean_extra_detail(value):
-            ''' Add extra detail total common
-            '''
+            """ Add extra detail total common
+            """
             if not value:
                 return value
 
@@ -99,8 +99,8 @@ class MrpProductionStatsMixed(orm.Model):
 
 
         def format_date(value):
-            ''' Format hour DD:MM:YYYY
-            '''
+            """ Format hour DD:MM:YYYY
+            """
             if not value:
                 return ''
             return '%s/%s/%s' % (
@@ -110,8 +110,8 @@ class MrpProductionStatsMixed(orm.Model):
                 )
 
         def format_hour(value):
-            ''' Format hour HH:MM
-            '''
+            """ Format hour HH:MM
+            """
             if not value:
                 return '00:00'
 
