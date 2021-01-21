@@ -35,6 +35,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT,
     DATETIME_FORMATS_MAP,
     float_compare)
+import pdb
 
 
 _logger = logging.getLogger(__name__)
@@ -121,6 +122,22 @@ class MrpProductionStatsMixed(orm.Model):
         # ---------------------------------------------------------------------
         #                  Collect stats data in database:
         # ---------------------------------------------------------------------
+        if context is None:
+            context = {}
+        stats_pool = self.pool.get('mrp.stats.excel.report.wizard')
+        context_new = context.copy()
+        context_new['collect_data'] = True
+        stats_data = stats_pool.action_stats_print(
+            cr, uid, [], context=context_new)
+        # Clean statistic database:
+        clean_data = {}
+        for key in stats_data:
+            clean_data[key[1]] = stats_data[key]
+        pdb.set_trace()
+
+        # ---------------------------------------------------------------------
+        #                  Collect stats data in database:
+        # ---------------------------------------------------------------------
         res = {}
         now = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
@@ -148,7 +165,7 @@ class MrpProductionStatsMixed(orm.Model):
         # B. Format class:
         num_format = '#,##0'
         xls_format = {
-            'title' : WB.add_format({
+            'title': WB.add_format({
                 'bold': True,
                 'font_name': 'Courier 10 pitch',  # 'Arial'
                 'font_size': 10,
@@ -157,18 +174,18 @@ class MrpProductionStatsMixed(orm.Model):
             'header': WB.add_format({
                 'bold': True,
                 'font_color': 'black',
-                'font_name': 'Courier 10 pitch', # 'Arial'
+                'font_name': 'Courier 10 pitch',  # 'Arial'
                 'font_size': 9,
                 'align': 'center',
                 'valign': 'vcenter',
-                'bg_color': '#cfcfcf', # gray
+                'bg_color': '#cfcfcf',  # gray
                 'border': 1,
                 # 'text_wrap': True,
                 }),
             'merge': WB.add_format({
                 'bold': True,
                 'font_color': 'black',
-                'font_name': 'Courier 10 pitch', # 'Arial'
+                'font_name': 'Courier 10 pitch',  # 'Arial'
                 'font_size': 10,
                 'align': 'center',
                 # 'vertical_align': 'center',
@@ -277,7 +294,7 @@ class MrpProductionStatsMixed(orm.Model):
         extra_detail = {}
 
         line_ids = line_pool.search(cr, uid, [
-            ('date', '>=', now_11), # last 11 days (for cover 9 days)
+            ('date', '>=', now_11),  # last 11 days (for cover 9 days)
             ], context=context)
         for line in line_pool.browse(cr, uid, line_ids, context=context):
             key = (
@@ -290,7 +307,7 @@ class MrpProductionStatsMixed(orm.Model):
             extra_detail[key] += line.total_text_detail
 
         # Collect data for stats mixed:
-        line_ids = self.search(cr, uid, [ # Filter yet present in query
+        line_ids = self.search(cr, uid, [  # Filter yet present in query
             # ('date_planned', '>=', now_9),
             # ('date_planned', '<=', now_0),
             ], context=context)
@@ -304,8 +321,8 @@ class MrpProductionStatsMixed(orm.Model):
         WS = WB.add_worksheet('Settimanali')
         WS.set_column('A:A', 12)
         WS.set_column('B:D', 15)
-        WS.set_column('E:H', 8)
-        WS.set_column('I:I', 60)
+        WS.set_column('E:I', 8)
+        WS.set_column('J:J', 60)
 
         # Write title row:
         row = 0
@@ -325,7 +342,8 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 5, _('Appront.'), xls_format['header'])
         WS.write(row, 6, _('Tot. pezzi'), xls_format['header'])
         WS.write(row, 7, _('Tempo'), xls_format['header'])
-        WS.write(row, 8, _('Dettaglio'), xls_format['header'])
+        WS.write(row, 8, _('Delta t.'), xls_format['header'])
+        WS.write(row, 9, _('Dettaglio'), xls_format['header'])
 
         # Write data:
         cell_format = xls_format['text']
@@ -361,7 +379,8 @@ class MrpProductionStatsMixed(orm.Model):
                         WS.write(row, 2, line.production_id.name, cell_format)
                         WS.write(row, 3, line.product_id.name, cell_format)
                         WS.write(row, 4, line.workers, cell_format)
-                        WS.write(row, 8, clean_extra_detail(
+                        # TODO
+                        WS.write(row, 9, clean_extra_detail(
                             extra_detail.get((
                                 wc.id,
                                 date_planned,
@@ -369,15 +388,19 @@ class MrpProductionStatsMixed(orm.Model):
                                 ), '')),
                             cell_format)
 
-                    #Common part:
-                    WS.write(row, 5, format_hour(line.startup),
+                    # Common part:
+                    WS.write(
+                        row, 5, format_hour(line.startup),
                         cell_number_format)
-                    WS.write(row, 6, line.maked_qty,
+                    WS.write(
+                        row, 6, line.maked_qty,
                         cell_number_format)
-                    WS.write(row, 7, format_hour(line.hour),
+                    WS.write(
+                        row, 7, format_hour(line.hour),
                         cell_number_format)
                 wc_end = row
-                WS.merge_range(wc_start + 1, 1, wc_end, 1,
+                WS.merge_range(
+                    wc_start + 1, 1, wc_end, 1,
                     wc.name,
                     xls_format['merge'])
 
@@ -386,7 +409,6 @@ class MrpProductionStatsMixed(orm.Model):
                 planned_start + 1, 0, planned_end, 0,
                 format_date(date_planned),
                 xls_format['merge'])
-
 
         # ---------------------------------------------------------------------
         #                   EXCEL: SHEET 1 Detail last 14 days
@@ -397,9 +419,9 @@ class MrpProductionStatsMixed(orm.Model):
         #        x.mrp_id.name, # Data
         #        )
         sort_key = lambda x: (
-            x.mrp_id.bom_id.product_tmpl_id.name, # Family
-            x.workcenter_id.name, # Line
-            x.mrp_id.name, # Data
+            x.mrp_id.bom_id.product_tmpl_id.name,  # Family
+            x.workcenter_id.name,  # Line
+            x.mrp_id.name,  # Data
             )
 
         # Setup columns:

@@ -31,13 +31,13 @@
         'base',
         'mrp',
         'production_accounting_external_stats',
-        'excel_export', # for manage XLSX output file
+        'excel_export',  # for manage XLSX output file
         ],
     'init_xml': [],
     'demo': [],
     'data': [
         'security/mail_group.xml',
-        
+
         'scheduler.xml',
         ],
     'active': False,

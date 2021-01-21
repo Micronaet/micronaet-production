@@ -31,6 +31,7 @@
         'base',
         'excel_export',
         'production_accounting_external_stats',
+        'production_stats_auto_mail',  # For medium compare
         ],
     'init_xml': [],
     'demo': [],

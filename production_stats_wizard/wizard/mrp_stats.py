@@ -40,7 +40,7 @@ _logger = logging.getLogger(__name__)
 
 
 class MrpStatsExcelReportWizard(orm.TransientModel):
-    """ Wizard for generare report
+    """ Wizard for generate report
     """
     _name = 'mrp.stats.excel.report.wizard'
 
