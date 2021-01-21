@@ -89,6 +89,8 @@ class MrpProductionStatsMixed(orm.Model):
                 code = part[0].strip()[1:-1].strip()
                 pieces = eval(part[1])  # x hour
 
+                if code not in clean_data:
+                    return '', False
                 if workers in clean_data[code][0]:
                     total, time = clean_data[code][0][workers]
                     comment = ''
