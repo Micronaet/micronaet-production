@@ -106,7 +106,7 @@ class MrpProductionStatsMixed(orm.Model):
                     piece_x_hour = total / time
                     medium_time += pieces / piece_x_hour  # m(x) t. x code
                     medium_detail += '[%s media: %s%s] ' % (
-                        code, int(piece_x_hour), comment)
+                        code, int(round(piece_x_hour, 0)), comment)
                 else:
                     medium_detail += '[%s dati per la media non presenti] ' % \
                                      code
