@@ -40,7 +40,7 @@ _logger = logging.getLogger(__name__)
 
 
 class MrpStatsExcelReportWizard(orm.TransientModel):
-    """ Wizard for
+    """ Wizard for generare report
     """
     _name = 'mrp.stats.excel.report.wizard'
 
@@ -49,9 +49,11 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
     # --------------------
     def action_stats_print(self, cr, uid, ids, context=None):
         """ Event stats print
+            context > collect_data for get only dict collected
         """
         if context is None:
             context = {}
+        collect_data = context.get('collect_data')
 
         # Pool used:
         excel_pool = self.pool.get('excel.writer')
@@ -209,8 +211,11 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                     (rate, f_color),  # Total rate
                     ], f_text, col=col)
 
-        return excel_pool.return_attachment(
-            cr, uid, 'Statistiche e medie', context=context)
+        if collect_data:
+            return data
+        else:
+            return excel_pool.return_attachment(
+                cr, uid, 'Statistiche e medie', context=context)
 
     _columns = {
         'from_date': fields.date('From date >='),
