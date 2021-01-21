@@ -76,6 +76,28 @@ class MrpProductionStatsMixed(orm.Model):
         # ---------------------------------------------------------------------
         #                               UTILITY:
         # ---------------------------------------------------------------------
+        def extract_delta(workers, clean_data, detail, real):
+            """ Extract delta t. from medium
+            """
+            pdb.set_trace()
+            medium_time = 0.0
+            for item in detail.replace('[ ', '').replace('[', '').split(']'):
+                part = item.split(' >> ')
+                code = part[0].strip()[1:-1].strip()
+                pieces = eval(part[1])  # x hour
+
+                try:
+                    total, time = clean_data[code][0].get(
+                        workers,
+                        # Use all data instead:
+                        (clean_data[code][1], clean_data[code][2]),
+                    )
+                    medium_time += (total / time) * pieces  # m(x) t. x code
+                except:
+                    return False
+
+            return real - medium_time  # Delta(t)
+
         def clean_extra_detail(value):
             """ Add extra detail total common
             """
@@ -133,7 +155,6 @@ class MrpProductionStatsMixed(orm.Model):
         clean_data = {}
         for key in stats_data:
             clean_data[key[1]] = stats_data[key]
-        pdb.set_trace()
 
         # ---------------------------------------------------------------------
         #                  Collect stats data in database:
@@ -321,8 +342,8 @@ class MrpProductionStatsMixed(orm.Model):
         WS = WB.add_worksheet('Settimanali')
         WS.set_column('A:A', 12)
         WS.set_column('B:D', 15)
-        WS.set_column('E:I', 8)
-        WS.set_column('J:J', 60)
+        WS.set_column('E:J', 8)
+        WS.set_column('K:K', 60)
 
         # Write title row:
         row = 0
@@ -379,14 +400,18 @@ class MrpProductionStatsMixed(orm.Model):
                         WS.write(row, 2, line.production_id.name, cell_format)
                         WS.write(row, 3, line.product_id.name, cell_format)
                         WS.write(row, 4, line.workers, cell_format)
-                        # TODO
-                        WS.write(row, 9, clean_extra_detail(
-                            extra_detail.get((
-                                wc.id,
-                                date_planned,
-                                line.production_id.id,
-                                ), '')),
-                            cell_format)
+
+                        # TODO Medium delta difference:
+                        detail = extra_detail.get(
+                            (wc.id, date_planned, line.production_id.id), '')
+                        delta = extract_delta(
+                            line.workers, clean_data, detail,
+                            line.hour * 60.0)
+                        delta = '/' if delta == False else format_hour(delta)
+                        WS.write(row, 8, delta, cell_format)
+
+                        WS.write(
+                            row, 9, clean_extra_detail(detail), cell_format)
 
                     # Common part:
                     WS.write(
@@ -428,8 +453,8 @@ class MrpProductionStatsMixed(orm.Model):
         WS = WB.add_worksheet('Dettaglio 20 gg.')
         WS.set_column('A:C', 10)
         WS.set_column('D:D', 20)
-        WS.set_column('E:I', 10)
-        WS.set_column('J:J', 60)
+        WS.set_column('E:H', 10)
+        WS.set_column('I:I', 60)
 
         # ---------------------------------------------------------------------
         # Collect data:
