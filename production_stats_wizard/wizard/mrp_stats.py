@@ -141,9 +141,6 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 _logger.warning('Production stats %s with no data' % mrp.name)
                 continue
 
-            # family = mrp.order_line_ids[0].product_id.family_id.name \
-            # or mrp.bom_id.product_tmpl_id.name
-            # family = mrp.bom_id.product_tmpl_id.name
             workers = int(record.workers)
             total = record.total
             hour = record.hour
@@ -209,7 +206,6 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         # Write data line:
         # ---------------------------------------------------------------------
-        pdb.set_trace()
         for key in sorted(data):
             row += 1
             origin, family, default_code = key
