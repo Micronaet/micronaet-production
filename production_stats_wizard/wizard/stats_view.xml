@@ -6,7 +6,7 @@
             <field name="name">mrp.worker.stats.history.tree</field>
             <field name="model">mrp.worker.stats.history</field>
             <field name="arch" type="xml">
-                <tree string="Storico produzioni">
+                <tree string="Storico produzioni" editable="bottom">
                     <field name="family" />
                     <field name="name" />
                     <field name="workers" />
@@ -18,7 +18,7 @@
           <field name="name">MRP storico stat.</field>
           <field name="res_model">mrp.worker.stats.history</field>
           <field name="view_type">form</field>
-          <field name="view_mode">tree,form</field>
+          <field name="view_mode">tree</field>
           <field name="view_id" ref="tree_mrp_worker_stats_history_view"/>
       </record>
 

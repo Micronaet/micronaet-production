@@ -49,7 +49,7 @@ class MrpWorkerStatsHistory(orm.Model):
 
     _columns = {
         'name': fields.char('Codice', size=6),
-        'family': fields.char('Famiglia', size=6),
+        'family': fields.char('Famiglia', size=40),
         'workers': fields.integer('Workers'),
         'medium': fields.integer('Medium'),
     }
@@ -266,12 +266,15 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
 
                 # Rate in tot pz / hour
                 rate = int(round(total / hour if hour else 0))
-                if rate >= max_rate:
-                    f_color = f_text_right_green
-                elif rate <= min_rate:
-                    f_color = f_text_right_red
+                if origin == 'media':
+                    if rate >= max_rate:
+                        f_color = f_text_right_green
+                    elif rate <= min_rate:
+                        f_color = f_text_right_red
+                    else:
+                        f_color = f_text_right
                 else:
-                    f_color = f_text_right
+                    f_color = f_header
                 excel_pool.write_xls_line(ws_name, row, [
                     (rate, f_color),  # Total rate
                     ], f_text, col=col)
