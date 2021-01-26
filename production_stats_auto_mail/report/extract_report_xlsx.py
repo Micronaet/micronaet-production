@@ -82,6 +82,7 @@ class MrpProductionStatsMixed(orm.Model):
             medium_time = 0.0
             medium_detail = ''
             error = False
+            pdb.set_trace()
             for item in detail.replace('[ ', '').replace('[', '').split(']'):
                 part = item.split(' >> ')
                 if len(part) != 2:
@@ -108,8 +109,8 @@ class MrpProductionStatsMixed(orm.Model):
                     medium_detail += '[%s media: %s%s] ' % (
                         code, int(round(piece_x_hour, 0)), comment)
                 else:
-                    medium_detail += '[%s dati per la media non presenti] ' % \
-                                     code
+                    medium_detail += \
+                        '[%s dati per la media non presenti] ' % code
                     error = True
                     continue
 
