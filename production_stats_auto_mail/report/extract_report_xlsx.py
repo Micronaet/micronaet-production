@@ -82,7 +82,6 @@ class MrpProductionStatsMixed(orm.Model):
             medium_time = 0.0
             medium_detail = ''
             error = False
-            pdb.set_trace()
             for item in detail.replace('[ ', '').replace('[', '').split(']'):
                 part = item.split(' >> ')
                 if len(part) != 2:
@@ -173,7 +172,7 @@ class MrpProductionStatsMixed(orm.Model):
         # Load statistic data form stored history (not from medium)
         history_pool = self.pool.get('mrp.worker.stats.history')
         clean_data = {}
-        history_ids = history_pool.search([])
+        history_ids = history_pool.search(cr, uid, [], context=context)
         for record in history_pool.browse(
                 cr, uid, history_ids, context=context):
             code = record.name
@@ -182,7 +181,7 @@ class MrpProductionStatsMixed(orm.Model):
             if code not in clean_data:
                 clean_data[code] = [{}, 0.0, 0.0]
             if workers not in clean_data[code][0]:
-                clean_data[code][0].append([medium, 1.0])
+                clean_data[code][0][workers] = [medium, 1.0]
 
         # ---------------------------------------------------------------------
         #                  Collect stats data in database:
