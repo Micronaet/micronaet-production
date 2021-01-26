@@ -35,6 +35,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT,
     DATETIME_FORMATS_MAP,
     float_compare)
+import pdb
 
 _logger = logging.getLogger(__name__)
 
@@ -51,6 +52,16 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         """ Event stats print
             context > collect_data for get only dict collected
         """
+        # Utility:
+        def get_family(parent_code, family_db):
+            """ Extract family from code (2:5)
+            """
+            for char in range(6, 1, -1):
+                part_code = parent_code[:char]
+                if part_code in family_db:
+                    return family_db[part_code]
+            return False
+
         if context is None:
             context = {}
         collect_data = context.get('collect_data')
@@ -58,6 +69,18 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # Pool used:
         excel_pool = self.pool.get('excel.writer')
         line_pool = self.pool.get('mrp.production.stats')
+        template_pool = self.pool.get('product.template')
+
+        # Load template mask:
+        family_db = {}
+        family_ids = template_pool.search(cr, uid, [
+            ('is_family', '=', True),
+        ], context=context)
+
+        for family in template_pool.browse(
+                cr, uid, family_ids, context=context):
+            for code in (family.family_list or '').split('|'):
+                family_db[code] = family.name
 
         # ---------------------------------------------------------------------
         #                           CREATE EXCEL FILE:
@@ -86,12 +109,13 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # Title row:
         row = 0
         excel_pool.write_xls_line(ws_name, row, [
-            _('Statistiche di produzione, medie su prodotti a codice a 5 car.'),
+            _('Statistiche di produzione, medie prodotti [codice a 5 car.]'),
             ], f_title)
 
         # Write Header line:
         row += 2
         header = [
+            _('Origine'),
             _('Famiglia'),
             _('Prodotto'),
             _('Tot. pezzi'),
@@ -103,7 +127,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
 
         # Setup columns:
         excel_pool.column_width(ws_name, [
-            30, 30, 10, 8, 8,
+            10, 30, 30, 10, 8, 8,
             ])
 
         fixed_cols = len(header)
@@ -117,7 +141,9 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 _logger.warning('Production stats %s with no data' % mrp.name)
                 continue
 
-            family = record.mrp_id.bom_id.product_tmpl_id.name
+            # family = mrp.order_line_ids[0].product_id.family_id.name \
+            # or mrp.bom_id.product_tmpl_id.name
+            # family = mrp.bom_id.product_tmpl_id.name
             workers = int(record.workers)
             total = record.total
             hour = record.hour
@@ -137,9 +163,11 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
 
             for product_line in record.line_ids:
                 default_code = product_line.default_code[:code_limit].strip()
+                family = get_family(default_code, family_db)
 
                 qty = product_line.qty
-                key = (family, default_code)
+                key = ('media', family, default_code)
+                stored_key = ('stored', family, default_code)
 
                 if key not in data:
                     data[key] = [
@@ -147,6 +175,12 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                         0.0,  # Total pz (all)
                         0.0,  # Total hours (all)
                     ]
+                    data[stored_key] = [
+                        {},  # Workers data (stored)
+                        0.0,  # Total pz (all) << not used
+                        0.0,  # Total hours (all) << not used
+                    ]
+
                 if workers not in data[key][0]:
                     data[key][0][workers] = [
                         0.0,  # total pz.
@@ -175,13 +209,15 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         # Write data line:
         # ---------------------------------------------------------------------
+        pdb.set_trace()
         for key in sorted(data):
             row += 1
-            family, default_code = key
+            origin, family, default_code = key
             workers_data, product_total, product_hour = data[key]
             product_rate = product_total / product_hour if product_hour else 0
 
             excel_pool.write_xls_line(ws_name, row, [
+                origin,
                 family,
                 default_code,
                 (int(product_total), f_text_right),
