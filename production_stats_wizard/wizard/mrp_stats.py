@@ -80,7 +80,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         if context is None:
             context = {}
 
-        use_line = context.get('first_load', 'force')
+        use_line = context.get('first_load', 'stored')
 
         history_pool = self.pool.get('mrp.worker.stats.history')
         current_proxy = self.browse(cr, uid, ids, context=context)[0]

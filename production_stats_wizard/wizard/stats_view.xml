@@ -44,11 +44,12 @@
                                </group>
                            </page>
                            <page name="page_medium" string="Medie di produzione">
-                               <group>
+                               <group col="4">
                                    <button name="action_stats_print" string="Statistica" type="object" class="oe_highlight" icon="gtk-print"/>
                                    <newline/>
                                    <field name="file" />
-                                   <button name="action_import_stats" string="Importa medie" type="object" class="oe_highlight" icon="gtk-print"/>
+                                   <button name="action_import_stats_first" string="Importa direttamente le medie" type="object" class="oe_highlight" icon="gtk-refresh" colspan="1" confirm="Attenzione importare le medie come valore forzato si esegue solo la prima volta, confermi?"/>
+                                   <button name="action_import_stats" string="Importa valori forzati" type="object" class="oe_highlight" icon="gtk-print" colspan="1" confirm="Attenzione verranno eliminati i dati prececendemente storicizzati per essere sostituiti da questi, confermi?"/>
                                </group>
                            </page>
                        </notebook>
