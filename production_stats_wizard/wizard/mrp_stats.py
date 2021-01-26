@@ -163,8 +163,8 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 family = get_family(default_code, family_db)
 
                 qty = product_line.qty
-                key = ('media', family, default_code)
-                stored_key = ('stored', family, default_code)
+                key = (family, 'media', default_code)
+                stored_key = (family, 'stored', default_code)
 
                 if key not in data:
                     data[key] = [
@@ -208,7 +208,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         for key in sorted(data):
             row += 1
-            origin, family, default_code = key
+            family, origin, default_code = key
             workers_data, product_total, product_hour = data[key]
             product_rate = product_total / product_hour if product_hour else 0
 
@@ -225,8 +225,11 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 workers_data[k][0] / workers_data[k][1]
                 for k in workers_data
                 if workers_data[k][1]]
-            max_rate = int(round(max(rate_list), 0))
-            min_rate = int(round(min(rate_list), 0))
+            if rate_list:
+                max_rate = int(round(max(rate_list), 0))
+                min_rate = int(round(min(rate_list), 0))
+            else:
+                max_rate = min_rate = 0
             for workers in workers_data:
                 col = fixed_cols + workers_list.index(workers)
                 total, hour = workers_data[workers]
