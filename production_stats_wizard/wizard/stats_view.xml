@@ -31,14 +31,28 @@
                    <header>
                        <button string="Cancel" special="cancel" />
                        <button name="action_print" string="Print" type="object" class="oe_highlight" icon="gtk-print"/>
-                       <button name="action_stats_print" string="Statistica" type="object" class="oe_highlight" icon="gtk-print"/>
                    </header>
                    <group colspan="4" col="4">
-                       <separator string="Filter:" colspan="4"/>
-                       <field name="from_date" />
-                       <field name="to_date" />
-                       <separator string="Sorting:" colspan="4"/>
-                       <field name="sort" />
+                       <notebook>
+                           <page name="page_detail" string="Dettaglio">
+                               <group>
+                                   <separator string="Filter:" colspan="4"/>
+                                   <field name="from_date" />
+                                   <field name="to_date" />
+                                   <separator string="Sorting:" colspan="4"/>
+                                   <field name="sort" />
+                               </group>
+                           </page>
+                           <page name="page_medium" string="Medie di produzione">
+                               <group>
+                                   <button name="action_stats_print" string="Statistica" type="object" class="oe_highlight" icon="gtk-print"/>
+                                   <newline/>
+                                   <field name="file" />
+                                   <button name="action_import_stats" string="Importa medie" type="object" class="oe_highlight" icon="gtk-print"/>
+                               </group>
+                           </page>
+                       </notebook>
+
                    </group>
                 </form>
             </field>

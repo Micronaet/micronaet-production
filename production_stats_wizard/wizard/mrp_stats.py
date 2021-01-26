@@ -35,6 +35,8 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT,
     DATETIME_FORMATS_MAP,
     float_compare)
+import xlrd
+import base64
 import pdb
 
 _logger = logging.getLogger(__name__)
@@ -63,6 +65,79 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
     # --------------------
     # Wizard button event:
     # --------------------
+    def action_import_stats(self, cr, uid, ids, context=None):
+        """ Import and update medium data
+        """
+        history_pool = self.pool.get('mrp.worker.stats.history')
+        current_proxy = self.browse(cr, uid, ids, context=context)[0]
+        pdb.set_trace()
+
+        # ---------------------------------------------------------------------
+        # Save file passed:
+        # ---------------------------------------------------------------------
+        if not current_proxy.file:
+            raise osv.except_osv(
+                _('No file:'),
+                _('File non presente'),
+                )
+        b64_file = base64.decodestring(current_proxy.file)
+        now = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        filename = '/tmp/tx_%s.xlsx' % now.replace(':', '_').replace('-', '_')
+        f = open(filename, 'wb')
+        f.write(b64_file)
+        f.close()
+
+        # ---------------------------------------------------------------------
+        # Load force name (for web publish)
+        # ---------------------------------------------------------------------
+        try:
+            WB = xlrd.open_workbook(filename)
+        except:
+            raise osv.except_osv(
+                _('Errore XLSX'),
+                _('Impossibile aprire il file: %s' % filename),
+                )
+
+        error = ''
+        WS = WB.sheet_by_index(0)
+        worker_start = 6
+        start = False
+        workers = {}
+        for row in range(WS.nrows):
+            # ---------------------------------------------------------
+            # Read product code:
+            # ---------------------------------------------------------
+            origin = WS.cell(row, 0).value
+            if not start and origin == 'Origine':
+                start = True
+                # Read workers part:
+                for col in range(worker_start, WS.ncols):
+                    worker = WS.cell(row, col).value
+                    if not worker.isdigit():
+                        continue
+                    workers[worker] = col
+
+                continue
+            if origin == 'media':
+                _logger.warning('Jump media line')
+                continue
+
+            family = WS.cell(row, 1).value
+            default_code = WS.cell(row, 2).value
+            for worker in workers:
+                worker_col = workers[worker]
+                medium = WS.cell(row, 2).value
+                if medium:
+                    history_pool.create(cr, uid, {
+                        'name': default_code,
+                        'family': family,
+                        'worker': int(worker),
+                        'medium': int(medium),
+                    }, context=context)
+
+
+        return True
+
     def action_stats_print(self, cr, uid, ids, context=None):
         """ Event stats print
             context > collect_data for get only dict collected
@@ -456,4 +531,8 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         'to_date': lambda *x: '%s01' % datetime.now().strftime(
             DEFAULT_SERVER_DATE_FORMAT),
         'sort': lambda *x: 'line',
+
+        'file': fields.binary(
+            'XLSX file', filters=None,
+            help='File con le medie forzate manualmente'),
         }
