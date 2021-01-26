@@ -169,15 +169,20 @@ class MrpProductionStatsMixed(orm.Model):
         # ---------------------------------------------------------------------
         if context is None:
             context = {}
-        stats_pool = self.pool.get('mrp.stats.excel.report.wizard')
-        context_new = context.copy()
-        context_new['collect_data'] = True
-        stats_data = stats_pool.action_stats_print(
-            cr, uid, [], context=context_new)
-        # Clean statistic database:
+
+        # Load statistic data form stored history (not from medium)
+        history_pool = self.pool.get('mrp.worker.stats.history')
         clean_data = {}
-        for key in stats_data:
-            clean_data[key[1]] = stats_data[key]
+        history_ids = history_pool.search([])
+        for record in history_pool.browse(
+                cr, uid, history_ids, context=context):
+            code = record.name
+            workers = record.workers
+            medium = record.medium
+            if code not in clean_data:
+                clean_data[code] = [{}, 0.0, 0.0]
+            if workers not in clean_data[code][0]:
+                clean_data[code][0].append([medium, 1.0])
 
         # ---------------------------------------------------------------------
         #                  Collect stats data in database:
