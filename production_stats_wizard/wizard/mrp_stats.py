@@ -70,7 +70,6 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         """
         history_pool = self.pool.get('mrp.worker.stats.history')
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
-        pdb.set_trace()
 
         # ---------------------------------------------------------------------
         # Save file passed:
@@ -88,9 +87,18 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         f.close()
 
         # ---------------------------------------------------------------------
+        # Clean all previous statistic:
+        # ---------------------------------------------------------------------
+        # TODO save previous?
+        _logger.warning('Delete previous history')
+        history_ids = history_pool.search(cr, uid, [], context=context)
+        history_pool.unlink(cr, uid, history_ids, context=context)
+
+        # ---------------------------------------------------------------------
         # Load force name (for web publish)
         # ---------------------------------------------------------------------
         try:
+            _logger.warning('Reload from file: %s' % filename)
             WB = xlrd.open_workbook(filename)
         except:
             raise osv.except_osv(
@@ -113,28 +121,30 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 # Read workers part:
                 for col in range(worker_start, WS.ncols):
                     worker = WS.cell(row, col).value
-                    if not worker.isdigit():
+                    if type(worker) != float:
                         continue
                     workers[worker] = col
-
                 continue
+            if not start:
+                continue
+
             if origin == 'media':
                 _logger.warning('Jump media line')
                 continue
 
             family = WS.cell(row, 1).value
             default_code = WS.cell(row, 2).value
+            pdb.set_trace()
             for worker in workers:
                 worker_col = workers[worker]
-                medium = WS.cell(row, 2).value
+                medium = WS.cell(row, worker_col).value
                 if medium:
                     history_pool.create(cr, uid, {
                         'name': default_code,
                         'family': family,
-                        'worker': int(worker),
+                        'workers': int(worker),
                         'medium': int(medium),
                     }, context=context)
-
 
         return True
 
@@ -518,7 +528,10 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         'sort': fields.selection([
             ('line', 'Line-Family-Date'),
             ('family', 'Family-Line-Date'),
-            ], 'sort', required=True)
+            ], 'sort', required=True),
+        'file': fields.binary(
+            'XLSX file', filters=None,
+            help='File con le medie forzate manualmente'),
         # 'workcenter_id': fields.many2one('mrp.workcenter', 'Workcenter'),
         # TODO family
         # TODO line
@@ -532,7 +545,4 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             DEFAULT_SERVER_DATE_FORMAT),
         'sort': lambda *x: 'line',
 
-        'file': fields.binary(
-            'XLSX file', filters=None,
-            help='File con le medie forzate manualmente'),
         }
