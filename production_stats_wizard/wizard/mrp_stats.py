@@ -134,11 +134,10 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
 
             family = WS.cell(row, 1).value
             default_code = WS.cell(row, 2).value
-            pdb.set_trace()
             for worker in workers:
                 worker_col = workers[worker]
                 medium = WS.cell(row, worker_col).value
-                if medium:
+                if type(medium) == float:
                     history_pool.create(cr, uid, {
                         'name': default_code,
                         'family': family,
