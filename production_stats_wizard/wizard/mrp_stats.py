@@ -65,9 +65,23 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
     # --------------------
     # Wizard button event:
     # --------------------
+    def action_import_stats_first(self, cr, uid, ids, context=None):
+        """ Load medium as history
+        """
+        if context is None:
+            context = {}
+
+        context['first_load'] = 'media'
+        return self.action_import_stats(cr, uid, ids, context=context)
+
     def action_import_stats(self, cr, uid, ids, context=None):
         """ Import and update medium data
         """
+        if context is None:
+            context = {}
+
+        use_line = context.get('first_load', 'force')
+
         history_pool = self.pool.get('mrp.worker.stats.history')
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
 
@@ -128,7 +142,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             if not start:
                 continue
 
-            if origin == 'media':
+            if origin != use_line:
                 _logger.warning('Jump media line')
                 continue
 
