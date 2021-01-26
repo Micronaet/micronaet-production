@@ -40,6 +40,21 @@ import pdb
 _logger = logging.getLogger(__name__)
 
 
+class MrpWorkerStatsHistory(orm.Model):
+    """ Store fixed data
+    """
+    _name = 'mrp.worker.stats.history'
+    _description = 'Worker stats history'
+    _order = 'family,name'
+
+    _columns = {
+        'name': fields.char('Codice', size=6),
+        'family': fields.char('Famiglia', size=6),
+        'workers': fields.integer('Workers'),
+        'medium': fields.integer('Medium'),
+    }
+
+
 class MrpStatsExcelReportWizard(orm.TransientModel):
     """ Wizard for generate report
     """
@@ -70,6 +85,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         excel_pool = self.pool.get('excel.writer')
         line_pool = self.pool.get('mrp.production.stats')
         template_pool = self.pool.get('product.template')
+        history_pool = self.pool.get('mrp.worker.stats.history')
 
         # Load template mask:
         family_db = {}
@@ -163,8 +179,8 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 family = get_family(default_code, family_db)
 
                 qty = product_line.qty
-                key = (family, 'media', default_code)
-                stored_key = (family, 'stored', default_code)
+                key = (family, default_code, 'media')
+                stored_key = (family, default_code, 'stored')
 
                 if key not in data:
                     data[key] = [
@@ -172,11 +188,25 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                         0.0,  # Total pz (all)
                         0.0,  # Total hours (all)
                     ]
+                    # ---------------------------------------------------------
+                    # Populate history part:
+                    # ---------------------------------------------------------
                     data[stored_key] = [
                         {},  # Workers data (stored)
                         0.0,  # Total pz (all) << not used
                         0.0,  # Total hours (all) << not used
                     ]
+                    history_ids = history_pool.search(cr, uid, [
+                        ('family', '=', family),
+                        ('name', '=', default_code),
+                    ], context=context)
+                    for history in history_pool.browse(
+                            cr, uid, history_ids, context=context):
+                        workers = history.workers
+                        data[stored_key][0][workers] = [
+                            history.medium,  # medium (total pz.)
+                            1.0,  # always 1 (total time)
+                        ]
 
                 if workers not in data[key][0]:
                     data[key][0][workers] = [
@@ -208,7 +238,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         for key in sorted(data):
             row += 1
-            family, origin, default_code = key
+            family, default_code, origin = key
             workers_data, product_total, product_hour = data[key]
             product_rate = product_total / product_hour if product_hour else 0
 

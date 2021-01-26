@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
+       <!--mrp.worker.stats.history-->
+       <record id="tree_mrp_worker_stats_history_view" model="ir.ui.view">
+            <field name="name">mrp.worker.stats.history.tree</field>
+            <field name="model">mrp.worker.stats.history</field>
+            <field name="arch" type="xml">
+                <tree string="Storico produzioni">
+                    <field name="family" />
+                    <field name="name" />
+                    <field name="workers" />
+                    <field name="medium" />
+                </tree>
+            </field>
+      </record>
+      <record model="ir.actions.act_window" id="action_mrp_worker_stats_history_view">
+          <field name="name">MRP storico stat.</field>
+          <field name="res_model">mrp.worker.stats.history</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">tree,form</field>
+          <field name="view_id" ref="tree_mrp_worker_stats_history_view"/>
+      </record>
+
        <!-- mrp.stats.excel.report.wizard -->
        <record id="mrp_stats_excel_report_wizard_view" model="ir.ui.view">
             <field name="name">Statistic XLSX report wizard</field>
@@ -36,6 +57,12 @@
           id="menu_mrp_stats_excel_report_wizard_view"
           action="action_mrp_stats_excel_report_wizard_view"
           sequence="10"
+          />
+      <menuitem
+          parent="production_accounting_external_stats.menu_mrp_production_stats_mixed"
+          id="menu_mrp_worker_stats_history_view"
+          action="action_mrp_worker_stats_history_view"
+          sequence="20"
           />
 
     </data>

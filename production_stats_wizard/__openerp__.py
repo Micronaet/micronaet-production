@@ -36,6 +36,7 @@
     'init_xml': [],
     'demo': [],
     'data': [
+        'security/ir.model.access.csv',
         'wizard/stats_view.xml',
         ],
     'active': False,
