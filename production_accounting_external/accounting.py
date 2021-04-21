@@ -534,7 +534,7 @@ class MrpProduction(orm.Model):
             'state': 'draft'}, context=context)
 
     def row_in_tree_view(self, cr, uid, ids, context=None):
-        """ Open line in tree vindow for manage better
+        """ Open line in tree window for manage better
         """
         sol_pool = self.pool.get('sale.order.line')
         sol_ids = sol_pool.search(cr, uid, [
@@ -547,18 +547,18 @@ class MrpProduction(orm.Model):
             'production_accounting_external',
             'production_sale_order_line_sort_tree_view',  # Sort mode
             )[1]
-
+        pdb.set_trace()
         return {
             'type': 'ir.actions.act_window',
             'name': _('Righe'),
             'view_type': 'form',
-            'view_mode': 'tree,form',
+            'view_mode': 'tree',
             'res_model': 'sale.order.line.mrp.sort',
             'view_id': tree_id,
             'views': [(tree_id, 'tree')],
             'domain': [('id', 'in', sol_ids)],
-            'context': context,
-            'target': 'current',  # 'new'
+            'context': {'lang': context.get('lang', 'it_IT')},  # context,
+            'target': 'current',
             'nodestroy': False,
             }
 
@@ -778,7 +778,7 @@ class SaleOrderLineMrpSort(orm.Model):
     _name = 'sale.order.line.mrp.sort'
     _auto = False
     _table = 'sale_order_line_mrp_sort'
-    _order = 'mrp_sequence'
+    _order = 'sequence'
     _description = 'MRP Sale line sorted'
 
     def init(self, cr):
@@ -795,7 +795,9 @@ class SaleOrderLineMrpSort(orm.Model):
                     create_uid, 
                     write_uid,                     
                     mrp_sequence,
-                    partner_id
+                    partner_id,
+                    order_id, 
+                    name            
                 from sale_order_line);
             """)
 
@@ -806,8 +808,24 @@ class SaleOrderLineMrpSort(orm.Model):
         'create_uid': fields.many2one('res.users', 'Creatore', readonly=True),
         'write_uid': fields.many2one('res.users', 'Creatore', readonly=True),
 
-        'mrp_sequence': fields.integer('Seq. MRP'),
-        'partner_id': fields.many2one('res.partner', 'Partner', readonly=True),
+        'sequence': fields.integer('Seq. MRP'),
+        'partner_id': fields.many2one('res.partner', 'Cliente', readonly=True),
+        'order_id': fields.many2one('sale.order', 'Ordine', readonly=True),
+        #'mrp_id': fields.many2one('mrp.production', 'MRP', readonly=True),
+        'name': fields.char('Nome', size=60, readonly=True),
+        #'mrp_default_code': fields.char('Nome', size=60, readonly=True),
+        #'date_deadline': fields.datetime('Scadenza', readonly=True),
+        #'product_uom_qty': fields.float('Q.', readonly=True),
+
+        # product_uom_maked_qty
+        # product_uom_maked_sync_qty
+        # mx_assigned_qty
+        # remove_mx_assigned_qty
+        # product_uom_assigned_qty
+        # product_uom_delivered_qty
+        # production_note
+        # sync_state
+        # is_manufactured
     }
 
 
