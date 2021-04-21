@@ -18,6 +18,7 @@
 #
 ###############################################################################
 import os
+import pdb
 import sys
 from openerp import netsvc
 import logging
@@ -776,14 +777,15 @@ class SaleOrderLineMrpSort(orm.Model):
     """
     _name = 'sale.order.line.mrp.sort'
     _auto = False
+    _table = 'sale_order_line_mrp_sort'
     _order = 'mrp_sequence'
     _description = 'MRP Sale line sorted'
 
-    def __init__(self, cr, uid, context=None):
+    def init(self, cr):
         """ Create Query for his view
         """
-        # from openerp import tools
-        # tools.drop_view_if_exists(cr, 'asset_asset_report')
+        from openerp import tools
+        tools.drop_view_if_exists(cr, 'sale_order_line_mrp_sort')
         cr.execute("""
             create or replace view sale_order_line_mrp_sort as (
                 select
@@ -793,8 +795,8 @@ class SaleOrderLineMrpSort(orm.Model):
                     create_uid, 
                     write_uid,                     
                     mrp_sequence,
-                    partner_id,
-                from sale_order_line;
+                    partner_id
+                from sale_order_line);
             """)
 
     _columns = {

@@ -200,7 +200,7 @@
     <!--Same as previous without sort (for manage handle)-->
     <record model="ir.ui.view" id="production_sale_order_line_sort_tree_view">
         <field name="name">Production sale order sort line</field>
-        <field name="model">sale.order.line.mrp.order</field>
+        <field name="model">sale.order.line.mrp.sort</field>
         <field name="arch" type="xml">
             <tree string="OC line" editable="bottom" delete="0" create="0"
                       default_order="mrp_sequence"
