@@ -543,7 +543,7 @@ class MrpProduction(orm.Model):
         model_pool = self.pool.get('ir.model.data')
         tree_id = model_pool.get_object_reference(
             cr, uid, 'production_accounting_external',
-            'production_sale_order_line_sort_tree_view',  # Sort mode
+            'production_sale_order_line_tree_view',  # Sort mode
             )[1]
 
         return {
@@ -610,7 +610,7 @@ class MrpProduction(orm.Model):
 
         mrp_ids = self.search(cr, uid, [
             ('name', '=', name),
-            #('unlinked_mrp', '=', True), # XXX not necessary
+            # ('unlinked_mrp', '=', True), # XXX not necessary
             ], context=context)
 
         if mrp_ids:
@@ -770,19 +770,58 @@ class MrpProduction(orm.Model):
             size=100, string='Sched. info', store=False),
         }
 
+
+class SaleOrderLineMrpSort(orm.Model):
+    """ Sale as sale order line but just for sort
+    """
+    _name = 'sale.order.line.mrp.sort'
+    _auto = False
+    _order = 'mrp_sequence'
+    _description = 'MRP Sale line sorted'
+
+    def __init__(self, cr):
+        """ Create Query for his view
+        """
+        # from openerp import tools
+        # tools.drop_view_if_exists(cr, 'asset_asset_report')
+        cr.execute("""
+            create or replace view sale_order_line_mrp_sort as (
+                select
+                    id,
+                    create_date,
+                    write_date,
+                    create_uid, 
+                    write_uid,                     
+                    mrp_sequence,
+                    partner_id,
+                from sale_order_line;
+            """)
+
+    _columns = {
+        'id': fields.integer('ID'),
+        'create_date': fields.datetime('Data creazione', readonly=True),
+        'write_date': fields.datetime('Data modifica', readonly=True),
+        'create_uid': fields.many2one('res.users', 'Creatore', readonly=True),
+        'write_uid': fields.many2one('res.users', 'Creatore', readonly=True),
+
+        'mrp_sequence': fields.integer('Seq. MRP'),
+        'partner_id': fields.many2one('res.partner', 'Partner', readonly=True),
+    }
+
+
 class MrpProductionWorkcenterLine(orm.Model):
     """ Accounting external fields
     """
     _inherit = 'mrp.production.workcenter.line'
 
     _columns = {
-        #'product_id': fields.related('mrp_id', 'product_id',
+        # 'product_id': fields.related('mrp_id', 'product_id',
         #    type='many2one', relation='product.product', string='Product'),
-        'has_mandatory_delivery': fields.related('production_id',
+        'has_mandatory_delivery': fields.related(
+            'production_id',
             'has_mandatory_delivery', type='char', size=1,
             string='Has fix delivery'),
-        'mandatory_delivery': fields.related('production_id',
+        'mandatory_delivery': fields.related(
+            'production_id',
             'mandatory_delivery', type='integer', string='Fix delivery'),
         }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
