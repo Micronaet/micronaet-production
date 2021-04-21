@@ -808,7 +808,7 @@ class SaleOrderLineMrpSort(orm.Model):
         'create_uid': fields.many2one('res.users', 'Creatore', readonly=True),
         'write_uid': fields.many2one('res.users', 'Creatore', readonly=True),
 
-        'sequence': fields.integer('Seq. MRP'),
+        'mrp_sequence': fields.integer('Seq. MRP'),
         'partner_id': fields.many2one('res.partner', 'Cliente', readonly=True),
         'order_id': fields.many2one('sale.order', 'Ordine', readonly=True),
         #'mrp_id': fields.many2one('mrp.production', 'MRP', readonly=True),

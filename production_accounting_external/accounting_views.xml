@@ -202,8 +202,8 @@
         <field name="name">Production sale order sort line</field>
         <field name="model">sale.order.line.mrp.sort</field>
         <field name="arch" type="xml">
-            <tree string="OC line" editable="bottom" delete="0" create="0" default_order="mrp_sequence">
-                <field name="sequence" string="ord." widget="handle"/>
+            <tree string="OC line" editable="bottom" delete="0" create="0">
+                <field name="mrp_sequence" string="ord." widget="handle"/>
                 <field name="partner_id" readonly="1"/>
             </tree>
         </field>
