@@ -542,8 +542,9 @@ class MrpProduction(orm.Model):
 
         model_pool = self.pool.get('ir.model.data')
         tree_id = model_pool.get_object_reference(
-            cr, uid, 'production_accounting_external',
-            'production_sale_order_line_tree_view',  # Sort mode
+            cr, uid,
+            'production_accounting_external',
+            'production_sale_order_line_sort_tree_view',  # Sort mode
             )[1]
 
         return {
@@ -551,8 +552,7 @@ class MrpProduction(orm.Model):
             'name': _('Righe'),
             'view_type': 'form',
             'view_mode': 'tree,form',
-            # 'res_id': 1,
-            'res_model': 'sale.order.line',
+            'res_model': 'sale.order.line.mrp.sort',
             'view_id': tree_id,
             'views': [(tree_id, 'tree')],
             'domain': [('id', 'in', sol_ids)],
