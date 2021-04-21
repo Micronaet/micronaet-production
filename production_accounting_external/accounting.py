@@ -402,7 +402,7 @@ class SaleOrderLine(orm.Model):
         'product_uom_assigned_qty': fields.float(
             '(Assigned) not use!', digits=(16, 2),  # TODO change after add
             help='This quantity is the stock qty present and assigned to'
-                'this current line'),
+                 'this current line'),
 
         'production_note': fields.char('Note', size=100),
 
@@ -551,15 +551,16 @@ class MrpProduction(orm.Model):
             'name': _('Righe'),
             'view_type': 'form',
             'view_mode': 'tree,form',
-            #'res_id': 1,
+            # 'res_id': 1,
             'res_model': 'sale.order.line',
             'view_id': tree_id,
             'views': [(tree_id, 'tree')],
             'domain': [('id', 'in', sol_ids)],
             'context': context,
-            'target': 'current', # 'new'
+            'target': 'current',  # 'new'
             'nodestroy': False,
             }
+
     def close_all_production(self, cr, uid, ids, context=None):
         """ Close all production
         """
@@ -726,7 +727,7 @@ class MrpProduction(orm.Model):
                     order='mrp_sequence,order_id,sequence,id',
                     context=context)
 
-            res[item_id] = item_ids #sol_pool.browse(cr, uid, item_ids, context=context)
+            res[item_id] = item_ids  # sol_pool.browse(cr, uid, item_ids, context=context)
         return res
 
     _columns = {
