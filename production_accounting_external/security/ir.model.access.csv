@@ -1,2 +1,3 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
 access_sale_order_line_previsional,sale.order.line.previsional,model_sale_order_line_previsional,,1,1,1,1
+access_sale_order_line_mrp_sort_user,sale.order.line.mrp.sort,model_sale_order_line_mrp_sort,,1,1,1,1

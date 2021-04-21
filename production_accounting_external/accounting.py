@@ -797,7 +797,10 @@ class SaleOrderLineMrpSort(orm.Model):
                     mrp_sequence,
                     partner_id,
                     order_id, 
-                    name            
+                    name,
+                    product_uom_qty,
+                    default_code,            
+                    date_deadline,
                 from sale_order_line);
             """)
 
@@ -813,9 +816,9 @@ class SaleOrderLineMrpSort(orm.Model):
         'order_id': fields.many2one('sale.order', 'Ordine', readonly=True),
         #'mrp_id': fields.many2one('mrp.production', 'MRP', readonly=True),
         'name': fields.char('Nome', size=60, readonly=True),
-        #'mrp_default_code': fields.char('Nome', size=60, readonly=True),
-        #'date_deadline': fields.datetime('Scadenza', readonly=True),
-        #'product_uom_qty': fields.float('Q.', readonly=True),
+        'product_uom_qty': fields.float('Q.', readonly=True),
+        'default_code': fields.char('Codice', size=60, readonly=True),
+        'date_deadline': fields.datetime('Scadenza', readonly=True),
 
         # product_uom_maked_qty
         # product_uom_maked_sync_qty
