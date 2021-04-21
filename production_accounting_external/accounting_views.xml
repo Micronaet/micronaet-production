@@ -204,7 +204,9 @@
         <field name="priority" eval="50"/>
         <field name="arch" type="xml">
             <tree string="OC line" editable="bottom" delete="0" create="0"
+                      default_order="mrp_sequence"
                       colors="red:is_manufactured==False;maroon:sync_state=='closed';green:sync_state=='sync';blue:has_mandatory_delivery==True">
+                <field name="mrp_sequence" string="ord." invisible="1"/>
                 <field name="mrp_sequence" string="ord." widget="handle"/>
                 <button name="free_line" type="object" string="Free line" icon="gtk-disconnect" attrs="{'invisible': ['|',('mrp_id','=',False),('sync_state','!=','draft')]}" context="{'production_order_id':mrp_id}"/>
                 <field name="partner_id" readonly="1"/>

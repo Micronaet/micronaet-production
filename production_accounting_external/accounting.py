@@ -543,7 +543,7 @@ class MrpProduction(orm.Model):
         model_pool = self.pool.get('ir.model.data')
         tree_id = model_pool.get_object_reference(
             cr, uid, 'production_accounting_external',
-            'production_sale_order_line_tree_view',
+            'production_sale_order_line_sort_tree_view',  # Sort mode
             )[1]
 
         return {
