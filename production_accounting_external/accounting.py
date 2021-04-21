@@ -547,7 +547,6 @@ class MrpProduction(orm.Model):
             'production_accounting_external',
             'production_sale_order_line_sort_tree_view',  # Sort mode
             )[1]
-        pdb.set_trace()
         return {
             'type': 'ir.actions.act_window',
             'name': _('Righe'),
@@ -797,10 +796,14 @@ class SaleOrderLineMrpSort(orm.Model):
                     mrp_sequence,
                     partner_id,
                     order_id, 
+                    mrp_production_id,
                     name,
                     product_uom_qty,
+                    product_uom_maked_sync_qty,
+                    product_uom_delivered_qty,
                     default_code,            
                     date_deadline,
+                    production_note
                 from sale_order_line);
             """)
 
@@ -814,11 +817,14 @@ class SaleOrderLineMrpSort(orm.Model):
         'mrp_sequence': fields.integer('Seq. MRP'),
         'partner_id': fields.many2one('res.partner', 'Cliente', readonly=True),
         'order_id': fields.many2one('sale.order', 'Ordine', readonly=True),
-        #'mrp_id': fields.many2one('mrp.production', 'MRP', readonly=True),
+        'mrp_production_id': fields.many2one('mrp.production', 'MRP', readonly=True),
         'name': fields.char('Nome', size=60, readonly=True),
         'product_uom_qty': fields.float('Q.', readonly=True),
-        'default_code': fields.char('Codice', size=60, readonly=True),
+        'product_uom_maked_sync_qty': fields.float('Fatti', readonly=True),
+        'product_uom_delivered_qty': fields.float('Consegn.', readonly=True),
+        'default_code': fields.char('Codice', size=20, readonly=True),
         'date_deadline': fields.datetime('Scadenza', readonly=True),
+        'production_note': fields.char('Note produz.', size=100, readonly=True),
 
         # product_uom_maked_qty
         # product_uom_maked_sync_qty
