@@ -779,7 +779,7 @@ class SaleOrderLineMrpSort(orm.Model):
     _order = 'mrp_sequence'
     _description = 'MRP Sale line sorted'
 
-    def __init__(self, cr):
+    def __init__(self, cr, uid, context=None):
         """ Create Query for his view
         """
         # from openerp import tools
