@@ -418,7 +418,7 @@ class SaleOrderLine(orm.Model):
             ('draft', 'Draft'),  # Not produced
             ('partial', 'Partial'),  # Partial produced
             ('partial_sync', 'Partial sync'),  # Partial produced acc. sync
-            ('closed', 'Closed'),  # Poduced acc. sync
+            ('closed', 'Closed'),  # Produced acc. sync
             ('sync', 'Sync'), ],'Sync state', select=True),
         }
 
@@ -494,8 +494,8 @@ class MrpProduction(orm.Model):
         for production in self.browse(cr, uid, ids, context=context):
             # Unlink if no produce remain and not order closed:
             test = [line.product_uom_maked_sync_qty
-                for line in production.order_line_ids \
-                    #if not line.mx_closed # XXX vedere se attivare (complicaz)
+                    for line in production.order_line_ids \
+                    # if not line.mx_closed # XXX vedere se attivare (complicaz)
                     ]
 
             if any(test):
@@ -778,7 +778,7 @@ class SaleOrderLineMrpSort(orm.Model):
     _name = 'sale.order.line.mrp.sort'
     _auto = False
     _table = 'sale_order_line_mrp_sort'
-    _order = 'sequence'
+    _order = 'mrp_sequence'
     _description = 'MRP Sale line sorted'
 
     def init(self, cr):
