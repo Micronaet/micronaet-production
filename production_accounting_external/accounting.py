@@ -220,7 +220,6 @@ class SaleOrderLineRelation(orm.Model):
                 _('Errore'),
                 _('Prodotto e assegnato maggiore di ordinato'),
                 )
-
         return self.write(cr, uid, ids, {
             'product_uom_maked_sync_qty': produced_qty,
             'sync_state': 'sync',
