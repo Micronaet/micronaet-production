@@ -38,7 +38,7 @@ class MrpProductionStat(orm.Model):
     """
     _name = 'mrp.production.stats'
     _description = 'MRP stats'
-    _order = 'date'
+    _order = 'date desc'
     _rec_name = 'date'
 
     def _function_start_total_text(
