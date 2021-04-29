@@ -802,7 +802,8 @@ class SaleOrderLineMrpSort(orm.Model):
                     product_uom_delivered_qty,
                     default_code,            
                     date_deadline,
-                    production_note
+                    production_note,
+                    sync_state
                 from sale_order_line);
             """)
 
@@ -824,6 +825,14 @@ class SaleOrderLineMrpSort(orm.Model):
         'default_code': fields.char('Codice', size=20, readonly=True),
         'date_deadline': fields.datetime('Scadenza', readonly=True),
         'production_note': fields.char('Note produz.', size=100, readonly=True),
+        'sync_state': fields.selection([
+            ('draft', 'Draft'),  # Not produced
+            ('partial', 'Partial'),  # Partial produced
+            ('partial_sync', 'Partial sync'),  # Partial produced acc. sync
+            ('closed', 'Closed'),  # Produced acc. sync
+            ('sync', 'Sync'), 
+            ], 'Sync state', select=True),
+        }
 
         # product_uom_maked_qty
         # product_uom_maked_sync_qty
@@ -832,9 +841,8 @@ class SaleOrderLineMrpSort(orm.Model):
         # product_uom_assigned_qty
         # product_uom_delivered_qty
         # production_note
-        # sync_state
         # is_manufactured
-    }
+
 
 
 class MrpProductionWorkcenterLine(orm.Model):

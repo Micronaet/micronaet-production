@@ -62,7 +62,7 @@ class MrpProductionReportWizard(orm.TransientModel):
         datas['wizard_show_sale'] = wiz_proxy.show_sale
         datas['wizard_show_frame'] = wiz_proxy.show_frame
         datas['wizard_show_note'] = wiz_proxy.show_note
-        #datas['show_cut'] = wiz_proxy.show_cut
+        datas['wizard_job_id'] = wiz_proxy.job_id.id
 
         return {
             'type': 'ir.actions.report.xml',
@@ -97,6 +97,7 @@ class MrpProductionReportWizard(orm.TransientModel):
         'show_sale': fields.boolean('B. Show sale part'),
         'show_frame': fields.boolean('C. Show frame part'),
         'show_note': fields.boolean('Mostra sistema note'),
+        'job_id': fields.many2one('mrp.production.stats', 'Job'),
         }
         
     _defaults = {

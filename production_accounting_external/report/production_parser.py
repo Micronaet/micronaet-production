@@ -613,12 +613,27 @@ class Parser(report_sxw.rml_parse):
     def get_object_with_total(self, o, data=None):
         """ Get object with totals for normal report
         """
+        cr = self.cr
+        uid = self.uid
+        context = {'lang': 'it_IT'}
         if data is None:
-            data = {}
+            data = {}            
+        
+        job_pool = self.pool.get('mrp.production.stats')    
+
+        # Job mode:        
         mode = data.get('mode', 'clean')
+        job_id = data.get('wizard_job_id')
+        if job_id:
+            job = job_pool.browse(cr, uid, job_id, context=context)
+            sorted_lines = sorted(
+                job.working_ids, key=lambda x: x.mrp_sequence)
+            # mode = 'all'
+        else:
+            sorted_lines = o.sort_order_line_ids
 
         lines = []
-        for line in o.sort_order_line_ids:  # jet ordered:
+        for line in sorted_lines:  # jet ordered:
             lines.append(line)
 
         # Total for code break:

@@ -202,7 +202,7 @@
         <field name="name">Production sale order sort line</field>
         <field name="model">sale.order.line.mrp.sort</field>
         <field name="arch" type="xml">
-            <tree string="OC line" editable="bottom" delete="0" create="0">
+            <tree string="OC line" editable="bottom" delete="0" create="0" colors="maroon:sync_state=='closed';green:sync_state=='sync'"><!--colors="red:is_manufactured==False;maroon:sync_state=='closed';green:sync_state=='sync';blue:has_mandatory_delivery==True"-->
                 <field name="mrp_sequence" string="ord." widget="handle"/>
                 <field name="partner_id" readonly="1"/>
                 <field name="order_id" readonly="1"/>
@@ -213,6 +213,7 @@
                 <field name="product_uom_delivered_qty" readonly="1"/>
                 <field name="product_uom_maked_sync_qty" readonly="1"/>
                 <field name="production_note" readonly="1"/>
+                <field name="sync_state" readonly="1"/>
             </tree>
         </field>
     </record>

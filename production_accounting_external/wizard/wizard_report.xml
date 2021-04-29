@@ -20,6 +20,7 @@
                             <field name="show_lavoration" />
                             <field name="show_sale" />
                             <field name="show_frame" />
+                            <field name="job_id" /><!--invisible="1"-->
                         </group>
                     </sheet>
                 </form>
