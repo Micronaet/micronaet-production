@@ -51,9 +51,12 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
     # --------------
     def action_create_mrp_production_stats(self, cr, uid, ids, context=None):
         """ Add statistic record
+            Context parameters: update_mode_id = ID of yet present stats
         """
         if context is None:
             context = {}
+
+        update_mode_id = context.get('update_mode_id')
 
         # Pool used:
         stats_pool = self.pool.get('mrp.production.stats')
@@ -70,8 +73,7 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
                 _('No parent production!'))
 
         # Create header:
-        stat_id = stats_pool.create(
-            cr, uid, {
+        stat_date = {
                 'date': wiz_proxy.date,
                 'total': wiz_proxy.total,
                 'workers': wiz_proxy.workers,
@@ -79,7 +81,13 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
                 'startup': wiz_proxy.startup,
                 'mrp_id': mrp_id,
                 'workcenter_id': wiz_proxy.workcenter_id.id,
-                }, context=context)
+                }
+        if update_mode_id:
+            stats_pool.write(
+                cr, uid, [update_mode_id], stat_date, context=context)
+            stat_id = update_mode_id
+        else:
+            stat_id = stats_pool.create(cr, uid, stat_date, context=context)
 
         # Create details:
         for line in wiz_proxy.detail_ids:
