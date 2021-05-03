@@ -20,6 +20,7 @@
 ###############################################################################
 
 import os
+import pdb
 import sys
 import logging
 import openerp
@@ -83,6 +84,12 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
                 'workcenter_id': wiz_proxy.workcenter_id.id,
                 }
         if update_mode_id:
+            # New management:
+            stat_date.update({
+                'crono_stop': datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                'working_done': True,
+            })
+
             stats_pool.write(
                 cr, uid, [update_mode_id], stat_date, context=context)
             stat_id = update_mode_id
