@@ -255,6 +255,22 @@ class MrpProductionStatsMixed(orm.Model):
                 'align': 'right',
                 'border': 1,
                 }),
+            'text_red': WB.add_format({
+                'font_color': 'black',
+                'bg_color': 'red',
+                'font_name': 'Courier 10 pitch',
+                'font_size': 9,
+                # 'align': 'left',
+                'border': 1,
+                }),
+            'text_number_red': WB.add_format({
+                'font_color': 'black',
+                'bg_color': 'red',
+                'font_name': 'Courier 10 pitch',
+                'font_size': 9,
+                'align': 'right',
+                'border': 1,
+                }),
             'text_today': WB.add_format({
                 'font_color': 'black',
                 'font_name': 'Courier 10 pitch',
@@ -639,9 +655,15 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 8, _('Cambio'), xls_format['header'])
 
         # Write data:
-        cell_format = xls_format['text']
-        cell_number_format = xls_format['text_number']
         for job in job_pool.browse(cr, uid, job_ids, context=context):
+            duration_not_considered = job.duration_not_considered
+            if duration_not_considered:
+                cell_format = xls_format['text_red']
+                cell_number_format = xls_format['text_number_red']
+            else:
+                cell_format = xls_format['text']
+                cell_number_format = xls_format['text_number']
+
             row += 1
             WS.write(row, 0, job.program_id.name, cell_format)
             WS.write(row, 1, job.created_at, cell_format)
@@ -652,7 +674,7 @@ class MrpProductionStatsMixed(orm.Model):
             WS.write(row, 6, job.duration_setup, cell_number_format)
             WS.write(
                 row, 7,
-                'X' if job.duration_not_considered else '', cell_format)
+                'X' if duration_not_considered else '', cell_format)
             WS.write(
                 row, 8, 'X' if job.duration_need_setup else '', cell_format)
 
