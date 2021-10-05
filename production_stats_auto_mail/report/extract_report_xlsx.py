@@ -257,7 +257,7 @@ class MrpProductionStatsMixed(orm.Model):
                 }),
             'text_red': WB.add_format({
                 'font_color': 'black',
-                'bg_color': 'red',
+                'bg_color': '#e5a69f',
                 'font_name': 'Courier 10 pitch',
                 'font_size': 9,
                 # 'align': 'left',
@@ -265,7 +265,7 @@ class MrpProductionStatsMixed(orm.Model):
                 }),
             'text_number_red': WB.add_format({
                 'font_color': 'black',
-                'bg_color': 'red',
+                'bg_color': '#e5a69f',
                 'font_name': 'Courier 10 pitch',
                 'font_size': 9,
                 'align': 'right',
