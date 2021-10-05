@@ -630,7 +630,7 @@ class MrpProductionStatsMixed(orm.Model):
         # ---------------------------------------------------------------------
         #                           Industria 4.0
         # ---------------------------------------------------------------------
-        # Saldatrice:
+        # SALDATRICE:
         # ---------------------------------------------------------------------
         medium_data = {}
         job_pool = self.pool.get('industria.job')
@@ -764,6 +764,132 @@ class MrpProductionStatsMixed(orm.Model):
             WS.write(row, 7, format_hour(mx_change_total), cell_format)
             WS.write(row, 8, format_hour(mx_change_gap), cell_format)
 
+            # todo write expected medium
+
+        # ---------------------------------------------------------------------
+        # PIEGATUBI:
+        # ---------------------------------------------------------------------
+        medium_data = {}
+        job_pool = self.pool.get('industria.job')
+        # Collect data:
+        job_ids = job_pool.search(cr, uid, [
+            ('source_id.code', '=', 'PIEG01'),
+            ('created_at', '>=', '%s 00:00:00' % now_20),
+            # ('created_at', '<=', '%s 23:59:59' % now_1),
+            ], context=context)
+        WS = WB.add_worksheet('FLECTE')
+        WS.set_column('A:C', 25)
+        WS.set_column('D:I', 15)
+
+        # Write title row:
+        row = 0
+        WS.write(
+            row, 0,
+            'Job piegatubi FLECTE dalla data di rif.: %s' % now_20,
+            xls_format['title'],
+            )
+
+        # Header line:
+        row += 1
+        WS.write(row, 0, _('Programma'), xls_format['header'])
+        WS.write(row, 1, _('Dalla data'), xls_format['header'])
+        WS.write(row, 2, _('Alla data'), xls_format['header'])
+        WS.write(row, 3, _('Durata'), xls_format['header'])
+        WS.write(row, 4, _('Cambio gap'), xls_format['header'])
+        WS.write(row, 5, _('Attrezzaggio'), xls_format['header'])
+        WS.write(row, 6, _('Non cons.'), xls_format['header'])
+        WS.write(row, 7, _('Nuova'), xls_format['header'])
+
+        WS.freeze_panes(2, 1)
+
+        # Write data:
+        for job in job_pool.browse(cr, uid, job_ids, context=context):
+            duration_not_considered = job.duration_not_considered
+            job_duration = job.job_duration
+            duration_change_gap = job.duration_change_gap
+            duration_setup = job.duration_setup
+            program = job.program_id
+
+            if duration_not_considered:
+                cell_format = xls_format['text_red']
+            else:
+                cell_format = xls_format['text']
+
+            row += 1
+            WS.write(row, 0, program.name, cell_format)
+            WS.write(row, 1, job.created_at, cell_format)
+            WS.write(row, 2, job.ended_at, cell_format)
+            WS.write(row, 3, format_hour(job_duration), cell_format)
+            WS.write(row, 4, format_hour(duration_change_gap), cell_format)
+            WS.write(row, 5, format_hour(duration_setup), cell_format)
+            WS.write(
+                row, 6,
+                'X' if duration_not_considered else '', cell_format)
+            WS.write(
+                row, 7, 'X' if job.duration_need_setup else '', cell_format)
+
+            # Medium data:
+            if not duration_not_considered:
+                if program not in medium_data:
+                    medium_data[program] = [
+                        0,  # counter
+                        0.0,  # duration
+                        0.0,  # gap change
+                        0.0,  # setup
+                    ]
+                medium_data[program][0] += 1
+                medium_data[program][1] += job_duration
+                medium_data[program][2] += duration_change_gap
+                medium_data[program][3] += duration_setup
+
+        # ---------------------------------------------------------------------
+        # Saldatrice media:
+        # ---------------------------------------------------------------------
+        WS = WB.add_worksheet('FLECTE medie')
+        WS.set_column('A:A', 25)
+        WS.set_column('B:I', 12)
+
+        # Write title row:
+        row = 0
+        WS.write(
+            row, 0,
+            'Medie per FLECTE dalla data di rif.: %s' % now_20,
+            xls_format['title'],
+            )
+
+        # Header line:
+        row += 1
+        WS.write(row, 0, _('Programma'), xls_format['header'])
+        WS.write(row, 1, _('Cont.'), xls_format['header'])
+        WS.write(row, 2, _('Durata'), xls_format['header'])
+        WS.write(row, 3, _('Cambio gap'), xls_format['header'])
+        WS.write(row, 4, _('Attrezzaggio'), xls_format['header'])
+
+        # Medie:
+        WS.write(row, 5, _('Dur. med.'), xls_format['header'])
+        WS.write(row, 6, _('Cambio gap med.'), xls_format['header'])
+
+        WS.freeze_panes(2, 1)
+        # Write data:
+        cell_format = xls_format['text']
+        for program in sorted(medium_data, key=lambda k: k.name):
+            (total, job_duration, duration_change_total, duration_change_gap,
+             duration_setup) = medium_data[program]
+            if total:
+                mx_duration = job_duration / total
+                mx_change_gap = duration_change_gap / total
+            else:
+                mx_duration = mx_change_gap = 0.0
+
+            row += 1
+            WS.write(row, 0, program.name, cell_format)
+            WS.write(row, 1, total, cell_format)
+            WS.write(row, 2, format_hour(job_duration), cell_format)
+            WS.write(row, 3, format_hour(duration_change_gap), cell_format)
+            WS.write(row, 4, format_hour(duration_setup), cell_format)
+
+            WS.write(row, 5, format_hour(mx_duration), cell_format)
+            WS.write(row, 6, format_hour(mx_change_gap), cell_format)
             # todo write expected medium
 
         WB.close()
