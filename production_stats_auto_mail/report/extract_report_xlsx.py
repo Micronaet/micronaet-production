@@ -687,9 +687,9 @@ class MrpProductionStatsMixed(orm.Model):
             WS.write(row, 1, job.created_at, cell_format)
             WS.write(row, 2, job.ended_at, cell_format)
             WS.write(row, 3, job_duration, cell_format)
-            WS.write(row, 4, duration_change_total, cell_number_format)
-            WS.write(row, 5, duration_change_gap, cell_number_format)
-            WS.write(row, 6, duration_setup, cell_number_format)
+            WS.write(row, 4, format_hour(duration_change_total), cell_format)
+            WS.write(row, 5, format_hour(duration_change_gap), cell_format)
+            WS.write(row, 6, format_hour(duration_setup), cell_format)
             WS.write(
                 row, 7,
                 'X' if duration_not_considered else '', cell_format)
@@ -757,14 +757,14 @@ class MrpProductionStatsMixed(orm.Model):
             row += 1
             WS.write(row, 0, program.name, cell_format)
             WS.write(row, 1, total, cell_format)
-            WS.write(row, 2, job_duration, cell_format)
-            WS.write(row, 3, duration_change_total, cell_number_format)
-            WS.write(row, 4, duration_change_gap, cell_number_format)
-            WS.write(row, 5, duration_setup, cell_number_format)
+            WS.write(row, 2, format_hour(job_duration), cell_format)
+            WS.write(row, 3, format_hour(duration_change_total), cell_format)
+            WS.write(row, 4, format_hour(duration_change_gap), cell_format)
+            WS.write(row, 5, format_hour(duration_setup), cell_format)
 
             WS.write(row, 6, format_hour(mx_duration), cell_format)
-            WS.write(row, 7, mx_change_total, cell_number_format)
-            WS.write(row, 8, mx_change_gap, cell_number_format)
+            WS.write(row, 7, format_hour(mx_change_total), cell_format)
+            WS.write(row, 8, format_hour(mx_change_gap), cell_format)
 
             # todo write expected medium
 
