@@ -642,7 +642,7 @@ class MrpProductionStatsMixed(orm.Model):
             ], context=context)
         WS = WB.add_worksheet('GIMAF')
         WS.set_column('A:C', 25)
-        WS.set_column('D:I', 20)
+        WS.set_column('D:I', 15)
 
         # Write title row:
         row = 0
@@ -713,7 +713,7 @@ class MrpProductionStatsMixed(orm.Model):
         # ---------------------------------------------------------------------
         WS = WB.add_worksheet('GIMAF medie')
         WS.set_column('A:A', 25)
-        WS.set_column('B:I', 10)
+        WS.set_column('B:I', 12)
 
         # Write title row:
         row = 0
