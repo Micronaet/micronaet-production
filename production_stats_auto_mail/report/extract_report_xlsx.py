@@ -873,8 +873,8 @@ class MrpProductionStatsMixed(orm.Model):
         # Write data:
         cell_format = xls_format['text']
         for program in sorted(medium_data, key=lambda k: k.name):
-            (total, job_duration, duration_change_total, duration_change_gap,
-             duration_setup) = medium_data[program]
+            (total, job_duration, duration_change_gap, duration_setup) = \
+                medium_data[program]
             if total:
                 mx_duration = job_duration / total
                 mx_change_gap = duration_change_gap / total
