@@ -602,6 +602,54 @@ class MrpProductionStatsMixed(orm.Model):
                 WS.write(row, 8, '#ERR', cell_number_format)
             WS.write(row, 9, line.total_text_detail, cell_number_format)
 
+        # ---------------------------------------------------------------------
+        #                           Industria 4.0
+        # ---------------------------------------------------------------------
+        job_pool = self.pool.get('industria.job')
+        # Collect data:
+        job_ids = job_pool.search(cr, uid, [
+            ('source_id.code', '=', 'SALD01'),
+            ('created_at', '>=', '%s 00:00:00' % now_1),
+            ('created_at', '<=', '%s 23:59:59' % now_1),
+            ], context=context)
+
+        WS = WB.add_worksheet('GIMAF')
+        WS.set_column('A:J', 10)
+        # WS.set_column('D:D', 20)
+        # WS.set_column('E:I', 10)
+        # WS.set_column('J:J', 60)
+
+        # Write title row:
+        row = 0
+        WS.write(
+            row, 0,
+            'Job saldatrice GIMAF di ieri, data rif.: %s' % now_1,
+            xls_format['title'],
+            )
+
+        # Header line:
+        row += 1
+        WS.write(row, 0, _('Dalla data'), xls_format['header'])
+        WS.write(row, 1, _('Alla data'), xls_format['header'])
+        WS.write(row, 2, _('Durata'), xls_format['header']) # MRP
+        WS.write(row, 3, _('Cambio totale'), xls_format['header'])
+        WS.write(row, 4, _('Cambio gap'), xls_format['header'])
+        WS.write(row, 5, _('Attrezzaggio'), xls_format['header'])
+        WS.write(row, 6, _('Non cons.'), xls_format['header'])
+        WS.write(row, 7, _('Cambio'), xls_format['header'])
+
+        # Write data:
+        for job in job_pool.browse(cr, uid, job_ids, context=context):
+            row += 1
+            WS.write(row, 0, job.created_at, cell_format)
+            WS.write(row, 1, job.ended_at, cell_format)
+            WS.write(row, 2, job.job_duation, cell_format)  # todo
+            WS.write(row, 3, job.duration_change_total, cell_number_format)
+            WS.write(row, 4, job.duration_change_gap, cell_number_format)
+            WS.write(row, 5, job.duration_setup, cell_number_format)
+            WS.write(row, 6, job.duration_not_considered, cell_format)
+            WS.write(row, 7, job.duration_need_setup, cell_format)
+
         WB.close()
 
         # ---------------------------------------------------------------------
