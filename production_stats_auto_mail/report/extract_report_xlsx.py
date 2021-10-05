@@ -664,6 +664,8 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 7, _('Non cons.'), xls_format['header'])
         WS.write(row, 8, _('Nuova'), xls_format['header'])
 
+        WS.freeze_panes(2, 1)
+
         # Write data:
         for job in job_pool.browse(cr, uid, job_ids, context=context):
             duration_not_considered = job.duration_not_considered
@@ -737,9 +739,9 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 7, _('Cambio tot. med.'), xls_format['header'])
         WS.write(row, 8, _('Cambio gap med.'), xls_format['header'])
 
+        WS.freeze_panes(2, 1)
         # Write data:
         cell_format = xls_format['text']
-        cell_number_format = xls_format['text_number_white']
         for program in sorted(medium_data, key=lambda k: k.name):
             (total, job_duration, duration_change_total, duration_change_gap,
              duration_setup) = medium_data[program]
