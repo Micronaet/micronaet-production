@@ -628,31 +628,33 @@ class MrpProductionStatsMixed(orm.Model):
 
         # Header line:
         row += 1
-        WS.write(row, 0, _('Dalla data'), xls_format['header'])
-        WS.write(row, 1, _('Alla data'), xls_format['header'])
-        WS.write(row, 2, _('Durata'), xls_format['header'])
-        WS.write(row, 3, _('Cambio totale'), xls_format['header'])
-        WS.write(row, 4, _('Cambio gap'), xls_format['header'])
-        WS.write(row, 5, _('Attrezzaggio'), xls_format['header'])
-        WS.write(row, 6, _('Non cons.'), xls_format['header'])
-        WS.write(row, 7, _('Cambio'), xls_format['header'])
+        WS.write(row, 0, _('Programma'), xls_format['header'])
+        WS.write(row, 1, _('Dalla data'), xls_format['header'])
+        WS.write(row, 2, _('Alla data'), xls_format['header'])
+        WS.write(row, 3, _('Durata'), xls_format['header'])
+        WS.write(row, 4, _('Cambio totale'), xls_format['header'])
+        WS.write(row, 5, _('Cambio gap'), xls_format['header'])
+        WS.write(row, 6, _('Attrezzaggio'), xls_format['header'])
+        WS.write(row, 7, _('Non cons.'), xls_format['header'])
+        WS.write(row, 8, _('Cambio'), xls_format['header'])
 
         # Write data:
         cell_format = xls_format['text']
         cell_number_format = xls_format['text_number']
         for job in job_pool.browse(cr, uid, job_ids, context=context):
             row += 1
-            WS.write(row, 0, job.created_at, cell_format)
-            WS.write(row, 1, job.ended_at, cell_format)
-            WS.write(row, 2, job.job_duration, cell_format)
-            WS.write(row, 3, job.duration_change_total, cell_number_format)
-            WS.write(row, 4, job.duration_change_gap, cell_number_format)
-            WS.write(row, 5, job.duration_setup, cell_number_format)
+            WS.write(row, 0, job.program_id.name, cell_format)
+            WS.write(row, 1, job.created_at, cell_format)
+            WS.write(row, 2, job.ended_at, cell_format)
+            WS.write(row, 3, job.job_duration, cell_format)
+            WS.write(row, 4, job.duration_change_total, cell_number_format)
+            WS.write(row, 5 job.duration_change_gap, cell_number_format)
+            WS.write(row, 6, job.duration_setup, cell_number_format)
             WS.write(
-                row, 6,
+                row, 7,
                 'X' if job.duration_not_considered else '', cell_format)
             WS.write(
-                row, 7, 'X' if job.duration_need_setup else '', cell_format)
+                row, 8, 'X' if job.duration_need_setup else '', cell_format)
 
         WB.close()
 
