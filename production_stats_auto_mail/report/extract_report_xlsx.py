@@ -648,7 +648,7 @@ class MrpProductionStatsMixed(orm.Model):
             WS.write(row, 2, job.ended_at, cell_format)
             WS.write(row, 3, job.job_duration, cell_format)
             WS.write(row, 4, job.duration_change_total, cell_number_format)
-            WS.write(row, 5 job.duration_change_gap, cell_number_format)
+            WS.write(row, 5, job.duration_change_gap, cell_number_format)
             WS.write(row, 6, job.duration_setup, cell_number_format)
             WS.write(
                 row, 7,
