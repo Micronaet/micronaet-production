@@ -774,7 +774,7 @@ class MrpProductionStatsMixed(orm.Model):
         # Collect data:
         job_ids = job_pool.search(cr, uid, [
             ('source_id.code', '=', 'PIEG01'),
-            # ('created_at', '>=', '%s 00:00:00' % now_20),
+            ('created_at', '>=', '%s 00:00:00' % now_20),
             # ('created_at', '<=', '%s 23:59:59' % now_1),
             ], context=context)
         WS = WB.add_worksheet('FLECTE')
