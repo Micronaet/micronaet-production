@@ -211,7 +211,7 @@ class MrpProductionStatsMixed(orm.Model):
         WB = xlsxwriter.Workbook(filename)
 
         # B. Format class:
-        num_format = '#.##0'
+        num_format = '0.#0'
         xls_format = {
             'title': WB.add_format({
                 'bold': True,
