@@ -642,9 +642,7 @@ class MrpProductionStatsMixed(orm.Model):
             ], context=context)
         WS = WB.add_worksheet('GIMAF')
         WS.set_column('A:C', 25)
-        # WS.set_column('D:D', 20)
-        # WS.set_column('E:I', 10)
-        # WS.set_column('J:J', 60)
+        WS.set_column('D:I', 20)
 
         # Write title row:
         row = 0
@@ -677,16 +675,14 @@ class MrpProductionStatsMixed(orm.Model):
 
             if duration_not_considered:
                 cell_format = xls_format['text_red']
-                cell_number_format = xls_format['text_number_red']
             else:
                 cell_format = xls_format['text']
-                cell_number_format = xls_format['text_number']
 
             row += 1
             WS.write(row, 0, program.name, cell_format)
             WS.write(row, 1, job.created_at, cell_format)
             WS.write(row, 2, job.ended_at, cell_format)
-            WS.write(row, 3, job_duration, cell_format)
+            WS.write(row, 3, format_hour(job_duration), cell_format)
             WS.write(row, 4, format_hour(duration_change_total), cell_format)
             WS.write(row, 5, format_hour(duration_change_gap), cell_format)
             WS.write(row, 6, format_hour(duration_setup), cell_format)
