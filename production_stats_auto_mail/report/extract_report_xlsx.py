@@ -637,7 +637,7 @@ class MrpProductionStatsMixed(orm.Model):
         # Collect data:
         job_ids = job_pool.search(cr, uid, [
             ('source_id.code', '=', 'SALD01'),
-            # ('created_at', '>=', '%s 00:00:00' % now_20),
+            ('created_at', '>=', '%s 00:00:00' % now_20),
             # ('created_at', '<=', '%s 23:59:59' % now_1),
             ], context=context)
         WS = WB.add_worksheet('GIMAF')
@@ -650,7 +650,7 @@ class MrpProductionStatsMixed(orm.Model):
         row = 0
         WS.write(
             row, 0,
-            'Job saldatrice GIMAF dalla data di rif.: %s' % now_1,
+            'Job saldatrice GIMAF dalla data di rif.: %s' % now_20,
             xls_format['title'],
             )
 
@@ -723,7 +723,7 @@ class MrpProductionStatsMixed(orm.Model):
         row = 0
         WS.write(
             row, 0,
-            'Medie per GIMAF',
+            'Medie per GIMAF dalla data di rif.: %s' % now_20,
             xls_format['title'],
             )
 
@@ -753,7 +753,6 @@ class MrpProductionStatsMixed(orm.Model):
                 mx_change_gap = duration_change_gap / total
             else:
                 mx_duration = mx_change_total = mx_change_gap = 0.0
-
 
             row += 1
             WS.write(row, 0, program.name, cell_format)
