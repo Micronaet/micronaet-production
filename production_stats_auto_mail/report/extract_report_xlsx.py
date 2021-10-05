@@ -625,11 +625,11 @@ class MrpProductionStatsMixed(orm.Model):
         # Collect data:
         job_ids = job_pool.search(cr, uid, [
             ('source_id.code', '=', 'SALD01'),
-            ('created_at', '>=', '%s 00:00:00' % now_20),
+            # ('created_at', '>=', '%s 00:00:00' % now_20),
             # ('created_at', '<=', '%s 23:59:59' % now_1),
             ], context=context)
         WS = WB.add_worksheet('GIMAF')
-        WS.set_column('A:C', 20)
+        WS.set_column('A:C', 25)
         # WS.set_column('D:D', 20)
         # WS.set_column('E:I', 10)
         # WS.set_column('J:J', 60)
