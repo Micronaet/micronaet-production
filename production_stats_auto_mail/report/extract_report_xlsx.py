@@ -621,6 +621,9 @@ class MrpProductionStatsMixed(orm.Model):
         # ---------------------------------------------------------------------
         #                           Industria 4.0
         # ---------------------------------------------------------------------
+        # Saldatrice:
+        # ---------------------------------------------------------------------
+        medium_data = {}
         job_pool = self.pool.get('industria.job')
         # Collect data:
         job_ids = job_pool.search(cr, uid, [
@@ -657,6 +660,12 @@ class MrpProductionStatsMixed(orm.Model):
         # Write data:
         for job in job_pool.browse(cr, uid, job_ids, context=context):
             duration_not_considered = job.duration_not_considered
+            job_duration = job.job_duration
+            duration_change_total = job.duration_change_total
+            duration_change_gap = job.duration_change_gap
+            duration_setup = job.duration_setup
+            program = job.program_id
+
             if duration_not_considered:
                 cell_format = xls_format['text_red']
                 cell_number_format = xls_format['text_number_red']
@@ -665,18 +674,94 @@ class MrpProductionStatsMixed(orm.Model):
                 cell_number_format = xls_format['text_number']
 
             row += 1
-            WS.write(row, 0, job.program_id.name, cell_format)
+            WS.write(row, 0, program.name, cell_format)
             WS.write(row, 1, job.created_at, cell_format)
             WS.write(row, 2, job.ended_at, cell_format)
-            WS.write(row, 3, job.job_duration, cell_format)
-            WS.write(row, 4, job.duration_change_total, cell_number_format)
-            WS.write(row, 5, job.duration_change_gap, cell_number_format)
-            WS.write(row, 6, job.duration_setup, cell_number_format)
+            WS.write(row, 3, job_duration, cell_format)
+            WS.write(row, 4, duration_change_total, cell_number_format)
+            WS.write(row, 5, duration_change_gap, cell_number_format)
+            WS.write(row, 6, duration_setup, cell_number_format)
             WS.write(
                 row, 7,
                 'X' if duration_not_considered else '', cell_format)
             WS.write(
                 row, 8, 'X' if job.duration_need_setup else '', cell_format)
+
+            # Medium data:
+            if not duration_not_considered:
+                if program not in medium_data:
+                    medium_data[program] = [
+                        0,  # counter
+                        0.0,  # duration
+                        0.0,  # total change
+                        0.0,  # gap change
+                        0.0,  # setup
+                    ]
+                medium_data[program][0] += 1
+                medium_data[program][1] += job_duration
+                medium_data[program][2] += duration_change_total
+                medium_data[program][3] += duration_change_gap
+                medium_data[program][4] += duration_setup
+
+        # ---------------------------------------------------------------------
+        # Saldatrice media:
+        # ---------------------------------------------------------------------
+        WS = WB.add_worksheet('GIMAF medie')
+        WS.set_column('A:A', 25)
+
+        # Write title row:
+        row = 0
+        WS.write(
+            row, 0,
+            'Medie per GIMAF',
+            xls_format['title'],
+            )
+
+        # Header line:
+        row += 1
+        WS.write(row, 0, _('Programma'), xls_format['header'])
+        WS.write(row, 1, _('Cont.'), xls_format['header'])
+        WS.write(row, 2, _('Durata'), xls_format['header'])
+        WS.write(row, 3, _('Cambio totale'), xls_format['header'])
+        WS.write(row, 4, _('Cambio gap'), xls_format['header'])
+        WS.write(row, 5, _('Attrezzaggio'), xls_format['header'])
+
+        # Medie:
+        WS.write(row, 6, _('Dur. med.'), xls_format['header'])
+        WS.write(row, 7, _('Cambio tot. med.'), xls_format['header'])
+        WS.write(row, 8, _('Cambio gap med.'), xls_format['header'])
+
+        # Write data:
+        for program in sorted(medium_data, key=lambda k: k.name):
+            (total, job_duration, duration_change_total, duration_change_gap,
+             duration_setup) = medium_data[program]
+            if total:
+                mx_duration = job_duration / total
+                mx_change_total = duration_change_total / total
+                mx_change_gap = duration_change_gap / total
+            else:
+                mx_duration = mx_change_total = mx_change_gap = 0.0
+
+            if duration_not_considered:
+                cell_format = xls_format['text_red']
+                cell_number_format = xls_format['text_number_red']
+            else:
+                cell_format = xls_format['text']
+                cell_number_format = xls_format['text_number']
+
+            row += 1
+            WS.write(row, 0, program.name, cell_format)
+            WS.write(row, 1, total, cell_format)
+            WS.write(row, 2, job_duration, cell_format)
+            WS.write(row, 3, duration_change_total, cell_number_format)
+            WS.write(row, 4, duration_change_gap, cell_number_format)
+            WS.write(row, 5, duration_setup, cell_number_format)
+
+            WS.write(row, 6, mx_duration, cell_number_format)
+            WS.write(row, 7, mx_change_total, cell_number_format)
+            WS.write(row, 8, mx_change_gap, cell_number_format)
+
+            # todo write expected medium
 
         WB.close()
 
