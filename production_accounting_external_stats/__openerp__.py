@@ -31,11 +31,12 @@
         'mrp',
         'production_accounting_external',
         'production_working_bom',
+        'industria40_base',  # Extra data from Industria 4.0
         ],
     'init_xml': [],
     'demo': [],
     'data': [
-        'security/ir.model.access.csv',    
+        'security/ir.model.access.csv',
         'wizard/insert_stat_view.xml', # wizard before
         'stats_views.xml',
         ],

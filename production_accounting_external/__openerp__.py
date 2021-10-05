@@ -47,7 +47,6 @@
         'pricelist_order',
         'note_system_management',  # for note in report
         # 'delivery_todo_report',  # For suspended field
-        'industria40_base',  # Extra data from Industria 4.0
 
         # 'production_workhour', # Replaced with:
         'hr_workhour',
