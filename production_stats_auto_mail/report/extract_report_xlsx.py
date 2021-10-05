@@ -629,7 +629,7 @@ class MrpProductionStatsMixed(orm.Model):
             # ('created_at', '<=', '%s 23:59:59' % now_1),
             ], context=context)
         WS = WB.add_worksheet('GIMAF')
-        WS.set_column('A:J', 10)
+        WS.set_column('A:C', 20)
         # WS.set_column('D:D', 20)
         # WS.set_column('E:I', 10)
         # WS.set_column('J:J', 60)
