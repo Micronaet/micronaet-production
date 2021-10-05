@@ -35,37 +35,38 @@
         'product',
         'stock',
         'sale',
-        'mx_close_order', # for close order management
+        'mx_close_order',  # for close order management
         'sql_sale_order',
         'production_family',
         'production_working_bom',
         'mrp',
         'mrp_operations',
-        'report_aeroo',        
+        'report_aeroo',
         'sql_sale_order',
         'production_order_mandatory',
         'pricelist_order',
-        'note_system_management', # for note in report
+        'note_system_management',  # for note in report
         # 'delivery_todo_report',  # For suspended field
-        
-        #'production_workhour', # Replaced with:
+        'industria40_base',  # Extra data from Industria 4.0
+
+        # 'production_workhour', # Replaced with:
         'hr_workhour',
-        
+
         # Family in sale.order.line:
-        'production_order_line_family', # Micronaet/micronaet-mx8.git 
+        'production_order_line_family',  # Micronaet/micronaet-mx8.git
         'order_line_view', # Micronaet/micronaet-mx8.git
         # 'sale_order_line_analysis', # default code taked from here now
         ],
     'init_xml': [],
     'demo': [],
     'data': [
-        'security/ir.model.access.csv',    
+        'security/ir.model.access.csv',
         'wizard/assign_production.xml',
         'wizard/create_production_view.xml',
         'wizard/partial_production.xml',
         'wizard/move_lavoration.xml',
         'wizard/wizard_report.xml',
-        'accounting_views.xml', # after wizard      
+        'accounting_views.xml', # after wizard
         'report/production_report.xml',
         ],
     'active': False,
