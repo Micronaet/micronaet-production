@@ -652,7 +652,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 5, _('Cambio gap'), xls_format['header'])
         WS.write(row, 6, _('Attrezzaggio'), xls_format['header'])
         WS.write(row, 7, _('Non cons.'), xls_format['header'])
-        WS.write(row, 8, _('Cambio'), xls_format['header'])
+        WS.write(row, 8, _('Nuova'), xls_format['header'])
 
         # Write data:
         for job in job_pool.browse(cr, uid, job_ids, context=context):
