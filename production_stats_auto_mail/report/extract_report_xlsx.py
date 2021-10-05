@@ -612,7 +612,6 @@ class MrpProductionStatsMixed(orm.Model):
             ('created_at', '>=', '%s 00:00:00' % now_20),
             # ('created_at', '<=', '%s 23:59:59' % now_1),
             ], context=context)
-
         WS = WB.add_worksheet('GIMAF')
         WS.set_column('A:J', 10)
         # WS.set_column('D:D', 20)
@@ -631,7 +630,7 @@ class MrpProductionStatsMixed(orm.Model):
         row += 1
         WS.write(row, 0, _('Dalla data'), xls_format['header'])
         WS.write(row, 1, _('Alla data'), xls_format['header'])
-        WS.write(row, 2, _('Durata'), xls_format['header']) # MRP
+        WS.write(row, 2, _('Durata'), xls_format['header'])
         WS.write(row, 3, _('Cambio totale'), xls_format['header'])
         WS.write(row, 4, _('Cambio gap'), xls_format['header'])
         WS.write(row, 5, _('Attrezzaggio'), xls_format['header'])
@@ -639,6 +638,8 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 7, _('Cambio'), xls_format['header'])
 
         # Write data:
+        cell_format = xls_format['text']
+        cell_number_format = xls_format['text_number']
         for job in job_pool.browse(cr, uid, job_ids, context=context):
             row += 1
             WS.write(row, 0, job.created_at, cell_format)
@@ -647,8 +648,11 @@ class MrpProductionStatsMixed(orm.Model):
             WS.write(row, 3, job.duration_change_total, cell_number_format)
             WS.write(row, 4, job.duration_change_gap, cell_number_format)
             WS.write(row, 5, job.duration_setup, cell_number_format)
-            WS.write(row, 6, job.duration_not_considered, cell_format)
-            WS.write(row, 7, job.duration_need_setup, cell_format)
+            WS.write(
+                row, 6,
+                'X' if job.duration_not_considered else '', cell_format)
+            WS.write(
+                row, 7, 'X' if job.duration_need_setup else '', cell_format)
 
         WB.close()
 
