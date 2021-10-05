@@ -271,6 +271,15 @@ class MrpProductionStatsMixed(orm.Model):
                 'align': 'right',
                 'border': 1,
                 }),
+            'text_number_white': WB.add_format({
+                'font_color': 'black',
+                'bg_color': '#e5a69f',
+                'font_name': 'Courier 10 pitch',
+                'font_size': 9,
+                'align': 'right',
+                'border': 1,
+                'num_format': num_format,
+                }),
             'text_today': WB.add_format({
                 'font_color': 'black',
                 'font_name': 'Courier 10 pitch',
@@ -599,7 +608,7 @@ class MrpProductionStatsMixed(orm.Model):
                 key=lambda x: (
                     x.workcenter_id.name, # Line
                     x.mrp_id.name, # Data
-                    x.mrp_id.bom_id.product_tmpl_id.name, # Family
+                    x.mrp_id.bom_id.product_tmpl_id.name,  # Family
                     )):
             row += 1
             WS.write(row, 0, line.workcenter_id.name, cell_format)
@@ -641,7 +650,7 @@ class MrpProductionStatsMixed(orm.Model):
         row = 0
         WS.write(
             row, 0,
-            'Job saldatrice GIMAF di ieri, data rif.: %s' % now_1,
+            'Job saldatrice GIMAF dalla data di rif.: %s' % now_1,
             xls_format['title'],
             )
 
@@ -708,6 +717,7 @@ class MrpProductionStatsMixed(orm.Model):
         # ---------------------------------------------------------------------
         WS = WB.add_worksheet('GIMAF medie')
         WS.set_column('A:A', 25)
+        WS.set_column('B:I', 10)
 
         # Write title row:
         row = 0
@@ -732,6 +742,8 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 8, _('Cambio gap med.'), xls_format['header'])
 
         # Write data:
+        cell_format = xls_format['text']
+        cell_number_format = xls_format['text_number_white']
         for program in sorted(medium_data, key=lambda k: k.name):
             (total, job_duration, duration_change_total, duration_change_gap,
              duration_setup) = medium_data[program]
@@ -742,12 +754,6 @@ class MrpProductionStatsMixed(orm.Model):
             else:
                 mx_duration = mx_change_total = mx_change_gap = 0.0
 
-            if duration_not_considered:
-                cell_format = xls_format['text_red']
-                cell_number_format = xls_format['text_number_red']
-            else:
-                cell_format = xls_format['text']
-                cell_number_format = xls_format['text_number']
 
             row += 1
             WS.write(row, 0, program.name, cell_format)
