@@ -593,7 +593,7 @@ class MrpProductionStatsMixed(orm.Model):
         row += 1
         WS.write(row, 0, _('Linea'), xls_format['header'])
         WS.write(row, 1, _('Data'), xls_format['header'])
-        WS.write(row, 2, _('Num. prod.'), xls_format['header']) # MRP
+        WS.write(row, 2, _('Num. prod.'), xls_format['header'])  # MRP
         WS.write(row, 3, _('Famiglia'), xls_format['header'])
         WS.write(row, 4, _('Lavoratori'), xls_format['header'])
         WS.write(row, 5, _('Appront.'), xls_format['header'])
@@ -606,8 +606,8 @@ class MrpProductionStatsMixed(orm.Model):
         for line in sorted(
                 line_pool.browse(cr, uid, line_ids, context=context),
                 key=lambda x: (
-                    x.workcenter_id.name, # Line
-                    x.mrp_id.name, # Data
+                    x.workcenter_id.name,  # Line
+                    x.mrp_id.name,  # Data
                     x.mrp_id.bom_id.product_tmpl_id.name,  # Family
                     )):
             row += 1
@@ -722,6 +722,145 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(
             row, 0,
             'Medie per GIMAF dalla data di rif.: %s' % now_20,
+            xls_format['title'],
+            )
+
+        # Header line:
+        row += 1
+        WS.write(row, 0, _('Programma'), xls_format['header'])
+        WS.write(row, 1, _('Cont.'), xls_format['header'])
+        WS.write(row, 2, _('Durata'), xls_format['header'])
+        WS.write(row, 3, _('Cambio totale'), xls_format['header'])
+        WS.write(row, 4, _('Cambio gap'), xls_format['header'])
+        WS.write(row, 5, _('Attrezzaggio'), xls_format['header'])
+
+        # Medie:
+        WS.write(row, 6, _('Dur. med.'), xls_format['header'])
+        WS.write(row, 7, _('Cambio tot. med.'), xls_format['header'])
+        WS.write(row, 8, _('Cambio gap med.'), xls_format['header'])
+
+        WS.freeze_panes(2, 1)
+        # Write data:
+        cell_format = xls_format['text']
+        for program in sorted(medium_data, key=lambda k: k.name):
+            (total, job_duration, duration_change_total, duration_change_gap,
+             duration_setup) = medium_data[program]
+            if total:
+                mx_duration = job_duration / total
+                mx_change_total = duration_change_total / total
+                mx_change_gap = duration_change_gap / total
+            else:
+                mx_duration = mx_change_total = mx_change_gap = 0.0
+
+            row += 1
+            WS.write(row, 0, program.name, cell_format)
+            WS.write(row, 1, total, cell_format)
+            WS.write(row, 2, format_hour(job_duration), cell_format)
+            WS.write(row, 3, format_hour(duration_change_total), cell_format)
+            WS.write(row, 4, format_hour(duration_change_gap), cell_format)
+            WS.write(row, 5, format_hour(duration_setup), cell_format)
+
+            WS.write(row, 6, format_hour(mx_duration), cell_format)
+            WS.write(row, 7, format_hour(mx_change_total), cell_format)
+            WS.write(row, 8, format_hour(mx_change_gap), cell_format)
+
+            # todo write expected medium
+
+        # ---------------------------------------------------------------------
+        # TAGLIATUBI:
+        # ---------------------------------------------------------------------
+        medium_data = {}
+        cut_pool = self.pool.get('industria.pipe.file.stat')
+        # Collect data:
+        cut_ids = cut_pool.search(cr, uid, [
+            ('file_id.robot_id.code', '=', 'TAGL01'),
+            ('created_at', '>=', '%s 00:00:00' % now_20),
+            ], context=context)
+        WS = WB.add_worksheet('ADIGE')
+        WS.set_column('A:C', 25)
+        WS.set_column('D:I', 15)
+
+        # Write title row:
+        row = 0
+        WS.write(
+            row, 0,
+            'Job tagliabuti ADIGE dalla data di rif.: %s' % now_20,
+            xls_format['title'],
+            )
+
+        # Header line:
+        row += 1
+        WS.write(row, 0, _('Programma'), xls_format['header'])
+        WS.write(row, 1, _('Dalla data'), xls_format['header'])
+        WS.write(row, 2, _('Alla data'), xls_format['header'])
+        WS.write(row, 3, _('Durata'), xls_format['header'])
+        WS.write(row, 4, _('Cambio totale'), xls_format['header'])
+        WS.write(row, 5, _('Cambio gap'), xls_format['header'])
+        WS.write(row, 6, _('Attrezzaggio'), xls_format['header'])
+        WS.write(row, 7, _('Non cons.'), xls_format['header'])
+        WS.write(row, 8, _('Nuova'), xls_format['header'])
+
+        WS.freeze_panes(2, 1)
+
+        # Write data:
+        for cut in cut_pool.browse(cr, uid, cut_ids, context=context):
+            if cut.state != 'CAMBIO BARRA':  # todo if no need other go search!
+                continue
+            duration_not_considered = False  # todo Not used for this?
+            bar_duration = cut.duration_bar
+            program = cut.program_id
+
+            # todo Data not present for now:
+            duration_change_total = duration_change_gap = duration_setup = 0
+            duration_need_setup = False
+
+            if duration_not_considered:
+                cell_format = xls_format['text_red']
+            else:
+                cell_format = xls_format['text']
+
+            row += 1
+            WS.write(row, 0, program.name, cell_format)
+            WS.write(row, 1, cut.timestamp, cell_format)
+            WS.write(row, 2, '/', cell_format)  # not used for now
+            WS.write(row, 3, format_hour(bar_duration), cell_format)
+            WS.write(row, 4, format_hour(duration_change_total), cell_format)
+            WS.write(row, 5, format_hour(duration_change_gap), cell_format)
+            WS.write(row, 6, format_hour(duration_setup), cell_format)
+            WS.write(
+                row, 7,
+                'X' if duration_not_considered else '', cell_format)
+            WS.write(
+                row, 8, 'X' if duration_need_setup else '', cell_format)
+
+            # Medium data:
+            if not duration_not_considered:
+                if program not in medium_data:
+                    medium_data[program] = [
+                        0,  # counter
+                        0.0,  # duration
+                        0.0,  # total change
+                        0.0,  # gap change
+                        0.0,  # setup
+                    ]
+                medium_data[program][0] += 1
+                medium_data[program][1] += bar_duration
+                medium_data[program][2] += duration_change_total
+                medium_data[program][3] += duration_change_gap
+                medium_data[program][4] += duration_setup
+
+        # ---------------------------------------------------------------------
+        # Saldatrice media:
+        # ---------------------------------------------------------------------
+        WS = WB.add_worksheet('ADIGE medie')
+        WS.set_column('A:A', 25)
+        WS.set_column('B:I', 12)
+
+        # Write title row:
+        row = 0
+        WS.write(
+            row, 0,
+            'Medie per ADIGE dalla data di rif.: %s' % now_20,
             xls_format['title'],
             )
 
