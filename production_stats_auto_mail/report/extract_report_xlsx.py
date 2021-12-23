@@ -774,7 +774,7 @@ class MrpProductionStatsMixed(orm.Model):
         # Collect data:
         cut_ids = cut_pool.search(cr, uid, [
             ('file_id.robot_id.code', '=', 'TAGL01'),
-            ('created_at', '>=', '%s 00:00:00' % now_20),
+            ('timestamp', '>=', '%s 00:00:00' % now_20),
             ], context=context)
         WS = WB.add_worksheet('ADIGE')
         WS.set_column('A:C', 25)
