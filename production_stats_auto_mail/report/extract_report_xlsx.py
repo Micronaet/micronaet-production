@@ -1063,7 +1063,7 @@ class MrpProductionStatsMixed(orm.Model):
             ], context=context)
         WS = WB.add_worksheet('FLECTE')
         WS.set_column('A:C', 25)
-        WS.set_column('D:I', 10)
+        WS.set_column('D:H', 10)
         WS.set_column('J:J', 40)
 
         # Write title row:
@@ -1195,7 +1195,7 @@ class MrpProductionStatsMixed(orm.Model):
                 medium_data[program][3] += duration_setup
 
         # ---------------------------------------------------------------------
-        # Saldatrice media:
+        # Piegatubi media:
         # ---------------------------------------------------------------------
         WS = WB.add_worksheet('FLECTE medie')
         WS.set_column('A:A', 25)
