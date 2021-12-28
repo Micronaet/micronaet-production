@@ -1089,7 +1089,7 @@ class MrpProductionStatsMixed(orm.Model):
         # Write data:
         gap_limit = 2.0
         medium_cache = {}
-        last_end = False
+        last_start = False
         for job in job_pool.browse(cr, uid, job_ids, context=context):
             duration_not_considered = job.duration_not_considered
             job_duration = job.job_duration
@@ -1098,16 +1098,16 @@ class MrpProductionStatsMixed(orm.Model):
             # duration_change_gap = job.duration_change_gap
             created_at = job.created_at
             ended_at = job.ended_at
-            if last_end:
+            if last_start:
                 duration_change_gap = (
                     datetime.strptime(
-                        last_end, DEFAULT_SERVER_DATETIME_FORMAT) -
+                        created_at, DEFAULT_SERVER_DATETIME_FORMAT) -
                     datetime.strptime(
-                        created_at, DEFAULT_SERVER_DATETIME_FORMAT)
+                        last_start, DEFAULT_SERVER_DATETIME_FORMAT)
                 ).seconds / 60.0
             else:
                 duration_change_gap = 0  # Not the first
-            last_end = ended_at
+            last_start = created_at
 
             duration_setup = job.duration_setup
             program = job.program_id
@@ -1132,8 +1132,8 @@ class MrpProductionStatsMixed(orm.Model):
 
             row += 1
             WS.write(row, 0, program.name, xls_format['text'])
-            WS.write(row, 1, job.created_at, xls_format['text'])
-            WS.write(row, 2, job.ended_at, xls_format['text'])
+            WS.write(row, 1, created_at, xls_format['text'])
+            WS.write(row, 2, ended_at, xls_format['text'])
             WS.write(row, 3, format_hour(job_duration), cell_format)
             WS.write(row, 4, format_hour(duration_change_gap), cell_gap_format)
             WS.write(row, 5, format_hour(duration_setup), xls_format['text'])
