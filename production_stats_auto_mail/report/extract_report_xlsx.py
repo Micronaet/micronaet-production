@@ -1089,7 +1089,7 @@ class MrpProductionStatsMixed(orm.Model):
         # Write data:
         gap_limit = 1.0
         medium_cache = {}
-        last_end = 0
+        last_end = False
         for job in job_pool.browse(cr, uid, job_ids, context=context):
             duration_not_considered = job.duration_not_considered
             job_duration = job.job_duration
@@ -1101,9 +1101,9 @@ class MrpProductionStatsMixed(orm.Model):
             if last_end:
                 duration_change_gap = (
                     datetime.strptime(
-                        last_end, DEFAULT_SERVER_DATETIME_FORMAT) -
+                        created_at, DEFAULT_SERVER_DATETIME_FORMAT) -
                     datetime.strptime(
-                        created_at, DEFAULT_SERVER_DATETIME_FORMAT)
+                        last_end, DEFAULT_SERVER_DATETIME_FORMAT)
                 ).seconds / 60.0
             else:
                 duration_change_gap = 0  # Not the first
@@ -1116,26 +1116,33 @@ class MrpProductionStatsMixed(orm.Model):
                     program.medium * 0.5, program.medium * 1.5)
             range_min, range_max = medium_cache[program]
 
+            # -----------------------------------------------------------------
+            # Color for cell:
+            # -----------------------------------------------------------------
             if duration_change_gap > gap_limit:
-                cell_format = xls_format['text_red_gap']
-            elif range_min < job_duration < range_max:
+                cell_gap_format = xls_format['text_red_gap']
+            else:
+                cell_gap_format = xls_format['text']
+
+            if range_min < job_duration < range_max:
                 cell_format = xls_format['text']
             else:
                 cell_format = xls_format['text_red']
                 duration_not_considered = True
 
             row += 1
-            WS.write(row, 0, program.name, cell_format)
-            WS.write(row, 1, job.created_at, cell_format)
-            WS.write(row, 2, job.ended_at, cell_format)
+            WS.write(row, 0, program.name, xls_format['text'])
+            WS.write(row, 1, job.created_at, xls_format['text'])
+            WS.write(row, 2, job.ended_at, xls_format['text'])
             WS.write(row, 3, format_hour(job_duration), cell_format)
-            WS.write(row, 4, format_hour(duration_change_gap), cell_format)
-            WS.write(row, 5, format_hour(duration_setup), cell_format)
+            WS.write(row, 4, format_hour(duration_change_gap), cell_gap_format)
+            WS.write(row, 5, format_hour(duration_setup), xls_format['text'])
             WS.write(
                 row, 6,
-                'X' if duration_not_considered else '', cell_format)
+                'X' if duration_not_considered else '', xls_format['text'])
             WS.write(
-                row, 7, 'X' if job.duration_need_setup else '', cell_format)
+                row, 7, 'X' if job.duration_need_setup else '',
+                xls_format['text'])
 
             # Medium data:
             if not duration_not_considered:
