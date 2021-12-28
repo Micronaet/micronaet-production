@@ -263,6 +263,14 @@ class MrpProductionStatsMixed(orm.Model):
                 # 'align': 'left',
                 'border': 1,
                 }),
+            'text_red_gap': WB.add_format({
+                'font_color': 'black',
+                'bg_color': '#dd4c3b',
+                'font_name': 'Courier 10 pitch',
+                'font_size': 9,
+                # 'align': 'left',
+                'border': 1,
+                }),
             'text_number_red': WB.add_format({
                 'font_color': 'black',
                 'bg_color': '#e5a69f',
@@ -1079,17 +1087,42 @@ class MrpProductionStatsMixed(orm.Model):
         WS.freeze_panes(2, 1)
 
         # Write data:
+        gap_limit = 1.0
+        medium_cache = {}
+        last_end = 0
         for job in job_pool.browse(cr, uid, job_ids, context=context):
             duration_not_considered = job.duration_not_considered
             job_duration = job.job_duration
-            duration_change_gap = job.duration_change_gap
+
+            # Gap from 2 relevation:
+            # duration_change_gap = job.duration_change_gap
+            created_at = job.created_at
+            ended_at = job.ended_at
+            if last_end:
+                duration_change_gap = (
+                    datetime.strftime(
+                        last_end, DEFAULT_SERVER_DATETIME_FORMAT) -
+                    datetime.strftime(
+                        created_at, DEFAULT_SERVER_DATETIME_FORMAT)
+                ).seconds / 60.0
+            else:
+                duration_change_gap = 0  # Not the first
+            last_end = ended_at
+
             duration_setup = job.duration_setup
             program = job.program_id
+            if program not in medium_cache:
+                medium_cache[program] = (
+                    program.medium * 0.5, program.medium * 1.5)
+            range_min, range_max = medium_cache[program]
 
-            if duration_not_considered:
-                cell_format = xls_format['text_red']
-            else:
+            if duration_change_gap > gap_limit:
+                cell_format = xls_format['text_red_gap']
+            elif range_min < job_duration < range_max:
                 cell_format = xls_format['text']
+            else:
+                cell_format = xls_format['text_red']
+                duration_not_considered = True
 
             row += 1
             WS.write(row, 0, program.name, cell_format)
