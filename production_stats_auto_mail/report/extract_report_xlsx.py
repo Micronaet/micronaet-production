@@ -1087,7 +1087,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.freeze_panes(2, 1)
 
         # Write data:
-        gap_limit = 2.0
+        gap_limit = 1.0
         medium_cache = {}
         last_start = False
         for job in job_pool.browse(cr, uid, job_ids, context=context):
