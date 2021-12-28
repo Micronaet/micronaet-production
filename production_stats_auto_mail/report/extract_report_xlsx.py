@@ -1115,14 +1115,14 @@ class MrpProductionStatsMixed(orm.Model):
             # Check last:
             # -----------------------------------------------------------------
             if last['day'] != day:
-                note += '[cambio giorno] '
+                note += '[fine giorno] '
                 change_day = True
                 last['day'] = day
             else:
                 change_day = False
 
             if last['program'] != program:
-                note += '[cambio programma] '
+                note += '[fine programma] '
                 change_program = True
                 last['program'] = program
             else:
