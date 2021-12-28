@@ -1063,7 +1063,7 @@ class MrpProductionStatsMixed(orm.Model):
             ], context=context)
         WS = WB.add_worksheet('FLECTE')
         WS.set_column('A:C', 25)
-        WS.set_column('D:I', 15)
+        WS.set_column('D:I', 10)
 
         # Write title row:
         row = 0
@@ -1079,7 +1079,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 1, _('Dalla data'), xls_format['header'])
         WS.write(row, 2, _('Alla data'), xls_format['header'])
         WS.write(row, 3, _('Durata'), xls_format['header'])
-        WS.write(row, 4, _('Cambio gap'), xls_format['header'])
+        WS.write(row, 4, _('Prossimo gap'), xls_format['header'])
         WS.write(row, 5, _('Attrezzaggio'), xls_format['header'])
         WS.write(row, 6, _('Non cons.'), xls_format['header'])
         WS.write(row, 7, _('Nuova'), xls_format['header'])
