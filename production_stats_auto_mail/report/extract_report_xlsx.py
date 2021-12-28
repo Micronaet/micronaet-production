@@ -1096,7 +1096,9 @@ class MrpProductionStatsMixed(orm.Model):
             'program': False,
             'day': False,
         }
+        counter = 0
         for job in job_pool.browse(cr, uid, job_ids, context=context):
+            counter += 1
             note = ''
             duration_not_considered = job.duration_not_considered
             job_duration = job.job_duration
@@ -1176,7 +1178,7 @@ class MrpProductionStatsMixed(orm.Model):
             WS.write(
                 row, 7, 'X' if job.duration_need_setup else '',
                 xls_format['text'])
-            WS.write(row, 8, note, xls_format['text'])
+            WS.write(row, 8, note if counter != 1 else '', xls_format['text'])
 
             # Medium data:
             if not duration_not_considered:
