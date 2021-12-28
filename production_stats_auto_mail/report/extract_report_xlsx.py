@@ -1090,6 +1090,7 @@ class MrpProductionStatsMixed(orm.Model):
         gap_limit = 1.0
         medium_cache = {}
         last_end = False
+        pdb.set_trace()
         for job in job_pool.browse(cr, uid, job_ids, context=context):
             duration_not_considered = job.duration_not_considered
             job_duration = job.job_duration
