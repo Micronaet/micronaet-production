@@ -1100,9 +1100,9 @@ class MrpProductionStatsMixed(orm.Model):
             ended_at = job.ended_at
             if last_end:
                 duration_change_gap = (
-                    datetime.strftime(
+                    datetime.strptime(
                         last_end, DEFAULT_SERVER_DATETIME_FORMAT) -
-                    datetime.strftime(
+                    datetime.strptime(
                         created_at, DEFAULT_SERVER_DATETIME_FORMAT)
                 ).seconds / 60.0
             else:
