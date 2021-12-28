@@ -1151,7 +1151,7 @@ class MrpProductionStatsMixed(orm.Model):
             # -----------------------------------------------------------------
             if duration_change_gap > gap_limit:
                 cell_gap_format = xls_format['text_red']
-                note += '[gap alto] '
+                note += '[gap alto > 1 min.] '
 
             else:
                 cell_gap_format = xls_format['text']
@@ -1159,7 +1159,7 @@ class MrpProductionStatsMixed(orm.Model):
             if range_min < job_duration < range_max:
                 cell_format = xls_format['text']
             else:
-                note += '[lavorazione alta] '
+                note += '[lavorazione alta (range 50% - 150%)] '
                 cell_format = xls_format['text_red']
                 duration_not_considered = True
 
