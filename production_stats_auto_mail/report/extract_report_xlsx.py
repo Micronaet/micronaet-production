@@ -1064,6 +1064,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS = WB.add_worksheet('FLECTE')
         WS.set_column('A:C', 25)
         WS.set_column('D:I', 10)
+        WS.set_column('J:J', 40)
 
         # Write title row:
         row = 0
@@ -1083,6 +1084,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 5, _('Attrezzaggio'), xls_format['header'])
         WS.write(row, 6, _('Non cons.'), xls_format['header'])
         WS.write(row, 7, _('Nuova'), xls_format['header'])
+        WS.write(row, 8, _('Note'), xls_format['header'])
 
         WS.freeze_panes(2, 1)
 
@@ -1095,6 +1097,7 @@ class MrpProductionStatsMixed(orm.Model):
             'day': False,
         }
         for job in job_pool.browse(cr, uid, job_ids, context=context):
+            note = ''
             duration_not_considered = job.duration_not_considered
             job_duration = job.job_duration
 
@@ -1110,12 +1113,14 @@ class MrpProductionStatsMixed(orm.Model):
             # Check last:
             # -----------------------------------------------------------------
             if last['day'] != day:
+                note += '[cambio giorno] '
                 change_day = True
                 last['day'] = day
             else:
                 change_day = False
 
             if last['program'] != program:
+                note += '[cambio programma] '
                 change_program = True
                 last['program'] = program
             else:
@@ -1146,12 +1151,15 @@ class MrpProductionStatsMixed(orm.Model):
             # -----------------------------------------------------------------
             if duration_change_gap > gap_limit:
                 cell_gap_format = xls_format['text_red']
+                note += '[gap alto] '
+
             else:
                 cell_gap_format = xls_format['text']
 
             if range_min < job_duration < range_max:
                 cell_format = xls_format['text']
             else:
+                note += '[lavorazione alta] '
                 cell_format = xls_format['text_red']
                 duration_not_considered = True
 
@@ -1168,6 +1176,7 @@ class MrpProductionStatsMixed(orm.Model):
             WS.write(
                 row, 7, 'X' if job.duration_need_setup else '',
                 xls_format['text'])
+            WS.write(row, 8, note, xls_format['text'])
 
             # Medium data:
             if not duration_not_considered:
