@@ -1120,7 +1120,7 @@ class MrpProductionStatsMixed(orm.Model):
             # Color for cell:
             # -----------------------------------------------------------------
             if duration_change_gap > gap_limit:
-                cell_gap_format = xls_format['text_red_gap']
+                cell_gap_format = xls_format['text_red']
             else:
                 cell_gap_format = xls_format['text']
 
