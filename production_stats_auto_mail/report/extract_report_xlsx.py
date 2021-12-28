@@ -1101,9 +1101,9 @@ class MrpProductionStatsMixed(orm.Model):
             if last_start:
                 duration_change_gap = (
                     datetime.strptime(
-                        created_at, DEFAULT_SERVER_DATETIME_FORMAT) -
+                        last_start, DEFAULT_SERVER_DATETIME_FORMAT) -
                     datetime.strptime(
-                        last_start, DEFAULT_SERVER_DATETIME_FORMAT)
+                        created_at, DEFAULT_SERVER_DATETIME_FORMAT)
                 ).seconds / 60.0
             else:
                 duration_change_gap = 0  # Not the first
