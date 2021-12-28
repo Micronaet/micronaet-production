@@ -1089,7 +1089,11 @@ class MrpProductionStatsMixed(orm.Model):
         # Write data:
         gap_limit = 1.0
         medium_cache = {}
-        last_start = False
+        last = {
+            'start': False,
+            'program': False,
+            'day': False,
+        }
         for job in job_pool.browse(cr, uid, job_ids, context=context):
             duration_not_considered = job.duration_not_considered
             job_duration = job.job_duration
@@ -1097,20 +1101,41 @@ class MrpProductionStatsMixed(orm.Model):
             # Gap from 2 relevation:
             # duration_change_gap = job.duration_change_gap
             created_at = job.created_at
+            day = created_at[:10]
             ended_at = job.ended_at
-            if last_start:
+            duration_setup = job.duration_setup
+            program = job.program_id
+
+            # -----------------------------------------------------------------
+            # Check last:
+            # -----------------------------------------------------------------
+            if last['day'] != day:
+                change_day = True
+                last['day'] = day
+            else:
+                change_day = False
+
+            if last['program'] != program:
+                change_program = True
+                last['program'] = program
+            else:
+                change_program = False
+
+            if last['start'] and not change_day:
                 duration_change_gap = (
                     datetime.strptime(
-                        last_start, DEFAULT_SERVER_DATETIME_FORMAT) -
+                        last['start'], DEFAULT_SERVER_DATETIME_FORMAT) -
                     datetime.strptime(
                         ended_at, DEFAULT_SERVER_DATETIME_FORMAT)
                 ).seconds / 60.0
             else:
                 duration_change_gap = 0  # Not the first
-            last_start = created_at
+            last['start'] = created_at
 
-            duration_setup = job.duration_setup
-            program = job.program_id
+            # Consider setup with change gap if new program
+            if change_program and not change_day:
+                duration_setup = duration_change_gap
+
             if program not in medium_cache:
                 medium_cache[program] = (
                     program.medium * 0.5, program.medium * 1.5)
