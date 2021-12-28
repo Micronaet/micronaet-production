@@ -1064,7 +1064,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS = WB.add_worksheet('FLECTE')
         WS.set_column('A:C', 25)
         WS.set_column('D:H', 10)
-        WS.set_column('J:J', 40)
+        WS.set_column('I:I', 40)
 
         # Write title row:
         row = 0
