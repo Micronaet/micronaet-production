@@ -1087,7 +1087,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.freeze_panes(2, 1)
 
         # Write data:
-        gap_limit = 1.0
+        gap_limit = 2.0
         medium_cache = {}
         last_end = False
         pdb.set_trace()
@@ -1102,9 +1102,9 @@ class MrpProductionStatsMixed(orm.Model):
             if last_end:
                 duration_change_gap = (
                     datetime.strptime(
-                        created_at, DEFAULT_SERVER_DATETIME_FORMAT) -
+                        last_end, DEFAULT_SERVER_DATETIME_FORMAT) -
                     datetime.strptime(
-                        last_end, DEFAULT_SERVER_DATETIME_FORMAT)
+                        created_at, DEFAULT_SERVER_DATETIME_FORMAT)
                 ).seconds / 60.0
             else:
                 duration_change_gap = 0  # Not the first
