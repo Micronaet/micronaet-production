@@ -1104,8 +1104,15 @@ class MrpProductionStatsMixed(orm.Model):
             job_duration = job.job_duration
 
             # Gap from 2 relevation:
-            # duration_change_gap = job.duration_change_gap
+            # duration_change_gap = job.duration_change_gap  todo not used
+            create_at_CEST = fields.datetime.context_timestamp(
+                cr, uid,
+                datetime.strptime(
+                    job.created_at,
+                    DEFAULT_SERVER_DATETIME_FORMAT),
+                context=context)
             created_at = job.created_at
+            pdb.set_trace()
             day = created_at[:10]
             ended_at = job.ended_at
             duration_setup = job.duration_setup
