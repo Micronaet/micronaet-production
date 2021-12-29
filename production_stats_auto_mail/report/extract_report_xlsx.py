@@ -1105,16 +1105,12 @@ class MrpProductionStatsMixed(orm.Model):
 
             # Gap from 2 relevation:
             # duration_change_gap = job.duration_change_gap  todo not used
-            create_at_CEST = fields.datetime.context_timestamp(
-                cr, uid,
-                datetime.strptime(
-                    job.created_at,
-                    DEFAULT_SERVER_DATETIME_FORMAT),
-                context=context)
-            created_at = job.created_at
-            pdb.set_trace()
+
+            created_at = self.get_user_time(
+                cr, uid, job.created_at, context=context)
             day = created_at[:10]
-            ended_at = job.ended_at
+            ended_at = self.get_user_time(
+                cr, uid, job.ended_at, context=context)
             duration_setup = job.duration_setup
             program = job.program_id
 
@@ -1288,3 +1284,13 @@ class MrpProductionStatsMixed(orm.Model):
             context=context,
             )
         return True
+
+    def get_user_time(self, cr, uid, dt_value, context=None):
+        """ Get user TZ time
+        """
+        return fields.datetime.context_timestamp(
+            cr, uid,
+            datetime.strptime(
+                dt_value,
+                DEFAULT_SERVER_DATETIME_FORMAT),
+            context=context).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
