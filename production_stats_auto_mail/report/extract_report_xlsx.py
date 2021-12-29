@@ -965,9 +965,15 @@ class MrpProductionStatsMixed(orm.Model):
                 cell_format = xls_format['text']
 
             row += 1
+
+            created_at = self.get_user_time(
+                cr, uid, job.created_at, context=context)
+            ended_at = self.get_user_time(
+                cr, uid, job.ended_at, context=context)
+
             WS.write(row, 0, program.name, cell_format)
-            WS.write(row, 1, job.created_at, cell_format)
-            WS.write(row, 2, job.ended_at or '/', cell_format)  # not used
+            WS.write(row, 1, created_at, cell_format)
+            WS.write(row, 2, ended_at or '/', cell_format)  # not used
             WS.write(row, 3, format_hour(job_duration), cell_format)
             WS.write(row, 4, format_hour(duration_change_total), cell_format)
             WS.write(row, 5, format_hour(duration_change_gap), cell_format)
@@ -1288,6 +1294,8 @@ class MrpProductionStatsMixed(orm.Model):
     def get_user_time(self, cr, uid, dt_value, context=None):
         """ Get user TZ time
         """
+        if not dt_value:
+            return False
         return fields.datetime.context_timestamp(
             cr, uid,
             datetime.strptime(
