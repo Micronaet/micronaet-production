@@ -688,10 +688,15 @@ class MrpProductionStatsMixed(orm.Model):
             else:
                 cell_format = xls_format['text']
 
+            created_at = self.get_user_time(
+                cr, uid, job.created_at, context=context)
+            ended_at = self.get_user_time(
+                cr, uid, job.ended_at, context=context)
+
             row += 1
             WS.write(row, 0, program.name, cell_format)
-            WS.write(row, 1, job.created_at, cell_format)
-            WS.write(row, 2, job.ended_at, cell_format)
+            WS.write(row, 1, created_at, cell_format)
+            WS.write(row, 2, ended_at, cell_format)
             WS.write(row, 3, format_hour(job_duration), cell_format)
             WS.write(row, 4, format_hour(duration_change_total), cell_format)
             WS.write(row, 5, format_hour(duration_change_gap), cell_format)
