@@ -827,9 +827,12 @@ class MrpProductionStatsMixed(orm.Model):
             else:
                 cell_format = xls_format['text']
 
+            timestamp = self.get_user_time(
+                cr, uid, cut.timestamp, context=context)
+
             row += 1
             WS.write(row, 0, program.name, cell_format)
-            WS.write(row, 1, cut.timestamp, cell_format)
+            WS.write(row, 1, timestamp, cell_format)
             WS.write(row, 2, '/', cell_format)  # not used for now
             WS.write(row, 3, format_hour(bar_duration), cell_format)
             WS.write(row, 4, format_hour(duration_change_total), cell_format)
