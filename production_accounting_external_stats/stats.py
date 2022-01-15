@@ -118,7 +118,7 @@ class MrpProductionStat(orm.Model):
 
 
 class MrpProductionStatMixed(osv.osv):
-    """ Create view object
+    """ Create view object for Dashboard (query not table!)
     """
     _name = 'mrp.production.stats.mixed'
     _description = 'MRP stats mixed'
