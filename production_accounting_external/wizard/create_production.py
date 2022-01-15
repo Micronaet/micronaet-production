@@ -32,31 +32,31 @@ from openerp import SUPERUSER_ID, api
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    DATETIME_FORMATS_MAP,
     float_compare)
-from utility import * 
+from utility import *
 
 
 _logger = logging.getLogger(__name__)
 
 class CreateMrpProductionWizard(orm.TransientModel):
-    ''' Wizard that create a production order based on selected order lines
-    '''    
+    """ Wizard that create a production order based on selected order lines
+    """
     _name = "mrp.production.create.wizard"
-    
+
     # ---------------
     # Utility funtion
     # ---------------
     def preserve_window(self, cr, uid, ids, context=None):
-        ''' Create action for return the same open wizard window
-        '''
+        """ Create action for return the same open wizard window
+        """
         view_id = self.pool.get('ir.ui.view').search(cr,uid,[
             ('model', '=', 'mrp.production.create.wizard'),
             ('name', '=', 'Create production order') # TODO needed?
             ], context=context)
-        
+
         return {
             'type': 'ir.actions.act_window',
             'name': "Wizard create production order",
@@ -68,31 +68,31 @@ class CreateMrpProductionWizard(orm.TransientModel):
             'target': 'new',
             'nodestroy': True,
             }
-        
-    # ----------    
-    # On Change:            
-    # ----------    
+
+    # ----------
+    # On Change:
+    # ----------
     def onchange_schedule_date(self, cr, uid, ids, schedule_from_date, bom_id,
             days=9, context=None):
-        ''' Present a little calendar based on start date
-        '''
+        """ Present a little calendar based on start date
+        """
         def format_date(value):
-            '''Date for columns header'''
+            """Date for columns header"""
             return "%s-%s" % (value[8:10], value[5:7])
-        
+
         res = {'value': {}}
 
         if not(schedule_from_date and bom_id):
             return res
-                
-        # Read line info: TODO (passed to onchange??    
+
+        # Read line info: TODO (passed to onchange??
         try:
             wc_proxy = self.pool.get('mrp.bom').browse(
                 cr, uid, bom_id, context=None)
             workcenter_id = wc_proxy.lavoration_ids[0].workcenter_id.id
             workcenter_name = wc_proxy.lavoration_ids[0].workcenter_id.name
             workers = wc_proxy.lavoration_ids[0].workers or 0
-                
+
         except:
             pass # TODO osv.except_osv()
             res['value']['calendar'] = _('No BOM or line finded!')
@@ -106,7 +106,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         start_date = datetime.strptime(schedule_from_date, '%Y-%m-%d')
         to_date = (start_date + relativedelta(days=days)).strftime('%Y-%m-%d')
         calendar = {}
-        
+
         process_pool = self.pool.get('mrp.production.workcenter.line')
         process_ids = process_pool.search(cr, uid, [
             #('workcenter_id', '=', workcenter_id),# after (for H/u total)
@@ -118,7 +118,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         for process in process_pool.browse(
                 cr, uid, process_ids, context=context):
             key = format_date(process.date_planned)
-            
+
             if key not in calendar:
                 calendar[key] = [0.0, 0.0] # H, H/m
 
@@ -129,7 +129,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         row1 = ''
         row2 = ''
         header = ''
-        for i in range(0, days):        
+        for i in range(0, days):
             to_date = format_date(
                 (start_date + relativedelta(days=i)).strftime('%Y-%m-%d'))
             header += '<th>%s</th>' % to_date
@@ -160,17 +160,17 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     <tr><td>H.</td>%s</tr>
                     <tr><td>H./u.</td>%s</tr>
                 <table>''' % (
-            workcenter_name,    
+            workcenter_name,
             header,
             row1,
             row2,
-            )            
-        return res        
-        
-    def onchange_operation(self, cr, uid, ids, operation, product_tmpl_id, 
+            )
+        return res
+
+    def onchange_operation(self, cr, uid, ids, operation, product_tmpl_id,
             context=None):
-        ''' On change operation list all production open in HTML style
-        '''
+        """ On change operation list all production open in HTML style
+        """
         res = {'value': {}}
         res['value']['other_production'] = _('<b>No production</b>')
         if not product_tmpl_id or operation not in (
@@ -180,15 +180,15 @@ class CreateMrpProductionWizard(orm.TransientModel):
         product_pool = self.pool.get('product.product')
         product_ids = product_pool.search(cr, uid, [
             ('product_tmpl_id', '=' , product_tmpl_id)], context=context)
-        
+
         if not product_ids:
             return res
-            
+
         production_pool = self.pool.get('mrp.production')
         production_ids = production_pool.search(
             cr, uid, [('product_id', '=', product_ids[0])], # TODO only open?
                 context=context)
-                
+
         res['value']['other_production'] = _(
             '''<style>
                     .table_status {
@@ -220,16 +220,16 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     <td>%s</td>
                     <td>%s</td>
                 </tr>""" % (
-                    item.date_planned[:10], 
+                    item.date_planned[:10],
                     #item.name, # TODO range date!!
                     item.name,
                     item.product_qty,
                     )
         else:
             res['value']['other_production'] += '</table>'
-                    
+
         return res
-        
+
     """def onchange_append_production(self, cr, uid, ids, production_id, 
             #oc_total, 
             context=None):
@@ -247,17 +247,17 @@ class CreateMrpProductionWizard(orm.TransientModel):
         return res """
 
     #def onchange_total(self, cr, uid, ids, total, oc_total, context=None):
-    #    ''' Create extra production value             
-    #    ''' 
+    #    ''' Create extra production value
+    #    '''
     #    #TODO also error
     #    res = {'value': {}}
     #    res['value']['extra_total'] = (total or 0.0) - (oc_total or 0.0)
-    #    return res 
-    
+    #    return res
+
     def onchange_force_production(self, cr, uid, ids, force_production, bom_id,
             context=None):
-        ''' Reset parameter or set as bom production one's
-        '''
+        """ Reset parameter or set as bom production one's
+        """
         res = {'value': {
             'item_hour': False, 'workers': False, 'workcenter_id': False}}
         if force_production:
@@ -265,28 +265,27 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 bom_pool = self.pool.get('mrp.bom')
                 bom_proxy = bom_pool.browse(cr, uid, bom_id, context=context)
                 for item in bom_proxy.lavoration_ids:
-                    if item.phase_id.production_phase: # first production                         
+                    if item.phase_id.production_phase:  # first production
                         res['value'].update({
                             'item_hour': item.item_hour or 0.0,
                             'workers': item.workers or False,
                             'workcenter_id': item.workcenter_id.id,
                             })
-                        print res    
             except:
                 pass
-        return res      
-                
+        return res
+
     # --------------
     # Wizard button:
     # --------------
     def action_create_mrp_production_order(self, cr, uid, ids, context=None):
-        ''' Create production order based on product_tmpl_id depend on quantity
+        """ Create production order based on product_tmpl_id depend on quantity
             Redirect mrp.production form after
-        '''
+        """
         if context is None:
             context = {}
-           
-        sol_ids = context.get("active_ids", [])   
+
+        sol_ids = context.get("active_ids", [])
 
         # Wizard proxy:
         wiz_proxy = self.browse(cr, uid, ids, context=context)[0]
@@ -294,28 +293,28 @@ class CreateMrpProductionWizard(orm.TransientModel):
         # Pool used:
         production_pool = self.pool.get('mrp.production')
         sol_pool = self.pool.get('sale.order.line')
-                
+
         # Not used for now:
         product_id = get_product_from_template(
             self, cr, uid, wiz_proxy.product_tmpl_id.id, context=context)
-            
-        # Context dict for pass parameter to create lavoration procedure:
-              
+
+        # Context dict for pass parameter to create job procedure:
+
         context['mrp_data'] = {
-            'bom_id': wiz_proxy.bom_id.id, 
-            'operation': wiz_proxy.operation, # create or append
+            'bom_id': wiz_proxy.bom_id.id,
+            'operation': wiz_proxy.operation,  # create or append
             'total': wiz_proxy.total,
             # Not mandatory in append:
             'schedule_from_date': wiz_proxy.schedule_from_date,
-            'workhour_id': wiz_proxy.workhour_id.id, 
+            'workhour_id': wiz_proxy.workhour_id.id,
             'mode': wiz_proxy.operation, # TODO split!!!
-            }            
+            }
         if wiz_proxy.force_production:
             # Use forced value (now mandatory)
             context['mrp_data'].update({
                 'item_hour': wiz_proxy.item_hour,
                 'workers': wiz_proxy.workers,
-                'workcenter_id': wiz_proxy.workcenter_id.id,                
+                'workcenter_id': wiz_proxy.workcenter_id.id,
                 # Not used for now:
                 # fixed
                 # phase_id
@@ -324,7 +323,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             # Call onchange function for calculate from BOM:
             try:
                 context['mrp_data'].update(
-                    self.onchange_force_production(cr, uid, ids, True, 
+                    self.onchange_force_production(cr, uid, ids, True,
                         wiz_proxy.bom_id.id, context=context)['value'])
             except:
                 raise osv.except_osv(
@@ -337,11 +336,11 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 'append_production_id': wiz_proxy.production_id.id,
                 'append_product_qty': wiz_proxy.production_id.product_qty,
                 })
-        else:        
+        else:
             context['mrp_data'].update({
                 'append_production_id': False,
                 'append_product_qty': False,
-                })        
+                })
 
         # Create a production order:
         if wiz_proxy.operation in ('create'):
@@ -352,7 +351,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     'ir.sequence').get(cr, uid, 'mrp.production'),
                 'date_planned': context['mrp_data']['schedule_from_date'],#TODO right?
                 'user_id': uid,
-                #'order_line_ids': [(6, 0, context.get("active_ids", []))],
+                # 'order_line_ids': [(6, 0, context.get("active_ids", []))],
                 'product_qty': context['mrp_data']['total'], # sum(order line)
                 # Keep for mandatory fields in production
                 'bom_id': wiz_proxy.bom_id.id,
@@ -378,10 +377,10 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     'mrp_id': p_id,
                     'mrp_unlinked': False,
                     }, context=context)
-                    
-            # Udate start date:        
+
+            # Udate start date:
             if context['mrp_data']['schedule_from_date']:
-                production_pool.write(               
+                production_pool.write(
                     cr, uid, p_id, {
                         'date_planned': context['mrp_data'][
                             'schedule_from_date'],
@@ -389,23 +388,23 @@ class CreateMrpProductionWizard(orm.TransientModel):
 
         # Reforce total from sale order line:
         production_pool.recompute_total_from_sol(
-            cr, uid, [p_id], context=context) 
+            cr, uid, [p_id], context=context)
 
         # Force (re)schedule (create / append):
-        production_pool.create_lavoration_item(# and workcenter line
+        production_pool.create_lavoration_item(  # and workcenter line
             cr, uid, [p_id], mode='create', context=context)
 
         return return_view(
-            self, cr, uid, p_id, 'mrp.mrp_production_form_view', 
-            'mrp.production', context=context) 
+            self, cr, uid, p_id, 'mrp.mrp_production_form_view',
+            'mrp.production', context=context)
 
     # -----------------
-    # Default function:        
+    # Default function:
     # -----------------
     def default_oc_list(self, cr, uid, field, context=None):
-        ''' Get list of order for confirm as default
+        """ Get list of order for confirm as default
             context: used for select product or family (grouping clause)
-        '''
+        """
         if context is None:
             context = {}
 
@@ -413,12 +412,12 @@ class CreateMrpProductionWizard(orm.TransientModel):
         ids = sol_pool.search(cr, uid, [
             ('id', 'in', context.get("active_ids", [])),
             ], context=context)
-        sol_browse = sol_pool.browse(cr, uid, ids, context=context) 
-        
+        sol_browse = sol_pool.browse(cr, uid, ids, context=context)
+
         if context.get('grouping', 'product') == 'product':
             ref_field = 'product_id'
         else:
-            ref_field = 'family_id'    
+            ref_field = 'family_id'
 
         default = {
             "list": _("""
@@ -446,45 +445,45 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     <th>Q.</th>
                     <th>Da mag.</th>
                     <th>Deadline</th>
-                </tr>"""), 
-            "is_error": False, 
-            #"oc_total": 0.0, 
-            "total": 0.0, 
-            "product": False, 
-            "from_deadline": False, 
-            "to_deadline": False, 
+                </tr>"""),
+            "is_error": False,
+            # "oc_total": 0.0,
+            "total": 0.0,
+            "product": False,
+            "from_deadline": False,
+            "to_deadline": False,
             "bom": False,
-            "error": "", #TODO
-            "warning": "", #TODO
-            }             
-        res = default.get(field, False)        
-        old_product_id = False     
-        
+            "error": "",  # todo
+            "warning": "",  # todo
+            }
+        res = default.get(field, False)
+        old_product_id = False
+
         try:
             if field == "template": # so template
                 if ref_field == 'product_id':
                     return sol_browse[0].product_id.product_tmpl_id.id
                 else: # family
-                    return sol_browse[0].family_id.id                
+                    return sol_browse[0].family_id.id
         except:
             return False
         try:
             if field == "product": # so template
                 if ref_field == 'product_id':
                     return sol_browse[0].product_id.id
-                else: # family
+                else:  # family
                     return get_product_from_template(
-                        self, cr, uid, sol_browse[0].family_id.id, 
+                        self, cr, uid, sol_browse[0].family_id.id,
                         context=context)
         except:
             return False
-            
+
         try:
-            if field == "bom":        
+            if field == "bom":
                 if ref_field == 'product_id':
                     tmpl_id = sol_browse[0].product_id.product_tmpl_id.id
                 else: # family
-                    tmpl_id = sol_browse[0].family_id.id                
+                    tmpl_id = sol_browse[0].family_id.id
 
                 # Search BOM for template:
                 item_ids = self.pool.get("mrp.bom").search(
@@ -492,21 +491,21 @@ class CreateMrpProductionWizard(orm.TransientModel):
                         'product_tmpl_id', '=', tmpl_id), ], context=context)
                 if item_ids:
                     return item_ids[0]
-                else: 
-                    return False    
+                else:
+                    return False
         except:
-            return False    
+            return False
 
         for item in sol_browse:
             if old_product_id == False:
                 old_product_id = item.__getattribute__(ref_field).id
-                
+
             # Test function mode:
             if field == "list":
                 if item.__getattribute__(ref_field).id != old_product_id:
                     res = "Error! Choose order line that are of one product ID"
-                    break                                    
-                         
+                    break
+
                 res += """
                     <tr>
                         <td>%s [%s] </td>
@@ -527,7 +526,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             elif field == "error":
                 if item.__getattribute__(ref_field).id != old_product_id:
                     return True
-            elif field in ("total"): #"oc_total", 
+            elif field in ("total"): #"oc_total",
                 res += (item.product_uom_qty - item.mx_assigned_qty)
             elif field in ("from_deadline", "to_deadline"):
                 if not res:
@@ -540,36 +539,36 @@ class CreateMrpProductionWizard(orm.TransientModel):
                         res = item.date_deadline
         else:
             if field == "list":
-                res += "</table>" # close table for list element
+                res += "</table>"  # close table for list element
         return res
-   
+
     def _get_wh_default(self, cr, uid, context=None):
-        ''' Get default from data if present 
+        """ Get default from data if present
             TODO >> maybe bettere with a boolean (for deletion)
-        '''
+        """
         try:
             res = self.pool.get('ir.model.data').xmlid_to_res_id(
                 cr, uid, 'hr_workhour.hr_workhour_normal') or False
-            return res    
+            return res
         except:
-            return False    
-            
+            return False
+
     _columns = {
         'name': fields.text('OC line', readonly=True),
 
         # Total block (current order)
         'extra_total': fields.float(
             'Extra total', digits=(16, 2), readonly=True),
-        #'oc_total': fields.float(
+        # 'oc_total': fields.float(
         #    'OC total', digits=(16, 2), readonly=True),
         'total': fields.float(
             'Total (current block)', digits=(16, 2), required=True,
             help='Total only for this block, if append will be integrated'),
 
         # Total production to update (only info)
-        #'production_extra': fields.float(
+        # 'production_extra': fields.float(
         #    'Production: Extra', readonly=True, digits=(16, 2), ),
-        #'production_oc': fields.float(
+        # 'production_oc': fields.float(
         #    'Production: OC', readonly=True, digits=(16, 2), ),
         'production_total': fields.float(
             'Production: Total', readonly=True, digits=(16, 2), ),
@@ -589,10 +588,10 @@ class CreateMrpProductionWizard(orm.TransientModel):
             'mrp.production', 'Production'),
         'bom_id': fields.many2one('mrp.bom', 'BOM'),
 
-        'from_deadline': fields.date('From deadline', 
+        'from_deadline': fields.date('From deadline',
             help='Min deadline found in order line!',
             readonly=True),
-        'to_deadline': fields.date('To deadline', 
+        'to_deadline': fields.date('To deadline',
             help='Max deadline found in order line!',
             readonly=True),
 
@@ -601,12 +600,12 @@ class CreateMrpProductionWizard(orm.TransientModel):
             'From date', help="Scheduled from date to start lavorations"),
         'workhour_id':fields.many2one('hr.workhour', 'Work hour'), # TODO mand.
         'workcenter_id': fields.many2one(
-            'mrp.workcenter', 'Workcenter line'), 
+            'mrp.workcenter', 'Workcenter line'),
 
         # Error control:
         'is_error': fields.boolean('Is error'),
         'other_production': fields.text(
-            'Other production', 
+            'Other production',
             help="Production open on line of this production", readonly=True),
         'error': fields.text('Error', readonly=True),
         'warning': fields.text('Warning', readonly=True),
@@ -616,7 +615,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             ('append', 'Append'),
             ], 'Operation', select=True, required=True),
         }
-        
+
     _defaults = {
         'name':  lambda s, cr, uid, c: s.default_oc_list(
             cr, uid, "list", context=c),
@@ -624,19 +623,19 @@ class CreateMrpProductionWizard(orm.TransientModel):
         'is_error': lambda s, cr, uid, c: s.default_oc_list(
             cr, uid, "error", context=c),
         #'oc_total': lambda s, cr, uid, c: s.default_oc_list(
-        #    cr, uid, "oc_total", context=c),        
+        #    cr, uid, "oc_total", context=c),
         'total': lambda s, cr, uid, c: s.default_oc_list(
-            cr, uid, "total", context=c),        
+            cr, uid, "total", context=c),
         'product_id': lambda s, cr, uid, c: s.default_oc_list(
-            cr, uid, "product", context=c),        
+            cr, uid, "product", context=c),
         'product_tmpl_id': lambda s, cr, uid, c: s.default_oc_list(
-            cr, uid, "template", context=c),        
+            cr, uid, "template", context=c),
         'bom_id': lambda s, cr, uid, c: s.default_oc_list(
-            cr, uid, "bom", context=c),        
+            cr, uid, "bom", context=c),
         'from_deadline': lambda s, cr, uid, c: s.default_oc_list(
-            cr, uid, "from_deadline", context=c),        
+            cr, uid, "from_deadline", context=c),
         'to_deadline': lambda s, cr, uid, c: s.default_oc_list(
-            cr, uid, "to_deadline", context=c),        
+            cr, uid, "to_deadline", context=c),
         'operation': lambda *x: 'create',
         'workhour_id': lambda s, cr, uid, ctx: s._get_wh_default(cr, uid, ctx),
     }

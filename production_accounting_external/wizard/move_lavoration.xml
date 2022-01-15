@@ -10,7 +10,7 @@
                    <header>
                        <button string="Cancel" special="cancel" />
                        <button name="move_lavoration_item" string="Move" type="object" icon="gtk-jump-to" class="oe_highlight" />
-                   </header>                   
+                   </header>
                    <group colspan="4" col="4">
                         <field name="new_date" />
                         <field name="scheduled_lavoration_id" readonly="1" />
@@ -20,8 +20,11 @@
                         <field name="workcenter_id" />
 
                         <field name="bom_id" />
-                        <field name="workers" />
                         <field name="item_hour" />
+
+                        <field name="workers" />
+                        <newline />
+                        <field name="operator_ids" colspan="4" />
 
                         <separator string="Note" colspan="4"/>
                         <field name="note" nolabel="1" colspan="4" />
@@ -29,7 +32,7 @@
                 </form>
             </field>
       </record>
-      
+
       <record model="ir.actions.act_window" id="move_lavoration_wizard">
             <field name="name">Move lavoration</field>
             <field name="res_model">mrp.production.move.lavoration.wizard</field>
@@ -38,18 +41,18 @@
             <field name="target">new</field>
             <field name="context">{}</field>
             <field name="domain">[]</field>
-      </record>  
+      </record>
 
       <record model="ir.ui.view" id="mrp_production_workcenter_line_form_move_button_view">
             <field name="name">Workcenter move</field>
             <field name="model">mrp.production.workcenter.line</field>
             <field name="inherit_id" ref="mrp_operations.mrp_production_workcenter_tree_view_inherit" />
             <field name="arch" type="xml">
-                <field name="state" position="after">                
+                <field name="state" position="after">
                     <button name="%(move_lavoration_wizard)d" string="Move lavoration block" type="action" icon="terp-stock_effects-object-colorize"
                         context="{'default_scheduled_lavoration_id':active_id}"/>
                 </field>
             </field>
-      </record>        
+      </record>
     </data>
 </openerp>
