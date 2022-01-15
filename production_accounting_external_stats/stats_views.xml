@@ -62,8 +62,7 @@
                     <field name="maked_qty" />
 
                     <field name="workers" />
-                    <newline />
-                    <field name="operator_ids" colspan="4" />
+                    <field name="operator_ids" widget="many2many_tags"/>
 
                     <!--<field name="name" />-->
                     <!--<field name="lavoration_qty" />-->
@@ -99,11 +98,15 @@
                         <group colspan="4" col="4">
                             <field name="workcenter_id"/>
                             <field name="date" />
+
                             <field name="hour" widget="float_time"/>
-                            <field name="workers" />
-                            <field name="operator_ids" />
                             <field name="startup" widget="float_time"/>
+
                             <field name="total" />
+                            <field name="workers" />
+
+                            <field name="operator_ids" widget="many2many_tags" colspan="4"/>
+
                             <separator string="Dettagli:" colspan="4"/>
                             <field name="line_ids" colspan="4" nolabel="1">
                                 <tree string="Dettagli" editable="bottom">
@@ -124,6 +127,7 @@
                         <field name="workcenter_id"/>
                         <field name="date" />
                         <field name="workers" />
+                        <field name="operator_ids" widget="many2many_tags" />
                         <field name="startup" widget="float_time"/>
                         <field name="hour" widget="float_time"/>
                         <field name="total" />

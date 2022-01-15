@@ -74,7 +74,7 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
                 _('No parent production!'))
 
         # Create header:
-        stat_date = {
+        stats_data = {
                 'date': wiz_proxy.date,
                 'total': wiz_proxy.total,
                 'workers': wiz_proxy.workers,
@@ -82,19 +82,21 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
                 'startup': wiz_proxy.startup,
                 'mrp_id': mrp_id,
                 'workcenter_id': wiz_proxy.workcenter_id.id,
+                'operator_ids': [
+                    (6, 0, [o.id for o in wiz_proxy.operator_ids])],
                 }
         if update_mode_id:
             # New management:
-            stat_date.update({
+            stats_data.update({
                 'crono_stop': datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                 'working_done': True,
             })
 
             stats_pool.write(
-                cr, uid, [update_mode_id], stat_date, context=context)
+                cr, uid, [update_mode_id], stats_data, context=context)
             stat_id = update_mode_id
         else:
-            stat_id = stats_pool.create(cr, uid, stat_date, context=context)
+            stat_id = stats_pool.create(cr, uid, stats_data, context=context)
 
         # Create details:
         for line in wiz_proxy.detail_ids:

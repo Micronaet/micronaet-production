@@ -10,15 +10,18 @@
                    <header>
                        <button string="Cancel" special="cancel" />
                        <button name="action_create_mrp_production_stats" string="Create" type="object" icon="gtk-jump-to" class="oe_highlight"/>
-                   </header>              
+                   </header>
                    <group colspan="4" col="4">
                        <field name="mrp_id" readonly="1"/>
                        <field name="workcenter_id" />
                        <field name="date" />
                        <field name="total" />
-                       <field name="workers" />
                        <field name="hour" widget="float_time"/>
                        <field name="startup" widget="float_time"/>
+                       <field name="workers" />
+                       <newline/>
+                       <field name="operator_ids" widget="many2many_tags" colspan="4"/>
+
                        <separator string="Dettagli:" colspan="4"/>
                        <field name="detail_ids" colspan="4" nolabel="1">
                            <tree string="Dettagli" editable="bottom">
