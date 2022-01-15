@@ -121,6 +121,11 @@ class CreateMrpProductionStatsWizard(orm.TransientModel):
         'startup': fields.float('Start up time', digits=(16, 3)),
         'mrp_id': fields.many2one(
             'mrp.production', 'Production', ondelete='cascade'),
+        'operator_ids': fields.many2many(
+            'res.partner', 'mrp_operator_stats_wiz_rel',
+            'stat_id', 'partner_id',
+            'Operatore', domain="[('is_operator', '=', True)]",
+            context={'default_is_operator': True}),
         }
 
     _defaults = {

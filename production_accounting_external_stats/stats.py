@@ -33,6 +33,17 @@ from openerp.tools.translate import _
 _logger = logging.getLogger(__name__)
 
 
+class ResPartner(orm.Model):
+    """ Statistic data
+    """
+    _inherit = 'res.partner'
+
+    _columns = {
+        'is_operator': fields.boolean(
+            'Operatore', help='Operatore di produzione'),
+    }
+
+
 class MrpProductionStat(orm.Model):
     """ Statistic data
     """
@@ -58,8 +69,12 @@ class MrpProductionStat(orm.Model):
         'workcenter_id': fields.many2one(
             'mrp.workcenter', 'Line', required=True),
         'date': fields.date('Date', required=True),
-        'total': fields.integer('Total'),# Removed for line:, required=True),
+        'total': fields.integer('Total'),  # Removed for line:, required=True),
         'workers': fields.integer('Workers'),
+        'operator_ids': fields.many2many(
+            'res.partner', 'mrp_operator_stats_rel',
+            'stat_id', 'partner_id',
+            'Operatore'),
         'hour': fields.float('Tot. H'),
         'startup': fields.float('Start up time', digits=(16, 3)),
         'mrp_id': fields.many2one(

@@ -1,21 +1,41 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <!--res.partner-->
+        <!-- Inherit Form View to Modify it -->
+        <record id="view_partner_operator_form" model="ir.ui.view">
+            <field name="name">Operatori</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='is_address']" position="after">
+                    <field name="is_operator"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="view_partner_operator_action" model="ir.actions.act_window">
+            <field name="name">Operatori di produzione</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('is_operator', '=', True)]</field>
+        </record>
+
         <!--mrp.production.stats-->
         <record model="ir.ui.view" id="view_mrp_production_stats_mixed_search">
             <field name="name">MRP Stats mix</field>
             <field name="model">mrp.production.stats.mixed</field>
             <field name="arch" type="xml">
-                <search string="MRP search stat" version="7.0">        
+                <search string="MRP search stat" version="7.0">
                     <field name="production_id" filter_domain="[('production_id.name','ilike',self)]"/>
                     <field name="workcenter_id" filter_domain="[('workcenter_id.name','ilike',self)]"/>
-                    <filter name="current_lavoration" string="Current lavoration" 
+                    <filter name="current_lavoration" string="Current lavoration"
                         domain="[('date_planned','&gt;=', ((context_today()-datetime.timedelta(days=9)).strftime('%Y-%m-%d'))),('date_planned','&lt;=',context_today().strftime('%Y-%m-%d'))]" />
                     <group expand="0" string="Group By">
                         <filter name="group_production" string="Production" context="{'group_by': 'production_id'}"/>
                         <filter name="group_workcenter" string="Workcenter" context="{'group_by': 'workcenter_id'}"/>
                         <filter name="group_day" string="Day" context="{'group_by': 'date_planned:day'}"/>
-                    </group>                
+                    </group>
                  </search>
             </field>
         </record>
@@ -54,9 +74,9 @@
             <field name="context">{'search_default_current_lavoration':True}</field>
             <field name="domain">[]</field>
         </record>
-        <menuitem 
-            parent="mrp.menu_mrp_manufacturing" 
-            id="menu_mrp_production_stats_mixed" 
+        <menuitem
+            parent="mrp.menu_mrp_manufacturing"
+            id="menu_mrp_production_stats_mixed"
             action="action_mrp_production_stats_mixed"
             sequence="100"
             />
@@ -73,6 +93,7 @@
                             <field name="date" />
                             <field name="hour" widget="float_time"/>
                             <field name="workers" />
+                            <field name="operator_ids" />
                             <field name="startup" widget="float_time"/>
                             <field name="total" />
                             <separator string="Dettagli:" colspan="4"/>
@@ -81,10 +102,10 @@
                                     <field name="default_code" />
                                     <field name="qty" />
                                 </tree>
-                            </field>                        
-                        </group>    
-                     </sheet>   
-                </form>            
+                            </field>
+                        </group>
+                     </sheet>
+                </form>
             </field>
         </record>
         <record model="ir.ui.view" id="view_mrp_production_stats_tree">
@@ -98,10 +119,10 @@
                         <field name="startup" widget="float_time"/>
                         <field name="hour" widget="float_time"/>
                         <field name="total" />
-                </tree>            
+                </tree>
             </field>
         </record>
-        
+
         <record model="ir.ui.view" id="mrp_production_lavoration_form_view">
             <field name="name">Production lavoration stats</field>
             <field name="model">mrp.production</field>
@@ -113,14 +134,14 @@
                 </field>
             </field>
         </record>
-        
+
         <record model="ir.ui.view" id="mrp_production_lavoration_form_startup_view">
             <field name="name">Production stats startup</field>
             <field name="model">mrp.production</field>
             <field name="inherit_id" ref="production_accounting_external.default_mrp_production_form_view"/>
             <field name="arch" type="xml">
                 <field name="order_line_ids" position="before">
-                    <group colspan="4" col="6">                    
+                    <group colspan="4" col="6">
                         <button name="start_blocking_stats" string="Start" type="object" />
                         <button name="stop_blocking_stats" string="Stop" type="object" />
                         <field name="stat_start_total_text" readonly="1"/>
@@ -128,6 +149,8 @@
                 </field>
             </field>
         </record>
+
+        <menuitem id="menu_base_mrp_operator" name="Operatori" parent="production_accounting_external.menu_base_sale_order_root" action="view_partner_operator_action" sequence="90"/>
     </data>
 </openerp>
 
