@@ -20,11 +20,8 @@
                         <field name="workcenter_id" />
 
                         <field name="bom_id" />
-                        <field name="item_hour" />
-
                         <field name="workers" />
-                        <newline />
-                        <field name="operator_ids" colspan="4" />
+                        <field name="item_hour" />
 
                         <separator string="Note" colspan="4"/>
                         <field name="note" nolabel="1" colspan="4" />
