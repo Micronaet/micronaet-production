@@ -147,6 +147,10 @@ class MrpProductionStatMixed(osv.osv):
         'lavoration_qty': fields.float('Lavoration q.', readonly=True),
         'hour': fields.float('Tot. H.', readonly=True),
         'workers': fields.integer('Workers', readonly=True),
+        'operator_ids': fields.many2many(
+            'res.partner', 'mrp_operator_stats_mix_rel',
+            'stat_id', 'partner_id',
+            'Operatore'),
         'startup': fields.float('Startup', readonly=True),
 
         # sale.order.line:
