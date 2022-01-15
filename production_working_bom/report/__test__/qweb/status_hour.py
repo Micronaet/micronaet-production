@@ -6,7 +6,7 @@
 #    Italian OpenERP Community (<http://www.openerp-italia.com>)
 #
 #    ########################################################################
-#    OpenERP, Open Source Management Solution	
+#    OpenERP, Open Source Management Solution
 #    Copyright (C) 2004-2008 Tiny SPRL (<http://tiny.be>). All Rights Reserved
 #    $Id$
 #
@@ -25,23 +25,22 @@
 #
 ##############################################################################
 
-
 from openerp import api, models
 
+
 class ReportStatusHour(models.AbstractModel):
-    ''' Report parser status of hour
-    '''
+    """ Report parser status of hour
+    """
     _name = 'report.production_working_bom.report_status_hour'
 
-    
     # -------------------------------------------------------------------------
     # Render method:
     # -------------------------------------------------------------------------
-        
+
     @api.multi
     def render_html(self, data=None):
-        ''' Renter report action:
-        '''
+        """ Renter report action:
+        """
         # ---------------------------------------------------------------------
         # Set up private variables:
         # ---------------------------------------------------------------------
@@ -50,7 +49,7 @@ class ReportStatusHour(models.AbstractModel):
         self.minimum = {}
         self.table = {}
         self.counter = {} # counter dict
-        
+
         report_obj = self.env['report']
         report = report_obj._get_report_from_name(
             'production_working_bom.report_status_hour')
@@ -58,7 +57,7 @@ class ReportStatusHour(models.AbstractModel):
             'doc_ids': self._ids,
             'doc_model': report.model,
             'docs': self,
-            
+
             # Counters:
             'get_dict_counter': self.get_dict_counter,
             'set_dict_counter': self.set_dict_counter,
@@ -68,63 +67,64 @@ class ReportStatusHour(models.AbstractModel):
             'get_rows': self._get_rows,
             'get_cols': self._get_cols,
             'get_cel': self._get_cel,
-            'has_negative': self._has_negative,            
+            'has_negative': self._has_negative,
             }
         return report_obj.render(
-            'production_working_bom.report_status_hour', 
-            docargs, 
+            'production_working_bom.report_status_hour',
+            docargs,
             )
 
     # -------------------------------------------------------------------------
     # Counters methods:
     # -------------------------------------------------------------------------
-    
+
     def set_dict_counter(self, name, item=None, value=False):
-        ''' Set element of dict counter        
-        '''
+        """ Set element of dict counter
+        """
         if name not in self.counter:
             self.counter[name] = {}
-        
+
         if item is not None:
-            self.counter[name][item] = value # normal set
-        return 
+            self.counter[name][item] = value  # normal set
+        return
 
     def get_dict_counter(self, name, item=None, default=False):
-        ''' Reset element of counter        
-        '''
+        """ Reset element of counter
+        """
         if item is None:
             return self.counter[name]
-        else:        
+        else:
             return self.counter[name].get(item, default)
-        
+
     # -------------------------------------------------------------------------
     # Report methods:
     # -------------------------------------------------------------------------
     def _has_negative(self, row, data=None):
-        ''' ???
-        '''
-        return 
-        
+        """ ???
+        """
+        return
+
     def _startup(self, data=None):
-        ''' Master function for prepare report
-        '''
+        """ Master function for prepare report
+        """
         if data is None:
             data = {}
-                    
+
         # initialize globals:
         self.rows = []
         self.cols = []
         self.table = {}
         self.counters = {}
-        
+
         # Load production converter for get product code:
         production_pool = self.pool.get("mrp.production")
         production_ids = production_pool.search(self.env.cr, self.env.uid, [])
         production_converter = {}
-        for p in production_pool.browse(self.env.cr, self.env.uid, production_ids):
+        for p in production_pool.browse(
+                self.env.cr, self.env.uid, production_ids):
             production_converter[p.id] = p.product_id.default_code or "#NoCod"
-                
-        # Read cols elements:        
+
+        # Read cols elements:
         self.env.cr.execute("""
             SELECT DISTINCT left(CAST(date_planned AS TEXT), 10) as day
             FROM mrp_production_workcenter_line
@@ -133,10 +133,10 @@ class ReportStatusHour(models.AbstractModel):
         for day in self.env.cr.fetchall():
             day = day[0]
             self.cols.append(day[-5:]) # populare cols list
-            
+
             start = "%s 00:00:00" % day
             end = "%s 23:59:59" % day
-            
+
             self.env.cr.execute("""
                 SELECT rr.name, q.hour, q.workers, q.prod 
                 FROM (
@@ -157,7 +157,7 @@ class ReportStatusHour(models.AbstractModel):
             for record in self.env.cr.fetchall():
                 if record[0] not in self.rows:
                     self.rows.append(record[0])
-                    
+
                 k = (record[0], day[-5:]) # key for table elements
                 if k not in self.table:
                     # Set up initial value
@@ -170,25 +170,23 @@ class ReportStatusHour(models.AbstractModel):
                 self.table[k][0] += record[1] * record[2]
                 self.table[k][1] += record[1]
                 self.table[k][2].append(
-                    production_converter.get(record[3], "??")) # production_id > default_code
-                
-        self.rows.sort() # only row
+                    production_converter.get(record[3], "??"))
+                # production_id > default_code
+
+        self.rows.sort()  # only row
         return True
 
     def _get_rows(self):
-        ''' Rows list (generated by _start_up function)
-        '''
+        """ Rows list (generated by _start_up function)
+        """
         return self.rows
 
     def _get_cols(self):
-        ''' Cols list (generated by _start_up function)
-        '''
+        """ Cols list (generated by _start_up function)
+        """
         return self.cols
 
     def _get_cel(self, row, col):
-        ''' Return cell elements or empty one if not present
-        '''
+        """ Return cell elements or empty one if not present
+        """
         return self.table.get((row, col), [0, 0, []])
-            
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-

@@ -8,8 +8,9 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='is_address']" position="after">
+                <xpath expr="//field[@name='is_company']" position="before">
                     <field name="is_operator"/>
+                    <label for="is_operator"/>
                 </xpath>
             </field>
         </record>
