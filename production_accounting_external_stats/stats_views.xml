@@ -62,7 +62,7 @@
                     <field name="maked_qty" />
 
                     <field name="workers" />
-                    <field name="operator_ids" widget="many2many_tags"/>
+                    <!--<field name="operator_ids" widget="many2many_tags"/>-->
 
                     <!--<field name="name" />-->
                     <!--<field name="lavoration_qty" />-->
