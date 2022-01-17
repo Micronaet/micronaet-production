@@ -541,7 +541,7 @@ class MrpProductionStatsMixed(orm.Model):
                 WS.set_column('A:C', 10)
                 WS.set_column('D:D', 20)
                 WS.set_column('E:I', 10)
-                WS.set_column('J:J', 60)
+                WS.set_column('J:K', 60)
 
                 WS_month[mrp_line] = [
                     WS,
