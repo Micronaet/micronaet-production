@@ -402,8 +402,8 @@ class MrpProductionStatsMixed(orm.Model):
         WS = WB.add_worksheet('Settimanali')
         WS.set_column('A:A', 12)
         WS.set_column('B:D', 15)
-        WS.set_column('E:I', 8)
-        WS.set_column('J:K', 60)
+        WS.set_column('E:J', 8)
+        WS.set_column('K:M', 60)
 
         # Write title row:
         row = 0
@@ -424,8 +424,9 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 6, _('Tot. pezzi'), xls_format['header'])
         WS.write(row, 7, _('Tempo'), xls_format['header'])
         WS.write(row, 8, _('Delta t.'), xls_format['header'])
-        WS.write(row, 9, _('Dettaglio medie'), xls_format['header'])
-        WS.write(row, 10, _('Dettaglio'), xls_format['header'])
+        WS.write(row, 9, _('Dettaglio lav.'), xls_format['header'])
+        WS.write(row, 10, _('Dettaglio medie'), xls_format['header'])
+        WS.write(row, 11, _('Dettaglio'), xls_format['header'])
 
         # Write data:
         cell_format = xls_format['text']
@@ -458,6 +459,8 @@ class MrpProductionStatsMixed(orm.Model):
                             cell_number_format = xls_format[
                                 'text_number_total']
 
+                        worker_list = ', '.join(
+                            [w.name for w in line.operators_ids])
                         WS.write(row, 2, line.production_id.name, cell_format)
                         WS.write(row, 3, line.product_id.name, cell_format)
                         WS.write(row, 4, line.workers, cell_format)
@@ -470,10 +473,11 @@ class MrpProductionStatsMixed(orm.Model):
                             line.hour)
                         delta = '/' if delta == False else format_hour(delta)
                         WS.write(row, 8, delta, cell_number_format)
-                        WS.write(row, 9, delta_comment, cell_format)
+                        WS.write(row, 9, worker_list, cell_format)
+                        WS.write(row, 10, delta_comment, cell_format)
 
                         WS.write(
-                            row, 10, clean_extra_detail(detail), cell_format)
+                            row, 11, clean_extra_detail(detail), cell_format)
 
                     # Common part:
                     WS.write(
