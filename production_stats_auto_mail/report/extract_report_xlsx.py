@@ -201,6 +201,8 @@ class MrpProductionStatsMixed(orm.Model):
         # Statistic 20 days page:
         now_20 = (datetime.now() - timedelta(days=20)).strftime(
             DEFAULT_SERVER_DATE_FORMAT)
+        now_6_month = (datetime.now() - timedelta(days=180)).strftime(
+            DEFAULT_SERVER_DATE_FORMAT)
 
         # ---------------------------------------------------------------------
         #                           Excel file:
@@ -424,7 +426,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 6, _('Tot. pezzi'), xls_format['header'])
         WS.write(row, 7, _('Tempo'), xls_format['header'])
         WS.write(row, 8, _('Delta t.'), xls_format['header'])
-        WS.write(row, 9, _('Dettaglio lav.'), xls_format['header'])
+        # WS.write(row, 9, _('Dettaglio lav.'), xls_format['header'])
         WS.write(row, 10, _('Dettaglio medie'), xls_format['header'])
         WS.write(row, 11, _('Dettaglio'), xls_format['header'])
 
@@ -459,8 +461,8 @@ class MrpProductionStatsMixed(orm.Model):
                             cell_number_format = xls_format[
                                 'text_number_total']
 
-                        worker_list = ', '.join(
-                            [w.name for w in line.operators_ids])
+                        # worker_list = ', '.join(
+                        #    [w.name for w in line.operators_ids])
                         WS.write(row, 2, line.production_id.name, cell_format)
                         WS.write(row, 3, line.product_id.name, cell_format)
                         WS.write(row, 4, line.workers, cell_format)
@@ -473,11 +475,11 @@ class MrpProductionStatsMixed(orm.Model):
                             line.hour)
                         delta = '/' if delta == False else format_hour(delta)
                         WS.write(row, 8, delta, cell_number_format)
-                        WS.write(row, 9, worker_list, cell_format)
-                        WS.write(row, 10, delta_comment, cell_format)
+                        # WS.write(row, 9, worker_list, cell_format)
+                        WS.write(row, 9, delta_comment, cell_format)
 
                         WS.write(
-                            row, 11, clean_extra_detail(detail), cell_format)
+                            row, 10, clean_extra_detail(detail), cell_format)
 
                     # Common part:
                     WS.write(
@@ -515,49 +517,67 @@ class MrpProductionStatsMixed(orm.Model):
             x.mrp_id.name,  # Data
             )
 
-        # Setup columns:
-        WS = WB.add_worksheet('Dettaglio 20 gg.')
-        WS.set_column('A:C', 10)
-        WS.set_column('D:D', 20)
-        WS.set_column('E:I', 10)
-        WS.set_column('J:J', 60)
-
         # ---------------------------------------------------------------------
         # Collect data:
         # ---------------------------------------------------------------------
         line_ids = line_pool.search(cr, uid, [
-            ('date', '>=', now_20),
+            ('date', '>=', now_6_month),
             ], context=context)
 
-        # Title row:
-        row = 0
-        WS.write(
-            row, 0,
-            'Dettaglio statistiche (ultimi 20 gg.)',
-            xls_format['title'],
-            )
-
-        # Header line:
-        row += 2
-        WS.write(row, 0, _('Linea'), xls_format['header'])
-        WS.write(row, 1, _('Data'), xls_format['header'])
-        WS.write(row, 2, _('Num. prod.'), xls_format['header'])
-        WS.write(row, 3, _('Famiglia'), xls_format['header'])
-        WS.write(row, 4, _('Lavoratori'), xls_format['header'])
-        WS.write(row, 5, _('Appront.'), xls_format['header'])
-        WS.write(row, 6, _('Tot. pezzi'), xls_format['header'])
-        WS.write(row, 7, _('Tempo'), xls_format['header'])
-        WS.write(row, 8, _('Pz / H'), xls_format['header'])
-        WS.write(row, 9, _('Dettaglio'), xls_format['header'])
-        WS.autofilter(row, 0, row, 5)  # Till columns 6
-
-        # Setup again:
-        cell_format = xls_format['text']
-        cell_number_format = xls_format['text_number_today']
+        WS_month = {}
         for line in sorted(
                 line_pool.browse(cr, uid, line_ids, context=context),
                 key=sort_key):
-            row += 1
+            mrp_line = line.workcenter_id.name
+            if mrp_line in WS_month:
+                WS = WS_month[mrp_line][0]
+            else:
+                # -------------------------------------------------------------
+                # Create WS for line:
+                # -------------------------------------------------------------
+                WS = WB.add_worksheet('Dett. %s' % mrp_line)
+
+                # Setup columns:
+                WS.set_column('A:C', 10)
+                WS.set_column('D:D', 20)
+                WS.set_column('E:I', 10)
+                WS.set_column('J:J', 60)
+
+                WS_month[mrp_line] = [
+                    WS,
+                    0,
+                ]
+
+                # Title row:
+                WS.write(
+                    WS_month[mrp_line][1], 0,
+                    'Dettaglio statistiche %s (ultimi 180 gg.)' % mrp_line,
+                    xls_format['title'],
+                    )
+
+                # Header line:
+                WS_month[mrp_line][1] += 2
+                row = WS_month[mrp_line][1]
+                WS.write(row, 0, _('Linea'), xls_format['header'])
+                WS.write(row, 1, _('Data'), xls_format['header'])
+                WS.write(row, 2, _('Num. prod.'), xls_format['header'])
+                WS.write(row, 3, _('Famiglia'), xls_format['header'])
+                WS.write(row, 4, _('Lavoratori'), xls_format['header'])
+                WS.write(row, 5, _('Appront.'), xls_format['header'])
+                WS.write(row, 6, _('Tot. pezzi'), xls_format['header'])
+                WS.write(row, 7, _('Tempo'), xls_format['header'])
+                WS.write(row, 8, _('Pz / H'), xls_format['header'])
+                WS.write(row, 9, _('Dett. operatori'), xls_format['header'])
+                WS.write(row, 10, _('Dett. prod.'), xls_format['header'])
+                WS.autofilter(row, 0, row, 5)  # Till columns 6
+                WS.freeze_panes(3, 1)
+
+                # Setup again:
+                cell_format = xls_format['text']
+                cell_number_format = xls_format['text_number_today']
+
+            WS_month[mrp_line][1] += 1
+            row = WS_month[mrp_line][1]
 
             # Key data:
             data = {  # last key, last row
@@ -565,6 +585,9 @@ class MrpProductionStatsMixed(orm.Model):
                 'date': format_date(line.date),
                 'family': line.mrp_id.bom_id.product_tmpl_id.name,
                 }
+
+            worker_list = ', '.join(
+                [w.name for w in line.operator_ids])
 
             WS.write(row, 0, data['line'], cell_format)
             WS.write(row, 1, data['date'], cell_format)
@@ -577,7 +600,8 @@ class MrpProductionStatsMixed(orm.Model):
             WS.write(
                 row, 8, line.total / line.hour if line.hour else '#ERR',
                 cell_number_format)
-            WS.write(row, 9, line.total_text_detail, cell_format)
+            WS.write(row, 9, worker_list, cell_format)
+            WS.write(row, 10, line.total_text_detail, cell_format)
 
         # ---------------------------------------------------------------------
         #                   EXCEL: SHEET 2 Today statistic:
