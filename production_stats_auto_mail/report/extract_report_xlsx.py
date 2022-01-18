@@ -404,8 +404,8 @@ class MrpProductionStatsMixed(orm.Model):
         WS = WB.add_worksheet('Settimanali')
         WS.set_column('A:A', 12)
         WS.set_column('B:D', 15)
-        WS.set_column('E:J', 8)
-        WS.set_column('K:M', 60)
+        WS.set_column('E:I', 8)
+        WS.set_column('J:M', 60)
 
         # Write title row:
         row = 0
