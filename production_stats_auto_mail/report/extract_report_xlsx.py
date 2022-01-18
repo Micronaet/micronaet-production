@@ -565,9 +565,10 @@ class MrpProductionStatsMixed(orm.Model):
                 WS.write(row, 5, _('Appront.'), xls_format['header'])
                 WS.write(row, 6, _('Tot. pezzi'), xls_format['header'])
                 WS.write(row, 7, _('Tempo'), xls_format['header'])
-                WS.write(row, 8, _('Pz / H'), xls_format['header'])
-                WS.write(row, 9, _('Dett. operatori'), xls_format['header'])
-                WS.write(row, 10, _('Dett. prod.'), xls_format['header'])
+                WS.write(row, 8, _('Delta t.'), xls_format['header'])
+                WS.write(row, 9, _('Pz / H'), xls_format['header'])
+                WS.write(row, 10, _('Dett. operatori'), xls_format['header'])
+                WS.write(row, 11, _('Dett. prod.'), xls_format['header'])
                 WS.autofilter(row, 0, row, 5)  # Till columns 6
                 WS.freeze_panes(3, 1)
 
@@ -588,6 +589,9 @@ class MrpProductionStatsMixed(orm.Model):
             worker_list = ', '.join(
                 [w.name for w in line.operator_ids])
 
+            delta_comment, delta = extract_delta(
+                line.workers, clean_data, line.total_text_detail,
+                line.hour)
             WS.write(row, 0, data['line'], cell_format)
             WS.write(row, 1, data['date'], cell_format)
             WS.write(row, 2, line.mrp_id.name, cell_format)
@@ -596,12 +600,15 @@ class MrpProductionStatsMixed(orm.Model):
             WS.write(row, 5, format_hour(line.startup), cell_format)
             WS.write(row, 6, line.total, cell_number_format)
             WS.write(row, 7, format_hour(line.hour), cell_format)
-            WS.write(
-                row, 8, line.total / line.hour if line.hour else '#ERR',
-                cell_number_format)
-            WS.write(row, 9, worker_list, cell_format)
-            WS.write(row, 10, line.total_text_detail, cell_format)
+            WS.write(row, 8, format_hour(delta), cell_format)
 
+            WS.write(
+                row, 9, line.total / line.hour if line.hour else '#ERR',
+                cell_number_format)
+
+            WS.write(row, 10, worker_list, cell_format)
+            WS.write(row, 11, line.total_text_detail, cell_format)
+            pdb.set_trace()
         # ---------------------------------------------------------------------
         #                   EXCEL: SHEET 2 Today statistic:
         # ---------------------------------------------------------------------
