@@ -608,7 +608,7 @@ class MrpProductionStatsMixed(orm.Model):
 
             WS.write(row, 10, worker_list, cell_format)
             WS.write(row, 11, line.total_text_detail, cell_format)
-            pdb.set_trace()
+
         # ---------------------------------------------------------------------
         #                   EXCEL: SHEET 2 Today statistic:
         # ---------------------------------------------------------------------
