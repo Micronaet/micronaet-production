@@ -592,6 +592,10 @@ class MrpProductionStatsMixed(orm.Model):
             delta_comment, delta = extract_delta(
                 line.workers, clean_data, line.total_text_detail,
                 line.hour)
+            if delta > 0.50:
+                cell_format = xls_format['text_red']
+            else:
+                cell_format = xls_format['text']
             WS.write(row, 0, data['line'], cell_format)
             WS.write(row, 1, data['date'], cell_format)
             WS.write(row, 2, line.mrp_id.name, cell_format)
