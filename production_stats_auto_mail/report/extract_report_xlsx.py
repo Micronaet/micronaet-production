@@ -427,8 +427,8 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 7, _('Tempo'), xls_format['header'])
         WS.write(row, 8, _('Delta t.'), xls_format['header'])
         # WS.write(row, 9, _('Dettaglio lav.'), xls_format['header'])
-        WS.write(row, 10, _('Dettaglio medie'), xls_format['header'])
-        WS.write(row, 11, _('Dettaglio'), xls_format['header'])
+        WS.write(row, 9, _('Dettaglio medie'), xls_format['header'])
+        WS.write(row, 10, _('Dettaglio'), xls_format['header'])
 
         # Write data:
         cell_format = xls_format['text']
@@ -477,7 +477,6 @@ class MrpProductionStatsMixed(orm.Model):
                         WS.write(row, 8, delta, cell_number_format)
                         # WS.write(row, 9, worker_list, cell_format)
                         WS.write(row, 9, delta_comment, cell_format)
-
                         WS.write(
                             row, 10, clean_extra_detail(detail), cell_format)
 
@@ -527,7 +526,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS_month = {}
         for line in sorted(
                 line_pool.browse(cr, uid, line_ids, context=context),
-                key=sort_key):
+                key=sort_key, reverse=True):
             mrp_line = line.workcenter_id.name
             if mrp_line in WS_month:
                 WS = WS_month[mrp_line][0]
