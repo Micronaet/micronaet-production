@@ -627,9 +627,14 @@ class MrpProductionStatsMixed(orm.Model):
                 cell = xl_rowcol_to_cell(row, 4)
                 WS.write_comment(cell, worker_list, parameters)
 
+            # Production:
+            if line.total_text_detail:
+                cell = xl_rowcol_to_cell(row, 6)
+                WS.write_comment(cell, line.total_text_detail, parameters)
+
             # Time:
             if delta_comment:
-                cell = xl_rowcol_to_cell(row, 8)
+                cell = xl_rowcol_to_cell(row, 9)
                 WS.write_comment(cell, delta_comment, parameters)
 
         # ---------------------------------------------------------------------
