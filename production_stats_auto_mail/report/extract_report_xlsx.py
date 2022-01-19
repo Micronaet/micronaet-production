@@ -623,12 +623,14 @@ class MrpProductionStatsMixed(orm.Model):
             # Comment:
             # -----------------------------------------------------------------
             # Workers:
-            cell = xl_rowcol_to_cell(row, 4)
-            WS.write_comment(cell, worker_list, parameters)
+            if worker_list:
+                cell = xl_rowcol_to_cell(row, 4)
+                WS.write_comment(cell, worker_list, parameters)
 
             # Time:
-            cell = xl_rowcol_to_cell(row, 8)
-            WS.write_comment(cell, delta_comment, parameters)
+            if delta_comment:
+                cell = xl_rowcol_to_cell(row, 8)
+                WS.write_comment(cell, delta_comment, parameters)
 
         # ---------------------------------------------------------------------
         #                   EXCEL: SHEET 2 Today statistic:
