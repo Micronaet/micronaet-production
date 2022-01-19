@@ -169,6 +169,7 @@ class MrpProductionStatsMixed(orm.Model):
         if context is None:
             context = {}
 
+        delta_gap_alarm = 0.50
         # Load statistic data form stored history (not from medium)
         history_pool = self.pool.get('mrp.worker.stats.history')
         clean_data = {}
@@ -569,12 +570,12 @@ class MrpProductionStatsMixed(orm.Model):
                 WS.write(row, 9, _('Pz / H'), xls_format['header'])
                 WS.write(row, 10, _('Dett. operatori'), xls_format['header'])
                 WS.write(row, 11, _('Dett. prod.'), xls_format['header'])
+                WS.write(row, 12, _('Dett. medie'), xls_format['header'])
                 WS.autofilter(row, 0, row, 5)  # Till columns 6
                 WS.freeze_panes(3, 1)
 
                 # Setup again:
                 cell_format = xls_format['text']
-                cell_number_format = xls_format['text_number_today']
 
             WS_month[mrp_line][1] += 1
             row = WS_month[mrp_line][1]
@@ -592,10 +593,11 @@ class MrpProductionStatsMixed(orm.Model):
             delta_comment, delta = extract_delta(
                 line.workers, clean_data, line.total_text_detail,
                 line.hour)
-            if delta > 0.50:
-                cell_format = xls_format['text_red']
+            if delta > delta_gap_alarm:
+                cell_number_format = xls_format['text_number_red']
             else:
-                cell_format = xls_format['text']
+                cell_number_format = xls_format['text_number_today']
+
             WS.write(row, 0, data['line'], cell_format)
             WS.write(row, 1, data['date'], cell_format)
             WS.write(row, 2, line.mrp_id.name, cell_format)
@@ -612,6 +614,7 @@ class MrpProductionStatsMixed(orm.Model):
 
             WS.write(row, 10, worker_list, cell_format)
             WS.write(row, 11, line.total_text_detail, cell_format)
+            WS.write(row, 12, delta_comment, cell_format)
 
         # ---------------------------------------------------------------------
         #                   EXCEL: SHEET 2 Today statistic:
