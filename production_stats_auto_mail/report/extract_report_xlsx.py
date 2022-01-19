@@ -22,6 +22,7 @@ import sys
 import logging
 import openerp
 import xlsxwriter
+from xlsxwriter.utility import xl_rowcol_to_cell
 import openerp.netsvc as netsvc
 import openerp.addons.decimal_precision as dp
 from openerp.osv import fields, osv, expression, orm
@@ -208,6 +209,8 @@ class MrpProductionStatsMixed(orm.Model):
         # ---------------------------------------------------------------------
         #                           Excel file:
         # ---------------------------------------------------------------------
+        parameters = {'width': 300, }
+
         # A. Create file:
         filename = '/tmp/send_stats_mrp_report.xlsx'
         _logger.info('Temp file: %s' % filename)
@@ -615,6 +618,17 @@ class MrpProductionStatsMixed(orm.Model):
             WS.write(row, 10, worker_list, cell_format)
             WS.write(row, 11, line.total_text_detail, cell_format)
             WS.write(row, 12, delta_comment, cell_format)
+
+            # -----------------------------------------------------------------
+            # Comment:
+            # -----------------------------------------------------------------
+            # Workers:
+            cell = self.rowcol_to_cell(row, 4)
+            WS.write_comment(cell, worker_list, parameters)
+
+            # Time:
+            cell = self.rowcol_to_cell(row, 8)
+            WS.write_comment(cell, delta_comment, parameters)
 
         # ---------------------------------------------------------------------
         #                   EXCEL: SHEET 2 Today statistic:
