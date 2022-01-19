@@ -623,11 +623,11 @@ class MrpProductionStatsMixed(orm.Model):
             # Comment:
             # -----------------------------------------------------------------
             # Workers:
-            cell = rowcol_to_cell(row, 4)
+            cell = xl_rowcol_to_cell(row, 4)
             WS.write_comment(cell, worker_list, parameters)
 
             # Time:
-            cell = rowcol_to_cell(row, 8)
+            cell = xl_rowcol_to_cell(row, 8)
             WS.write_comment(cell, delta_comment, parameters)
 
         # ---------------------------------------------------------------------
