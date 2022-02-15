@@ -40,7 +40,7 @@
                                    <field name="from_date" />
                                    <field name="to_date" />
                                    <separator string="Parametri:" colspan="4"/>
-                                   <field name="date_formatted" />
+                                   <!--<field name="date_formatted" />-->
                                    <field name="sort" />
                                </group>
                            </page>

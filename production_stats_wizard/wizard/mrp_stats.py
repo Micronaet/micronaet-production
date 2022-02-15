@@ -420,7 +420,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         from_date = wiz_browse.from_date
         to_date = wiz_browse.to_date
         sort = wiz_browse.sort
-        date_formatted = wiz_browse.date_formatted
+        date_formatted = False  # todo wiz_browse.date_formatted
         # wc_id = wiz_browse.workcenter_id.id
 
         if sort == 'line':
