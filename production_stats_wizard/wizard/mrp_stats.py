@@ -541,10 +541,11 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             date_dt = datetime.strptime(line.date, DEFAULT_SERVER_DATE_FORMAT)
             dow = day_of_week.get(date_dt.isoweekday(), '?')
 
+            total_text_detail = line.total_text_detail or ''
             excel_pool.write_xls_line(ws_name, row, [
                 data['line'],
                 data['date'],
-
+                dow,
                 line.mrp_id.name,
                 data['family'],
                 line.workers,
@@ -552,6 +553,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 (line.total, f_number),
                 (line_hour, f_number),
                 (line.total / line.hour if line.hour else '#ERR', f_number),
+                total_text_detail.count(']'),
                 line.total_text_detail or ''
                 ], f_text)
 
