@@ -505,7 +505,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             _('Dettaglio')
             ]
         excel_pool.write_xls_line(ws_name, row, title_block, f_header)
-        excel_pool.autofilter(ws_name, row, 1, row, len(title_block) - 1)
+        excel_pool.autofilter(ws_name, row, 0, row, len(title_block) - 1)
         # Write data:
         # XXX Part for break code in report:
         # break_code = {
