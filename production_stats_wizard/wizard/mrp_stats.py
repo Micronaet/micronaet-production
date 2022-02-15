@@ -387,6 +387,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
     _columns = {
         'from_date': fields.date('From date >='),
         'to_date': fields.date('To date <'),
+        'date_formatted': fields.boolean('Ora formattata'),
         'sort': fields.selection([
             ('line', 'Line-Family-Date'),
             ('family', 'Family-Line-Date'),
@@ -403,12 +404,23 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         if context is None:
             context = {}
 
+        day_of_week = {
+            0: 'Dom.',
+            1: 'Lun.',
+            2: 'Mar.',
+            3: 'Mer.',
+            4: 'Gio.',
+            5: 'Ven.',
+            6: 'Sab.',
+            7: 'Dom.',
+        }
         wiz_browse = self.browse(cr, uid, ids, context=context)[0]
 
         # Parameters:
         from_date = wiz_browse.from_date
         to_date = wiz_browse.to_date
         sort = wiz_browse.sort
+        date_formatted = wiz_browse.date_formatted
         # wc_id = wiz_browse.workcenter_id.id
 
         if sort == 'line':
@@ -444,7 +456,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
 
         # Setup columns:
         excel_pool.column_width(ws_name, [
-            10, 10, 10, 20, 10, 10, 10, 10, 10, 60,
+            10, 10, 10, 10, 20, 10, 10, 10, 10, 10, 5, 60,
             ])
 
         # ---------------------------------------------------------------------
@@ -481,6 +493,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         excel_pool.write_xls_line(ws_name, row, [
             _('Linea'),
             _('Data'),
+            _('DoW'),
             _('Num. prod.'),
             _('Famiglia'),
             _('Lavoratori'),
@@ -488,6 +501,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             _('Tot. pezzi'),
             _('Tempo'),
             _('Pz / H'),
+            _('# Dett.'),
             _('Dettaglio')
             ], f_header)
 
@@ -519,15 +533,23 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             #    else: # not wrote:
             #        data[key] = '' # Not wrote
 
+            if date_formatted:
+                line_hour = excel_pool.format_hour(line.hour)
+            else:
+                line_hour = line.hour
+            date_dt = datetime.strptime(line.date, DEFAULT_SERVER_DATE_FORMAT)
+            dow = day_of_week.get(date_dt.isoweekday(), '?')
+
             excel_pool.write_xls_line(ws_name, row, [
                 data['line'],
                 data['date'],
+
                 line.mrp_id.name,
                 data['family'],
                 line.workers,
                 (excel_pool.format_hour(line.startup), f_number),
                 (line.total, f_number),
-                (excel_pool.format_hour(line.hour), f_number),
+                (line_hour, f_number),
                 (line.total / line.hour if line.hour else '#ERR', f_number),
                 line.total_text_detail or ''
                 ], f_text)

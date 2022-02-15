@@ -39,7 +39,8 @@
                                    <separator string="Filter:" colspan="4"/>
                                    <field name="from_date" />
                                    <field name="to_date" />
-                                   <separator string="Sorting:" colspan="4"/>
+                                   <separator string="Parametri:" colspan="4"/>
+                                   <field name="date_formatted" />
                                    <field name="sort" />
                                </group>
                            </page>
