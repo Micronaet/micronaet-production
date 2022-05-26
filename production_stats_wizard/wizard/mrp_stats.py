@@ -544,7 +544,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         # Detail sheet:
         # ---------------------------------------------------------------------
-        ws_name = 'Dettaglio per controli'
+        ws_name = 'Dettaglio per controlli'
         excel_pool.create_worksheet(ws_name)
 
         # Title row:
@@ -567,7 +567,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             'H.',
             ]
         excel_pool.write_xls_line(ws_name, row, header, f_header)
-        excel_pool.autofilter(ws_name, row, 0, row, 1)
+        excel_pool.autofilter(ws_name, row, 0, row, len(header))
 
         # Setup columns:
         excel_pool.column_width(ws_name, [
