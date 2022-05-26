@@ -394,7 +394,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             if not total:
                 return '0:00'
             min = int(total)
-            sec = int(60.0 (total - min))
+            sec = int(60.0 * (total - min))
             return '%s:%0d' % (min, sec)
 
         if context is None:
