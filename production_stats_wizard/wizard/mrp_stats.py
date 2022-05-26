@@ -470,7 +470,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         data = {}
         for record in line_pool.browse(cr, uid, line_ids, context=context):
             mrp = record.mrp_id
-            if not record.mrp_id.line_ids:
+            if not record.line_ids:
                 _logger.warning('Production stats %s with no data' % mrp.name)
                 continue
 
