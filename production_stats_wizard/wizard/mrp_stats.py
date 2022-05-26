@@ -447,7 +447,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             'Tot. Pezzi',
             'Tot. H./uomo',
             'm(x) H./uomo',
-            'H. per 1 pz',
+            'Min x 1 pz',
             ]
         excel_pool.write_xls_line(ws_name, row, header, f_header)
         excel_pool.autofilter(ws_name, row, 0, row, 1)
@@ -505,7 +505,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 pz_hour = '/'
 
             if total:
-                hour_pz = hour / total
+                hour_pz = (hour / total) * 60.0
             else:
                 hour_pz = '/'
 
@@ -513,8 +513,8 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 default_code,
                 (int(total), f_text_right),
                 (hour, f_number),
-                (int(round(pz_hour, 0)), f_text_right),
-                (int(round(hour_pz, 0)), f_text_right),
+                (round(pz_hour, 0), f_text_right),
+                (round(hour_pz, 2), f_text_right),
                 ], f_text)
 
         attachment = excel_pool.return_attachment(
