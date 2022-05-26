@@ -468,23 +468,26 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         excel_pool.freeze_panes(ws_name, row + 1, 0)
 
         data = {}
+        detail_data = []
         for record in line_pool.browse(cr, uid, line_ids, context=context):
             mrp = record.mrp_id
+            mrp_name = mrp.name
             if not record.line_ids:
-                _logger.warning('Production stats %s with no data' % mrp.name)
+                _logger.warning('Production stats %s with no data' % mrp_name)
                 continue
 
             workers = int(record.workers)
             if not workers:
                 _logger.warning('Production stats %s with no workers' %
-                                mrp.name)
+                                mrp_name)
                 continue
 
             total = record.total  # Total piece for a day of work
-            hour = record.hour * workers
+            mrp_hour = record.hour
+            hour = mrp_hour * workers
             if not hour:
                 # Not time so no medium data
-                _logger.warning('Prod. stats %s without duration' % mrp.name)
+                _logger.warning('Prod. stats %s without duration' % mrp_name)
                 continue
 
             medium_rate = hour / total  # Media ponderata sulle q. prod.
@@ -499,8 +502,20 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                     ]
 
                 # Update total:
+                medium_duration = qty * medium_rate
                 data[default_code][0] += qty
-                data[default_code][1] += qty * medium_rate
+                data[default_code][1] += medium_duration
+
+                detail_data.append([
+                    mrp_name,
+                    total,  # PZ Mrp
+                    mrp_hour,  # Hour MRP
+                    hour,  # Hour / man
+                    workers,
+                    default_code,
+                    qty,
+                    medium_duration,
+                ])
 
         # ---------------------------------------------------------------------
         # Write data line:
@@ -525,6 +540,45 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 (round(pz_hour, 0), f_text_right),
                 (get_min_sec(hour_pz), f_text_right),
                 ], f_text)
+
+        # ---------------------------------------------------------------------
+        # Detail sheet:
+        # ---------------------------------------------------------------------
+        ws_name = 'Dettaglio per controli'
+        excel_pool.create_worksheet(ws_name)
+
+        # Title row:
+        row = 0
+        excel_pool.write_xls_line(ws_name, row, [
+            _('Dettaglio per controlli medie prodotti '
+              '[codice a %s car.]: %s') % (code_limit, wiz_filter),
+            ], f_title)
+
+        # Write Header line:
+        row += 1
+        header = [
+            'MRP',
+            'MRP pz'
+            'MRP H.' % code_limit,
+            'MRP H./uomo',
+            'MRP Lavor.',
+            'Codice',
+            'Q.',
+            'H.',
+            ]
+        excel_pool.write_xls_line(ws_name, row, header, f_header)
+        excel_pool.autofilter(ws_name, row, 0, row, 1)
+
+        # Setup columns:
+        excel_pool.column_width(ws_name, [
+            20, 10, 10, 10, 10,
+            18, 10, 10,
+            ])
+        excel_pool.freeze_panes(ws_name, row + 1, 5)
+
+        for record in sorted(detail_data):
+            row += 1
+            excel_pool.write_xls_line(ws_name, row, record, f_text)
 
         attachment = excel_pool.return_attachment(
                 cr, uid, 'Statistiche per costi produzione', context=context)
