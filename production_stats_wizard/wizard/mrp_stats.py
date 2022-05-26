@@ -558,7 +558,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         row += 1
         header = [
             'MRP',
-            'MRP pz'
+            'MRP pz',
             'MRP H.',
             'MRP H./uomo',
             'MRP Lavor.',
