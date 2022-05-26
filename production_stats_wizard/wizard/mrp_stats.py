@@ -470,7 +470,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         data = {}
         for record in line_pool.browse(cr, uid, line_ids, context=context):
             mrp = record.mrp_id
-            if not record.line_ids:
+            if not record.mrp_id.line_ids:
                 _logger.warning('Production stats %s with no data' % mrp.name)
                 continue
 
@@ -480,14 +480,14 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                                 mrp.name)
                 continue
 
-            total = record.total
+            total = record.total  # Total piece for a day of work
             hour = record.hour * workers
             if not hour:
                 # Not time so no medium data
                 _logger.warning('Prod. stats %s without duration' % mrp.name)
                 continue
 
-            medium_rate = total / hour  # Media ponderata sulle sotto prod.
+            medium_rate = hour / total  # Media ponderata sulle q. prod.
             for product_line in record.line_ids:
                 default_code = product_line.default_code[
                                :code_limit].strip().upper()
@@ -500,7 +500,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
 
                 # Update total:
                 data[default_code][0] += qty
-                data[default_code][1] += hour * medium_rate
+                data[default_code][1] += qty * medium_rate
 
         # ---------------------------------------------------------------------
         # Write data line:
