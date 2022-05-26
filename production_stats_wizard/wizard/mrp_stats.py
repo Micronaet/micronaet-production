@@ -384,6 +384,143 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         else:
             return attachment
 
+    def action_industrial_cost_print(self, cr, uid, ids, context=None):
+        """ Event stats print
+            context > collect_data for get only dict collected
+        """
+        if context is None:
+            context = {}
+
+        # Pool used:
+        excel_pool = self.pool.get('excel.writer')
+        line_pool = self.pool.get('mrp.production.stats')
+
+        wizard = self.browse(cr, uid, ids, context=context)[0]
+
+        # ---------------------------------------------------------------------
+        #                           CREATE EXCEL FILE:
+        # ---------------------------------------------------------------------
+        code_limit = 5  # todo Max code char
+        ws_name = _('Statistica per costi DB')
+        excel_pool.create_worksheet(ws_name)
+        excel_pool.set_format()
+
+        # Format type:
+        f_title = excel_pool.get_format('title')
+        f_header = excel_pool.get_format('header')
+        f_text = excel_pool.get_format('text')
+        f_text_right = excel_pool.get_format('text_right')
+        f_text_right_green = excel_pool.get_format('text_right_green')
+        f_text_right_red = excel_pool.get_format('text_right_red')
+        f_number = excel_pool.get_format('number')
+
+        # ---------------------------------------------------------------------
+        # Collect data:
+        # ---------------------------------------------------------------------
+        from_date = wizard.from_date
+        to_date = wizard.to_date
+
+        # Domain depend on wizard parameters:
+        domain = []
+        wiz_filter = ''
+        if from_date:
+            domain.append(('date', '>=', from_date))
+            wiz_filter += 'Dalla data: %s ' % excel_pool.format_date(
+                from_date)
+        if to_date:
+            domain.append(('date', '<', to_date))
+            wiz_filter += 'Alla data: %s ' % excel_pool.format_date(to_date)
+        wiz_filter = wiz_filter or 'Tutti'
+        line_ids = line_pool.search(cr, uid, domain, context=context)
+
+        # Title row:
+        row = 0
+        excel_pool.write_xls_line(ws_name, row, [
+            _('Statistiche di produzione, medie prodotti '
+              '[codice a %s car.]: %s') % (code_limit, wiz_filter),
+            ], f_title)
+
+        # Write Header line:
+        row += 2
+        header = [
+            'Codice [%s]' % code_limit,
+            'Tot. Pezzi',
+            'Tot. H./uomo',
+            'm(x) H./uomo',
+            'H. per 1 pz',
+            ]
+        excel_pool.write_xls_line(ws_name, row, header, f_header)
+        excel_pool.autofilter(ws_name, row, 0, row, 1)
+
+        # Setup columns:
+        excel_pool.column_width(ws_name, [
+            15, 20, 20, 15, 15,
+            ])
+        excel_pool.freeze_panes(ws_name, row + 1, 0)
+
+        data = {}
+        for record in line_pool.browse(cr, uid, line_ids, context=context):
+            mrp = record.mrp_id
+            if not record.line_ids:
+                _logger.warning('Production stats %s with no data' % mrp.name)
+                continue
+
+            workers = int(record.workers)
+            if not workers:
+                _logger.warning('Production stats %s with no workers' %
+                                mrp.name)
+                continue
+
+            total = record.total
+            hour = record.hour * workers
+            if not hour:
+                # Not time so no medium data
+                _logger.warning('Prod. stats %s without duration' % mrp.name)
+                continue
+
+            for product_line in record.line_ids:
+                default_code = product_line.default_code[:code_limit].strip()
+
+                qty = product_line.qty
+
+                if default_code not in data:
+                    data[default_code] = [
+                        0.0,  # Total pz (all)
+                        0.0,  # Total hours (all)
+                    ]
+
+                # Workers:
+                data[default_code][0] += total
+                data[default_code][1] += hour
+
+        # ---------------------------------------------------------------------
+        # Write data line:
+        # ---------------------------------------------------------------------
+        for default_code in sorted(data):
+            row += 1
+            total, hour = data[default_code]
+            if hour:
+                pz_hour = total / hour
+            else:
+                pz_hour = '/'
+
+            if total:
+                hour_pz = hour / total
+            else:
+                hour_pz = '/'
+
+            excel_pool.write_xls_line(ws_name, row, [
+                default_code,
+                (int(total), f_text_right),
+                (hour, f_number),
+                (int(round(pz_hour, 0)), f_text_right),
+                (int(round(hour_pz, 0)), f_text_right),
+                ], f_text)
+
+        attachment = excel_pool.return_attachment(
+                cr, uid, 'Statistiche per costi produzione', context=context)
+        return attachment
+
     _columns = {
         'from_date': fields.date('From date >='),
         'to_date': fields.date('To date <'),

@@ -30,7 +30,8 @@
                 <form string="Wizard" version="7.0">
                    <header>
                        <button string="Cancel" special="cancel" />
-                       <button name="action_print" string="Print" type="object" class="oe_highlight" icon="gtk-print"/>
+                       <button name="action_print" string="Stampa dettaglio" type="object" class="oe_highlight" icon="gtk-print"/>
+                       <button name="action_industrial_cost_print" string="Stampa medie per costi DB" type="object" class="oe_highlight" icon="gtk-print"/>
                    </header>
                    <group colspan="4" col="4">
                        <notebook>
