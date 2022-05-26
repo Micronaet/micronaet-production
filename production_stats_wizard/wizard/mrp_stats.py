@@ -487,20 +487,20 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                 _logger.warning('Prod. stats %s without duration' % mrp.name)
                 continue
 
+            medium_rate = total / hour  # Media ponderata sulle sotto prod.
             for product_line in record.line_ids:
-                default_code = product_line.default_code[:code_limit].strip()
-
-                qty = product_line.qty
-
+                default_code = product_line.default_code[
+                               :code_limit].strip().upper()
+                qty = product_line.qty  # total sub-mrp
                 if default_code not in data:
                     data[default_code] = [
                         0.0,  # Total pz (all)
                         0.0,  # Total hours (all)
                     ]
 
-                # Workers:
-                data[default_code][0] += total
-                data[default_code][1] += hour
+                # Update total:
+                data[default_code][0] += qty
+                data[default_code][1] += hour * medium_rate
 
         # ---------------------------------------------------------------------
         # Write data line:
