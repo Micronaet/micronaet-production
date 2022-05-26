@@ -567,7 +567,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
             'H.',
             ]
         excel_pool.write_xls_line(ws_name, row, header, f_header)
-        excel_pool.autofilter(ws_name, row, 0, row, len(header))
+        excel_pool.autofilter(ws_name, row, 0, row, len(header) - 1)
 
         # Setup columns:
         excel_pool.column_width(ws_name, [
