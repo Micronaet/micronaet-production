@@ -559,7 +559,7 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         header = [
             'MRP',
             'MRP pz'
-            'MRP H.' % code_limit,
+            'MRP H.',
             'MRP H./uomo',
             'MRP Lavor.',
             'Codice',
