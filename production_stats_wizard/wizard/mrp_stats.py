@@ -388,14 +388,17 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
         """ Event stats print
             context > collect_data for get only dict collected
         """
-        def get_min_sec(total):
+        def get_min_sec(total, format='float'):
             """ Tranform Float into MM:SS time
             """
             if not total:
                 return '0:00'
             min = int(total)
             sec = int(60.0 * (total - min))
-            return '%s:%02d' % (min, sec)
+            if format == 'float':
+                return total
+            else:
+                return '%s:%02d' % (min, sec)
 
         if context is None:
             context = {}
