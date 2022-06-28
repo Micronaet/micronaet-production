@@ -1,21 +1,100 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-        <record model="ir.ui.view" id="view_res_partner_production_note_form">
-            <field name="name">res.partner.form</field>
-            <field name="model">res.partner</field>
-            <field name="inherit_id" ref="base.view_partner_form"/>
+        <record model="ir.ui.view" id="view_mrp_production_note_search">
+            <field name="name">mrp.production.note.search</field>
+            <field name="model">mrp.production.note</field>
             <field name="arch" type="xml">
-                <field name="comment" position="before">
-                    <separator string="Generic note" colspan="4"/>
-                </field>    
-                <field name="comment" position="after">
-                    <separator string="Production note" colspan="4"/>
-                    <field name="mrp_note" nolabel="1" colspan="4" />
-                </field>
+                <search string="Note di prodizione" version="7.0">
+                    <field name="name" />
+                    <field name="note" />
+
+                    <field name="partner_id" filter_domain="[('partner_id.name','ilike',self)]"/>
+                    <field name="mrp_id" filter_domain="[('mrp_id.name','ilike',self)]"/>
+                    <field name="manager_id" filter_domain="[('manager_id.name','ilike',self)]"/>
+                    <field name="create_uid" filter_domain="[('create_uid.name','ilike',self)]"/>
+
+                    <filter name="state_draft" string="Bozza" domain="[('state','=','draft')]"/>
+                    <filter name="state_confirmed" string="Confermate" domain="[('state','=','confirmed')]"/>
+                    <filter name="state_cancel" string="Annullate" domain="[('state','=','cancel')]"/>
+
+                    <group expand="0" string="Raggruppa per...">
+                        <filter name="group_partner" string="Partner" context="{'group_by': 'partner_id'}"/>
+                        <filter name="group_mrp" string="Produzione" context="{'group_by': 'mrp_id'}"/>
+                        <filter name="group_manager" string="Autorizzato da" context="{'group_by': 'manager_id'}"/>
+                        <filter name="group_creator" string="Creato da" context="{'group_by': 'create_uid'}"/>
+                        <filter name="group_line" string="Riga ordine" context="{'group_by': 'line_id'}"/>
+                        <filter name="group_date" string="Data creazione" context="{'group_by': 'create_date'}"/>
+                        <filter name="group_state" string="Stato" context="{'group_by': 'state'}" />
+                    </group>
+                </search>
             </field>
         </record>
-
+        <record model="ir.ui.view" id="view_mrp_production_note_tree">
+            <field name="name">mrp.production.note.tree</field>
+            <field name="model">mrp.production.note</field>
+            <field name="arch" type="xml">
+                <tree string="Note" colors="red:state=='cancel';grey:state=='draft'">
+                    <field name="name" />
+                    <field name="state" />
+                    <field name="create_uid" />
+                    <field name="create_date" />
+                    <field name="mrp_id" />
+                    <field name="manager_id" />
+                    <field name="line_id" />
+                    <field name="partner_id" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_mrp_production_note_form">
+            <field name="name">mrp.production.note.form</field>
+            <field name="model">mrp.production.note</field>
+            <field name="arch" type="xml">
+                <form string="Note" version="7.0">
+                    <header>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group col="4">
+                            <field name="create_uid" />
+                            <field name="create_date" />
+                            <field name="mrp_id" />
+                            <field name="manager_id" />
+                            <notebook>
+                                <page name="page_note" string="Note">
+                                    <group col="4">
+                                        <field name="name" />
+                                        <separator string="Dettaglio" colspan="4"/>
+                                        <field name="note" colspan="4" nolabel="1" />
+                                    </group>
+                                </page>
+                                <page name="page_link" string="Connessioni">
+                                    <group col="4">
+                                        <field name="line_id" />
+                                        <field name="partner_id" />
+                                    </group>
+                                </page>
+                            </notebook>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_mrp_production_note">
+            <field name="name">Note di produzione</field>
+            <field name="res_model">mrp.production.note</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_mrp_production_note_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+        <menuitem
+            parent="mrp.menu_mrp_configuration"
+            id="menu_mrp_production_note"
+            action="action_mrp_production_note"
+            sequence="90"
+            />
     </data>
 </openerp>
 

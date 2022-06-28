@@ -30,52 +30,41 @@ from openerp import SUPERUSER_ID, api
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    DATETIME_FORMATS_MAP,
     float_compare)
 
 
 _logger = logging.getLogger(__name__)
 
-class ResPartner(orm.Model):
-    """ Model name: ResPartner
+
+class MrpProductionNote(orm.Model):
+    """ Model name: MRP Note
     """
-    _inherit = 'res.partner'
+    _name = 'mrp.production'
+    _description = 'Note di produzione'
+    _order = 'create_date desc'
 
     _columns = {
-        'mrp_note': fields.char(
-            'Production note', size=120, help='Production note for partner'), 
+        'create_uid': fields.many2one('Inserito da'),
+        'create_date': fields.datetimne('Inserita il'),
+
+        'name': fields.char('Nota', size=120),
+        'note': fields.text('Dettaglio'),
+
+        'mrp_id': fields.many2one('Produzione'),
+        'line_id': fields.many2one('Riga ordine'),
+        'partner_id': fields.many2one('Partner'),
+        'manager_id': fields.many2one('Responsabile'),
+
+        'state': fields.selection([
+            ('draft', 'Bozza'),
+            ('confirmed', 'Confermata'),
+            ('cancel', 'Annullata'),
+            ], 'Stato'),
         }
 
-class SaleOrder(orm.Model):
-    """ Model name: SaleOrder
-    """
-    _inherit = 'sale.order'
-
-    _columns = {
-        'mrp_note': fields.char(
-            'Production note', size=120, help='Production note for partner'),         
-        }
-
-class SaleOrderLine(orm.Model):
-    """ Model name: SaleOrderLine
-    """
-    _inherit = 'sale.order.line'
-
-    _columns = {
-        'mrp_note': fields.char(
-            'Production note', size=120, help='Production note for partner'),         
-        }
-
-class ProductProduct(orm.Model):
-    """ Model name: ProductProduct
-    """
-    _inherit = 'product.product'
-
-    _columns = {
-        'mrp_note': fields.char(
-            'Production note', size=120, help='Production note for partner'),         
-        }
-        
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+    _defaults = {
+        'state': lambda *x: 'draft',
+    }
