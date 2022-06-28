@@ -38,6 +38,8 @@
     'init_xml': [],
     'demo': [],
     'data': [
+        'security/ir.model.access.csv',
+
         'note_view.xml',
         ],
     'active': False,

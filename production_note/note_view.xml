@@ -5,7 +5,7 @@
             <field name="name">mrp.production.note.search</field>
             <field name="model">mrp.production.note</field>
             <field name="arch" type="xml">
-                <search string="Note di prodizione" version="7.0">
+                <search string="Note di produzione" version="7.0">
                     <field name="name" />
                     <field name="note" />
 
