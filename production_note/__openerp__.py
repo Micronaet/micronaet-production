@@ -40,7 +40,7 @@
     'data': [
         'security/ir.model.access.csv',
 
-        'note_view.xml',
+        'views/note_view.xml',
         ],
     'active': False,
     'installable': True,
