@@ -48,7 +48,7 @@ class MrpProductionNote(orm.Model):
 
     _columns = {
         'create_uid': fields.many2one('Inserito da'),
-        'create_date': fields.datetimne('Inserita il'),
+        'create_date': fields.datetime('Inserita il'),
 
         'name': fields.char('Nota', size=120),
         'note': fields.text('Dettaglio'),
