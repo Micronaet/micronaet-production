@@ -69,6 +69,9 @@ class MrpProductionNote(orm.Model):
 
     _defaults = {
         'state': lambda *x: 'draft',
+        'create_uid': lambda s, cr, uid, ctx: uid,
+        'create_date': lambda *x: datetime.now().strftime(
+            DEFAULT_SERVER_DATETIME_FORMAT)
     }
 
 

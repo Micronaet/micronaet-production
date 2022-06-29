@@ -136,15 +136,16 @@
             parent="mrp.menu_mrp_configuration"
             id="menu_mrp_production_note"
             sequence="90"
+            name="Note di produzione"
             />
             <menuitem
-                parent="mrp.menu_mrp_production_note"
+                parent="menu_mrp_production_note"
                 id="menu_mrp_production_note_list_awaiting"
                 action="action_mrp_production_note_awaiting"
                 sequence="10"
                 />
             <menuitem
-                parent="mrp.menu_mrp_production_note"
+                parent="menu_mrp_production_note"
                 id="menu_mrp_production_note_list"
                 action="action_mrp_production_note"
                 sequence="20"
