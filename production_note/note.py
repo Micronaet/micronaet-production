@@ -50,6 +50,11 @@ class MrpProductionNote(orm.Model):
     # -------------------------------------------------------------------------
     # Workflow button:
     # -------------------------------------------------------------------------
+    def wkf_save(self, cr, uid, ids, context=None):
+        """ Save button
+        """
+        return {'type': 'ir.actions.act_window_close'}
+
     def wkf_draft(self, cr, uid, ids, context=None):
         """ Confirm
         """
@@ -110,7 +115,6 @@ class SaleOrderLine(orm.Model):
     def new_mrp_production_note_line(self, cr, uid, ids, context=None):
         """ Open new note linked to this resource
         """
-        pdb.set_trace()
         if context is None:
             context = {}
         note_pool = self.pool.get('mrp.production.note')
@@ -119,6 +123,7 @@ class SaleOrderLine(orm.Model):
 
         model_pool = self.pool.get('ir.model.data')
         view_id = model_pool.get_object_reference(
+            cr, uid,
             'production_note', 'view_mrp_production_note_form')[1]
 
         note_id = note_pool.create(cr, uid, {

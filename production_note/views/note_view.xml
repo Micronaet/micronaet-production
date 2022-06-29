@@ -88,6 +88,7 @@
             <field name="arch" type="xml">
                 <form string="Note" version="7.0">
                     <header>
+                        <button name="wkf_save" type="object" string="Salva" attrs="{'invisible': [('state', '!=', 'draft')]}" icon="gtk-save" class="oe_highlight"/>
                         <button name="wkf_confirm" type="object" string="Autorizza" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="production_note.group_note_manager" icon="STOCK_APPLY"/>
                         <button name="wkf_draft" type="object" string="Bozza" attrs="{'invisible': [('state', '!=', 'cancel')]}" icon="gtk-undo"/>
                         <button name="wkf_cancel" type="object" string="Annulla" attrs="{'invisible': [('state', '=', 'cancel')]}" icon="gtk-cancel"/>
