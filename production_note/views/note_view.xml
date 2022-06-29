@@ -85,9 +85,9 @@
             <field name="arch" type="xml">
                 <form string="Note" version="7.0">
                     <header>
-                        <button name="wkf_confirm" type="object" string="Autorizza" attrs="{'invisible': [('state', '=', 'draft')]}" groups="production_note.group_note_manager"/>
-                        <button name="wkf_draft" type="object" string="Bozza" attrs="{'invisible': [('state', '=', 'cancel')]}"/>
-                        <button name="wkf_cancel" type="object" string="Annulla" attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
+                        <button name="wkf_confirm" type="object" string="Autorizza" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="production_note.group_note_manager"/>
+                        <button name="wkf_draft" type="object" string="Bozza" attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
+                        <button name="wkf_cancel" type="object" string="Annulla" attrs="{'invisible': [('state', '=', 'cancel')]}"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
