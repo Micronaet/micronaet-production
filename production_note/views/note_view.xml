@@ -69,13 +69,16 @@
             <field name="arch" type="xml">
                 <tree string="Note" colors="red:state=='cancel';grey:state=='draft'">
                     <field name="name" />
-                    <field name="state" />
                     <field name="create_uid" />
                     <field name="create_date" />
                     <field name="mrp_id" />
                     <field name="manager_id" />
                     <field name="line_id" />
                     <field name="partner_id" />
+                    <button name="wkf_confirm" type="object" string="Autorizza" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="production_note.group_note_manager" icon="STOCK_APPLY"/>
+                    <button name="wkf_draft" type="object" string="Bozza" attrs="{'invisible': [('state', '!=', 'cancel')]}" icon="gtk-undo"/>
+                    <button name="wkf_cancel" type="object" string="Annulla" attrs="{'invisible': [('state', '=', 'cancel')]}" icon="gtk-cancel"/>
+                    <field name="state" />
                 </tree>
             </field>
         </record>
@@ -85,9 +88,9 @@
             <field name="arch" type="xml">
                 <form string="Note" version="7.0">
                     <header>
-                        <button name="wkf_confirm" type="object" string="Autorizza" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="production_note.group_note_manager"/>
-                        <button name="wkf_draft" type="object" string="Bozza" attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
-                        <button name="wkf_cancel" type="object" string="Annulla" attrs="{'invisible': [('state', '=', 'cancel')]}"/>
+                        <button name="wkf_confirm" type="object" string="Autorizza" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="production_note.group_note_manager" icon="STOCK_APPLY"/>
+                        <button name="wkf_draft" type="object" string="Bozza" attrs="{'invisible': [('state', '!=', 'cancel')]}" icon="gtk-undo"/>
+                        <button name="wkf_cancel" type="object" string="Annulla" attrs="{'invisible': [('state', '=', 'cancel')]}" icon="gtk-cancel"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>

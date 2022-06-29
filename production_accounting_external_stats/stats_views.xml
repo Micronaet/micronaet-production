@@ -97,7 +97,7 @@
                     <header>
                     </header>
                     <sheet>
-                        <group colspan="4" col="4">
+                        <group colspan="4" col="4" attrs="{'readonly': [('state', '=', 'confirmed')]}">
                             <field name="workcenter_id"/>
                             <field name="date" />
 

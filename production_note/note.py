@@ -54,6 +54,7 @@ class MrpProductionNote(orm.Model):
         """
         return self.write(cr, uid, ids, {
             'state': 'draft',
+            'manager_id': False,
         }, context=context)
 
     def wkf_confirm(self, cr, uid, ids, context=None):
@@ -61,6 +62,7 @@ class MrpProductionNote(orm.Model):
         """
         return self.write(cr, uid, ids, {
             'state': 'confirmed',
+            'manager_id': uid,
         }, context=context)
 
     def wkf_cancel(self, cr, uid, ids, context=None):
