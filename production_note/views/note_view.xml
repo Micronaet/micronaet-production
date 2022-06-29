@@ -28,7 +28,7 @@
             <field name="inherit_id" ref="production_accounting_external_stats.view_mrp_production_stats_tree"/>
             <field name="arch" type="xml">
                  <field name="total" position="after">
-                    <button name="new_mrp_production_stats__note" type="object" string="Nota di produzione" icon="gtk-info"/>
+                    <button name="new_mrp_production_stats_note" type="object" string="Nota di produzione" icon="gtk-info"/>
                  </field>
             </field>
         </record>
