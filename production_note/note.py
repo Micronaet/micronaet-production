@@ -135,7 +135,7 @@ class SaleOrderLine(orm.Model):
             'view_id': view_id,
             'views': [(False, 'form')],
             'domain': [],
-            'context': context,
+            'context': ctx,
             'target': 'new',
             'nodestroy': False,
             }
