@@ -18,6 +18,7 @@
 #
 ###############################################################################
 import os
+import pdb
 import sys
 import logging
 import openerp
@@ -109,33 +110,34 @@ class SaleOrderLine(orm.Model):
     def new_mrp_production_note_line(self, cr, uid, ids, context=None):
         """ Open new note linked to this resource
         """
+        pdb.set_trace()
         if context is None:
             context = {}
-        # note_pool = self.pool.get('mrp.production.note')
+        note_pool = self.pool.get('mrp.production.note')
         line_id = ids[0]
         current = self.browse(cr, uid, line_id, context=context)
 
-        # model_pool = self.pool.get('ir.model.data')
-        # view_id = model_pool.get_object_reference(
-        #    'module_name', 'view_name')[1]
-        view_id = False
+        model_pool = self.pool.get('ir.model.data')
+        view_id = model_pool.get_object_reference(
+            'production_note', 'view_mrp_production_note_form')[1]
 
-        ctx = context.copy()
-        ctx['default_partner_id'] = current.order_id.partner_id.id
-        ctx['default_line_id'] = line_id
-        ctx['default_mrp_id'] = current.mrp_production_id.id
+        note_id = note_pool.create(cr, uid, {
+            'mrp_id': current.mrp_id.id,
+            'line_id': line_id,
+            'partner_id': current.order_id.partner_id.id,
+        }, context=context)
 
         return {
             'type': 'ir.actions.act_window',
             'name': _('Nuova nota'),
             'view_type': 'form',
             'view_mode': 'form',
-            # 'res_id': 1,
+            'res_id': note_id,
             'res_model': 'mrp.production.note',
             'view_id': view_id,
-            'views': [(False, 'form')],
+            'views': [(view_id, 'form')],
             'domain': [],
-            'context': ctx,
+            'context': context,
             'target': 'new',
             'nodestroy': False,
             }

@@ -102,7 +102,7 @@
                             <notebook colspan="4">
                                 <page name="page_note" string="Note">
                                     <group col="4">
-                                        <field name="name" />
+                                        <field name="name" required="True"/>
                                         <separator string="Dettaglio" colspan="4"/>
                                         <field name="note" colspan="4" nolabel="1" />
                                     </group>

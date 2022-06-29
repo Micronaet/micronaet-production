@@ -34,9 +34,9 @@ from openerp import SUPERUSER_ID, api
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    DATETIME_FORMATS_MAP,
     float_compare)
 
 
@@ -48,7 +48,7 @@ class res_company(orm.Model):
     '''
 
     _inherit = 'res.company'
-    
+
     # Utility:
     def get_xmlrpc_is_manual(self, cr, uid, company_id=False, context=None):
         ''' Check if is a manual backup
@@ -57,18 +57,18 @@ class res_company(orm.Model):
             company_id = self.search(cr, uid, [], context=context)[0]
         elif type(company_id) in (list, tuple):
             company_id = company_id[0]
-        
+
         return self.browse(cr, uid, company_id, context=context).manual
-        
+
     def get_xmlrpc_socket(
             self, cr, uid, company_id=False, context=None):
-        ''' Read element with company_id or passed 
+        ''' Read element with company_id or passed
         '''
         if not company_id:
             company_id = self.search(cr, uid, [], context=context)[0]
         elif type(company_id) in (list, tuple):
             company_id = company_id[0]
-        
+
         parameters = self.browse(cr, uid, company_id, context=context)
         try:
             xmlrpc_server = "http://%s:%s" % (
@@ -83,20 +83,20 @@ class res_company(orm.Model):
                 'XMLRPC for calling importation is not response check'
                 ' if program is open on XMLRPC server\n[%s]' % (
                     sys.exc_info(), ) ), )
-        
+
     _columns = {
         'accounting_sync': fields.boolean('Sync via XMLRPC'),
         'accounting_sync_host': fields.char(
-            'Accounting sync XMLRPC host', 
-            size=64, 
+            'Accounting sync XMLRPC host',
+            size=64,
             help="IP address: 10.0.0.2  or hostname: server.example.com"),
         'accounting_sync_port': fields.integer(
-            'Acounting sync port', 
+            'Acounting sync port',
             help="XMLRPC port, example: 8000"),
-        'manual': fields.boolean('Manual sync', 
+        'manual': fields.boolean('Manual sync',
             help='Manual confirmation set manual accounting sync'),
         }
-        
+
     _defaults = {
         'accounting_sync': lambda *x: True,
         'accounting_sync_port': lambda *x: 8000,
@@ -105,46 +105,46 @@ class res_company(orm.Model):
 class MrpProduction(orm.Model):
     ''' Add extra field to manage connection with accounting
     '''
-    
+
     _inherit = 'mrp.production'
 
     # Override function
     def accounting_sync(self, cr, uid, ids, context=None):
-        ''' Read all line to sync in accounting and produce it for 
+        ''' Read all line to sync in accounting and produce it for
             XMLRPC call
         '''
-        return True # XXX DEAD MODULE FUNCTION
+        return True  # XXX DEAD MODULE FUNCTION
         if self.pool.get('res.company').get_xmlrpc_is_manual(
                 cr, uid, False, context=context):
-                
+
             # TODO procedure for set syncronization that is manual
-            _logger.info('Manual sync production!')            
+            _logger.info('Manual sync production!')
             for sol in self.browse(cr, uid, ids, context=context)[
                     0].order_line_ids:
                 # Jump line sync
                 if sol.sync_state == 'sync':
                     continue
-                    
+
                 data = {
                     'product_uom_maked_sync_qty': sol.product_uom_maked_qty,
                     'product_uom_maked_qty': 0.0, # always reset q maked
                     }
-                
-                # Different behaviour depend on state:    
+
+                # Different behaviour depend on state:
                 if sol.sync_state == 'closed':
                     data['sync_state'] = 'sync'
-                    
+
                 if sol.sync_state == 'partial':
                     account_qty = (
-                        sol.product_uom_maked_sync_qty + 
+                        sol.product_uom_maked_sync_qty +
                         sol.product_uom_maked_qty
-                        )                       
-                    data['product_uom_maked_sync_qty'] = account_qty                     
+                        )
+                    data['product_uom_maked_sync_qty'] = account_qty
                     if account_qty == sol.product_uom_qty: # TODO approx?
                         data['sync_state'] = 'sync' # closed!
-                    
-                # Correct line as account sync:    
-                self.pool.get('sale.order.line').write(cr, uid, sol.id, data, 
+
+                # Correct line as account sync:
+                self.pool.get('sale.order.line').write(cr, uid, sol.id, data,
                     context=context)
             return True
 
@@ -153,10 +153,10 @@ class MrpProduction(orm.Model):
         # Read all line to close
         # ----------------------
         sol_pool = self.pool.get('sale.order.line')
-        
+
         sol_ids = sol_pool.search(cr, uid, [
             ('sync_state', 'in', ('partial', 'closed'))
-            ], 
+            ],
             order='order_id', # TODO line sequence?
             context=context, )
 
@@ -166,8 +166,8 @@ class MrpProduction(orm.Model):
         parameters = {} # replace transit file
         sol_lines = {} # for close OK lines  (only for partial use)
         parameters['transit_string'] = ''
-        
-        for line in sol_pool.browse(cr, uid, sol_ids, context=context):            
+
+        for line in sol_pool.browse(cr, uid, sol_ids, context=context):
             sol_lines[line.id] = [ # only for partial check
                 line.sync_state,
                 line.product_uom_maked_qty + line.product_uom_maked_sync_qty,
@@ -188,12 +188,12 @@ class MrpProduction(orm.Model):
         try:
             XMLRPC = self.pool.get(
                 'res.company').get_xmlrpc_socket(
-                    cr, uid, False, context=context) # TODO company_id 
-                
+                    cr, uid, False, context=context) # TODO company_id
+
             # TODO use pickle library!!!
             res = XMLRPC.sprix('production', parameters['transit_string'])
             #pickle.dumps(parameters)) # param serialized
-        except:    
+        except:
             raise osv.except_osv(
                 _('Sync error!'),
                 _('XMLRPC error calling production procedure'), )
@@ -204,15 +204,15 @@ class MrpProduction(orm.Model):
                 _('Sync error!'),
                 _('Error from accounting:\n%s') % res,
             )
-            
-        # Update odoo sol with sync informations:    
+
+        # Update odoo sol with sync informations:
         item_ids = eval(res[2:])
         for item_id in item_ids: # update sync value in accounting
             if item_id not in sol_lines:
                 _logger.warning('Order line in production not sync because'
                     'not exist in odoo but only in accounting (jumped)')
                 continue
-                
+
             if sol_lines[item_id][0] == 'partial':
                 # check if is complete (total = account + current):
                 data = {
@@ -228,7 +228,7 @@ class MrpProduction(orm.Model):
                 sol_pool.write(cr, uid, item_id, {
                     'sync_state': 'sync',
                     'product_uom_maked_sync_qty': sol_lines[item_id][2], # tot.
-                    'product_uom_maked_qty': 0,                    
+                    'product_uom_maked_qty': 0,
                     }, context=context)
         return True
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
