@@ -146,3 +146,41 @@ class SaleOrderLine(orm.Model):
             'target': 'new',
             'nodestroy': False,
             }
+
+
+class MrpProduction(orm.Model):
+    """ Production
+    """
+    _inherit = 'mrp.production'
+
+    def new_mrp_production_note(self, cr, uid, ids, context=None):
+        """ Open new note linked to this resource
+        """
+        if context is None:
+            context = {}
+        note_pool = self.pool.get('mrp.production.note')
+        mrp_id = ids[0]
+
+        model_pool = self.pool.get('ir.model.data')
+        view_id = model_pool.get_object_reference(
+            cr, uid,
+            'production_note', 'view_mrp_production_note_form')[1]
+
+        note_id = note_pool.create(cr, uid, {
+            'mrp_id': mrp_id,
+        }, context=context)
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Nuova nota'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_id': note_id,
+            'res_model': 'mrp.production.note',
+            'view_id': view_id,
+            'views': [(view_id, 'form')],
+            'domain': [],
+            'context': context,
+            'target': 'new',
+            'nodestroy': False,
+            }

@@ -8,7 +8,7 @@
             <field name="inherit_id" ref="production_accounting_external.production_sale_order_line_tree_view"/>
             <field name="arch" type="xml">
                 <field name="name" position="after">
-                    <button name="new_mrp_production_note_line" type="object" string="Nuova nota di produzione" icon="gtk-info"/>
+                    <button name="new_mrp_production_note_line" type="object" string="Nota di produzione" icon="gtk-info"/>
                 </field>
             </field>
         </record>
@@ -18,7 +18,7 @@
             <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
             <field name="arch" type="xml">
                 <field name="state" position="before">
-                    <button name="new_mrp_production_note" type="object" string="Nuova nota di produzione" icon="gtk-info"/>
+                    <button name="new_mrp_production_note" type="object" string="Nota di produzione" icon="gtk-info"/>
                 </field>
             </field>
         </record>
@@ -28,7 +28,7 @@
             <field name="inherit_id" ref="production_accounting_external_stats.view_mrp_production_stats_tree"/>
             <field name="arch" type="xml">
                  <field name="total">
-                    <button name="new_mrp_production_stats__note" type="object" string="Nuova nota di produzione" icon="gtk-info"/>
+                    <button name="new_mrp_production_stats__note" type="object" string="Nota di produzione" icon="gtk-info"/>
                  </field>
             </field>
         </record>
