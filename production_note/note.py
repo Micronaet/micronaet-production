@@ -46,6 +46,30 @@ class MrpProductionNote(orm.Model):
     _description = 'Note di produzione'
     _order = 'create_date desc'
 
+    # -------------------------------------------------------------------------
+    # Workflow button:
+    # -------------------------------------------------------------------------
+    def wkf_draft(self, cr, uid, ids, context=None):
+        """ Confirm
+        """
+        return self.write(cr, uid, ids, {
+            'state': 'draft',
+        }, context=context)
+
+    def wkf_confirm(self, cr, uid, ids, context=None):
+        """ Confirm
+        """
+        return self.write(cr, uid, ids, {
+            'state': 'confirmed',
+        }, context=context)
+
+    def wkf_cancel(self, cr, uid, ids, context=None):
+        """ Confirm
+        """
+        return self.write(cr, uid, ids, {
+            'state': 'cancel',
+        }, context=context)
+
     _columns = {
         'create_uid': fields.many2one('res.users', 'Inserito da'),
         'create_date': fields.datetime('Inserita il'),
