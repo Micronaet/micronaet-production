@@ -39,6 +39,7 @@
     'init_xml': [],
     'demo': [],
     'data': [
+        'security/note_group.xml',
         'security/ir.model.access.csv',
 
         'views/note_view.xml',
