@@ -95,7 +95,7 @@
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
-                        <group col="4">
+                        <group col="4" attrs="{'readonly': [('state', '=', 'confirmed')]}">
                             <field name="create_uid" />
                             <field name="create_date" />
                             <field name="mrp_id" />
@@ -150,6 +150,7 @@
                 id="menu_mrp_production_note_list_awaiting"
                 action="action_mrp_production_note_awaiting"
                 sequence="10"
+                groups="production_note.group_note_manager"
                 />
             <menuitem
                 parent="menu_mrp_production_note"
