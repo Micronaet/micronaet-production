@@ -1,6 +1,38 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <!-- Inherit -->
+        <record model="ir.ui.view" id="production_sale_order_line_mrp_note_tree_view">
+            <field name="name">MRP line production note</field>
+            <field name="model">sale.order.line</field>
+            <field name="inherit_id" ref="production_accounting_external.production_sale_order_line_tree_view"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <button name="new_mrp_production_note_line" type="object" string="Nuova nota di produzione" icon="gtk-info"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="mrp_production_note_mrp_button_view">
+            <field name="name">Note di produzione</field>
+            <field name="model">mrp.production</field>
+            <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+            <field name="arch" type="xml">
+                <field name="state" position="before">
+                    <button name="new_mrp_production_note" type="object" string="Nuova nota di produzione" icon="gtk-info"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_mrp_production_stats_note_button_tree">
+            <field name="name">MRP Stats note</field>
+            <field name="model">mrp.production.stats</field>
+            <field name="inherit_id" ref="production_accounting_external_stats.view_mrp_production_stats_tree"/>
+            <field name="arch" type="xml">
+                 <field name="total">
+                    <button name="new_mrp_production_stats__note" type="object" string="Nuova nota di produzione" icon="gtk-info"/>
+                 </field>
+            </field>
+        </record>
+
         <record model="ir.ui.view" id="view_mrp_production_note_search">
             <field name="name">mrp.production.note.search</field>
             <field name="model">mrp.production.note</field>
@@ -24,6 +56,7 @@
                         <filter name="group_manager" string="Autorizzato da" context="{'group_by': 'manager_id'}"/>
                         <filter name="group_creator" string="Creato da" context="{'group_by': 'create_uid'}"/>
                         <filter name="group_line" string="Riga ordine" context="{'group_by': 'line_id'}"/>
+                        <filter name="group_stats" string="Statistica" context="{'group_by': 'stats_id'}"/>
                         <filter name="group_date" string="Data creazione" context="{'group_by': 'create_date'}"/>
                         <filter name="group_state" string="Stato" context="{'group_by': 'state'}" />
                     </group>
@@ -60,7 +93,7 @@
                             <field name="create_date" />
                             <field name="mrp_id" />
                             <field name="manager_id" />
-                            <notebook>
+                            <notebook colspan="4">
                                 <page name="page_note" string="Note">
                                     <group col="4">
                                         <field name="name" />
@@ -72,6 +105,7 @@
                                     <group col="4">
                                         <field name="line_id" />
                                         <field name="partner_id" />
+                                        <field name="stats_id" />
                                     </group>
                                 </page>
                             </notebook>

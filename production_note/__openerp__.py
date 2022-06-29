@@ -34,6 +34,7 @@
         'mrp',
         # 'partner_product_partic_base',
         'production_accounting_external',
+        'production_accounting_external_stats',
         ],
     'init_xml': [],
     'demo': [],

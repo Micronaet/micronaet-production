@@ -94,6 +94,8 @@
             <field name="model">mrp.production.stats</field>
             <field name="arch" type="xml">
                 <form string="MRP stats" version="7.0">
+                    <header>
+                    </header>
                     <sheet>
                         <group colspan="4" col="4">
                             <field name="workcenter_id"/>
