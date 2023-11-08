@@ -731,7 +731,7 @@ msgstr "Righe OC"
 #. module: production_accounting_external
 #: model:ir.ui.menu,name:production_accounting_external.menu_sale_order_line_m1
 msgid "OC line production"
-msgstr "Riga produzione OC"
+msgstr "OC ancora da programmare"
 
 #. module: production_accounting_external
 #: view:sale.order.line:production_accounting_external.view_sale_order_line_tree_force_mrp

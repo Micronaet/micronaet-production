@@ -460,7 +460,7 @@
         <!--TODO remove filter for accounting when accounting will not be present! -->
     </record>
     <record model="ir.actions.act_window" id="action_view_sale_order_production_all_line">
-        <field name="name">Righe OC produzione (tutte)</field>
+        <field name="name">OC+MO (tutti)</field>
         <field name="res_model">sale.order.line</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,graph</field>
