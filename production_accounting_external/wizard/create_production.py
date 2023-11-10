@@ -295,6 +295,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         sol_pool = self.pool.get('sale.order.line')
 
         # Not used for now:
+        import pdb; pdb.set_trace()
         product_id = get_product_from_template(
             self, cr, uid, wiz_proxy.product_tmpl_id.id, context=context)
 
