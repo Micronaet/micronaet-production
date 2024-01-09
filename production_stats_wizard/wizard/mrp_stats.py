@@ -311,7 +311,10 @@ class MrpStatsExcelReportWizard(orm.TransientModel):
                         0.0,  # total pz.
                         0.0,  # total time
                     ]
-                product_time = qty / rate
+                if rate:    
+                    product_time = qty / rate
+                else:
+                    product_time = 0.0     
 
                 # Workers:
                 data[key][0][workers][0] += qty
