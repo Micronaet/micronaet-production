@@ -32,32 +32,33 @@ from openerp import SUPERUSER_ID, api
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    DATETIME_FORMATS_MAP,
     float_compare)
 
 
 _logger = logging.getLogger(__name__)
 
+
 class MrpProductionReportWizard(orm.TransientModel):
-    ''' Procurements depend on sale
-    '''    
+    """ Procurements depend on sale
+    """
     _name = 'mrp.production.report.wizard'
     _description = 'Production report wizard'
-    
+
     # --------------
     # Button events:
     # --------------
     def print_report_production(self, cr, uid, ids, context=None):
-        ''' Redirect to report passing parameters
-        ''' 
+        """ Redirect to report passing parameters
+        """
         wiz_proxy = self.browse(cr, uid, ids)[0]
-            
+
         datas = {}
         datas['wizard'] = True # started from wizard
-                
-        datas['mode'] = wiz_proxy.mode        
+
+        datas['mode'] = wiz_proxy.mode
         datas['wizard_show_lavoration'] = wiz_proxy.show_lavoration
         datas['wizard_show_sale'] = wiz_proxy.show_sale
         datas['wizard_show_frame'] = wiz_proxy.show_frame
@@ -72,14 +73,14 @@ class MrpProductionReportWizard(orm.TransientModel):
             }
 
     def print_report_cut(self, cr, uid, ids, context=None):
-        ''' Redirect to report passing parameters
-        ''' 
+        """ Redirect to report passing parameters
+        """
         wiz_proxy = self.browse(cr, uid, ids)[0]
-            
+
         datas = {}
         datas['wizard'] = True # started from wizard
-        datas['mode'] = wiz_proxy.mode        
-                
+        datas['mode'] = wiz_proxy.mode
+
         return {
             'type': 'ir.actions.report.xml',
             'report_name': 'production_cut_report',
@@ -92,14 +93,14 @@ class MrpProductionReportWizard(orm.TransientModel):
             ('clean', 'Clean from delivery and maked'),
             ('all', 'Normal mode'),
             ], 'Report mode', required=True),
-            
+
         'show_lavoration': fields.boolean('A. Show lavoration'),
         'show_sale': fields.boolean('B. Show sale part'),
         'show_frame': fields.boolean('C. Show frame part'),
         'show_note': fields.boolean('Mostra sistema note'),
         'job_id': fields.many2one('mrp.production.stats', 'Job'),
         }
-        
+
     _defaults = {
         'mode': lambda *x: 'clean',
         'show_lavoration': lambda *x: True,
@@ -107,4 +108,3 @@ class MrpProductionReportWizard(orm.TransientModel):
         'show_frame': lambda *x: True,
         'show_note': lambda *x: True,
         }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
