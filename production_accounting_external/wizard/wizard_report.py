@@ -61,7 +61,9 @@ class MrpProductionReportWizard(orm.TransientModel):
         mrp_id = context.get('active_id')
         mrp = mrp_pool.browse(cr, uid, mrp_id, context=context)
 
-        filename = '/tmp/%s.xlsx' % mrp.name  # todo'
+        path = os.path.expanduser('~/NAS/industria40/MRP')
+        filename = os.path.join(path, '%s.xlsx' % mrp.name)
+
         ctx['force_data'] = {
             'report_name': 'mrp',  # For extract
             'report_filename': filename,
