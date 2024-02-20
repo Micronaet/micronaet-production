@@ -20,6 +20,7 @@
 ###############################################################################
 
 import os
+import pdb
 import sys
 import logging
 import openerp
@@ -304,7 +305,7 @@ class Parser(report_sxw.rml_parse):
 
         for mrp in mrp_pool.browse(self.cr, self.uid, mrp_ids):
             family_id = mrp.product_id.id
-            # bom_id.product_tmpll_id
+            # bom_id.product_tmpl_id
             if family_id not in mrp_family:
                 mrp_family[family_id] = [0.0, 0.0]  # OC, Done
 
@@ -608,7 +609,95 @@ class Parser(report_sxw.rml_parse):
     def get_report_extra_data(self, field):
         """ Return extra data report same for mrp and cut
         """
+        localcontext = self.localcontext.get('data', {})
+        report_name = localcontext.get('report_name')
+        if field == 'records' and report_name == 'mrp':
+            if localcontext['report_filename']:
+                # Export data in Excel file:
+                self.extract_report_for_sl(
+                    self.cr,
+                    self.uid,
+                    self.report_extra_data.get(field, ''),
+                    {})
+
         return self.report_extra_data.get(field, '')
+
+    def extract_report_for_sl(self, cr, uid, data, context=None):
+        """ Extract report for SL production
+        """
+        excel_pool = self.pool.get('excel.writer')
+
+        localcontext = self.localcontext.get('data', {})
+
+        ws_name = 'Dettaglio produzione'
+        excel_pool.create_worksheet(ws_name)
+        filename = localcontext.get('report_filename')
+
+        # ---------------------------------------------------------------------
+        # Format:
+        # ---------------------------------------------------------------------
+        format_title = excel_pool.get_format('title')
+        format_header = excel_pool.get_format('header')
+        format_text = excel_pool.get_format('text')
+        format_number = excel_pool.get_format('number')
+
+        # ---------------------------------------------------------------------
+        # Column dimension:
+        # ---------------------------------------------------------------------
+        col_width = (
+            5, 10,
+            30,
+            12, 10, 30,
+            10, 10, 10, 10)
+        excel_pool.column_width(ws_name, col_width)
+
+        # Row 1
+        row = 0
+        header = [
+            'Riferimento OC', '',
+            'Cliente',
+            'Prodotto', 'Scadenza OC', 'Note di produzione',
+            'Pz./Imb', 'Bancale', 'Da fare', 'Fatti',
+            ]
+
+        excel_pool.write_xls_line(
+            ws_name, row, header, format_header)
+        excel_pool.merge_cell(ws_name, [row, 0, row, 1])
+
+        pdb.set_trace()
+        for mode, line, total in data:
+            if mode != 'L':
+                continue
+
+            row += 1
+            code = line.product_id.default_code or ''
+            record = [
+                line.mrp_sequence,
+                self.clean_order(line.order_id.name),
+                line.order_id.partner_id.name,
+                '%s%s' % (
+                    line.product_id.default_code.replace(' ', '.') or '',
+                    ' (PREVIS.)' if line.order_id.forecasted_production_id
+                    else '',
+                    ),
+                # formatLang(line.date_deadline,
+                #           date=True) if line.date_deadline else ""
+                line.date_deadline or '',
+                '%s %s %s' % (
+                    'IGNIFUGO ' if code[5:6].upper() == 'I' else '',
+                    self.clean_note(line.production_note),
+                    (line.order_id.client_order_ref or '').split('|')[-1]
+                    ),
+                int(line.product_id.q_x_pack),
+                'EUR' if line.order_id.partner_id.pallet_eur else '',
+                int(total[0]),
+                int(total[1]) if total[1] else '',
+            ]
+            excel_pool.write_xls_line(
+                ws_name, row, record, format_text)
+
+        _logger.info('Saving extra file in %s' % filename)
+        return excel_pool.save_file_as(filename)
 
     def get_object_with_total(self, o, data=None):
         """ Get object with totals for normal report
@@ -617,11 +706,11 @@ class Parser(report_sxw.rml_parse):
         uid = self.uid
         context = {'lang': 'it_IT'}
         if data is None:
-            data = {}            
-        
-        job_pool = self.pool.get('mrp.production.stats')    
+            data = {}
 
-        # Job mode:        
+        job_pool = self.pool.get('mrp.production.stats')
+
+        # Job mode:
         mode = data.get('mode', 'clean')
         job_id = data.get('wizard_job_id')
         if job_id:
@@ -667,7 +756,7 @@ class Parser(report_sxw.rml_parse):
             mx_assigned_qty = line.mx_assigned_qty
             product_uom_qty -= mx_assigned_qty
 
-            if mode == 'clean': # remove delivered qty (OC and Maked)
+            if mode == 'clean':  # remove delivered qty (OC and Maked)
                 delivered_qty = line.delivered_qty
                 product_uom_qty -= delivered_qty
                 product_uom_maked_sync_qty -= delivered_qty

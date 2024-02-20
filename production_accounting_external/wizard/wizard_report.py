@@ -50,13 +50,36 @@ class MrpProductionReportWizard(orm.TransientModel):
     # --------------
     # Button events:
     # --------------
+    def print_report_production_extra_file(self, cr, uid, ids, context=None):
+        """ Call original with redirect
+        """
+        mrp_pool = self.pool.get('mrp.production')
+
+        if context is None:
+            context = {}
+        ctx = context.copy()
+        mrp_id = context.get('active_id')
+        mrp = mrp_pool.browse(cr, uid, mrp_id, context=context)
+
+        filename = '/tmp/%s.xlsx' % mrp.name  # todo'
+        ctx['force_data'] = {
+            'report_name': 'mrp',  # For extract
+            'report_filename': filename,
+            'context': context,
+        }
+
+        return self.print_report_production(cr, uid, ids, context=ctx)
+
     def print_report_production(self, cr, uid, ids, context=None):
         """ Redirect to report passing parameters
         """
+        if context is None:
+            context = {}
+
         wiz_proxy = self.browse(cr, uid, ids)[0]
 
         datas = {}
-        datas['wizard'] = True # started from wizard
+        datas['wizard'] = True  # started from wizard
 
         datas['mode'] = wiz_proxy.mode
         datas['wizard_show_lavoration'] = wiz_proxy.show_lavoration
@@ -64,6 +87,9 @@ class MrpProductionReportWizard(orm.TransientModel):
         datas['wizard_show_frame'] = wiz_proxy.show_frame
         datas['wizard_show_note'] = wiz_proxy.show_note
         datas['wizard_job_id'] = wiz_proxy.job_id.id
+
+        if 'force_data' in context:
+            datas.update(context['force_data'])
 
         return {
             'type': 'ir.actions.report.xml',
@@ -78,7 +104,7 @@ class MrpProductionReportWizard(orm.TransientModel):
         wiz_proxy = self.browse(cr, uid, ids)[0]
 
         datas = {}
-        datas['wizard'] = True # started from wizard
+        datas['wizard'] = True  # started from wizard
         datas['mode'] = wiz_proxy.mode
 
         return {

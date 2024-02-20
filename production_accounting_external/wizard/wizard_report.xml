@@ -8,8 +8,9 @@
             <field name="arch" type="xml">
                 <form string="Print production" version="7.0">
                     <head>
-                        <button string="Cancel" special="cancel" colspan="2" />                   
+                        <button string="Cancel" special="cancel" colspan="2" />
                         <button name="print_report_production" type="object" string="Print production" icon="gtk-print" colspan="2" class="oe_highlight" attrs="{'invisible':[('show_lavoration','=',False),('show_sale','=',False),('show_frame','=',False)]}"/>
+                        <button name="print_report_production_extra_file" type="object" string="Stampa produzione (con dettaglio Excel)" icon="gtk-print" colspan="2" class="oe_highlight" attrs="{'invisible':[('show_lavoration','=',False),('show_sale','=',False),('show_frame','=',False)]}"/>
                         <button name="print_report_cut" type="object" string="Print cut" icon="gtk-print" colspan="2" class="oe_highlight"/>
                     </head>
                     <sheet>
@@ -26,7 +27,7 @@
                 </form>
             </field>
       </record>
-      
+
       <record id="action_mrp_production_report_wizard" model="ir.actions.act_window">
         <field name="name">Print production wizard</field>
         <field name="type">ir.actions.act_window</field>
