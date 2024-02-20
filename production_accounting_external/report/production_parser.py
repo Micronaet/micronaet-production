@@ -664,7 +664,6 @@ class Parser(report_sxw.rml_parse):
             ws_name, row, header, format_header)
         excel_pool.merge_cell(ws_name, [row, 0, row, 1])
 
-        pdb.set_trace()
         for mode, line, total in data:
             if mode != 'L':
                 continue
