@@ -808,7 +808,7 @@ class MrpProductionStatsMixed(orm.Model):
         # Header line:
         row += 1
         WS.write(row, 0, _('Programma'), xls_format['header'])
-        WS.write(row, 1, _('Girono'), xls_format['header'])
+        WS.write(row, 1, _('Giorno'), xls_format['header'])
         WS.write(row, 2, _('Cont.'), xls_format['header'])
         WS.write(row, 3, _('Durata'), xls_format['header'])
         WS.write(row, 4, _('Cambio totale'), xls_format['header'])
@@ -819,6 +819,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 7, _('Dur. med.'), xls_format['header'])
         WS.write(row, 8, _('Cambio tot. med.'), xls_format['header'])
         WS.write(row, 9, _('Cambio gap med.'), xls_format['header'])
+        WS.autofilter(row, 0, row, 9)
 
         WS.freeze_panes(2, 2)
         # Write data:
@@ -1317,7 +1318,7 @@ class MrpProductionStatsMixed(orm.Model):
         # Medie:
         WS.write(row, 6, _('Dur. med.'), xls_format['header'])
         WS.write(row, 7, _('Cambio gap med.'), xls_format['header'])
-
+        WS.autofilter(row, 0, row, 7)
         WS.freeze_panes(2, 2)
         # Write data:
         cell_format = xls_format['text']
