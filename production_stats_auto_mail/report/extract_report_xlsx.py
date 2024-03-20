@@ -203,6 +203,8 @@ class MrpProductionStatsMixed(orm.Model):
         # Statistic 20 days page:
         now_20 = (datetime.now() - timedelta(days=20)).strftime(
             DEFAULT_SERVER_DATE_FORMAT)
+        now_40 = (datetime.now() - timedelta(days=40)).strftime(
+            DEFAULT_SERVER_DATE_FORMAT)
         now_6_month = (datetime.now() - timedelta(days=180)).strftime(
             DEFAULT_SERVER_DATE_FORMAT)
 
@@ -707,7 +709,7 @@ class MrpProductionStatsMixed(orm.Model):
         # Collect data:
         job_ids = job_pool.search(cr, uid, [
             ('source_id.code', '=', 'SALD01'),
-            ('created_at', '>=', '%s 00:00:00' % now_20),
+            ('created_at', '>=', '%s 00:00:00' % now_6_month),
             # ('created_at', '<=', '%s 23:59:59' % now_1),
             ], context=context)
         WS = WB.add_worksheet('GIMAF')
@@ -718,7 +720,7 @@ class MrpProductionStatsMixed(orm.Model):
         row = 0
         WS.write(
             row, 0,
-            'Job saldatrice GIMAF dalla data di rif.: %s' % now_20,
+            'Job saldatrice GIMAF dalla data di rif.: %s' % now_6_month,
             xls_format['title'],
             )
 
@@ -796,7 +798,7 @@ class MrpProductionStatsMixed(orm.Model):
         row = 0
         WS.write(
             row, 0,
-            'Medie per GIMAF dalla data di rif.: %s' % now_20,
+            'Medie per GIMAF dalla data di rif.: %s' % now_6_month,
             xls_format['title'],
             )
 
@@ -849,7 +851,7 @@ class MrpProductionStatsMixed(orm.Model):
         # Collect data:
         cut_ids = cut_pool.search(cr, uid, [
             ('file_id.robot_id.code', '=', 'TAGL01'),
-            ('timestamp', '>=', '%s 00:00:00' % now_20),
+            ('timestamp', '>=', '%s 00:00:00' % now_6_month),
             ], context=context)
         WS = WB.add_worksheet('ADIGE')
         WS.set_column('A:C', 25)
@@ -859,7 +861,7 @@ class MrpProductionStatsMixed(orm.Model):
         row = 0
         WS.write(
             row, 0,
-            'Job tagliabuti ADIGE dalla data di rif.: %s' % now_20,
+            'Job tagliabuti ADIGE dalla data di rif.: %s' % now_6_month,
             xls_format['title'],
             )
 
@@ -938,7 +940,7 @@ class MrpProductionStatsMixed(orm.Model):
         row = 0
         WS.write(
             row, 0,
-            'Medie per ADIGE dalla data di rif.: %s' % now_20,
+            'Medie per ADIGE dalla data di rif.: %s' % now_6_month,
             xls_format['title'],
             )
 
@@ -991,7 +993,7 @@ class MrpProductionStatsMixed(orm.Model):
         # Collect data:
         job_ids = job_pool.search(cr, uid, [
             ('source_id.code', '=', 'FORN01'),
-            ('created_at', '>=', '%s 00:00:00' % now_20),
+            ('created_at', '>=', '%s 00:00:00' % now_6_month),
             ], context=context)
         WS = WB.add_worksheet('ELETTROFRIGO')
         WS.set_column('A:C', 25)
@@ -1001,7 +1003,7 @@ class MrpProductionStatsMixed(orm.Model):
         row = 0
         WS.write(
             row, 0,
-            'Job Forno ELETTROFRIGO dalla data di rif.: %s' % now_20,
+            'Job Forno ELETTROFRIGO dalla data di rif.: %s' % now_6_month,
             xls_format['title'],
             )
 
@@ -1081,7 +1083,8 @@ class MrpProductionStatsMixed(orm.Model):
         row = 0
         WS.write(
             row, 0,
-            'Medie forno per ELETTRIFRIGO dalla data di rif.: %s' % now_20,
+            'Medie forno per ELETTRIFRIGO dalla data di rif.: %s' %
+            now_6_month,
             xls_format['title'],
             )
 
@@ -1134,7 +1137,7 @@ class MrpProductionStatsMixed(orm.Model):
         # Collect data:
         job_ids = job_pool.search(cr, uid, [
             ('source_id.code', '=', 'PIEG01'),
-            ('created_at', '>=', '%s 00:00:00' % now_20),
+            ('created_at', '>=', '%s 00:00:00' % now_6_month),
             # ('created_at', '<=', '%s 23:59:59' % now_1),
             ], context=context)
         WS = WB.add_worksheet('FLECTE')
@@ -1146,7 +1149,7 @@ class MrpProductionStatsMixed(orm.Model):
         row = 0
         WS.write(
             row, 0,
-            'Job piegatubi FLECTE dalla data di rif.: %s' % now_20,
+            'Job piegatubi FLECTE dalla data di rif.: %s' % now_6_month,
             xls_format['title'],
             )
 
@@ -1291,7 +1294,7 @@ class MrpProductionStatsMixed(orm.Model):
         row = 0
         WS.write(
             row, 0,
-            'Medie per FLECTE dalla data di rif.: %s' % now_20,
+            'Medie per FLECTE dalla data di rif.: %s' % now_6_month,
             xls_format['title'],
             )
 
