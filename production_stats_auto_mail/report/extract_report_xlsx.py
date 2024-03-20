@@ -868,7 +868,7 @@ class MrpProductionStatsMixed(orm.Model):
             ], context=context)
         WS = WB.add_worksheet('ADIGE')
         WS.set_column('A:C', 25)
-        WS.set_column('D:I', 15)
+        WS.set_column('D:L', 15)
 
         # Write title row:
         row = 0
@@ -911,6 +911,7 @@ class MrpProductionStatsMixed(orm.Model):
 
             timestamp = self.get_user_time(
                 cr, uid, cut.timestamp, context=context)
+            day = timestamp[:10]
 
             row += 1
             WS.write(row, 0, program.name, cell_format)
@@ -927,20 +928,24 @@ class MrpProductionStatsMixed(orm.Model):
                 row, 8, 'X' if duration_need_setup else '', cell_format)
 
             # Medium data:
+            if program not in medium_data:
+                medium_data[program] = {}
+
+            if day not in medium_data[program]:
+                medium_data[program][day] = [
+                    0,  # counter
+                    0.0,  # duration
+                    0.0,  # total change
+                    0.0,  # gap change
+                    0.0,  # setup
+                ]
+
+            medium_data[program][day][0] += 1
             if not duration_not_considered:
-                if program not in medium_data:
-                    medium_data[program] = [
-                        0,  # counter
-                        0.0,  # duration
-                        0.0,  # total change
-                        0.0,  # gap change
-                        0.0,  # setup
-                    ]
-                medium_data[program][0] += 1
-                medium_data[program][1] += bar_duration
-                medium_data[program][2] += duration_change_total
-                medium_data[program][3] += duration_change_gap
-                medium_data[program][4] += duration_setup
+                medium_data[program][day][1] += bar_duration
+                medium_data[program][day][2] += duration_change_total
+                medium_data[program][day][3] += duration_change_gap
+                medium_data[program][day][4] += duration_setup
 
         # ---------------------------------------------------------------------
         # Tagliatubi media:
@@ -960,44 +965,48 @@ class MrpProductionStatsMixed(orm.Model):
         # Header line:
         row += 1
         WS.write(row, 0, _('Programma'), xls_format['header'])
-        WS.write(row, 1, _('Cont.'), xls_format['header'])
-        WS.write(row, 2, _('Durata'), xls_format['header'])
-        WS.write(row, 3, _('Cambio totale'), xls_format['header'])
-        WS.write(row, 4, _('Cambio gap'), xls_format['header'])
-        WS.write(row, 5, _('Attrezzaggio'), xls_format['header'])
+        WS.write(row, 1, _('Giorno'), xls_format['header'])
+        WS.write(row, 2, _('Cont.'), xls_format['header'])
+        WS.write(row, 3, _('Durata'), xls_format['header'])
+        WS.write(row, 4, _('Cambio totale'), xls_format['header'])
+        WS.write(row, 5, _('Cambio gap'), xls_format['header'])
+        WS.write(row, 6, _('Attrezzaggio'), xls_format['header'])
 
         # Medie:
-        WS.write(row, 6, _('Dur. med.'), xls_format['header'])
-        WS.write(row, 7, _('Cambio tot. med.'), xls_format['header'])
-        WS.write(row, 8, _('Cambio gap med.'), xls_format['header'])
+        WS.write(row, 7, _('Dur. med.'), xls_format['header'])
+        WS.write(row, 8, _('Cambio tot. med.'), xls_format['header'])
+        WS.write(row, 9, _('Cambio gap med.'), xls_format['header'])
         WS.autofilter(row, 0, row, 8)
         WS.freeze_panes(2, 2)
 
         # Write data:
         cell_format = xls_format['text']
         for program in sorted(medium_data, key=lambda k: k.name):
-            (total, job_duration, duration_change_total, duration_change_gap,
-             duration_setup) = medium_data[program]
-            if total:
-                mx_duration = job_duration / total
-                mx_change_total = duration_change_total / total
-                mx_change_gap = duration_change_gap / total
-            else:
-                mx_duration = mx_change_total = mx_change_gap = 0.0
+            for day in sorted(medium_data, reverse=True):
+                (total, job_duration, duration_change_total,
+                 duration_change_gap, duration_setup) = \
+                    medium_data[program][day]
+                if total:
+                    mx_duration = job_duration / total
+                    mx_change_total = duration_change_total / total
+                    mx_change_gap = duration_change_gap / total
+                else:
+                    mx_duration = mx_change_total = mx_change_gap = 0.0
 
-            row += 1
-            WS.write(row, 0, program.name, cell_format)
-            WS.write(row, 1, total, cell_format)
-            WS.write(row, 2, format_hour(job_duration), cell_format)
-            WS.write(row, 3, format_hour(duration_change_total), cell_format)
-            WS.write(row, 4, format_hour(duration_change_gap), cell_format)
-            WS.write(row, 5, format_hour(duration_setup), cell_format)
+                row += 1
+                WS.write(row, 0, program.name, cell_format)
+                WS.write(row, 1, format_date(day), cell_format)
+                WS.write(row, 2, total, cell_format)
+                WS.write(row, 3, format_hour(job_duration), cell_format)
+                WS.write(row, 4, format_hour(
+                    duration_change_total), cell_format)
+                WS.write(row, 5, format_hour(duration_change_gap), cell_format)
+                WS.write(row, 6, format_hour(duration_setup), cell_format)
 
-            WS.write(row, 6, format_hour(mx_duration), cell_format)
-            WS.write(row, 7, format_hour(mx_change_total), cell_format)
-            WS.write(row, 8, format_hour(mx_change_gap), cell_format)
-
-            # todo write expected medium
+                WS.write(row, 7, format_hour(mx_duration), cell_format)
+                WS.write(row, 8, format_hour(mx_change_total), cell_format)
+                WS.write(row, 9, format_hour(mx_change_gap), cell_format)
+                # todo write expected medium
 
         # ---------------------------------------------------------------------
         # FORNO:
