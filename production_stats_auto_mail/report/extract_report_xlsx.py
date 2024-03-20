@@ -436,7 +436,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 9, _('Dettaglio medie'), xls_format['header'])
         WS.write(row, 10, _('Dettaglio'), xls_format['header'])
         WS.autofilter(row, 0, row, 10)
-        WS.freeze_panes(4, 1)
+        WS.freeze_panes(4, 2)
 
         # Write data:
         cell_format = xls_format['text']
@@ -579,7 +579,7 @@ class MrpProductionStatsMixed(orm.Model):
                 WS.write(row, 11, _('Dett. prod.'), xls_format['header'])
                 WS.write(row, 12, _('Dett. medie'), xls_format['header'])
                 WS.autofilter(row, 0, row, 5)  # Till columns 6
-                WS.freeze_panes(3, 1)
+                WS.freeze_panes(3, 3)
 
                 # Setup again:
                 cell_format = xls_format['text']
@@ -676,7 +676,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 8, _('Pz / H'), xls_format['header'])
         WS.write(row, 9, _('Dettaglio'), xls_format['header'])
         WS.autofilter(row, 0, row, 9)
-        WS.freeze_panes(2, 1)
+        WS.freeze_panes(2, 2)
 
         # Write data:
         for line in sorted(
@@ -740,7 +740,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 7, _('Non cons.'), xls_format['header'])
         WS.write(row, 8, _('Nuova'), xls_format['header'])
         WS.autofilter(row, 0, row, 8)
-        WS.freeze_panes(2, 1)
+        WS.freeze_panes(2, 2)
 
         # Write data:
         for job in job_pool.browse(cr, uid, job_ids, context=context):
@@ -890,7 +890,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 7, _('Non cons.'), xls_format['header'])
         WS.write(row, 8, _('Nuova'), xls_format['header'])
         WS.autofilter(row, 0, row, 8)
-        WS.freeze_panes(2, 1)
+        WS.freeze_panes(2, 2)
 
         # Write data:
         for cut in cut_pool.browse(cr, uid, cut_ids, context=context):
@@ -971,7 +971,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 7, _('Cambio tot. med.'), xls_format['header'])
         WS.write(row, 8, _('Cambio gap med.'), xls_format['header'])
         WS.autofilter(row, 0, row, 8)
-        WS.freeze_panes(2, 1)
+        WS.freeze_panes(2, 2)
 
         # Write data:
         cell_format = xls_format['text']
@@ -1033,7 +1033,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 7, _('Non cons.'), xls_format['header'])
         WS.write(row, 8, _('Nuova'), xls_format['header'])
         WS.autofilter(row, 0, row, 8)
-        WS.freeze_panes(2, 1)
+        WS.freeze_panes(2, 2)
 
         # Write data:
         for job in job_pool.browse(cr, uid, job_ids, context=context):
@@ -1116,7 +1116,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 7, _('Cambio tot. med.'), xls_format['header'])
         WS.write(row, 8, _('Cambio gap med.'), xls_format['header'])
         WS.autofilter(row, 0, row, 8)
-        WS.freeze_panes(2, 1)
+        WS.freeze_panes(2, 2)
 
         # Write data:
         cell_format = xls_format['text']
@@ -1180,7 +1180,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 7, _('Nuova'), xls_format['header'])
         WS.write(row, 8, _('Note'), xls_format['header'])
         WS.autofilter(row, 0, row, 8)
-        WS.freeze_panes(2, 1)
+        WS.freeze_panes(2, 2)
 
         # Write data:
         gap_limit = 1.0
