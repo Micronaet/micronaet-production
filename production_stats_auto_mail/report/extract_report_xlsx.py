@@ -894,10 +894,19 @@ class MrpProductionStatsMixed(orm.Model):
 
         # Write data:
         for cut in cut_pool.browse(cr, uid, cut_ids, context=context):
-            if cut.state != 'CAMBIO BARRA':  # todo if no need other go search!
+            # todo if no need other go search!
+            # if cut.state != 'CAMBIO BARRA':
+            if cut.state == 'CAMBIO BARRA':
+                # Check only STOP and TAGLIO
                 continue
+
             duration_not_considered = False  # todo Not used for this?
-            bar_duration = cut.duration_bar
+            duration_piece = cut.duration_piece
+            if duration_piece <= 0:
+                # No cut pz!
+                continue
+
+            # bar_duration = cut.duration_bar
             program = cut.program_id
 
             # todo Data not present for now:
@@ -917,7 +926,7 @@ class MrpProductionStatsMixed(orm.Model):
             WS.write(row, 0, program.name, cell_format)
             WS.write(row, 1, timestamp, cell_format)
             WS.write(row, 2, '/', cell_format)  # not used for now
-            WS.write(row, 3, format_hour(bar_duration), cell_format)
+            WS.write(row, 3, format_hour(duration_piece), cell_format)
             WS.write(row, 4, format_hour(duration_change_total), cell_format)
             WS.write(row, 5, format_hour(duration_change_gap), cell_format)
             WS.write(row, 6, format_hour(duration_setup), cell_format)
@@ -942,7 +951,7 @@ class MrpProductionStatsMixed(orm.Model):
 
             medium_data[program][day][0] += 1
             if not duration_not_considered:
-                medium_data[program][day][1] += bar_duration
+                medium_data[program][day][1] += duration_piece
                 medium_data[program][day][2] += duration_change_total
                 medium_data[program][day][3] += duration_change_gap
                 medium_data[program][day][4] += duration_setup
@@ -966,7 +975,7 @@ class MrpProductionStatsMixed(orm.Model):
         row += 1
         WS.write(row, 0, _('Programma'), xls_format['header'])
         WS.write(row, 1, _('Giorno'), xls_format['header'])
-        WS.write(row, 2, _('Cont.'), xls_format['header'])
+        WS.write(row, 2, _('Pz.'), xls_format['header'])
         WS.write(row, 3, _('Durata'), xls_format['header'])
         WS.write(row, 4, _('Cambio totale'), xls_format['header'])
         WS.write(row, 5, _('Cambio gap'), xls_format['header'])
