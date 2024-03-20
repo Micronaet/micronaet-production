@@ -1308,7 +1308,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 6, _('Dur. med.'), xls_format['header'])
         WS.write(row, 7, _('Cambio gap med.'), xls_format['header'])
 
-        WS.freeze_panes(2, 1)
+        WS.freeze_panes(2, 2)
         # Write data:
         cell_format = xls_format['text']
         for program in sorted(medium_data, key=lambda k: k.name):
