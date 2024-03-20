@@ -435,6 +435,8 @@ class MrpProductionStatsMixed(orm.Model):
         # WS.write(row, 9, _('Dettaglio lav.'), xls_format['header'])
         WS.write(row, 9, _('Dettaglio medie'), xls_format['header'])
         WS.write(row, 10, _('Dettaglio'), xls_format['header'])
+        WS.autofilter(row, 0, row, 10)
+        WS.freeze_panes(4, 1)
 
         # Write data:
         cell_format = xls_format['text']
@@ -673,6 +675,8 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 7, _('Tempo'), xls_format['header'])
         WS.write(row, 8, _('Pz / H'), xls_format['header'])
         WS.write(row, 9, _('Dettaglio'), xls_format['header'])
+        WS.autofilter(row, 0, row, 9)
+        WS.freeze_panes(2, 1)
 
         # Write data:
         for line in sorted(
@@ -735,7 +739,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 6, _('Attrezzaggio'), xls_format['header'])
         WS.write(row, 7, _('Non cons.'), xls_format['header'])
         WS.write(row, 8, _('Nuova'), xls_format['header'])
-
+        WS.autofilter(row, 0, row, 8)
         WS.freeze_panes(2, 1)
 
         # Write data:
@@ -820,8 +824,8 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 8, _('Cambio tot. med.'), xls_format['header'])
         WS.write(row, 9, _('Cambio gap med.'), xls_format['header'])
         WS.autofilter(row, 0, row, 9)
-
         WS.freeze_panes(2, 2)
+
         # Write data:
         cell_format = xls_format['text']
         for program in sorted(medium_data, key=lambda k: k.name):
@@ -885,7 +889,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 6, _('Attrezzaggio'), xls_format['header'])
         WS.write(row, 7, _('Non cons.'), xls_format['header'])
         WS.write(row, 8, _('Nuova'), xls_format['header'])
-
+        WS.autofilter(row, 0, row, 8)
         WS.freeze_panes(2, 1)
 
         # Write data:
@@ -943,7 +947,7 @@ class MrpProductionStatsMixed(orm.Model):
         # ---------------------------------------------------------------------
         WS = WB.add_worksheet('ADIGE medie')
         WS.set_column('A:A', 25)
-        WS.set_column('B:I', 12)
+        WS.set_column('B:L', 12)
 
         # Write title row:
         row = 0
@@ -966,8 +970,9 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 6, _('Dur. med.'), xls_format['header'])
         WS.write(row, 7, _('Cambio tot. med.'), xls_format['header'])
         WS.write(row, 8, _('Cambio gap med.'), xls_format['header'])
-
+        WS.autofilter(row, 0, row, 8)
         WS.freeze_panes(2, 1)
+
         # Write data:
         cell_format = xls_format['text']
         for program in sorted(medium_data, key=lambda k: k.name):
@@ -1027,7 +1032,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 6, _('Attrezzaggio'), xls_format['header'])
         WS.write(row, 7, _('Non cons.'), xls_format['header'])
         WS.write(row, 8, _('Nuova'), xls_format['header'])
-
+        WS.autofilter(row, 0, row, 8)
         WS.freeze_panes(2, 1)
 
         # Write data:
@@ -1110,8 +1115,9 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 6, _('Dur. med.'), xls_format['header'])
         WS.write(row, 7, _('Cambio tot. med.'), xls_format['header'])
         WS.write(row, 8, _('Cambio gap med.'), xls_format['header'])
-
+        WS.autofilter(row, 0, row, 8)
         WS.freeze_panes(2, 1)
+
         # Write data:
         cell_format = xls_format['text']
         for program in sorted(medium_data, key=lambda k: k.name):
@@ -1173,7 +1179,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 6, _('Non cons.'), xls_format['header'])
         WS.write(row, 7, _('Nuova'), xls_format['header'])
         WS.write(row, 8, _('Note'), xls_format['header'])
-
+        WS.autofilter(row, 0, row, 8)
         WS.freeze_panes(2, 1)
 
         # Write data:
@@ -1320,6 +1326,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 7, _('Cambio gap med.'), xls_format['header'])
         WS.autofilter(row, 0, row, 7)
         WS.freeze_panes(2, 2)
+
         # Write data:
         cell_format = xls_format['text']
         for program in sorted(medium_data, key=lambda k: k.name):
