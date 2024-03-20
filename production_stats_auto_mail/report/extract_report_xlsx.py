@@ -436,7 +436,7 @@ class MrpProductionStatsMixed(orm.Model):
         WS.write(row, 9, _('Dettaglio medie'), xls_format['header'])
         WS.write(row, 10, _('Dettaglio'), xls_format['header'])
         WS.autofilter(row, 0, row, 10)
-        WS.freeze_panes(4, 2)
+        WS.freeze_panes(2, 2)
 
         # Write data:
         cell_format = xls_format['text']
@@ -842,7 +842,7 @@ class MrpProductionStatsMixed(orm.Model):
 
                 row += 1
                 WS.write(row, 0, program.name, cell_format)
-                WS.write(row, 1, day, cell_format)
+                WS.write(row, 1, format_date(day), cell_format)
                 WS.write(row, 2, total, cell_format)
                 WS.write(row, 3, format_hour(job_duration), cell_format)
                 WS.write(row, 4, format_hour(duration_change_total),
@@ -1341,7 +1341,7 @@ class MrpProductionStatsMixed(orm.Model):
 
                 row += 1
                 WS.write(row, 0, program.name, cell_format)
-                WS.write(row, 1, day, cell_format)
+                WS.write(row, 1, format_date(day), cell_format)
                 WS.write(row, 2, total, cell_format)
                 WS.write(row, 3, format_hour(job_duration), cell_format)
                 WS.write(row, 4, format_hour(duration_change_gap), cell_format)
