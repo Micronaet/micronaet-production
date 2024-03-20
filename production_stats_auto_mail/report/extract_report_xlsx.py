@@ -191,7 +191,7 @@ class MrpProductionStatsMixed(orm.Model):
         res = {}
         now = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
-        # TODO Collect data in res
+        # todo Collect data in res
         now_0 = datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
         now_1 = (datetime.now() - timedelta(days=1)).strftime(
             DEFAULT_SERVER_DATE_FORMAT)
@@ -1127,7 +1127,7 @@ class MrpProductionStatsMixed(orm.Model):
             # todo write expected medium
 
         # ---------------------------------------------------------------------
-        # PIEGATUBI:
+        #                       PIEGATUBI FLECTE:
         # ---------------------------------------------------------------------
         medium_data = {}
         job_pool = self.pool.get('industria.job')
@@ -1259,26 +1259,33 @@ class MrpProductionStatsMixed(orm.Model):
                 xls_format['text'])
             WS.write(row, 8, note if counter != 1 else '', xls_format['text'])
 
-            # Medium data:
-            if not duration_not_considered:
-                if program not in medium_data:
-                    medium_data[program] = [
-                        0,  # counter
-                        0.0,  # duration
-                        0.0,  # gap change
-                        0.0,  # setup
+            # -----------------------------------------------------------------
+            # Medium data [program-day]:
+            # -----------------------------------------------------------------
+            if program not in medium_data:
+                medium_data[program] = {}
+            if day not in medium_data[program]:
+                medium_data[program][day] = [
+                    0,  # counter
+                    0.0,  # duration
+                    0.0,  # gap change
+                    0.0,  # setup
                     ]
-                medium_data[program][0] += 1
-                medium_data[program][1] += job_duration
-                medium_data[program][2] += duration_change_gap
-                medium_data[program][3] += duration_setup
+
+            if not duration_not_considered:
+                medium_data[program][day][0] += 1
+                medium_data[program][day][1] += job_duration
+                medium_data[program][day][2] += duration_change_gap
+                medium_data[program][day][3] += duration_setup
+            else:  # Quantity always consider (time not)
+                medium_data[program][day][0] += 1
 
         # ---------------------------------------------------------------------
         # Piegatubi media:
         # ---------------------------------------------------------------------
         WS = WB.add_worksheet('FLECTE medie')
         WS.set_column('A:A', 25)
-        WS.set_column('B:I', 12)
+        WS.set_column('B:L', 12)
 
         # Write title row:
         row = 0
@@ -1291,37 +1298,40 @@ class MrpProductionStatsMixed(orm.Model):
         # Header line:
         row += 1
         WS.write(row, 0, _('Programma'), xls_format['header'])
-        WS.write(row, 1, _('Cont.'), xls_format['header'])
-        WS.write(row, 2, _('Durata'), xls_format['header'])
-        WS.write(row, 3, _('Cambio gap'), xls_format['header'])
-        WS.write(row, 4, _('Attrezzaggio'), xls_format['header'])
+        WS.write(row, 1, _('Giorno'), xls_format['header'])
+        WS.write(row, 2, _('Cont.'), xls_format['header'])
+        WS.write(row, 3, _('Durata'), xls_format['header'])
+        WS.write(row, 4, _('Cambio gap'), xls_format['header'])
+        WS.write(row, 5, _('Attrezzaggio'), xls_format['header'])
 
         # Medie:
-        WS.write(row, 5, _('Dur. med.'), xls_format['header'])
-        WS.write(row, 6, _('Cambio gap med.'), xls_format['header'])
+        WS.write(row, 6, _('Dur. med.'), xls_format['header'])
+        WS.write(row, 7, _('Cambio gap med.'), xls_format['header'])
 
         WS.freeze_panes(2, 1)
         # Write data:
         cell_format = xls_format['text']
         for program in sorted(medium_data, key=lambda k: k.name):
-            (total, job_duration, duration_change_gap, duration_setup) = \
-                medium_data[program]
-            if total:
-                mx_duration = job_duration / total
-                mx_change_gap = duration_change_gap / total
-            else:
-                mx_duration = mx_change_gap = 0.0
+            for day in sorted(medium_data[program]):
+                (total, job_duration, duration_change_gap, duration_setup) = \
+                    medium_data[program][day]
+                if total:
+                    mx_duration = job_duration / total
+                    mx_change_gap = duration_change_gap / total
+                else:
+                    mx_duration = mx_change_gap = 0.0
 
-            row += 1
-            WS.write(row, 0, program.name, cell_format)
-            WS.write(row, 1, total, cell_format)
-            WS.write(row, 2, format_hour(job_duration), cell_format)
-            WS.write(row, 3, format_hour(duration_change_gap), cell_format)
-            WS.write(row, 4, format_hour(duration_setup), cell_format)
+                row += 1
+                WS.write(row, 0, program.name, cell_format)
+                WS.write(row, 1, day, cell_format)
+                WS.write(row, 2, total, cell_format)
+                WS.write(row, 3, format_hour(job_duration), cell_format)
+                WS.write(row, 4, format_hour(duration_change_gap), cell_format)
+                WS.write(row, 5, format_hour(duration_setup), cell_format)
 
-            WS.write(row, 5, format_hour(mx_duration), cell_format)
-            WS.write(row, 6, format_hour(mx_change_gap), cell_format)
-            # todo write expected medium
+                WS.write(row, 6, format_hour(mx_duration), cell_format)
+                WS.write(row, 7, format_hour(mx_change_gap), cell_format)
+                # todo write expected medium
 
         WB.close()
 
