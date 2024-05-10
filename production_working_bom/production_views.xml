@@ -87,7 +87,7 @@
                            <field name="workcenter_id" />
                            <field name="production_bom_id" />
                            <field name="workhour_id" />
-                           <!--<field name="fixed" invisible="1"/>-->
+                           <!--<field name="fixed" invisble="1"/>-->
                            <field name="workers" string="Empl."/>
                            <field name="item_hour" string="Pz/H" />
                            <field name="duration" widget="float_time" sum="total" string="BOM H."/> <!--TODO remove after check WC generation works-->
@@ -99,7 +99,7 @@
                            <button name="open_lavoration_wc" type="object" string="" icon="terp-calendar"/>
                         </tree>
                     </field>
-                    <group colspan="4" col="4" invisibile="1">
+                    <group colspan="4" col="4" invisible="1">
                         <separator string="Scheduled" colspan="3"/>
                         <button name="open_lavoration" type="object" string="Lavorations" icon="terp-calendar"/>
                     </group>
