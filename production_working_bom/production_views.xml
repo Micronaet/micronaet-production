@@ -9,14 +9,14 @@
         <field name="arch" type="xml">
             <form string="Parameters" version="7.0">
                 <group colspan="4" col="4">
-                    <field name="name" readonly="1" /> 
+                    <field name="name" readonly="1" />
                     <newline />
                     <field name="work_hour_day" />
                     <field name="extra_hour_day" />
                     <field name="employee" />
                     <field name="start_hour" />
                 </group>
-            </form>    
+            </form>
         </field>
     </record>
     <record model="ir.actions.act_window" id="action_res_company_parameter">
@@ -52,37 +52,36 @@
             <field name="cycle" position="attributes">
                 <attribute name="invisible">context.get('embedded',False)</attribute>
             </field>
-            <field name="hour" position="attributes">                
+            <field name="hour" position="attributes">
                 <attribute name="sum">Total</attribute>
             </field>
-            <field name="state" position="before">                
+            <field name="state" position="before">
                 <field name="lavoration_qty" sum="total"/>
                 <field name="workers" />
             </field>
         </field>
-    </record>    
-    
+    </record>
+
     <record model="ir.ui.view" id="mrp_production_lavoration_form_view">
         <field name="name">Production lavoration</field>
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_form_view" />
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-                <page string="Lavoration">
-
+                <page string="Lavorazioni">
                     <group colspan="4" col="8">
                         <!--<separator string="Original setup (creation time):" colspan="8"/>-->
                         <!--<field name="workhour_id" string="Workhour"/>-->
                         <!--<field name="schedule_from_date" string="Start date"/>-->
                         <field name="worker_ids" widget="many2many_tags" colspan="6" string="Workers"/>
-                        <button name="reschedule_lavoration" type="object" colspan="2" string="Re-schedule all" confirm="This delete all lavoration and phase and recreate with date and workhour setted up, confirm?"/>
-                        <separator string="Lavoration blocks:" colspan="8"/>
+                        <button name="reschedule_lavoration" type="object" colspan="2" string="Re-schedule all" confirm="This delete all lavoration and phase and recreate with date and workhour setted up, confirm?" invisible="1"/>
+                        <separator string="Lavoration blocks:" colspan="8" invisible="1"/>
                     </group>
-                    <field name="lavoration_ids" colors="blue:fixed==True" readonly="1"> <!--readonly all!!-->
+                    <field name="lavoration_ids" colors="blue:fixed==True" readonly="1" invisible="1"> <!--readonly all!!-->
                         <tree string="Lavoration" editable="bottom" colors="green:master==True">
                            <field name="master" invisible="1"/>
                            <field name="create_date" />
-                           <field name="schedule_from_date" string="From"/>                           
+                           <field name="schedule_from_date" string="From"/>
                            <!--<field name="level" string="Lev."/>
                            <field name="phase_id" />-->
                            <field name="workcenter_id" />
@@ -92,7 +91,7 @@
                            <field name="workers" string="Empl."/>
                            <field name="item_hour" string="Pz/H" />
                            <field name="duration" widget="float_time" sum="total" string="BOM H."/> <!--TODO remove after check WC generation works-->
-                           
+
                            <!--From workcenter:-->
                            <field name="total_number" sum="lavoration" string="# lav."/>
                            <field name="total_duration" widget="float_time" sum="duration" string="H. tot."/>
@@ -100,12 +99,12 @@
                            <button name="open_lavoration_wc" type="object" string="" icon="terp-calendar"/>
                         </tree>
                     </field>
-                    <group colspan="4" col="4">
+                    <group colspan="4" col="4" invisibile="1">
                         <separator string="Scheduled" colspan="3"/>
                         <button name="open_lavoration" type="object" string="Lavorations" icon="terp-calendar"/>
-                    </group>    
+                    </group>
 
-                    <field name="scheduled_lavoration_ids" context="{'embedded':True}"/>
+                    <field name="scheduled_lavoration_ids" context="{'embedded':True}" invisible="1"/>
                 </page>
             </xpath>
         </field>
@@ -134,7 +133,7 @@
             <calendar color="product" date_delay="hour" date_start="date_planned" string="Operations">
 	            <field name="workcenter_id" />
 	            <!--<field name="production_id" />-->
-	            <field name="product" />	            
+	            <field name="product" />
             </calendar>
         </field>
     </record>
@@ -147,7 +146,7 @@
             <calendar color="workcenter_id" date_delay="hour" date_start="date_planned" string="Operations">
 	            <field name="workcenter_id" />
 	            <!--<field name="production_id" />-->
-	            <field name="product" />	            
+	            <field name="product" />
             </calendar>
         </field>
     </record>
@@ -161,15 +160,15 @@
         <field name="context">{}</field>
         <field name="domain">[]</field>
     </record>
-    
-    <menuitem 
-        parent="mrp.menu_mrp_production_action" 
-        id="menu_mrp_production_for_production" 
+
+    <menuitem
+        parent="mrp.menu_mrp_production_action"
+        id="menu_mrp_production_for_production"
         action="action_mrp_production_production_calendar"/>
 
-    <menuitem 
-        parent="mrp.menu_mrp_configuration" 
-        id="menu_res_company_parameter" 
+    <menuitem
+        parent="mrp.menu_mrp_configuration"
+        id="menu_res_company_parameter"
         action="action_res_company_parameter"/>
     </data>
 </openerp>
