@@ -701,15 +701,18 @@ class Parser(report_sxw.rml_parse):
     def get_object_with_total(self, o, data=None):
         """ Get object with totals for normal report
         """
+        # Pool used:
+        mrp_pool = self.pool.get('mrp.production')
+        job_pool = self.pool.get('mrp.production.stats')
+
+        # Default args:
         cr = self.cr
         uid = self.uid
         context = {'lang': 'it_IT'}
         if data is None:
             data = {}
 
-        job_pool = self.pool.get('mrp.production.stats')
-
-        # Job mode:
+        # Mode (and Job mode):
         mode = data.get('mode', 'clean')
         job_id = data.get('wizard_job_id')
         if job_id:
@@ -741,34 +744,25 @@ class Parser(report_sxw.rml_parse):
 
         # Table dictionary:
         self.parent_frame_table = {}
-
         self.mrp_sol = []
         old_line = False
         for line in lines:
-
-            # Variable:
-            product_uom_qty = line.product_uom_qty
-            product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
             default_code = line.default_code
 
-            # Consider OC as OC - assigned = net production:
-            mx_assigned_qty = line.mx_assigned_qty
-            product_uom_qty -= mx_assigned_qty
+            if job_id:  # Force for Job q. if present
+                job_uom_qty = line.job_uom_qty
+            else:
+                job_uom_qty = 0
 
-            if mode == 'clean':  # remove delivered qty (OC and Maked)
-                delivered_qty = line.delivered_qty
-                product_uom_qty -= delivered_qty
-                product_uom_maked_sync_qty -= delivered_qty
-                if not product_uom_qty:
-                    continue  # jump empty line
+            # Read Qty with standard function:
+            reply = mrp_pool.get_mrp_oc_maked_qty_from_line(
+                line, mode, job_uom_qty)
+            if not reply:  # Line not needed in print (clean mode)!
+                continue
 
-                if product_uom_maked_sync_qty < 0:  # remain 0 if negative
-                    product_uom_maked_sync_qty = 0.0
-                elif product_uom_maked_sync_qty > 0:  # clean ordered with done
-                    product_uom_qty -= product_uom_maked_sync_qty
-                    if not product_uom_qty:
-                        continue  # jump empty line
-                    product_uom_maked_sync_qty = 0.0
+            # Extract data from call:
+            product_uom_qty = reply.get('total', 0.0)
+            product_uom_maked_sync_qty = reply.get('done', 0.0)
 
             # Total operations:
             self.report_extra_data['total_qty'] += product_uom_qty
@@ -791,6 +785,9 @@ class Parser(report_sxw.rml_parse):
             else:
                 package = False
 
+            # -----------------------------------------------------------------
+            #                           Total:
+            # -----------------------------------------------------------------
             # 1. Parent total:
             if parent not in self.parents:
                 self.parents[parent] = 0.0
@@ -879,7 +876,7 @@ class Parser(report_sxw.rml_parse):
                     record.append('')
             self.parent_frame_clean.append(record)
 
-        return records # TODO remove?
+        return records  # todo remove?
 
     def get_object_remain(self, ):
         """ Get as browse obj all record with unsync elements
@@ -899,3 +896,48 @@ class Parser(report_sxw.rml_parse):
                 )
         except:
             return "0:00"
+
+
+class MrpProductionInherit(orm.Model):
+    """ Save used function
+    """
+    _inherit = 'mrp.production'
+
+    def get_mrp_oc_maked_qty_from_line(self, line, mode, job_uom_qty):
+        """ Extract line data from MRP information
+        """
+        # Parameters:
+        product_uom_qty = line.product_uom_qty
+        product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
+
+        # Consider OC as OC - assigned = net production:
+        mx_assigned_qty = line.mx_assigned_qty
+        product_uom_qty -= mx_assigned_qty
+
+        # ---------------------------------------------------------------------
+        # Or Job mode XOR clean mode!
+        # ---------------------------------------------------------------------
+        if job_uom_qty:  # Job mode:
+            product_uom_qty = job_uom_qty  # Forceq q.
+            product_uom_maked_sync_qty = 0.0  # All to produce!
+
+        elif mode == 'clean':  # remove delivered qty (OC and Maked)
+            delivered_qty = line.delivered_qty
+            product_uom_qty -= delivered_qty
+            product_uom_maked_sync_qty -= delivered_qty
+
+            if not product_uom_qty:
+                return False  # jump empty line
+
+            if product_uom_maked_sync_qty < 0:  # remain 0 if negative
+                product_uom_maked_sync_qty = 0.0
+            elif product_uom_maked_sync_qty > 0:  # clean ordered with done
+                product_uom_qty -= product_uom_maked_sync_qty
+                if not product_uom_qty:
+                    return False  # jump empty line
+                product_uom_maked_sync_qty = 0.0
+
+        return {
+            'total': product_uom_qty,
+            'done': product_uom_maked_sync_qty
+        }

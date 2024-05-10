@@ -18,6 +18,7 @@
 #
 ###############################################################################
 import os
+import pdb
 import sys
 from openerp import netsvc
 import logging
@@ -106,7 +107,7 @@ class MrpProductionStatLine(orm.Model):
         }
 
 
-class MrpProductionStat(orm.Model):
+class MrpProductionStatInherit(orm.Model):
     """ Statistic data
     """
     _inherit = 'mrp.production.stats'
@@ -269,7 +270,14 @@ class MrpProduction(orm.Model):
         # Check difference:
         current = self.get_current_locked_status(
             cr, uid, ids, context=context)
-        previous = eval(mrp_proxy.stat_start_total)
+        try:
+            previous = eval(mrp_proxy.stat_start_total)
+        except:
+            raise osv.except_osv(
+                _('Errore'),
+                _('La procedura prevede di aprire la giornata, '
+                  ' fare i bloccaggi e poi alla fine chiuderla!'),
+            )
 
         total = 0
         default_res = []
