@@ -296,9 +296,16 @@ class CreateMrpProductionWizard(orm.TransientModel):
         sol_pool = self.pool.get('sale.order.line')
 
         # Not used for now:
-        pdb.set_trace()
         product_id = get_product_from_template(
             self, cr, uid, wiz_proxy.product_tmpl_id.id, context=context)
+        if not product_id:
+            raise osv.except_osv(
+                _('Problemi con nome famiglia'),
+                _('Probabilmente è stato disattivato il prodotto collega '
+                  'al modello di prodotti usato per la famiglia. Andare '
+                  'nella videata con l''elenco dei prodotti disattivati, '
+                  'cercarlo, riattivarlo.'),
+            )
 
         # Context dict for pass parameter to create job procedure:
 
