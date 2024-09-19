@@ -20,6 +20,7 @@
 ###############################################################################
 
 import os
+import pdb
 import sys
 import logging
 import openerp
@@ -295,6 +296,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         sol_pool = self.pool.get('sale.order.line')
 
         # Not used for now:
+        pdb.set_trace()
         product_id = get_product_from_template(
             self, cr, uid, wiz_proxy.product_tmpl_id.id, context=context)
 
@@ -307,7 +309,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             # Not mandatory in append:
             'schedule_from_date': wiz_proxy.schedule_from_date,
             'workhour_id': wiz_proxy.workhour_id.id,
-            'mode': wiz_proxy.operation, # TODO split!!!
+            'mode': wiz_proxy.operation,  # todo split!!!
             }
         if wiz_proxy.force_production:
             # Use forced value (now mandatory)
@@ -323,7 +325,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
             # Call onchange function for calculate from BOM:
             try:
                 context['mrp_data'].update(
-                    self.onchange_force_production(cr, uid, ids, True,
+                    self.onchange_force_production(
+                        cr, uid, ids, True,
                         wiz_proxy.bom_id.id, context=context)['value'])
             except:
                 raise osv.except_osv(
@@ -343,22 +346,23 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 })
 
         # Create a production order:
-        if wiz_proxy.operation in ('create'):
+        if wiz_proxy.operation in ('create', ):
             # Create lavoration:
             p_id = production_pool.create(cr, uid, {
                 # Production data:
                 'name': self.pool.get(
                     'ir.sequence').get(cr, uid, 'mrp.production'),
-                'date_planned': context['mrp_data']['schedule_from_date'],#TODO right?
+                # todo right?:
+                'date_planned': context['mrp_data']['schedule_from_date'],
                 'user_id': uid,
                 # 'order_line_ids': [(6, 0, context.get("active_ids", []))],
-                'product_qty': context['mrp_data']['total'], # sum(order line)
+                'product_qty': context['mrp_data']['total'],  # sum(order line)
                 # Keep for mandatory fields in production
                 'bom_id': wiz_proxy.bom_id.id,
 
                 # Not necessary for this installation:
                 'product_id': product_id,
-                'product_uom': wiz_proxy.product_id.uom_id.id or 1,# or \
+                'product_uom': wiz_proxy.product_id.uom_id.id or 1,  # or \
                 #    wiz_proxy.product_tmpl_id.uom_id.id,
                 }, context=context)
 
@@ -368,7 +372,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
                 'mrp_unlinked': False,
                 }, context=context)
 
-        else: # 'append'
+        else:  # 'append'
             p_id = context['mrp_data']['append_production_id']
 
             # Add sale order line to production:
