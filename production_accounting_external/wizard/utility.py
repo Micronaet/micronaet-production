@@ -47,12 +47,30 @@ def get_product_from_template(self, cr, uid, tmpl_id, context=None):
     product_ids = self.pool.get('product.product').search(cr, uid, [
         ('product_tmpl_id', '=', tmpl_id)
         ], context=context)
+
+    if not product_ids:
+        _logger.warning('Error search product from template {}'.format(
+            tmpl_id))
+
+        try:
+            query = '''
+                UPDATE product_product 
+                SET active = 't' 
+                WHERE product_tmpl_id = %s;
+                ''' % tmpl_id
+            cr.execute(query)
+
+            # Search again:
+            product_ids = self.pool.get('product.product').search(cr, uid, [
+                ('product_tmpl_id', '=', tmpl_id)
+            ], context=context)
+        except:
+            _logger.error('Error executing {}'.format(query))
+
     if product_ids:
         return product_ids[0]
     else:
         _logger.error('Error search product from template {}'.format(tmpl_id))
-        # todo riattivare il prodotto cercando anche tra gli active false?
-        # update product_product set active = 't' where product_tmpl_id = %s
         return False
 
 
