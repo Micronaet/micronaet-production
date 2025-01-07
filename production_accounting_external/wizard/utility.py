@@ -51,6 +51,8 @@ def get_product_from_template(self, cr, uid, tmpl_id, context=None):
         return product_ids[0]
     else:
         _logger.error('Error search product from template {}'.format(tmpl_id))
+        # todo riattivare il prodotto cercando anche tra gli active false?
+        # update product_product set active = 't' where product_tmpl_id = %s
         return False
 
 
