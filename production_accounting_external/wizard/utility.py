@@ -37,6 +37,8 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DATETIME_FORMATS_MAP,
     float_compare)
 
+_logger = logging.getLogger(__name__)
+
 
 # Generic function
 def get_product_from_template(self, cr, uid, tmpl_id, context=None):
@@ -48,6 +50,7 @@ def get_product_from_template(self, cr, uid, tmpl_id, context=None):
     if product_ids:
         return product_ids[0]
     else:
+        _logger.error('Error search product from template {}'.format(tmpl_id))
         return False
 
 
