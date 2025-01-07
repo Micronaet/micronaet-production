@@ -48,7 +48,7 @@ def get_product_from_template(self, cr, uid, tmpl_id, context=None):
         ('product_tmpl_id', '=', tmpl_id)
         ], context=context)
 
-    if not product_ids:
+    if not product_ids and tmpl_id:
         _logger.warning('Error search product from template {}'.format(
             tmpl_id))
 
