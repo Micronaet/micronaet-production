@@ -42,24 +42,24 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 _logger = logging.getLogger(__name__)
 
 class SaleOrderProcurementReportWizard(orm.TransientModel):
-    ''' Procurements depend on sale
-    '''    
+    """ Procurements depend on sale
+    """
     _name = 'sale.order.procurement.report.wizard'
     _description = 'Sale produrement wizard'
     
     # -------------------------------------------------------------------------
-    # Utilty:
+    # Utility:
     # -------------------------------------------------------------------------
     def extract_report_grouped_in_excel(
             self, cr, uid, data=None, context=None):
-        ''' Extract XLSX mode for groupe report (used for frames)
-        '''    
+        """ Extract XLSX mode for groupe report (used for frames)
+        """
         # ---------------------------------------------------------------------
         # Utility:
         # ---------------------------------------------------------------------
         def write_xls_mrp_line(WS, row, line):
-            ''' Write line in excel file
-            '''
+            """ Write line in excel file
+            """
             col = 0
             for item, format_cell in line:
                 WS.write(row, col, item, format_cell)
@@ -128,15 +128,14 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
             'num_format': num_format,
             })
         
-        # ---------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         #                     EXPORT EXCEL REPORT
-        # ---------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         order_pool = self.pool.get('sale.order')
         attachment_pool = self.pool.get('ir.attachment')
 
         # Call parser function for get data:
-        res, mrp_date_db = order_pool._report_procurement_grouped_get_objects(
-            cr, uid, data=data, context=context)
+        res, mrp_date_db = order_pool._report_procurement_grouped_get_objects(cr, uid, data=data, context=context)
 
         # ---------------------------------------------------------------------
         # Write header block:
@@ -174,15 +173,14 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
 
         # 1. Filter applied:
         write_xls_mrp_line(WS, 1, [
-            (_('Filtro: %s') % \
-                order_pool._report_procurement_get_filter_description(
-                    cr, uid, context=context), format_title),
+            (_('Filtro: %s') % order_pool._report_procurement_get_filter_description(
+                cr, uid, context=context), format_title),
             ])
             
-        # ---------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         # Write body:
-        # ---------------------------------------------------------------------
-        i = 3 # Last line writed
+        # --------------------------------------------------------------------------------------------------------------
+        i = 3 # Last line written
 
         mrp_total = {}
         for mode, key, line in res:
@@ -196,8 +194,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
                     ]
                 # Add extra column for format border    
                 body.extend([
-                    ('', format_number) for c in range(
-                        0, total_columns - len(body))])
+                    ('', format_number) for c in range(0, total_columns - len(body))])
                         
                 write_xls_mrp_line(WS, i, body)
                 # Add directly extra total for date of MRP production
@@ -209,8 +206,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
                         if col not in mrp_total:
                              mrp_total[col] = 0.0
                         mrp_total[col] += S
-                    
-    
+
             elif mode == 'T':
                 body = [
                     (_('Total fam. %s') % key, format_text_total),
@@ -220,8 +216,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
                     ]
                 # Add extra column for format border    
                 body.extend([
-                    ('', format_number_total) for c in range(
-                        0, total_columns - len(body))])
+                    ('', format_number_total) for c in range(0, total_columns - len(body))])
                 write_xls_mrp_line(WS, i, body)
                 
                 # Write MRP totals:
@@ -232,7 +227,7 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
                 mrp_total = {}
         
         WB.close()
-        _logger.info('End generation framte status report %s' % filename)
+        _logger.info('End generation frame status report %s' % filename)
 
         # Creaet attachment for return XLSX file as download:
         b64 = open(filename, 'rb').read().encode('base64')
@@ -257,8 +252,8 @@ class SaleOrderProcurementReportWizard(orm.TransientModel):
     # Button events:
     # --------------
     def print_report(self, cr, uid, ids, context=None):
-        ''' Redirect to report passing parameters
-        ''' 
+        """ Redirect to report passing parameters
+        """
 
         wiz_proxy = self.browse(cr, uid, ids)[0]
             

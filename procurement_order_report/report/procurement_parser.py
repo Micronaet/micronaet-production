@@ -38,8 +38,8 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 _logger = logging.getLogger(__name__)
 
 class SaleOrder(orm.Model):
-    ''' Utility function moved in sale order
-    '''
+    """ Utility function moved in sale order
+    """
     _inherit = 'sale.order'
     
     # -------------------------------------------------------------------------
@@ -47,19 +47,19 @@ class SaleOrder(orm.Model):
     # -------------------------------------------------------------------------
     def _report_procurement_get_filter_description(
             self, cr, uid, context=None):
-        ''' Return filter for object
-        '''
+        """ Return filter for object
+        """
         return self.filter_description or ''
 
     def _report_procurement_get_orders_selected(self, cr, uid, context=None):
-        ''' Moved function here
-        '''        
+        """ Moved function here
+        """
         return self.browse(cr, uid, self.order_ids, context=context)
         
     def _report_procurement_browse_order_line(
             self, cr, uid, data=None, context=None):
-        ''' Return line (used from 2 report)
-        '''
+        """ Return line (used from 2 report)
+        """
         _logger.info('Start report data: %s' % data)
         
         # Parameters for report management:
@@ -79,11 +79,11 @@ class SaleOrder(orm.Model):
         family_id = data.get('family_id', False)
         family_name = data.get('family_name', '?')
 
-        #from_code = data.get('from_code', 0) - 1
-        #to_code = from_code + data.get('code_length', 0)
-        #if from_code > 0 and to_code > 0:
+        # from_code = data.get('from_code', 0) - 1
+        # to_code = from_code + data.get('code_length', 0)
+        # if from_code > 0 and to_code > 0:
         #    grouped = True
-        #else:
+        # else:
         # TODO remove:
         grouped = False
 
@@ -105,6 +105,7 @@ class SaleOrder(orm.Model):
             # Order for send pricelist:
             ('pricelist_order', '=', False),
             ]
+
         if only_remain:
             domain.append(('mx_closed', '=', False))
         _logger.warning('Domain for order filter: %s' % domain)
@@ -142,8 +143,7 @@ class SaleOrder(orm.Model):
         #    self.filter_description += _(', all order line')
         
         order_ids = self.search(cr, uid, domain)
-        _logger.info('Order filter domain used: [%s] order selected: %s' % (
-            domain, len(order_ids)))
+        _logger.info('Order filter domain used: [%s] order selected: %s' % (domain, len(order_ids)))
 
         # ---------------------------------------------------------------------
         #                      Sale order line filter
@@ -182,7 +182,6 @@ class SaleOrder(orm.Model):
         if to_deadline:
             domain.append(('date_deadline', '<=', to_deadline))
             self.filter_description += _(', deadline <= %s') % to_deadline
-            
 
         if family_id:
             domain.append(('product_id.family_id', '=', family_id))  
@@ -195,17 +194,16 @@ class SaleOrder(orm.Model):
         
     def _report_procurement_grouped_get_objects(
             self, cr, uid, data=None, context=None):
-        ''' Used here parser report function, lauched also for XLSX files 
+        """ Used here parser report function, launched also for XLSX files
             data extract
-        '''         
+        """
         def clean_number(value):
             return ('%s' % value).replace('.', ',')
             
         # Loop on order:
         products = {}
-        browse_line = self._report_procurement_browse_order_line(
-            cr, uid, data, context=context)
-        self.order_ids = [] # list of order interessed from movement
+        browse_line = self._report_procurement_browse_order_line(cr, uid, data, context=context)
+        self.order_ids = [] # list of order touched from movement
 
         record_select = data.get('record_select', 'all')
         only_remain = record_select != 'all'
@@ -218,8 +216,7 @@ class SaleOrder(orm.Model):
                 continue # jump if no item or all produced
 
             product_uom_qty = line.product_uom_qty
-            product_uom_maked_sync_qty = line.mx_assigned_qty + \
-                line.product_uom_maked_sync_qty
+            product_uom_maked_sync_qty = line.mx_assigned_qty + line.product_uom_maked_sync_qty
             delivered_qty = line.delivered_qty
 
             TOT = product_uom_qty - delivered_qty            
@@ -253,7 +250,7 @@ class SaleOrder(orm.Model):
                 if code not in mrp_date_db[date_planned]:
                     mrp_date_db[date_planned][code] = 0
                     
-                #TODO (Suspended):     
+                # TODO (Suspended):
                 mrp_date_db[date_planned][code] += S
         
         # create a res order by product code
@@ -265,11 +262,9 @@ class SaleOrder(orm.Model):
 
         for code in codes:
             # Check if is the same parent code:
-            if last_parent == False: 
-                # XXX only for first line
+            if last_parent == False:  # XXX only for first line
                 last_parent = code[:3] # first 3                
-            elif code[:3] != last_parent:
-                # Save previous code
+            elif code[:3] != last_parent:  # Save previous code
                 res.append(('T', last_parent, parent_total))
                 last_parent = code[:3]
                 parent_total = [0, 0, 0] # Parent total
@@ -277,12 +272,11 @@ class SaleOrder(orm.Model):
             total = [0, 0, 0] # Current code total
             # Add product line:
             for line in products[code]:
-                #res.append(('P', line))
+                # res.append(('P', line))
 
                 # Quantity used:
                 product_uom_qty = line.product_uom_qty
-                product_uom_maked_sync_qty = line.mx_assigned_qty + \
-                    line.product_uom_maked_sync_qty
+                product_uom_maked_sync_qty = line.mx_assigned_qty + line.product_uom_maked_sync_qty
                 delivered_qty = line.delivered_qty
 
                 TOT = product_uom_qty - delivered_qty                
@@ -342,8 +336,8 @@ class Parser(report_sxw.rml_parse):
         })
 
     def extract_measure(self, name='', datas=None):
-        ''' Extract dimension from order
-        '''
+        """ Extract dimension from order
+        """
         # Only if checked
         if datas is None or not datas.get('with_extract_dimension', False):
             return ''
@@ -391,37 +385,37 @@ class Parser(report_sxw.rml_parse):
         return res        
         
     def get_general_total(self, ):
-        ''' Return instance general total
-        '''
+        """ Return instance general total
+        """
         return self.general_total
     
     def get_filter_description(self, ):
-        ''' Moved in sale order
-        '''
+        """ Moved in sale order
+        """
         return self.pool.get(
             'sale.order')._report_procurement_get_filter_description(
                 self.cr, self.uid)
         
     def get_datetime(self):
-        ''' Return datetime obj
-        '''
+        """ Return datetime obj
+        """
         return datetime
 
     def get_date(self):
-        ''' Return datetime obj
-        '''
+        """ Return datetime obj
+        """
         return datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
 
     def get_counter(self, name):
-        ''' Get counter with name passed (else create an empty)
-        '''
+        """ Get counter with name passed (else create an empty)
+        """
         if name not in self.counters:
             self.counters[name] = False
         return self.counters[name]
 
     def set_counter(self, name, value):
-        ''' Set counter with name with value passed
-        '''
+        """ Set counter with name with value passed
+        """
         self.counters[name] = value
         return "" # empty so no write in module
 
@@ -429,15 +423,15 @@ class Parser(report_sxw.rml_parse):
     # Utility for 3 report:
     # -------------------------------------------------------------------------
     def browse_order_line(self, data):
-        ''' Move here function in sale order
-        '''
+        """ Move here function in sale order
+        """
         return self.pool.get(
             'sale.order')._report_procurement_browse_order_line(
             self.cr, self.uid, data=data)
     
     def get_object_line(self, data):
-        ''' Selected object + print object
-        '''
+        """ Selected object + print object
+        """
         # TODO Move in sale.order?
         # Loop on order:
         products = {}
@@ -563,15 +557,15 @@ class Parser(report_sxw.rml_parse):
         return res
 
     def get_object_grouped_line(self, data):
-        ''' Moved in sale.order: Selected object + print object 
-        ''' 
+        """ Moved in sale.order: Selected object + print object
+        """
         return self.pool.get(
             'sale.order')._report_procurement_grouped_get_objects(
                 self.cr, self.uid, data=data)
 
     def get_object_grouped_family_line(self, data):
-        ''' Selected object + print object
-        '''
+        """ Selected object + print object
+        """
         # TODO Move in sale.order?
         def clean_number(value):
             return ('%s' % value).replace('.', ',')
@@ -687,8 +681,8 @@ class Parser(report_sxw.rml_parse):
         return res
 
     def get_orders_selected(self):
-        ''' Moved in sale.order function            
-        '''
+        """ Moved in sale.order function
+        """
         # TODO used also in other reports?
         return self.pool.get(
             'sale.order')._report_procurement_get_orders_selected(
