@@ -56,8 +56,7 @@ class SaleOrder(orm.Model):
         """
         return self.browse(cr, uid, self.order_ids, context=context)
         
-    def _report_procurement_browse_order_line(
-            self, cr, uid, data=None, context=None):
+    def _report_procurement_browse_order_line(self, cr, uid, data=None, context=None):
         """ Return line (used from 2 report)
         """
         _logger.info('Start report data: %s' % data)
@@ -425,8 +424,7 @@ class Parser(report_sxw.rml_parse):
     def browse_order_line(self, data):
         """ Move here function in sale order
         """
-        return self.pool.get(
-            'sale.order')._report_procurement_browse_order_line(
+        return self.pool.get('sale.order')._report_procurement_browse_order_line(
             self.cr, self.uid, data=data)
     
     def get_object_line(self, data):
