@@ -192,9 +192,8 @@ class MrpProduction(orm.Model):
         # --------------------------------------------------------------------------------------------------------------
         # Read current sequence parent (so old parents):
         # --------------------------------------------------------------------------------------------------------------
-        pdb.set_trace()
         for seq in mrp_proxy.sequence_ids:
-            parents[seq.name] = 0
+            parents[seq.name] = [0.0, 0.0]
             old_parents[seq.name] = seq.id
             if seq.sequence < max_sequence:
                 max_sequence = seq.sequence
@@ -202,7 +201,6 @@ class MrpProduction(orm.Model):
         # --------------------------------------------------------------------------------------------------------------
         # Append parent with line (and totals in new parents):
         # --------------------------------------------------------------------------------------------------------------
-        pdb.set_trace()
         for line in mrp_proxy.order_line_ids:
             default_code = line.product_id.default_code            
             parent = self.get_sort_code(sequence_mode, default_code)
@@ -213,7 +211,6 @@ class MrpProduction(orm.Model):
             parents[parent][1] += line.product_uom_maked_sync_qty  # done
 
         i = 0
-        pdb.set_trace()
         for parent in sorted(parents):
             i += 1
             if parent in old_parents:
