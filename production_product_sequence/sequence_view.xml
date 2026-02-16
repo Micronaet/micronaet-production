@@ -15,45 +15,45 @@
             </field>
         </record>
 
-    <record model="ir.ui.view" id="default_mrp_production_form_sequence_view">
-        <field name="name">Production order sequence</field>
-        <field name="model">mrp.production</field>
-        <field name="inherit_id" ref="production_accounting_external.default_mrp_production_form_view" />
-        <field name="arch" type="xml">
-             <group string="Order lines" position="before">
-                 <group colspan="4" col="4">
-                     <group colspan="2" col="2">
-                         <separator string="Sequence:" colspan="2"/>
-                         <field name="sequence_ids" nolabel="1" >
-                             <tree string="Sequence from parent" delete="false" create="false" options="{'reload_on_button': true}" editable="bottom">
-                                 <field name="sequence" invisible="1"/>
-                                 <field name="name" readonly="1"/>
-                                 <field name="total" readonly="1" string="Tot."/>
-                                 <field name="done" readonly="1" string="Fatti"/>
-                                 <field name="remain" readonly="1" string="Da fare"/>
-                                 <button name="remove_parent_block" string="Free all block" type="object" icon="gtk-disconnect" confirm="All line of this block will be unlinked, confirm?"/>
-                             </tree>                         
-                             <form string="Sequence from parent" version="7.0">
-                                 <group string="Sequence" colspan="4" col="4">
-                                     <field name="sequence" readonly="1"/>
+        <record model="ir.ui.view" id="default_mrp_production_form_sequence_view">
+            <field name="name">Production order sequence</field>
+            <field name="model">mrp.production</field>
+            <field name="inherit_id" ref="production_accounting_external.default_mrp_production_form_view" />
+            <field name="arch" type="xml">
+                 <group string="Order lines" position="before">
+                     <group colspan="4" col="4">
+                         <group colspan="2" col="2">
+                             <separator string="Sequence:" colspan="2"/>
+                             <field name="sequence_ids" nolabel="1" >
+                                 <tree string="Sequence from parent" delete="false" create="false" options="{'reload_on_button': true}" editable="bottom">
+                                     <field name="sequence" invisible="1"/>
                                      <field name="name" readonly="1"/>
                                      <field name="total" readonly="1" string="Tot."/>
                                      <field name="done" readonly="1" string="Fatti"/>
                                      <field name="remain" readonly="1" string="Da fare"/>
-                                 </group>
-                             </form>                         
-                         </field>
-                     </group>
-                     <group colspan="2" col="4">
-                         <separator string="Sort operation:" colspan="4"/>
-                         <button name="load_parent_list" string="Load list" type="object" icon="STOCK_REFRESH" colspan="1"/>
-                         <button name="force_order_sequence" string="Force order" type="object" icon="gtk-sort-descending" colspan="1"/>
-                         <field name="sequence_mode" nolabel="1" />
+                                     <button name="remove_parent_block" string="Free all block" type="object" icon="gtk-disconnect" confirm="All line of this block will be unlinked, confirm?"/>
+                                 </tree>
+                                 <form string="Sequence from parent" version="7.0">
+                                     <group string="Sequence" colspan="4" col="4">
+                                         <field name="sequence" readonly="1"/>
+                                         <field name="name" readonly="1"/>
+                                         <field name="total" readonly="1" string="Tot."/>
+                                         <field name="done" readonly="1" string="Fatti"/>
+                                         <field name="remain" readonly="1" string="Da fare"/>
+                                     </group>
+                                 </form>
+                             </field>
+                         </group>
+                         <group colspan="2" col="4">
+                             <separator string="Sort operation:" colspan="4"/>
+                             <button name="load_parent_list" string="Load list" type="object" icon="STOCK_REFRESH" colspan="1"/>
+                             <button name="force_order_sequence" string="Force order" type="object" icon="gtk-sort-descending" colspan="1"/>
+                             <field name="sequence_mode" nolabel="1" />
+                         </group>
                      </group>
                  </group>
-             </group>
-        </field>
-    </record> 
+            </field>
+        </record>
     </data>
 </openerp>
 
