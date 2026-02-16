@@ -70,7 +70,8 @@
         <field name="inherit_id" ref="mrp.view_mrp_bom_filter"/>
         <field name="arch" type="xml">
             <field name="name" position="after">
-                <filter name="is_family" string="Is family" domain="[('product_tmpl_id.is_family','=',True)]"/>
+                <!--<filter name="is_family" string="Is family" domain="[('product_tmpl_id.is_family','=',True)]"/>-->
+                <filter name="is_family" string="Is family" domain="[('is_family','=',True)]"/>
             </field>
         </field>
     </record>
