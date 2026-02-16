@@ -44,7 +44,7 @@ class SaleOrderLine(orm.Model):
     """
     _inherit = 'sale.order.line'
 
-    def _get_frame_code(self, cr, uid, ids, field_name, arg, context=None):
+    def _get_frame_code_part(self, cr, uid, ids, field_name, arg, context=None):
         """ Extract Frame code
         """
         res = {}
@@ -54,8 +54,8 @@ class SaleOrderLine(orm.Model):
         return res
 
     _columns = {
-        'frame_code': fields.function(
-            _get_frame_code, string='Codice telaio', type='char', size=3,
+        'frame_code_part': fields.function(
+            _get_frame_code_part, string='Codice telaio', type='char', size=3,
             store={
                 # Change product in sale line
                 'sale.order.line': (lambda self, cr, uid, ids, c=None: ids, ['product_id'], 10),
