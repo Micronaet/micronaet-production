@@ -39,6 +39,38 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+class SaleOrderLine(orm.Model):
+    """ Add extra fields
+    """
+    _inherit = 'sale.order.line'
+
+    def _get_frame_code(self, cr, uid, ids, field_name, arg, context=None):
+        """ Extract Frame code
+        """
+        res = {}
+        for line in self.browse(cr, uid, ids, context=context):
+            code = line.product_id and line.product_id.default_code or ""
+            res[line.id] = code[7:9] or ""
+        return res
+
+    _columns = {
+        'frame_code': fields.function(
+            _get_frame_code, string='Codice telaio', type='char', size=3,
+            store={
+                # Change product in sale line
+                'sale.order.line': (lambda self, cr, uid, ids, c=None: ids, ['product_id'], 10),
+
+                # Change code in product
+                'product.product': (
+                    lambda self, cr, uid, ids, c=None: self.pool.get('sale.order.line').search(cr, uid, [
+                        ('product_id', 'in', ids)], context=c),
+                    ['default_code'],
+                    20,
+                ),
+            }
+        ),
+    }
+
 class MrpProductionSequence(orm.Model):
     """ Object for keep product line in order depend on parent 3 char code
     """
