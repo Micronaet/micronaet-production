@@ -21,6 +21,7 @@ import os
 import sys
 import logging
 import openerp
+import pdb
 import openerp.netsvc as netsvc
 import openerp.addons.decimal_precision as dp
 from openerp.osv import fields, osv, expression, orm
@@ -191,6 +192,7 @@ class MrpProduction(orm.Model):
         # --------------------------------------------------------------------------------------------------------------
         # Read current sequence parent (so old parents):
         # --------------------------------------------------------------------------------------------------------------
+        pdb.set_trace()
         for seq in mrp_proxy.sequence_ids:
             parents[seq.name] = 0
             old_parents[seq.name] = seq.id
@@ -200,6 +202,7 @@ class MrpProduction(orm.Model):
         # --------------------------------------------------------------------------------------------------------------
         # Append parent with line (and totals in new parents):
         # --------------------------------------------------------------------------------------------------------------
+        pdb.set_trace()
         for line in mrp_proxy.order_line_ids:
             default_code = line.product_id.default_code            
             parent = self.get_sort_code(sequence_mode, default_code)
@@ -210,6 +213,7 @@ class MrpProduction(orm.Model):
             parents[parent][1] += line.product_uom_maked_sync_qty  # done
 
         i = 0
+        pdb.set_trace()
         for parent in sorted(parents):
             i += 1
             if parent in old_parents:
