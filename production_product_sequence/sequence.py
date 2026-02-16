@@ -39,16 +39,16 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 _logger = logging.getLogger(__name__)
 
 class MrpProductionSequence(orm.Model):
-    ''' Object for keep product line in order depend on parent 3 char code
-    '''
+    """ Object for keep product line in order depend on parent 3 char code
+    """
     _name = 'mrp.production.sequence'
     _description = 'MRP production sequence'
     _order = 'sequence, name'    
     
     # Button:
     def remove_parent_block(self, cr, uid, ids, context=None):
-        ''' Remove block and all element of this block
-        '''
+        """ Remove block and all element of this block
+        """
         # Pool used:
         mrp_pool = self.pool.get('mrp.production')
         
@@ -90,22 +90,24 @@ class MrpProductionSequence(orm.Model):
             'Parent', size=15, required=True), 
         'mrp_id': fields.many2one('mrp.production', 'MRP order'),
         'total': fields.integer('Quantity'),
+        'done': fields.integer('Fatti'),
+        'remain': fields.integer('Residui'),
         }
     _defaults = {
         'sequence': lambda *x: 1000, # New line go bottom
         }
 
 class MrpProduction(orm.Model):
-    ''' Add extra field to mrp order
-    '''
+    """ Add extra field to mrp order
+    """
     _inherit = 'mrp.production'
     
     # ---------------------------------------------------------------------
     # Utility:
     # ---------------------------------------------------------------------
     def get_sort_code(self, sequence_mode, default_code):
-        ''' Return sort code for line order
-        '''        
+        """ Return sort code for line order
+        """
         if sequence_mode == 'parent':
             return default_code[:3]    
         elif sequence_mode == 'frame':
@@ -123,9 +125,9 @@ class MrpProduction(orm.Model):
     # Override function:
     # ------------------
     def force_production_sequence(self, cr, uid, ids, context=None):
-        ''' Force new order on sale order line depend on parent code
+        """ Force new order on sale order line depend on parent code
             and default code
-        '''
+        """
         # Pool used:
         line_pool = self.pool.get('sale.order.line')        
         sequence_pool = self.pool.get('mrp.production.sequence')        
@@ -147,8 +149,7 @@ class MrpProduction(orm.Model):
         for line in mrp_proxy.order_line_ids:
             default_code = line.product_id.default_code            
             parent_code = self.get_sort_code(sequence_mode, default_code)
-            master_order[parent_code].append(
-                (line.product_id.default_code, line.id))
+            master_order[parent_code].append((line.product_id.default_code, line.id))
                         
         i = 0
         # Loop on forced order parent:
@@ -176,69 +177,69 @@ class MrpProduction(orm.Model):
     # Button function:
     # ----------------
     def load_parent_list(self, cr, uid, ids, context=None):
-        ''' Load list of parent for se the order
-        '''
+        """ Load list of parent for se the order
+        """
         seq_pool = self.pool.get('mrp.production.sequence')
 
         # Load current parent:
-        parents = {}
-        old_parents = {}
+        parents = {}  # Master total database
+        old_parents = {}  # Old to check when remove
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
         max_sequence = 0
         sequence_mode = mrp_proxy.sequence_mode
         
-        # ---------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         # Read current sequence parent (so old parents):
-        # ---------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         for seq in mrp_proxy.sequence_ids:
             parents[seq.name] = 0
             old_parents[seq.name] = seq.id
             if seq.sequence < max_sequence:
                 max_sequence = seq.sequence
         
-        # ---------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         # Append parent with line (and totals in new parents):
-        # ---------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         for line in mrp_proxy.order_line_ids:
             default_code = line.product_id.default_code            
             parent = self.get_sort_code(sequence_mode, default_code)
             if parent not in parents:
-                parents[parent] = (
-                    line.product_uom_qty - line.mx_assigned_qty) or 1
-            else:
-                parents[parent] += (
-                    line.product_uom_qty - line.mx_assigned_qty) or 1
+                parents[parent] = [0.0, 0.0]  # Total, Done
+
+            parents[parent][0] = (line.product_uom_qty - line.mx_assigned_qty) or 1
+            parents[parent][1] = line.product_uom_maked_sync_qty  # done
 
         i = 0
         for parent in sorted(parents):
             i += 1
             if parent in old_parents:
-                if parents[parent] == 0:
-                    # Delete in no elements:
-                    seq_pool.unlink(cr, uid, old_parents[parent], 
-                        context=context)
-                else:        
-                    # Update with totals:
+                if parents[parent][0]:  # If not total delete block:
+                    seq_pool.unlink(cr, uid, old_parents[parent], context=context)
+                else:  # Update with totals:
                     seq_pool.write(cr, uid, old_parents[parent], {
                         #'sequence': i,
                         #'name': parent,      
                         #'mrp_id': ids[0],          
-                        'total': parents[parent]
-                        }, context=context)            
+                        'total': parents[parent][0],
+                        'done': parents[parent][1],
+                        'remain': parents[parent][0] - parents[parent][1],
+                        }, context=context)
             else:
                 # Create new parent:
                 seq_pool.create(cr, uid, {
                     'sequence': max_sequence + i, # in order but append to org.
                     'name': parent,      
                     'mrp_id': ids[0],          
-                    'total': parents[parent]
-                    }, context=context)            
+                    'total': parents[parent][0],
+                    'done': parents[parent][1],
+                    'remain': parents[parent][0] - parents[parent][1],
+                }, context=context)
         return True
 
     def force_order_sequence(self, cr, uid, ids, context=None):
-        ''' Force order line sequence depend on this list of parent
-        '''
-        # Force overrided function sequence:
+        """ Force order line sequence depend on this list of parent
+        """
+        # Force overridden function sequence:
         self.force_production_sequence(cr, uid, ids, context=context)
         return True
         
@@ -255,5 +256,4 @@ class MrpProduction(orm.Model):
         
     _defaults = {
         'sequence_mode': lambda *x: 'parent',                   
-        }    
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+        }

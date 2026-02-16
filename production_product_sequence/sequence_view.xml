@@ -14,14 +14,18 @@
                              <tree string="Sequence from parent" delete="false" create="false" options="{'reload_on_button': true}" editable="bottom">
                                  <field name="sequence" invisible="1"/>
                                  <field name="name" readonly="1"/>
-                                 <field name="total" readonly="1"/>
+                                 <field name="total" readonly="1" string="Tot."/>
+                                 <field name="done" readonly="1" string="Fatti"/>
+                                 <field name="remain" readonly="1" string="Da fare"/>
                                  <button name="remove_parent_block" string="Free all block" type="object" icon="gtk-disconnect" confirm="All line of this block will be unlinked, confirm?"/>
                              </tree>                         
                              <form string="Sequence from parent" version="7.0">
                                  <group string="Sequence" colspan="4" col="4">
                                      <field name="sequence" readonly="1"/>
                                      <field name="name" readonly="1"/>
-                                     <field name="total" readonly="1"/>
+                                     <field name="total" readonly="1" string="Tot."/>
+                                     <field name="done" readonly="1" string="Fatti"/>
+                                     <field name="remain" readonly="1" string="Da fare"/>
                                  </group>
                              </form>                         
                          </field>
