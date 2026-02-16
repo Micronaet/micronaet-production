@@ -50,7 +50,7 @@ class SaleOrderLine(orm.Model):
         res = {}
         for line in self.browse(cr, uid, ids, context=context):
             code = line.product_id and line.product_id.default_code or ""
-            res[line.id] = code[7:9] or ""
+            res[line.id] = code[6:8] or ""
         return res
 
     _columns = {
