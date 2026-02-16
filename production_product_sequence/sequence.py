@@ -214,7 +214,7 @@ class MrpProduction(orm.Model):
         for parent in sorted(parents):
             i += 1
             if parent in old_parents:
-                if parents[parent][0]:  # If not total delete block:
+                if not parents[parent][0]:  # If not total delete block:
                     seq_pool.unlink(cr, uid, old_parents[parent], context=context)
                 else:  # Update with totals:
                     seq_pool.write(cr, uid, old_parents[parent], {
