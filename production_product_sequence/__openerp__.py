@@ -31,6 +31,7 @@
     'depends': [
         'base',
         'production_accounting_external',
+        'sql_sale_order',  # For search bar
         ],
     'init_xml': [],
     'demo': [],

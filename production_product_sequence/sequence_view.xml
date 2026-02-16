@@ -1,6 +1,23 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+    <record model="ir.ui.view" id="view_sale_order_line_frame_code_search">
+        <field name="name">Search Frame Code line</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sql_sale_order.view_sale_order_line_search"/>
+        <field name="arch" type="xml">
+            <search string="OC line">
+                <field name="product_id" position="after">
+                    <field name="frame_code_part" string="Codice Telaio" />
+                </field>
+
+                <filter name="group_product" position="after">
+                    <filter name="group_frame_code_part" string="Codice Telaio" context="{'group_by':'frame_code_part'}"/>
+                </filter>
+            </search>
+        </field>
+    </record>
+
     <record model="ir.ui.view" id="default_mrp_production_form_sequence_view">
         <field name="name">Production order sequence</field>
         <field name="model">mrp.production</field>
