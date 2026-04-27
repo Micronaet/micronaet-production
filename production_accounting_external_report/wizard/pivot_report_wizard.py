@@ -138,10 +138,6 @@ class MRPPivotReportWizard(orm.TransientModel):
         format_text = excel_pool.get_format('text')
         format_number = excel_pool.get_format('number')
 
-        # Column dimension:
-        col_width = (30, 20, 15)
-        excel_pool.column_width(ws_name, col_width)
-        # fixed_col = len(col_width)
 
         # Title
         row = 0
@@ -149,14 +145,27 @@ class MRPPivotReportWizard(orm.TransientModel):
             u'Pivot Produzioni, filtro: {}'.format(domain_text),
         ], format_title)
 
-        # Header
-        row += 1
-        header = [u'Famiglia', u'MRP', u'Colore']
-        excel_pool.write_xls_line(ws_name, row, header, format_header)
-
         # Integrate date block:
         colums_header.sort()
         empty = [0 for item in range(len(colums_header))]
+
+        # --------------------------------------------------------------------------------------------------------------
+        # Header
+        # --------------------------------------------------------------------------------------------------------------
+        header = [u'Famiglia', u'MRP', u'Colore']
+
+        # Column dimension:
+        col_width = [30, 20, 15]
+        # fixed_col = len(col_width)
+
+        # Integrate:
+        for col in colums_header:
+            header.append(col)
+            col_width.append(15)
+        excel_pool.column_width(ws_name, col_width)
+        row += 1
+        excel_pool.write_xls_line(ws_name, row, header, format_header)
+
 
         for key in sorted(master_data):
             family, mrp, frame = key
