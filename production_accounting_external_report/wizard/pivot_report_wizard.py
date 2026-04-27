@@ -119,7 +119,7 @@ class MRPPivotReportWizard(orm.TransientModel):
             # MRP mode?
 
             # Update master data:
-            key = (family, mrp, frame)
+            key = family, mrp, frame
             if key not in master_data:
                 master_data[key] = {}
             if date_deadline not in master_data[key]:
@@ -141,7 +141,7 @@ class MRPPivotReportWizard(orm.TransientModel):
         # Column dimension:
         col_width = (20, 20, 20, 15,)
         excel_pool.column_width(ws_name, col_width)
-        fixed_col = len(col_width)
+        # fixed_col = len(col_width)
 
         # Title
         row = 0
@@ -158,7 +158,7 @@ class MRPPivotReportWizard(orm.TransientModel):
         master_deadline.sort()
         empty = [0 for item in range(len(master_deadline))]
 
-        for key in master_deadline:
+        for key in master_data:
             family, mrp, frame = key
             line_data = empty[:]
             for deadline in master_deadline[key]:
