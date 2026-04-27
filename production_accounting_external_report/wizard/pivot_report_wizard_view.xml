@@ -12,7 +12,7 @@
                        <button name="action_report" string="Stampa" type="object" icon="gtk-print" class="oe_highlight"/>
                    </header>
                    <group colspan="4" col="4">
-                       <field name="mote" />
+                       <field name="mode" />
                        <newline/>
                        <field name="from_deadline" />
                        <field name="to_deadline" />
