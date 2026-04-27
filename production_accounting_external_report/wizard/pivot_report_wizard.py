@@ -124,7 +124,7 @@ class MRPPivotReportWizard(orm.TransientModel):
                 master_data[key] = {}
             if date_deadline not in master_data[key]:
                 master_data[key][date_deadline] = 0
-            master_data[key][date_deadline] += int(round(total))
+            master_data[key][date_deadline] += int(round(total, 0))
 
         # --------------------------------------------------------------------------------------------------------------
         # Excel File:
