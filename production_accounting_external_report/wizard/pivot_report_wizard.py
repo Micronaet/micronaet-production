@@ -78,32 +78,32 @@ class MRPPivotReportWizard(orm.TransientModel):
         mode = wizard.mode
 
         if from_deadline:
-            domain_text += ' [Dalla scadenza {}]'.format(from_deadline)
+            domain_text += u' [Dalla scadenza {}]'.format(from_deadline)
             domain.append(('date_deadline', '>=', from_deadline))
         if to_deadline:
-            domain_text += ' [Alla scadenza {}]'.format(to_deadline)
+            domain_text += u' [Alla scadenza {}]'.format(to_deadline)
             domain.append(('date_deadline', '<=', to_deadline))
         if not domain_text:
-            domain_text = '[Nessun filtro applicato]'
-        domain_text += ' - Modalità: {}'.format(mode)
+            domain_text = u'[Nessun filtro applicato]'
+        domain_text += u' - Modalità: {}'.format(mode)
 
         line_ids = line_pool.search(cr, uid, domain, context=context)
-        _logger.info('Domain for search: %s [Tot: %s]' % (domain, len(line_ids)))
+        _logger.info(u'Domain for search: %s [Tot: %s]' % (domain, len(line_ids)))
 
         master_data = {}
         colums_header = []
         for line in line_pool.browse(cr, uid, line_ids, context=context):
             # Readability:
-            family = line.family_id.name if line.family_id else 'Non presente'
-            mrp = line.mrp_id.name if line.mrp_id else 'Non in produzione'
-            default_code = line.default_code or ''
-            frame = (default_code[6:8]).strip() or 'Grezzo'  # frame_code_part
+            family = line.family_id.name if line.family_id else u'Non presente'
+            mrp = line.mrp_id.name if line.mrp_id else u'Non in produzione'
+            default_code = line.default_code or u''
+            frame = (default_code[6:8]).strip() or u'Grezzo'  # frame_code_part
 
             # Deadline column:
             if line.date_deadline:
                 date_deadline = line.date_deadline[:7]
             else:
-                date_deadline = '1900-01'  # Empty deadline
+                date_deadline = u'1900-01'  # Empty deadline
 
             if date_deadline not in colums_header:
                 colums_header.append(date_deadline)
@@ -129,7 +129,7 @@ class MRPPivotReportWizard(orm.TransientModel):
         # --------------------------------------------------------------------------------------------------------------
         # Excel File:
         # --------------------------------------------------------------------------------------------------------------
-        ws_name = 'MRP Pivot'
+        ws_name = u'MRP Pivot'
         excel_pool.create_worksheet(ws_name)
 
         # Format:
@@ -139,19 +139,19 @@ class MRPPivotReportWizard(orm.TransientModel):
         format_number = excel_pool.get_format('number')
 
         # Column dimension:
-        col_width = (20, 20, 20, 15,)
+        col_width = (30, 20, 15)
         excel_pool.column_width(ws_name, col_width)
         # fixed_col = len(col_width)
 
         # Title
         row = 0
         excel_pool.write_xls_line(ws_name, row, [
-            'Pivot Produzioni, filtro: {}'.format(domain_text),
+            u'Pivot Produzioni, filtro: {}'.format(domain_text),
         ], format_title)
 
         # Header
         row += 1
-        header = ['Famiglia', 'Gruppo', 'MRP', 'Colore']
+        header = [u'Famiglia', u'MRP', u'Colore']
         excel_pool.write_xls_line(ws_name, row, header, format_header)
 
         # Integrate date block:
