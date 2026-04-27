@@ -88,7 +88,7 @@ class MRPPivotReportWizard(orm.TransientModel):
         master_deadline = []
         for line in line_pool.browse(cr, uid, line_ids, context=context):
             # Readability:
-            family = line.family_id if line.family_id else 'Non presente'
+            family = line.family_id.name if line.family_id else 'Non presente'
             mrp = line.mrp_id.name if line.mrp_id else 'Non in produzione'
             default_code = line.default_code or ''
             frame = (default_code[6:8]).strip() or 'Grezzo'  # frame_code_part
