@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+       <!-- mrp.pivot.report.wizard -->
+       <record id="mrp_pivot_report_wizard_view" model="ir.ui.view">
+            <field name="name">MRP Pivot report</field>
+            <field name="model">mrp.pivot.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Pivot Report" version="7.0">
+                   <header>
+                       <button string="Cancel" special="cancel" />
+                       <button name="action_report" string="Stampa" type="object" icon="gtk-print" class="oe_highlight"/>
+                   </header>
+                   <group colspan="4" col="4">
+                       <field name="from_date" />
+                       <field name="to_date" />
+                   </group>
+                </form>
+            </field>
+      </record>
+    </data>
+    <record id="mrp_pivot_report_wizard_action" model="ir.actions.act_window">
+        <field name="name">MRP Pivot report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.pivot.report.wizard</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem
+          parent="mrp.menu_mrp_manufacturing"
+          id="menu_mrp_pivot_report_wizard"
+          action="mrp_pivot_report_wizard_action"
+          sequence="90"
+          />
+</openerp>
