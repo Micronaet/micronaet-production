@@ -79,12 +79,12 @@ class MRPPivotReportWizard(orm.TransientModel):
         if not domain_text:
             domain_text = 'Nessun filtro applicato'
 
-        line_ids = pick_pool.search(cr, uid, domain, context=context)
+        line_ids = line_pool.search(cr, uid, domain, context=context)
         _logger.info('Domain for search: %s [Tot: %s]' % (domain, len(line_ids)))
 
         master_data = {}
         master_deadline = []
-        for line in pick_pool.browse(cr, uid, line_ids, context=context):
+        for line in line_pool.browse(cr, uid, line_ids, context=context):
             # Readability:
             family = line.family_id
             mrp = line.mrp_id
