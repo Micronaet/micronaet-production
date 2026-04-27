@@ -175,7 +175,7 @@ class MRPPivotReportWizard(orm.TransientModel):
             row += 1
             excel_pool.write_xls_line(ws_name, row, row_data, format_number)
 
-        return excel_pool.save_file_as('/tmp/prova.xlsx')
+        # return excel_pool.save_file_as('/tmp/prova.xlsx')
         return excel_pool.return_attachment(cr, uid, 'mrp_pivot.xlsx', context=context)
 
     _columns = {
