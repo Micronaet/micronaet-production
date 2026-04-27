@@ -67,15 +67,17 @@ class MRPPivotReportWizard(orm.TransientModel):
         domain = []
         domain_text = ''
 
-        from_date = wizard.from_date
-        to_date = wizard.to_date
+        from_deadline = wizard.from_deadline
+        to_deadline = wizard.to_deadline
 
-        if from_date:
-            domain_text += ' [Dalla data {}]'.format(from_date)
-            domain.append(('date_deadline', '>=', from_date))
-        if to_date:
-            domain_text += ' [Aalla data {}]'.format(to_date)
-            domain.append(('date_deadline', '<=', to_date))
+        if from_deadline:
+            domain_text += ' [Dalla scadenza {}]'.format(from_deadline)
+            domain.append(('date_deadline', '>=', from_deadline))
+        if to_deadline:
+            domain_text += ' [Alla scadenza {}]'.format(to_deadline)
+            domain.append(('date_deadline', '<=', to_deadline))
+        if not domain_text:
+            domain_text = 'Nessun filtro applicato'
 
         line_ids = pick_pool.search(cr, uid, domain, context=context)
         _logger.info('Domain for search: %s [Tot: %s]' % (domain, len(line_ids)))
