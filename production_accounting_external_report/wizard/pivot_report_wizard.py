@@ -94,7 +94,11 @@ class MRPPivotReportWizard(orm.TransientModel):
             frame = (default_code[6:8]).strip() or 'Grezzo'  # frame_code_part
 
             # Deadline column:
-            date_deadline = line.date_deadline[:7] or '1900-01'
+            if line.date_deadline:
+                date_deadline = line.date_deadline[:7]
+            else:
+                date_deadline = '1900-01'  # Empty deadline
+
             if date_deadline not in master_deadline:
                 master_deadline.append(date_deadline)
 
