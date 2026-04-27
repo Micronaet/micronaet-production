@@ -161,7 +161,7 @@ class MRPPivotReportWizard(orm.TransientModel):
         for key in master_data:
             family, mrp, frame = key
             line_data = empty[:]
-            for deadline in master_deadline[key]:
+            for deadline in master_data[key]:
                 col = master_data.index(deadline)
                 line_data[col] = master_deadline[key][deadline]
 
