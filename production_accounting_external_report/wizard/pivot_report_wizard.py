@@ -55,8 +55,8 @@ class MRPPivotReportWizard(orm.TransientModel):
             context = {}
 
         # Pool used:
-        line_pool = self.pool.get('sale.order.line')
         excel_pool = self.pool.get('excel.writer')
+        line_pool = self.pool.get('sale.order.line')
 
         # --------------------------------------------------------------------------------------------------------------
         # Collect data:
@@ -69,6 +69,7 @@ class MRPPivotReportWizard(orm.TransientModel):
 
         from_deadline = wizard.from_deadline
         to_deadline = wizard.to_deadline
+        mode = wizard.mode
 
         if from_deadline:
             domain_text += ' [Dalla scadenza {}]'.format(from_deadline)
@@ -77,7 +78,8 @@ class MRPPivotReportWizard(orm.TransientModel):
             domain_text += ' [Alla scadenza {}]'.format(to_deadline)
             domain.append(('date_deadline', '<=', to_deadline))
         if not domain_text:
-            domain_text = 'Nessun filtro applicato'
+            domain_text = '[Nessun filtro applicato]'
+        domain_text += ' - Modalità: {}'.format(mode)
 
         line_ids = line_pool.search(cr, uid, domain, context=context)
         _logger.info('Domain for search: %s [Tot: %s]' % (domain, len(line_ids)))
@@ -86,10 +88,10 @@ class MRPPivotReportWizard(orm.TransientModel):
         master_deadline = []
         for line in line_pool.browse(cr, uid, line_ids, context=context):
             # Readability:
-            family = line.family_id
-            mrp = line.mrp_id
-            default_code = (line.default_code or '').strip()
-            frame = default_code[6:8] or 'Grezzo'
+            family = line.family_id if line.family_id else 'Non presente'
+            mrp = line.mrp_id.name if line.mrp_id else 'Non in produzione'
+            default_code = line.default_code or ''
+            frame = (default_code[6:8]).strip() or 'Grezzo'  # frame_code_part
 
             # Deadline column:
             date_deadline = line.date_deadline[:7] or '1900-01'
@@ -98,17 +100,21 @@ class MRPPivotReportWizard(orm.TransientModel):
 
             # Quantity:
             product_uom_qty = line.product_uom_qty
-            product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
-            mx_assigned_qty = line.mx_assigned_qty
-            # TODO Check data in:
-            remain = max((product_uom_qty - product_uom_maked_sync_qty - mx_assigned_qty), 0)
+            if mode == 'todo':
+                product_uom_maked_sync_qty = line.product_uom_maked_sync_qty
+                mx_assigned_qty = line.mx_assigned_qty
+                total = max((product_uom_qty - product_uom_maked_sync_qty - mx_assigned_qty), 0)
+            else:  # 'order'
+                total = product_uom_qty
+            # MRP mode?
 
+            # Update master data:
             key = (family, mrp, frame)
             if key in master_data:
                 master_data[key] = {}
             if date_deadline not in master_deadline[key][date_deadline]:
                 master_data[key][date_deadline] = 0.0
-            master_data[key][date_deadline] += remain
+            master_data[key][date_deadline] += total
 
         # --------------------------------------------------------------------------------------------------------------
         # Excel File:
@@ -161,6 +167,14 @@ class MRPPivotReportWizard(orm.TransientModel):
         return excel_pool.return_attachment(cr, uid, 'mrp_pivot.xlsx', context=context)
 
     _columns = {
-        'from_deadline': fields.date('Da data scadenza'),
-        'to_deadline': fields.date('A data scadenza'),
+        'from_deadline': fields.date('Da data scadenza >='),
+        'to_deadline': fields.date('A data scadenza <='),
+        'mode': fields.selection([
+            ('order', 'Ordinato'),
+            ('todo', 'Da fare'),
+        ], 'Totale', required=True),
         }
+
+    _defaults = {
+        'mode': lambda *x: 'todo',
+    }
