@@ -66,10 +66,11 @@ class MRPPivotReportWizard(orm.TransientModel):
 
         # '|',('mrp_unlinked','=',True),('mrp_id','=',False),
         domain = [
-            ('pricelist_order','=',False),
-            ('go_in_production','=',True),
-            ('is_manufactured','=',True),
-            ('mx_closed','=',False),
+            ('pricelist_order', '=', False),
+            ('go_in_production', '=', True),
+            ('is_manufactured', '=', True),
+            ('mx_closed', '=', False),
+            # ('order_id.mx_closed', '=', False),
         ]
         domain_text = ''
 
