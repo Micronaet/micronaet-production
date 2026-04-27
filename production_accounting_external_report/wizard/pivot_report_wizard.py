@@ -123,8 +123,8 @@ class MRPPivotReportWizard(orm.TransientModel):
             if key not in master_data:
                 master_data[key] = {}
             if date_deadline not in master_data[key]:
-                master_data[key][date_deadline] = 0.0
-            master_data[key][date_deadline] += total
+                master_data[key][date_deadline] = 0
+            master_data[key][date_deadline] += int(round(total))
 
         # --------------------------------------------------------------------------------------------------------------
         # Excel File:
@@ -158,7 +158,7 @@ class MRPPivotReportWizard(orm.TransientModel):
         colums_header.sort()
         empty = [0 for item in range(len(colums_header))]
 
-        for key in master_data:
+        for key in sorted(master_data):
             family, mrp, frame = key
             line_data = empty[:]
             for deadline in master_data[key]:
