@@ -22,7 +22,7 @@
             <field name="name">MRP Pivot report</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">mrp.pivot.report.wizard</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">form</field>
             <field name="target">new</field>
        </record>
        <menuitem
