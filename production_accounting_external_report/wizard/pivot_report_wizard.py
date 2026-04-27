@@ -114,7 +114,7 @@ class MRPPivotReportWizard(orm.TransientModel):
 
             # Update master data:
             key = (family, mrp, frame)
-            if key in master_data:
+            if key not in master_data:
                 master_data[key] = {}
             if date_deadline not in master_data[key]:
                 master_data[key][date_deadline] = 0.0
