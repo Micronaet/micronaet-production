@@ -91,7 +91,7 @@ class MRPPivotReportWizard(orm.TransientModel):
         _logger.info('Domain for search: %s [Tot: %s]' % (domain, len(line_ids)))
 
         master_data = {}
-        master_deadline = []
+        colums_header = []
         for line in line_pool.browse(cr, uid, line_ids, context=context):
             # Readability:
             family = line.family_id.name if line.family_id else 'Non presente'
@@ -105,8 +105,8 @@ class MRPPivotReportWizard(orm.TransientModel):
             else:
                 date_deadline = '1900-01'  # Empty deadline
 
-            if date_deadline not in master_deadline:
-                master_deadline.append(date_deadline)
+            if date_deadline not in colums_header:
+                colums_header.append(date_deadline)
 
             # Quantity:
             product_uom_qty = line.product_uom_qty
@@ -155,15 +155,15 @@ class MRPPivotReportWizard(orm.TransientModel):
         excel_pool.write_xls_line(ws_name, row, header, format_header)
 
         # Integrate date block:
-        master_deadline.sort()
-        empty = [0 for item in range(len(master_deadline))]
+        colums_header.sort()
+        empty = [0 for item in range(len(colums_header))]
 
         for key in master_data:
             family, mrp, frame = key
             line_data = empty[:]
             for deadline in master_data[key]:
-                col = master_data.index(deadline)
-                line_data[col] = master_deadline[key][deadline]
+                col = colums_header.index(deadline)
+                line_data[col] = master_data[key][deadline]
 
             # Write line:
             row_data = [
