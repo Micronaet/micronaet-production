@@ -64,7 +64,13 @@ class MRPPivotReportWizard(orm.TransientModel):
         # Wizard proxy parameters:
         wizard = self.browse(cr, uid, ids, context=context)[0]
 
-        domain = []
+        # '|',('mrp_unlinked','=',True),('mrp_id','=',False),
+        domain = [
+            ('pricelist_order','=',False),
+            ('go_in_production','=',True),
+            ('is_manufactured','=',True),
+            ('mx_closed','=',False),
+        ]
         domain_text = ''
 
         from_deadline = wizard.from_deadline
@@ -150,7 +156,7 @@ class MRPPivotReportWizard(orm.TransientModel):
 
         # Integrate date block:
         master_deadline.sort()
-        empty = [0 for item in len(master_deadline)]
+        empty = [0 for item in range(len(master_deadline))]
 
         for key in master_deadline:
             family, mrp, frame = key
