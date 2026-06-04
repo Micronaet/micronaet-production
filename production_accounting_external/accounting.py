@@ -750,10 +750,10 @@ class MrpProduction(orm.Model):
                 ], context=context)
 
             # Sorted with default_order
-            # if line_ids:
-            #    lines_browse = line_pool.browse(cr, uid, line_ids, context=context)
-            #    lines_sorted = sorted(lines_browse, key=lambda l: l.mrp_sequence)
-            #    line_ids = [l.id for l in lines_sorted]
+            if line_ids:
+                lines_browse = line_pool.browse(cr, uid, line_ids, context=context)
+                lines_sorted = sorted(lines_browse, key=lambda l: l.mrp_sequence)
+                line_ids = [l.id for l in lines_sorted]
             res[production_id] = line_ids
         return res
 
