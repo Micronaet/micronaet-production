@@ -524,19 +524,20 @@ class MrpProduction(orm.Model):
         """ Close manually the lavoration
         """
         return self.write(cr, uid, ids, {
-            'state': 'done'}, context=context)
+            'state': 'done',
+        }, context=context)
 
     def button_redraft_forced(self, cr, uid, ids, context=None):
         """ Redraft manually the lavoration
         """
         return self.write(cr, uid, ids, {
-            'state': 'draft'}, context=context)
+            'state': 'draft',
+        }, context=context)
 
     def row_in_tree_view(self, cr, uid, ids, context=None):
         """ Open line in tree window for manage better
         """
         mrp = self.browse(cr, uid, ids, context=context)[0]
-
         sol_ids = [s.id for s in mrp.order_line_ids]
 
         # sol_pool = self.pool.get('sale.order.line')
@@ -567,14 +568,13 @@ class MrpProduction(orm.Model):
     def close_all_production(self, cr, uid, ids, context=None):
         """ Close all production
         """
+        sol_pool = self.pool.get('sale.order.line')
         line_proxy = self.browse(cr, uid, ids, context=context).order_line_ids
 
         # Loop for close all (use original button event):
         for line in line_proxy:
            if line.sync_state == 'draft':
-               self.pool.get(
-                   'sale.order.line').close_production(
-                       cr, uid, [line.id], context=context)
+               sol_pool.close_production(cr, uid, [line.id], context=context)
 
         # Close also MRP record:
         return self.button_confirm_forced(cr, uid, ids, context=context)
