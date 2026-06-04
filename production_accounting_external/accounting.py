@@ -765,7 +765,7 @@ class MrpProduction(orm.Model):
             ('real', 'Reale'),
             ('group', 'Raggruppamento')
             ], string="Tipo Produzione", required=True),
-        'group_mrp_id': fields.Many2one(
+        'group_mrp_id': fields.many2one(
             'mrp.production', string="Produzione Padre", domain=[('mrp_type', '=', 'group')]
             ),
         'child_production_ids': fields.one2many(
