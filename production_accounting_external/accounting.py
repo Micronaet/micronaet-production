@@ -813,9 +813,15 @@ class MrpProduction(orm.Model):
             relation='sale.order.line',
             string='Order line'
         ),
+
         # TODO remove: vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
         # 'order_line_ids': fields.one2many('sale.order.line', 'mrp_id', 'Order line'),
         # TODO remove: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+        # TODO needed? (only for report but replaced!)
+        'sort_order_line_ids': fields.function(
+            _get_order_line_ids, method=True, relation='sale.order.line',
+            type='one2many', string='Order line', store=False, help='Utilizzato nelle stampe'),
         # --------------------------------------------------------------------------------------------------------------
 
         'unlinked_mrp': fields.boolean('Unlinked order', help='Order for keep all unlinked sale line'),
@@ -830,10 +836,6 @@ class MrpProduction(orm.Model):
 
         'use_mrp_ids': fields.one2many(
             'mrp.production', 'used_by_mrp_id', 'Use mrp'),
-
-        'sort_order_line_ids': fields.function(
-            _get_order_line_ids, method=True, relation='sale.order.line',
-            type='one2many', string='Order line', store=False),
 
         'previsional_line_ids': fields.one2many(
             'sale.order.line.previsional', 'mrp_id', 'Previsional order'),

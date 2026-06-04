@@ -78,7 +78,7 @@ class MrpProductionReportWizard(orm.TransientModel):
         if context is None:
             context = {}
 
-        wiz_proxy = self.browse(cr, uid, ids)[0]
+        wiz_proxy = self.browse(cr, uid, ids, context=context)[0]
 
         datas = {}
         datas['wizard'] = True  # started from wizard

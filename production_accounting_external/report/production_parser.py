@@ -103,6 +103,7 @@ class Parser(report_sxw.rml_parse):
                 note_list[-1][code_len:]  # remove code
                 )
             return res.strip()
+        return note
 
     def get_note_reference(self, note):
         """ Linked obj for note
@@ -295,13 +296,15 @@ class Parser(report_sxw.rml_parse):
         res = {}
         mrp_pool = self.pool.get('mrp.production')
         sol_pool = self.pool.get('sale.order.line')
+        context = {'lang': 'it_IT'}
 
         # ---------------------------------------------------------------------
         # Read open productions:
         # ---------------------------------------------------------------------
         mrp_family = {}
         mrp_ids = mrp_pool.search(self.cr, self.uid, [
-            ('state', 'not in', ('cancel', 'done'))])
+            ('state', 'not in', ('cancel', 'done')),
+        ], context=context)
 
         for mrp in mrp_pool.browse(self.cr, self.uid, mrp_ids):
             family_id = mrp.product_id.id
@@ -389,8 +392,7 @@ class Parser(report_sxw.rml_parse):
         res = []
 
         # TODO check procedure:
-        for component in sorted(
-                self.material_db, key=lambda x: x.default_code):
+        for component in sorted(self.material_db, key=lambda x: x.default_code):
             stock = component.mx_net_mrp_qty
             current = self.material_db[component]
             future = component.mx_mrp_future_qty
@@ -408,10 +410,8 @@ class Parser(report_sxw.rml_parse):
 
             # Load other MO (not this)
             production_list = set(
-                [('%s ' % (c.mrp_id.name or 'OC')).replace(
-                    'MO', '').lstrip('0')
-                    for c in component.future_ids if
-                    c.mrp_id.id != mrp_id])
+                [('%s ' % (c.mrp_id.name or 'OC')).replace('MO', '').lstrip('0')
+                    for c in component.future_ids if c.mrp_id.id != mrp_id])
 
             res.append((
                 component,  # Component
@@ -457,8 +457,7 @@ class Parser(report_sxw.rml_parse):
                         fabric_code = fabric.product_id.default_code or ''
                         if fabric_code[:1].upper() == 'T':
                             product_components[product][component][
-                                fabric_code] = (fabric.product_qty *
-                                                component_qty)
+                                fabric_code] = (fabric.product_qty * component_qty)
                         else:
                             _logger.warning('Jumped %s' % fabric_code)
 
@@ -473,13 +472,11 @@ class Parser(report_sxw.rml_parse):
         mode = data.get('mode', 'clean')
 
         lines = []
-        for line in sorted(
-                o.order_line_ids,
-                key=lambda item: (
-                    item.product_id.default_code[3:6],
-                    item.product_id.default_code[8:12],
-                    item.product_id.default_code[0:3],
-                    )):
+        for line in sorted(o.order_line_ids, key=lambda item: (
+                item.product_id.default_code[3:6],
+                item.product_id.default_code[8:12],
+                item.product_id.default_code[0:3],
+                )):
             lines.append(line)
 
         # Total for code break:
@@ -528,9 +525,7 @@ class Parser(report_sxw.rml_parse):
             self.report_extra_data['total_qty'] += product_uom_qty
             self.report_extra_data['done_qty'] += product_uom_maked_sync_qty
 
-            add_material_cut(
-                line.product_id, self.material_db, todo,
-                self.product_components)
+            add_material_cut(line.product_id, self.material_db, todo, self.product_components)
 
             # -------------
             # Check Frames:
@@ -717,11 +712,11 @@ class Parser(report_sxw.rml_parse):
         job_id = data.get('wizard_job_id')
         if job_id:
             job = job_pool.browse(cr, uid, job_id, context=context)
-            sorted_lines = sorted(
-                job.working_ids, key=lambda x: x.mrp_sequence)
+            sorted_lines = sorted(job.working_ids, key=lambda x: x.mrp_sequence)
             # mode = 'all'
         else:
-            sorted_lines = o.sort_order_line_ids
+            # sorted_lines = o.sort_order_line_ids  # TODO remove if not used sort_order_line_ids
+            sorted_lines = sorted(o.order_line_ids, key=lambda l: l.mrp_sequence)
 
         lines = []
         for line in sorted_lines:  # jet ordered:
@@ -755,8 +750,7 @@ class Parser(report_sxw.rml_parse):
                 job_uom_qty = 0
 
             # Read Qty with standard function:
-            reply = mrp_pool.get_mrp_oc_maked_qty_from_line(
-                line, mode, job_uom_qty)
+            reply = mrp_pool.get_mrp_oc_maked_qty_from_line(line, mode, job_uom_qty)
             if not reply:  # Line not needed in print (clean mode)!
                 continue
 
