@@ -767,17 +767,17 @@ class MrpProduction(orm.Model):
         # field_value contiene una lista di comandi Odoo standard (es. [(1, id, vals), (4, id), ...])
         if field_value:
             for command in field_value:
-                # Comando 1: Modifica di una riga esistente (1, id, {vals})
+                # 1: Modify row (1, id, {vals})
                 if command[0] == 1:
                     line_id = command[1]
                     vals = command[2]
                     if vals:
                         sol_pool.write(cr, uid, [line_id], vals, context=context)
 
-                # Comando 2: Cancellazione/Scollegamento di una riga (2, id) o (3, id)
+                # Comando 2: Remove, unlink row (2, id) o (3, id)
                 elif command[0] in (2, 3):
                     line_id = command[1]
-                    # Scolleghiamo la riga dalla produzione impostando mrp_id a False
+                    # Delete = unlink one2many with mrp_id = False
                     sol_pool.write(cr, uid, [line_id], {'mrp_id': False}, context=context)
         return True
 
