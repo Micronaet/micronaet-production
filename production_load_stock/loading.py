@@ -73,7 +73,8 @@ class MrpProduction(orm.Model):
         log += 'MRP: %s [# %s]\n' % (mrp.name, len(mrp.order_line_ids))
 
         self.write(cr, uid, ids, {
-            'pick_status': log}, context=context)
+            'pick_status': log,
+        }, context=context)
         return True
 
     def button_get_picking(self, cr, uid, ids, context=None):

@@ -7,17 +7,15 @@
             <field name="model">mrp.production</field>
             <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
             <field name="arch" type="xml">
-                <xpath expr="/form/header/field[@name='state']" position="before">
+                <!-- 04 giu 2026: Removed no more used -->
+                <!--<xpath expr="/form/header/field[@name='state']" position="before">
                      <button name="button_create_cl_sl" string="Update stock" type="object" />                     
                      <button name="button_get_picking" string="Stock pick" type="object" />                     
                 </xpath>
-                <!--<field name="name" position="after">
-                     <button name="button_create_cl_sl" string="Update stock" type="object" />                     
-                     <button name="button_get_picking" string="Stock pick" type="object" />                     
-                </field>-->
                 <field name="origin" position="after">
                      <field name="pick_status" attrs="{'invisible': [('pick_status','=',False)]}" />
                 </field>
+                -->
             </field>
         </record>
 
