@@ -757,6 +757,30 @@ class MrpProduction(orm.Model):
             res[production_id] = line_ids
         return res
 
+    def _inverse_order_line_ids(self, cr, uid, id, field_name, field_value, args, context=None):
+        """
+        Funzione inversa che elabora i comandi inviati dalla griglia modificabile
+        e li applica direttamente sulle righe d'ordine reali.
+        """
+        sol_pool = self.pool.get('sale.order.line')
+
+        # field_value contiene una lista di comandi Odoo standard (es. [(1, id, vals), (4, id), ...])
+        if field_value:
+            for command in field_value:
+                # Comando 1: Modifica di una riga esistente (1, id, {vals})
+                if command[0] == 1:
+                    line_id = command[1]
+                    vals = command[2]
+                    if vals:
+                        sol_pool.write(cr, uid, [line_id], vals, context=context)
+
+                # Comando 2: Cancellazione/Scollegamento di una riga (2, id) o (3, id)
+                elif command[0] in (2, 3):
+                    line_id = command[1]
+                    # Scolleghiamo la riga dalla produzione impostando mrp_id a False
+                    sol_pool.write(cr, uid, [line_id], {'mrp_id': False}, context=context)
+        return True
+
     _columns = {
         # --------------------------------------------------------------------------------------------------------------
         # Group management:
@@ -777,6 +801,17 @@ class MrpProduction(orm.Model):
         #    relation='sale.order.line',
         #    string="Righe Aggregate"
         # ),
+
+        'order_line_ids': fields.function(
+            _compute_order_line_ids,
+            fnct_inv=_inverse_order_line_ids,
+            type='many2many',
+            relation='sale.order.line',
+            string='Order line'
+        ),
+        # TODO remove: vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+        # 'order_line_ids': fields.one2many('sale.order.line', 'mrp_id', 'Order line'),
+        # TODO remove: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         # --------------------------------------------------------------------------------------------------------------
 
         'unlinked_mrp': fields.boolean('Unlinked order', help='Order for keep all unlinked sale line'),
@@ -791,16 +826,6 @@ class MrpProduction(orm.Model):
 
         'use_mrp_ids': fields.one2many(
             'mrp.production', 'used_by_mrp_id', 'Use mrp'),
-
-        # TODO remove: vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-        # 'order_line_ids': fields.one2many('sale.order.line', 'mrp_id', 'Order line'),
-        # TODO remove: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        'order_line_ids': fields.function(
-            _compute_order_line_ids,
-            type='many2many',
-            relation='sale.order.line',
-            string='Order line'
-        ),
 
         'sort_order_line_ids': fields.function(
             _get_order_line_ids, method=True, relation='sale.order.line',
