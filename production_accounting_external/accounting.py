@@ -764,7 +764,7 @@ class MrpProduction(orm.Model):
         """
         sol_pool = self.pool.get('sale.order.line')
 
-        # field_value contiene una lista di comandi Odoo standard (es. [(1, id, vals), (4, id), ...])
+        # field_value standard ODOO ORM: (ex. [(1, id, vals), (4, id), ...])
         if field_value:
             for command in field_value:
                 # 1: Modify row (1, id, {vals})
