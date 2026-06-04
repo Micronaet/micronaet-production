@@ -723,15 +723,63 @@ class MrpProduction(orm.Model):
             item_ids = sol_pool.search(
                 cr, uid, [
                     ('mrp_id', '=', item_id)],
-                    order='mrp_sequence,order_id,sequence,id',
-                    context=context)
+                    order='mrp_sequence,order_id,sequence,id',  context=context)
 
             res[item_id] = item_ids  # sol_pool.browse(cr, uid, item_ids, context=context)
         return res
 
+    def _compute_all_order_line_ids(self, cr, uid, ids, field_name, arg, context=None):
+        """ Collect all sale order line of childs MRP
+        """
+        line_pool = self.pool.get('sale.order.line')
+
+        res = {}
+        for production in self.browse(cr, uid, ids, context=context):
+            production_id = production.id
+            line_ids = []
+
+            if production.mrp_type == 'group':
+                child_ids = [child.id for child in production.child_production_ids]
+                if child_ids:
+                    line_ids = line_pool.search(cr, uid, [
+                        ('mrp_id', 'in', child_ids),
+                    ], context=context)
+            else:
+                line_ids = line_pool.search(cr, uid, [
+                    ('mrp_id', '=', production_id),
+                ], context=context)
+
+            # Sorted with default_order
+            # if line_ids:
+            #    lines_browse = line_pool.browse(cr, uid, line_ids, context=context)
+            #    lines_sorted = sorted(lines_browse, key=lambda l: l.product_id.name if l.product_id else '')
+            #    line_ids = [l.id for l in lines_sorted]
+            res[production_id] = line_ids
+        return res
+
     _columns = {
-        'unlinked_mrp': fields.boolean('Unlinked order',
-            help='Order for keep all unlinked sale line'),
+        # --------------------------------------------------------------------------------------------------------------
+        # Group management:
+        # --------------------------------------------------------------------------------------------------------------
+        'mrp_type': fields.selection([
+            ('real', 'Reale'),
+            ('group', 'Raggruppamento')
+            ], string="Tipo Produzione", required=True),
+        'group_mrp_id': fields.Many2one(
+            'mrp.production', string="Produzione Padre", domain=[('mrp_type', '=', 'group')]
+            ),
+        'child_production_ids': fields.one2many(
+            'mrp.production', 'group_mrp_id', string="Produzioni Figlie"
+        ),
+        # 'all_order_line_ids': fields.function(
+        #    _compute_all_order_line_ids,
+        #    type='many2many',
+        #    relation='sale.order.line',
+        #    string="Righe Aggregate"
+        # ),
+        # --------------------------------------------------------------------------------------------------------------
+
+        'unlinked_mrp': fields.boolean('Unlinked order', help='Order for keep all unlinked sale line'),
         'forecast_qty': fields.function(
             _get_total_information, method=True, type='float',
             string='Forecast qty', store=False, readonly=True, multi=True),
@@ -745,14 +793,18 @@ class MrpProduction(orm.Model):
             'mrp.production', 'used_by_mrp_id', 'Use mrp'),
 
         # TODO remove: vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-        'order_line_ids': fields.one2many(
-            'sale.order.line', 'mrp_id', 'Order line'),
+        # 'order_line_ids': fields.one2many('sale.order.line', 'mrp_id', 'Order line'),
         # TODO remove: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'order_line_ids': fields.function(
+            _compute_order_line_ids,
+            type='many2many',
+            relation='sale.order.line',
+            string='Order line'
+        ),
 
         'sort_order_line_ids': fields.function(
             _get_order_line_ids, method=True, relation='sale.order.line',
-            type='one2many', string='Order line',
-            store=False),
+            type='one2many', string='Order line', store=False),
 
         'previsional_line_ids': fields.one2many(
             'sale.order.line.previsional', 'mrp_id', 'Previsional order'),
@@ -769,6 +821,9 @@ class MrpProduction(orm.Model):
             size=100, string='Sched. info', store=False),
         }
 
+    _defaults = {
+        'mrp_type': lambda *x: 'real',
+    }
 
 class SaleOrderLineMrpSort(orm.Model):
     """ Sale as sale order line but just for sort
