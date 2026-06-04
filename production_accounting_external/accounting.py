@@ -786,7 +786,7 @@ class MrpProduction(orm.Model):
         # Group management:
         # --------------------------------------------------------------------------------------------------------------
         'mrp_type': fields.selection([
-            ('group', 'Raggruppamento')
+            ('group', 'Raggruppamento'),
             ('real', 'Reale'),
             ], string="Tipo Produzione", required=True),
         'group_mrp_id': fields.many2one(
