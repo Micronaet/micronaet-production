@@ -258,7 +258,8 @@
             </xpath>
 
             <field name="date_planned" position="before">
-                <field name="forecast_qty" />
+                <field name="mrp_type" invisible="1" />
+                <field name="forecast_qty"  attrs="{'invisible': [('mrp_type', '=', 'group')]}" />
             </field>
 
             <!--Hide notebook page-->
