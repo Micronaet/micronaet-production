@@ -104,6 +104,7 @@
         </field>
     </record>
 
+    <!--mrp.view_mrp_production_filter-->
     <record model="ir.ui.view" id="default_mrp_production_tree_view">
         <field name="name">Production custom tree</field>
         <field name="model">mrp.production</field>
@@ -112,8 +113,13 @@
             <!--Tree colors -->
             <xpath expr="/tree" position="attributes">
                 <attribute name="colors">green:state in ('done');grey:state in ('cancel')</attribute>
+                <attribute name="fonts">bold:mrp_type=='group'</attribute>
             </xpath>
 
+            <field name="name" position="after">
+               <field name="group_mrp_id" />
+               <field name="mrp_type" invisible="1" />
+            </field>
             <!--<field name="product_qty" position="before">
                <field name="forecast_qty" />
             </field>-->
