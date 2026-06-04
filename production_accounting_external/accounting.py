@@ -728,7 +728,7 @@ class MrpProduction(orm.Model):
             res[item_id] = item_ids  # sol_pool.browse(cr, uid, item_ids, context=context)
         return res
 
-    def _compute_all_order_line_ids(self, cr, uid, ids, field_name, arg, context=None):
+    def _compute_order_line_ids(self, cr, uid, ids, field_name, arg, context=None):
         """ Collect all sale order line of childs MRP
         """
         line_pool = self.pool.get('sale.order.line')
