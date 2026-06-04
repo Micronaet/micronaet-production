@@ -535,17 +535,21 @@ class MrpProduction(orm.Model):
     def row_in_tree_view(self, cr, uid, ids, context=None):
         """ Open line in tree window for manage better
         """
-        sol_pool = self.pool.get('sale.order.line')
-        sol_ids = sol_pool.search(cr, uid, [
-            ('mrp_id', '=', ids[0]),
-            ], context=context)
+        mrp = self.browse(cr, uid, ids, context=context)[0]
+
+        sol_ids = [s.id for s in mrp.order_line_ids]
+
+        # sol_pool = self.pool.get('sale.order.line')
+        # sol_ids = sol_pool.search(cr, uid, [
+        #    ('mrp_id', '=', ids[0]),
+        #    ], context=context)
 
         model_pool = self.pool.get('ir.model.data')
         tree_id = model_pool.get_object_reference(
             cr, uid,
-            'production_accounting_external',
-            'production_sale_order_line_sort_tree_view',  # Sort mode
+            'production_accounting_external', 'production_sale_order_line_sort_tree_view',  # Sort mode
             )[1]
+
         return {
             'type': 'ir.actions.act_window',
             'name': _('Righe'),
