@@ -569,14 +569,22 @@ class MrpProduction(orm.Model):
         """ Close all production
         """
         sol_pool = self.pool.get('sale.order.line')
-        line_proxy = self.browse(cr, uid, ids, context=context).order_line_ids
+        mrp = self.browse(cr, uid, ids, context=context)
+        line_proxy = mrp.order_line_ids
 
         # Loop for close all (use original button event):
         for line in line_proxy:
            if line.sync_state == 'draft':
                sol_pool.close_production(cr, uid, [line.id], context=context)
 
+        # --------------------------------------------------------------------------------------------------------------
         # Close also MRP record:
+        # --------------------------------------------------------------------------------------------------------------
+        for sub_mrp in mrp.child_production_ids:
+            _logger.info('Close {} sub MRP'.format(sub_mrp.name))
+            self.button_confirm_forced(cr, uid, [sub_mrp.id], context=context)
+
+        _logger.info('Close {} Master MRP'.format(mrp.name))
         return self.button_confirm_forced(cr, uid, ids, context=context)
 
     def accounting_sync(self, cr, uid, ids, context=None):
@@ -607,8 +615,7 @@ class MrpProduction(orm.Model):
         """ Generate container MRP order for unlinked elements
         """
         if not date_planned:
-            date_planned = datetime.now().strftime(
-                DEFAULT_SERVER_DATETIME_FORMAT)
+            date_planned = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         name = 'UNLINK-%s.%s' % (date_planned[2:4], date_planned[5:7])
 
         mrp_ids = self.search(cr, uid, [

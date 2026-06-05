@@ -117,8 +117,7 @@ class MrpMoveLavoration(orm.TransientModel):
 
         # Call button event procedure but with context modified for move wc
         # Reforce total from sale order line:
-        mrp_pool.recompute_total_from_sol(
-            cr, uid, [p_id], context=context) 
+        mrp_pool.recompute_total_from_sol(cr, uid, [p_id], context=context)
 
         # Force (re)schedule (create / append):
         mrp_pool.create_lavoration_item(# and workcenter line

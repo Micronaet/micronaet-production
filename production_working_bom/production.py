@@ -31,15 +31,15 @@ from openerp.tools.translate import _
 _logger = logging.getLogger(__name__)
 
 class res_company(orm.Model):
-    ''' Add fields for report in workcenter
-    '''
+    """ Add fields for report in workcenter
+    """
     _inherit = 'res.company'
     
     # Utility:
     def get_hour_parameters(
             self, cr, uid, company_id=False, context=None):
-        ''' Read element with company_id or passed 
-        '''
+        """ Read element with company_id or passed
+        """
         if not company_id:
             company_id = self.search(cr, uid, [], context=context)[0]
         elif type(company_id) in (list, tuple):
@@ -66,8 +66,8 @@ class res_company(orm.Model):
         }    
 
 #class mrp_workcenter(orm.Model):
-#    ''' Add fields for report in workcenter
-#    '''
+#    """ Add fields for report in workcenter
+#    """
 #
 #    _inherit = 'mrp.workcenter'
 #    
@@ -79,8 +79,8 @@ class res_company(orm.Model):
 #        }
 
 class mrp_bom_lavoration(orm.Model):
-    ''' Add relation fields (use same element in BOM and in production)
-    '''
+    """ Add relation fields (use same element in BOM and in production)
+    """
 
     _inherit = 'mrp.bom.lavoration'
 
@@ -88,8 +88,8 @@ class mrp_bom_lavoration(orm.Model):
     # Button:    
     # -------
     def open_lavoration_wc(self, cr, uid, ids, context=None):
-        ''' Open in calendar all lavorations for this workcenter
-        '''
+        """ Open in calendar all lavorations for this workcenter
+        """
         return self.pool.get('mrp.production').open_view(
             cr, uid, ids, 'workcenter', context=context) or {}
 
@@ -97,8 +97,8 @@ class mrp_bom_lavoration(orm.Model):
     # Function fields:
     # ----------------
     def _function_get_wc_data(self, cr, uid, ids, fields, args, context=None):
-        ''' Fields function for calculate totals depend on wc lines 
-        '''    
+        """ Fields function for calculate totals depend on wc lines
+        """
         res = {}
         for lavoration in self.browse(cr, uid, ids, context=context):
             # Initial setup:
@@ -158,18 +158,18 @@ class mrp_bom_lavoration(orm.Model):
         }
 
 class bom_production(orm.Model):
-    ''' Lavoration for BOM extra fields for manage production
+    """ Lavoration for BOM extra fields for manage production
         Add totals and link to production order for use same element also 
         for exploded BOM in productions
-    '''
+    """
     _inherit = 'mrp.production'
 
     # --------
     # Utility:
     # --------
     def write_sequence_order_line(self, cr, uid, ids, context=None):
-        ''' Recompute total order from sale order line (one record of mrp)
-        '''
+        """ Recompute total order from sale order line (one record of mrp)
+        """
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
         sol_pool = self.pool.get('sale.order.line')
         
@@ -182,12 +182,11 @@ class bom_production(orm.Model):
         return True
 
     def recompute_total_from_sol(self, cr, uid, ids, context=None):
-        ''' Recompute total order from sale order line (one record of mrp)
-        '''
+        """ Recompute total order from sale order line (one record of mrp)
+        """
         mrp_proxy = self.browse(cr, uid, ids, context=context)[0]
         product_qty = sum(
-            [(item.product_uom_qty - item.mx_assigned_qty) \
-                for item in mrp_proxy.order_line_ids])
+            [(item.product_uom_qty - item.mx_assigned_qty) for item in mrp_proxy.order_line_ids])
 
         self.write_sequence_order_line(cr, uid, ids, context=context)    
         if product_qty <= 0.0:
@@ -199,9 +198,9 @@ class bom_production(orm.Model):
             }, context=context)
         
     def open_view(self, cr, uid, ids, open_mode, context=None):
-        ''' Open in calendar all lavorations for this production:
+        """ Open in calendar all lavorations for this production:
             open_mode: 'production', 'workcenter' for setup filters
-        '''
+        """
         # Find record or filter to show:
         if open_mode == 'workcenter':
             lavoration_proxy = self.pool.get(
@@ -253,14 +252,14 @@ class bom_production(orm.Model):
             'type': 'ir.actions.act_window'}
 
     def create_wc_from_lavoration(self, cr, uid, order_id, context=None):
-        ''' Create sub workcenter from lavoration
+        """ Create sub workcenter from lavoration
             @param self: instance of class
             @param cr: cursor
             @param uid: user ID
             @param order_id: mrp order passed used for create all wc 
                 from lavoration
             @param context: extra parameters
-        '''
+        """
         # TODO read all lavoration
 
         # TODO load a date list for leave days >> need a module for this
@@ -352,8 +351,7 @@ class bom_production(orm.Model):
                     current_date = current_date + timedelta(days=1)
 
                 wc_pool.create(cr, uid, {
-                    'name': '%s [%s]' % (
-                        mrp_proxy.name, max_sequence),
+                    'name': '%s [%s]' % (mrp_proxy.name, max_sequence),
                     'sequence': max_sequence,
                     'workcenter_id': lavoration.workcenter_id.id,
                     'date_planned': current_date_text,
@@ -374,15 +372,15 @@ class bom_production(orm.Model):
         # TODO Write some date in production start / stop?
         # Write data in production from lavoration and workcenter:
         # TODO 
-        '''self.write(cr, uid, ids, {
+        """self.write(cr, uid, ids, {
             '': max_date,
             '': min_date,
-            }, context=context)'''
+            }, context=context)"""
         return True
         
     def create_lavoration_item(self, cr, uid, ids, mode='create', 
             context=None):
-        ''' Create lavoration item (case: new, append, splitted), use a 
+        """ Create lavoration item (case: new, append, splitted), use a
             procedure for generate all workcenter line
             @param cr: cursor
             @param self: instance of class
@@ -390,7 +388,7 @@ class bom_production(orm.Model):
             @param ids: mrp order 
             @param context: extra parameters
                 mrp_data dict
-        '''
+        """
         if context is None:
             context = {}
 
@@ -560,8 +558,8 @@ class bom_production(orm.Model):
             cr, uid, ids, mode='create', context=context)
 
     def open_lavoration(self, cr, uid, ids, context=None):
-        ''' Open in calendar all lavorations for this production
-        '''
+        """ Open in calendar all lavorations for this production
+        """
         return self.open_view(
             cr, uid, ids, 'production', context=context) or {}
         
@@ -586,8 +584,8 @@ class bom_production(orm.Model):
         }
 
 class mrp_production_workcenter_line(orm.Model):
-    ''' Extra field for workcenter line for extra info about lavoration
-    '''
+    """ Extra field for workcenter line for extra info about lavoration
+    """
     _inherit = 'mrp.production.workcenter.line'
     
     _columns = {
@@ -615,8 +613,8 @@ class mrp_production_workcenter_line(orm.Model):
         }
 
 class product_product(orm.Model):
-    ''' Add extra field for status report
-    '''
+    """ Add extra field for status report
+    """
     _inherit = 'product.product'
     
     _columns = {
@@ -624,13 +622,12 @@ class product_product(orm.Model):
         }
 
 class mrp_bom_lavoration(orm.Model):
-    ''' Add relation fields (use same element in BOM and in production)
-    '''
+    """ Add relation fields (use same element in BOM and in production)
+    """
     _inherit = 'mrp.bom.lavoration'
     
     _columns = {
         # workcenter depend on lavoration element
         'scheduled_ids': fields.one2many('mrp.production.workcenter.line',
             'lavoration_id', 'Scheduled lavorations'), 
-        }       
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+        }

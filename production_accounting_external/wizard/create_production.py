@@ -398,8 +398,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
                         }, context=context)
 
         # Reforce total from sale order line:
-        production_pool.recompute_total_from_sol(
-            cr, uid, [p_id], context=context)
+        production_pool.recompute_total_from_sol(cr, uid, [p_id], context=context)
 
         # Force (re)schedule (create / append):
         production_pool.create_lavoration_item(  # and workcenter line
