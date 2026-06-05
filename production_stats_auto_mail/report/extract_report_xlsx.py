@@ -109,8 +109,7 @@ class MrpProductionStatsMixed(orm.Model):
                     medium_detail += '[%s media: %s%s] ' % (
                         code, int(round(piece_x_hour, 0)), comment)
                 else:
-                    medium_detail += \
-                        '[%s dati per la media non presenti] ' % code
+                    medium_detail += '[%s dati per la media non presenti] ' % code
                     error = True
                     continue
 
@@ -175,8 +174,7 @@ class MrpProductionStatsMixed(orm.Model):
         history_pool = self.pool.get('mrp.worker.stats.history')
         clean_data = {}
         history_ids = history_pool.search(cr, uid, [], context=context)
-        for record in history_pool.browse(
-                cr, uid, history_ids, context=context):
+        for record in history_pool.browse(cr, uid, history_ids, context=context):
             code = record.name
             workers = record.workers
             medium = record.medium
@@ -193,20 +191,14 @@ class MrpProductionStatsMixed(orm.Model):
 
         # todo Collect data in res
         now_0 = datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
-        now_1 = (datetime.now() - timedelta(days=1)).strftime(
-            DEFAULT_SERVER_DATE_FORMAT)
-        now_9 = (datetime.now() - timedelta(days=9)).strftime(
-            DEFAULT_SERVER_DATE_FORMAT)
+        now_1 = (datetime.now() - timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT)
+        now_9 = (datetime.now() - timedelta(days=9)).strftime(DEFAULT_SERVER_DATE_FORMAT)
         # Add extra period for not get empty data in extra info
-        now_11 = (datetime.now() - timedelta(days=11)).strftime(
-            DEFAULT_SERVER_DATE_FORMAT)
+        now_11 = (datetime.now() - timedelta(days=11)).strftime(DEFAULT_SERVER_DATE_FORMAT)
         # Statistic 20 days page:
-        now_20 = (datetime.now() - timedelta(days=20)).strftime(
-            DEFAULT_SERVER_DATE_FORMAT)
-        now_40 = (datetime.now() - timedelta(days=40)).strftime(
-            DEFAULT_SERVER_DATE_FORMAT)
-        now_6_month = (datetime.now() - timedelta(days=180)).strftime(
-            DEFAULT_SERVER_DATE_FORMAT)
+        now_20 = (datetime.now() - timedelta(days=20)).strftime(DEFAULT_SERVER_DATE_FORMAT)
+        now_40 = (datetime.now() - timedelta(days=40)).strftime(DEFAULT_SERVER_DATE_FORMAT)
+        now_6_month = (datetime.now() - timedelta(days=180)).strftime(DEFAULT_SERVER_DATE_FORMAT)
 
         # ---------------------------------------------------------------------
         #                           Excel file:
@@ -455,8 +447,7 @@ class MrpProductionStatsMixed(orm.Model):
                             cell_format = xls_format['text_total']
                         cell_number_format = cell_format  # same of text
 
-                        WS.merge_range(
-                            row, 2, row, 4, _('TOTALE'), cell_format)
+                        WS.merge_range(row, 2, row, 4, _('TOTALE'), cell_format)
                         WS.write(row, 4, '', cell_format)  # No total workers
                         WS.write(row, 8, '', cell_format)  # Empty detail
                     else:
@@ -489,20 +480,12 @@ class MrpProductionStatsMixed(orm.Model):
                             row, 10, clean_extra_detail(detail), cell_format)
 
                     # Common part:
-                    WS.write(
-                        row, 5, format_hour(line.startup),
+                    WS.write(row, 5, format_hour(line.startup),
                         cell_number_format)
-                    WS.write(
-                        row, 6, line.maked_qty,
-                        cell_number_format)
-                    WS.write(
-                        row, 7, format_hour(line.hour),
-                        cell_number_format)
+                    WS.write(row, 6, line.maked_qty, cell_number_format)
+                    WS.write(row, 7, format_hour(line.hour), cell_number_format)
                 wc_end = row
-                WS.merge_range(
-                    wc_start + 1, 1, wc_end, 1,
-                    wc.name,
-                    xls_format['merge'])
+                WS.merge_range(wc_start + 1, 1, wc_end, 1, wc.name, xls_format['merge'])
 
             planned_end = row
             WS.merge_range(

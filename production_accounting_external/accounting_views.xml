@@ -212,7 +212,8 @@
                 <field name="mrp_sequence" string="ord." widget="handle"/>
                 <field name="partner_id" readonly="1"/>
                 <field name="order_id" readonly="1"/>
-                <field name="mrp_production_id" readonly="1"/>
+                <!--<field name="mrp_production_id" readonly="1"/> TODO remove?-->
+                <field name="mrp_id" readonly="1"/>
                 <field name="name" readonly="1"/>
                 <field name="default_code" readonly="1"/>
                 <field name="product_uom_qty" readonly="1"/>
