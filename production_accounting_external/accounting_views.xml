@@ -178,7 +178,7 @@
                 <field name="mrp_sequence" string="ord." invisible="1"/>
                 <field name="partner_id" readonly="1"/>
                 <field name="order_id" readonly="1"/>
-                <field name="mrp_id" invisible="1"/>
+                <field name="mrp_id" />
                 <field name="name" invisible="1"/>
                 <!--<field name="mrp_default_code" readonly="1" />XXX ex default_code-->
                 <field name="default_code" />
