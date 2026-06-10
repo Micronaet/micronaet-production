@@ -600,7 +600,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
         'product_tmpl_id': fields.many2one(
             'product.template', 'Mod. Product/Family', required=True),
         'production_id': fields.many2one(
-            'mrp.production', 'Production'),
+            'mrp.production', 'Production',
+            domain="[('product_id','=',product_id),('mrp_type', '=', 'real'),('state', 'not in', ('cancel', 'done'))]"),
         'bom_id': fields.many2one('mrp.bom', 'BOM'),
 
         'from_deadline': fields.date('From deadline',
