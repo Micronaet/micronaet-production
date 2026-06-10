@@ -216,17 +216,16 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     <th>Prod.</th>
                     <th>Q.</th>                    
                 </tr>''')
-        for item in production_pool.browse(
-                cr, uid, production_ids, context=context):
+        for item in production_pool.browse(cr, uid, production_ids, context=context):
             res['value']['other_production'] += """
                 <tr><td>%s</td>
-                    <td>%s %s</td>
+                    <td>%s (%s)</td>
                     <td>%s</td>
                 </tr>""" % (
                     item.date_planned[:10],
                     #item.name, # TODO range date!!
                     item.name,
-                    '' if item.mrp_type == 'real' else '[RAGGRUPP.]',
+                    'Reale' if item.mrp_type == 'real' else 'Gruppo',
                     item.product_qty,
                     )
         else:
