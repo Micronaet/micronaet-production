@@ -35,7 +35,7 @@
                         <field name="operation" on_change="onchange_operation(operation, product_tmpl_id)"/>
                         <field name="production_id" 
                                attrs="{'invisible': [('operation','in',('create'))], 'required': [('operation','not in',('create'))]}" 
-                               domain="[('product_id','=',product_id)]" 
+                               domain="[('product_id','=',product_id), ('mrp_type', '=', 'real')]"
                                /><!--, on_change="onchange_append_production(production_id, oc_total)"-->
                         <newline />
                         
@@ -65,8 +65,10 @@
                                    <group colspan="2">
                                        <separator string="Productions:" colspan="2"/>
                                        <field name="other_production" widget="html" readonly="1" nolabel="1" colspan="2"/>
+                                       <!--
                                        <separator string="Calendar for line:" colspan="2"/>
                                        <field name="calendar" widget="html" readonly="1" nolabel="1" colspan="2"/>
+                                       -->
                                    </group>   
                                </group>   
                             </page>                            
