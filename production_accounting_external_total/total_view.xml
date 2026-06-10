@@ -47,7 +47,7 @@
             <field name="domain">[('state','not in', ('cancel', 'done'))]</field>
         </record>
         <record model="ir.actions.act_window" id="action_mrp_production_group">
-            <field name="name">raggruppamenti di produzione</field>
+            <field name="name">Raggruppamenti di prod.</field>
             <field name="res_model">mrp.production</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
