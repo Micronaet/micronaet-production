@@ -2,22 +2,24 @@
 <openerp>
     <data>
         <!--TODO remove!!!-->
-        <record model="ir.ui.view" id="mrp_production_form_temp_view">         
+                <!-- 04 giu 2026: Removed no more used -->
+        <!--
+        <record model="ir.ui.view" id="mrp_production_form_temp_view">
             <field name="name">mrp.production.temp.form</field>
             <field name="model">mrp.production</field>
             <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
             <field name="arch" type="xml">
-                <!-- 04 giu 2026: Removed no more used -->
-                <!--<xpath expr="/form/header/field[@name='state']" position="before">
+                <xpath expr="/form/header/field[@name='state']" position="before">
                      <button name="button_create_cl_sl" string="Update stock" type="object" />                     
                      <button name="button_get_picking" string="Stock pick" type="object" />                     
                 </xpath>
                 <field name="origin" position="after">
                      <field name="pick_status" attrs="{'invisible': [('pick_status','=',False)]}" />
                 </field>
-                -->
+
             </field>
         </record>
+        -->
 
         <record model="ir.ui.view" id="production_sale_order_line_tree_view">
             <field name="name">Production sale order line</field>
@@ -28,8 +30,7 @@
                     <button name="open_product_bom" type="object" string="BOM" icon="gtk-properties" />                    
                 </field>
             </field>
-       </record>    
-                
+       </record>
     </data>
 </openerp>
 
