@@ -400,11 +400,11 @@ class CreateMrpProductionWizard(orm.TransientModel):
                         'date_planned': context['mrp_data']['schedule_from_date'],
                         }, context=context)
 
-        # Reforce total from sale order line:
+        # Force again total from sale order line:
         production_pool.recompute_total_from_sol(cr, uid, [p_id], context=context)
 
         # Force (re)schedule (create / append):
-        # 10/06/2026: Removed generation of Job in calendar:
+        # NOTE 10/06/2026: Removed generation of Job in calendar:
         # production_pool.create_lavoration_item(cr, uid, [p_id], mode='create', context=context)  # and workcenter line
 
         return return_view(
