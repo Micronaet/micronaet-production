@@ -187,8 +187,10 @@ class CreateMrpProductionWizard(orm.TransientModel):
 
         production_pool = self.pool.get('mrp.production')
         production_ids = production_pool.search(
-            cr, uid, [('product_id', '=', product_ids[0])], # TODO only open?
-                context=context)
+            cr, uid, [
+                ('state', 'not in', ('cancel', 'done')),
+                ('product_id', '=', product_ids[0]),
+            ], context=context)
 
         res['value']['other_production'] = _(
             '''<style>
@@ -246,7 +248,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
         res['value']['production_total'] = production_proxy.product_qty
         #res['value']['production_extra'] = production_proxy.extra_qty        
         #res['value']['production_oc'] = production_proxy.oc_qty        
-        return res """
+        return res 
+    """
 
     #def onchange_total(self, cr, uid, ids, total, oc_total, context=None):
     #    ''' Create extra production value
