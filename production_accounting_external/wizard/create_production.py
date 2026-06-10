@@ -301,8 +301,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         sol_pool = self.pool.get('sale.order.line')
 
         # Not used for now:
-        product_id = get_product_from_template(
-            self, cr, uid, wiz_proxy.product_tmpl_id.id, context=context)
+        product_id = get_product_from_template(self, cr, uid, wiz_proxy.product_tmpl_id.id, context=context)
         if not product_id:
             raise osv.except_osv(
                 _('Problemi con nome famiglia'),
@@ -323,6 +322,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             'workhour_id': wiz_proxy.workhour_id.id,
             'mode': wiz_proxy.operation,  # todo split!!!
             }
+
         if wiz_proxy.force_production:
             # Use forced value (now mandatory)
             context['mrp_data'].update({
@@ -338,8 +338,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
             try:
                 context['mrp_data'].update(
                     self.onchange_force_production(
-                        cr, uid, ids, True,
-                        wiz_proxy.bom_id.id, context=context)['value'])
+                        cr, uid, ids, True, wiz_proxy.bom_id.id, context=context)['value'])
             except:
                 raise osv.except_osv(
                     _('Error'),
@@ -394,20 +393,19 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     'mrp_unlinked': False,
                     }, context=context)
 
-            # Udate start date:
+            # Update start date:
             if context['mrp_data']['schedule_from_date']:
                 production_pool.write(
                     cr, uid, p_id, {
-                        'date_planned': context['mrp_data'][
-                            'schedule_from_date'],
+                        'date_planned': context['mrp_data']['schedule_from_date'],
                         }, context=context)
 
         # Reforce total from sale order line:
         production_pool.recompute_total_from_sol(cr, uid, [p_id], context=context)
 
         # Force (re)schedule (create / append):
-        production_pool.create_lavoration_item(  # and workcenter line
-            cr, uid, [p_id], mode='create', context=context)
+        # 10/06/2026: Removed generation of Job in calendar:
+        # production_pool.create_lavoration_item(cr, uid, [p_id], mode='create', context=context)  # and workcenter line
 
         return return_view(
             self, cr, uid, p_id, 'mrp.mrp_production_form_view',
@@ -655,4 +653,3 @@ class CreateMrpProductionWizard(orm.TransientModel):
         'operation': lambda *x: 'create',
         'workhour_id': lambda s, cr, uid, ctx: s._get_wh_default(cr, uid, ctx),
     }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

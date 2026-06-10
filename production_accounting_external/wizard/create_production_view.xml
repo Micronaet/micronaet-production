@@ -28,7 +28,7 @@
                         <field name="to_deadline" />
 
                         <field name="schedule_from_date" on_change="onchange_schedule_date(schedule_from_date,bom_id)" attrs="{'required':[('operation','in',('create'))]}" />
-                        <field name="workhour_id" create="0" attrs="{'required':[('operation','in',('create'))]}" />
+                        <field name="workhour_id" create="0" attrs="{'required':[('operation','in',('create'))]}" invisible="1"/>
 
                                                 
                         <separator string="Operation:" colspan="4"/>
