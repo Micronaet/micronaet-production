@@ -46,7 +46,16 @@
             <field name="context">{}</field>
             <field name="domain">[('state','not in', ('cancel', 'done'))]</field>
         </record>
-        
+        <record model="ir.actions.act_window" id="action_mrp_production_group">
+            <field name="name">raggruppamenti di produzione</field>
+            <field name="res_model">mrp.production</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_mrp_production_for_close_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[('mrp_state', '=', 'group')]</field>  <!--('state','not in', ('cancel', 'done'))-->
+        </record>
+
         <menuitem 
             parent="mrp.menu_mrp_production_action" 
             id="menu_action_openerp_model_tree" 
@@ -55,6 +64,12 @@
             parent="mrp.menu_mrp_production_action" 
             id="menu_action_openerp_model_current_tree" 
             action="action_mrp_production_current"
+            sequence="1"
+            />
+        <menuitem
+            parent="mrp.menu_mrp_production_action"
+            id="menu_action_mrp_production_group"
+            action="action_mrp_production_group"
             sequence="1"
             />
     </data>
