@@ -180,7 +180,8 @@ class CreateMrpProductionWizard(orm.TransientModel):
         # get product_id from template:
         product_pool = self.pool.get('product.product')
         product_ids = product_pool.search(cr, uid, [
-            ('product_tmpl_id', '=' , product_tmpl_id)], context=context)
+            ('product_tmpl_id', '=' , product_tmpl_id),
+        ], context=context)
 
         if not product_ids:
             return res
@@ -188,7 +189,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
         production_pool = self.pool.get('mrp.production')
         production_ids = production_pool.search(
             cr, uid, [
-                ('state', 'not in', ('cancel', 'done')),
+                ('state', 'not in', ('cancel', 'done')),  # Only open
                 ('product_id', '=', product_ids[0]),
             ], context=context)
 
@@ -216,6 +217,7 @@ class CreateMrpProductionWizard(orm.TransientModel):
                     <th>Prod.</th>
                     <th>Q.</th>                    
                 </tr>''')
+
         for item in production_pool.browse(cr, uid, production_ids, context=context):
             res['value']['other_production'] += """
                 <tr><td>%s</td>
